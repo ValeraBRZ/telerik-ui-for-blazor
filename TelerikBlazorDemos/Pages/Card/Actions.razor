@@ -1,0 +1,60 @@
+@page "/card/actions"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Actions Orientation">
+        <TelerikDropDownList @bind-Value="@CardOrientation"
+                             Data="@OrientationTypes"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Actions Layout">
+        <TelerikDropDownList @bind-Value="@CardActionsLayout"
+                             Data="@ActionLayouts"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="flex-center">
+    <TelerikCard Width="300px">
+        <CardHeader>
+            <CardTitle>Rome</CardTitle>
+            <CardSubTitle>Capital of Italy</CardSubTitle>
+        </CardHeader>
+        <CardImage Src="images/cards/places/rome.jpg"></CardImage>
+        <CardBody>
+            <p>Rome is a sprawling, cosmopolitan city with nearly 3,000 years of globally influential art, architecture and culture on display.</p>
+            <p>Ancient ruins such as the Forum and the Colosseum evoke the power of the former Roman Empire. </p>
+        </CardBody>
+        <CardActions Orientation="@CardOrientation" Layout="@CardActionsLayout">
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Map</TelerikButton>
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Weather</TelerikButton>
+        </CardActions>
+    </TelerikCard>
+</div>
+
+@code {
+    public CardOrientation CardOrientation { get; set; }
+    public List<CardOrientation> OrientationTypes { get; set; } = new List<CardOrientation>()
+    {
+        CardOrientation.Horizontal,
+        CardOrientation.Vertical,
+    };
+
+    public CardActionsLayout CardActionsLayout { get; set; } = CardActionsLayout.Stretch;
+
+    public List<CardActionsLayout> ActionLayouts => CardOrientation == CardOrientation.Horizontal ?
+        HorizontalActionLayouts : VerticalActionLayouts;
+
+    public List<CardActionsLayout> HorizontalActionLayouts { get; set; } = new List<CardActionsLayout>()
+    {
+        CardActionsLayout.Start,
+        CardActionsLayout.Center,
+        CardActionsLayout.End,
+        CardActionsLayout.Stretch
+    };
+
+    public List<CardActionsLayout> VerticalActionLayouts { get; set; } = new List<CardActionsLayout>()
+    {
+        CardActionsLayout.Center,
+        CardActionsLayout.Stretch
+    };
+}

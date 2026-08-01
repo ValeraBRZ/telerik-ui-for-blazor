@@ -1,0 +1,62 @@
+@page "/treelist/frozen-columns"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@(() => isFrozen = !isFrozen)">
+            @(isFrozen ? "Unfreeze" : "Freeze") Command Column
+        </TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class=@("demo-alert " + ( isFrozen ? "demo-alert-success" : "demo-alert-error" ) )>
+    The Command Column is
+    <strong class="text-muted">
+        @(isFrozen ? "Frozen" : "Unfrozen")
+    </strong>
+</div>
+
+
+@if (!string.IsNullOrEmpty(Result))
+{
+    <div class="demo-alert demo-alert-info">@Result</div>
+}
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Reorderable="true"
+                 Height="300px" Width="900px">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="Id" Width="80px" Locked="true"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="Position" Width="250px"></TreeListColumn>
+        <TreeListCommandColumn Width="300px" Locked="@isFrozen" Title="Command Column">
+            <TreeListCommandButton Icon="@SvgIcon.InfoCircle"
+                                   OnClick="@((TreeListCommandEventArgs  e) => Result = $" Click from {(e.Item as EmployeeDirectoryDto).FirstName}")">
+                Information
+            </TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    private bool isFrozen { get; set; } = false;
+    private string Result { get; set; }
+
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

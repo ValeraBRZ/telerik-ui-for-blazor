@@ -1,0 +1,44 @@
+@page "/buttongroup/selection"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Pick the Selection Mode of the ButtonGroup">
+        <TelerikDropDownList @bind-Value="@SelectionMode"
+                             Data="@SelectionModeOptions">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="row">
+    <div class="col-6 mb-md">
+        <TelerikButtonGroup SelectionMode="@SelectionMode">
+            <ButtonGroupToggleButton @bind-Selected="@BoldSelected" Icon="@SvgIcon.Bold"></ButtonGroupToggleButton>
+            <ButtonGroupToggleButton @bind-Selected="@ItalicSelected" Icon="@SvgIcon.Italic"></ButtonGroupToggleButton>
+            <ButtonGroupToggleButton @bind-Selected="@UnderlineSelected" Icon="@SvgIcon.Underline"></ButtonGroupToggleButton>
+            <ButtonGroupToggleButton @bind-Selected="@StrikethroughSelected" Icon="@SvgIcon.Strikethrough"></ButtonGroupToggleButton>
+        </TelerikButtonGroup>
+    </div>
+    <div class="col-6">
+        <h6 class="kd-demo-heading mt-0"> Selection </h6>
+        <div><strong>Bold: </strong>@BoldSelected.ToString().ToLower()</div>
+        <div><strong>Italic: </strong>@ItalicSelected.ToString().ToLower()</div>
+        <div><strong>Underline: </strong>@UnderlineSelected.ToString().ToLower()</div>
+        <div><strong>Strikethrough: </strong>@StrikethroughSelected.ToString().ToLower()</div>
+    </div>
+</div>
+
+@code {
+    public ButtonGroupSelectionMode SelectionMode { get; set; } = ButtonGroupSelectionMode.Multiple;
+    public IEnumerable<ButtonGroupSelectionMode> SelectionModeOptions { get; set; } =
+        new List<ButtonGroupSelectionMode> {
+            ButtonGroupSelectionMode.Single,
+            ButtonGroupSelectionMode.Multiple
+            };
+
+    public bool BoldSelected { get; set; }
+    public bool ItalicSelected { get; set; }
+    public bool StrikethroughSelected { get; set; }
+    public bool UnderlineSelected { get; set; }
+}

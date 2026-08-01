@@ -1,0 +1,31 @@
+@page "/dateinput/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info">Enter year "0000" too see localized error message. The default min and max range is from the year 1900 to 2100.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <EditForm Model="@model">
+        <DataAnnotationsValidator />
+        <div class="k-form-field">
+            <label for="selected-date" class="k-label k-form-label">Selected Date</label>
+            <div class="k-form-field-wrap">
+                <TelerikDateInput @bind-Value="@model.SelectedDate" Format="f"></TelerikDateInput>
+                <ValidationMessage For="@(() => model.SelectedDate)"></ValidationMessage>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private EditFormModel model { get; set; } = new EditFormModel { SelectedDate = DateTime.Now };
+
+    public class EditFormModel
+    {
+        public DateTime SelectedDate { get; set; }
+    }
+}

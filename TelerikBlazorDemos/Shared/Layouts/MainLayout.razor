@@ -1,0 +1,36 @@
+@namespace TelerikBlazorDemos.Shared
+
+@inherits Microsoft.AspNetCore.Components.LayoutComponentBase
+
+@inject IHostEnvironment HostEnvironment
+
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.JSInterop;
+
+@if (HostEnvironment.IsStaging())
+{
+    <DevEnvironmentBanner />
+}
+
+<TelerikRootComponent EnableRtl="@IsRtlEnabled">
+    @Body
+</TelerikRootComponent>
+
+@code{
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private bool IsRtlEnabled { get; set; }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        SetRtlForLocation();
+
+        await base.SetParametersAsync(parameters);
+    }
+
+    private void SetRtlForLocation()
+    {
+        IsRtlEnabled = NavigationManager.Uri.Contains("rtl");
+    }
+}

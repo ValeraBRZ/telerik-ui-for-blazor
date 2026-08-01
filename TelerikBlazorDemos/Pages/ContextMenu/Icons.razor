@@ -1,0 +1,95 @@
+@page "/contextmenu/icons"
+
+<TelerikContextMenu Selector=".k-card"
+                    Data="@MenuItems"
+                    IconField="@nameof(MenuItem.MyIconField)">
+</TelerikContextMenu>
+
+<div class="inbox-container">
+    <div class="custom-toolbar">
+        <span class="mail-box">Mail Box</span>
+    </div>
+    <div class="k-card k-card-horizontal">
+        <TelerikSvgIcon Icon="@SvgIcon.Inbox"></TelerikSvgIcon> Inbox
+    </div>
+    <div class="k-card k-card-horizontal">
+        <TelerikSvgIcon Icon="@SvgIcon.Envelope"></TelerikSvgIcon> Sent
+    </div>
+    <div class="k-card k-card-horizontal">
+        <TelerikSvgIcon Icon="@SvgIcon.Clipboard"></TelerikSvgIcon> Drafts
+    </div>
+    <div class="k-card k-card-horizontal">
+        <TelerikSvgIcon Icon="@SvgIcon.ExclamationCircle"></TelerikSvgIcon> Spam
+    </div>
+</div>
+
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public object MyIconField { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+{
+            new MenuItem()
+            {
+                Text = "Mark all as Read",
+                MyIconField = SvgIcon.Envelope
+            },
+            new MenuItem()
+            {
+                Text = "New Folder",
+                MyIconField = SvgIcon.FolderAdd,
+            },
+            new MenuItem()
+             {
+                Text = "Mark as favorite",
+                MyIconField = SvgIcon.Star
+             }
+        }; ;
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .custom-toolbar {
+        width: 100%;
+        background-color: #f6f6f6;
+        height: 40px;
+        line-height: 10px;
+        border-bottom: inset;
+        border-bottom-width: 1px;
+        padding: 17px 15px;
+        color: #656565;
+    }
+
+    .custom-toolbar .mail-box {
+        font-size: 20px;
+    }
+
+    .inbox-container {
+        height: 500px;
+        margin: 30px auto;
+        width: 70%;
+    }
+
+    .k-card {
+        padding: 6px 20px;
+        width: 127px;
+        font-size: 18px;
+        line-height:26px;
+    }
+
+        .k-card .k-svg-icon {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+            margin-right: 4px;
+        }
+</style>

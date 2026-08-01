@@ -1,0 +1,36 @@
+@page "/colorpalette/layout"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Columns">
+        <TelerikNumericTextBox @bind-Value="@Columns" Min="1" Max="20"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Tile Width">
+        <TelerikNumericTextBox @bind-Value="@TileWidth" Min="5" Max="100"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Tile Height">
+        <TelerikNumericTextBox @bind-Value="@TileHeight" Min="5" Max="100"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikColorPalette @bind-Value="@SelectedColor"
+                         Columns="@Columns"
+                         TileWidth="@($"{TileWidth}px")"
+                         TileHeight="@($"{TileHeight}px")">
+    </TelerikColorPalette>
+</div>
+
+@code {
+    private int _columns = 10;
+    public string SelectedColor { get; set; }
+    public int TileWidth { get; set; } = 24;
+    public int TileHeight { get; set; } = 24;
+    public int Columns
+    {
+        get => _columns;
+        set
+        {
+            _columns = Math.Max(1, value);
+        }
+    }
+}

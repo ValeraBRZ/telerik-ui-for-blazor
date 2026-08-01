@@ -1,0 +1,50 @@
+@page "/tabstrip/tab-visibility"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleTabLondon">Show / Hide Tab London</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleTabParis">Show / Hide Tab Paris</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikTabStrip>
+        <TabStripTab Title="Sofia">
+            <WeatherCard City="Sofia"
+                         TempC="23"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Visible="@TabLondonVisible"
+                     Title="London">
+            <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Visible="@TabParisVisible"
+                     Title="Paris">
+            <WeatherCard City="Paris"
+                         TempC="17"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+    </TelerikTabStrip>
+</div>
+
+@code {
+    bool TabLondonVisible = true;
+    bool TabParisVisible = false;
+
+    void ToggleTabLondon()
+    {
+        TabLondonVisible = !TabLondonVisible;
+    }
+
+    void ToggleTabParis()
+    {
+        TabParisVisible = !TabParisVisible;
+    }
+}

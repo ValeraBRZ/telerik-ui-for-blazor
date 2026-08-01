@@ -1,0 +1,168 @@
+@page "/grid/data-table"
+
+@using System.Data
+@using Telerik.DataSource.Extensions
+
+@inject ProductService ProductService
+
+@if (DataTable != null)
+{
+<TelerikGrid TItem="Dictionary<string, object>"
+             Sortable="@true"
+             FilterMode="@GridFilterMode.FilterMenu"
+             EditMode="GridEditMode.Inline"
+             Pageable="@true"
+             OnCreate="@CreateHandler"
+             OnDelete="@DeleteHandler"
+             OnUpdate="@UpdateHandler"
+             OnRead="@ReadItems">
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
+    </GridToolBarTemplate>
+    <GridColumns>
+        @*You can also manually generate all the columns by yourself by looping over the columns in the DataTable.
+            Make sure you set the FieldType parameter. It is mandatory for dynamic objects like DataTables and Dictionaries*@
+        <GridColumn Field="ProductName" Title="Product Name" FieldType="@typeof(string)" Width="280px" />
+        <GridColumn Field="UnitPrice" FieldType="@typeof(decimal)" Width="130px">
+            <Template>
+                @Convert.ToDouble((context as Dictionary<string, object>)["UnitPrice"]).ToString("C2")
+            </Template>
+        </GridColumn>
+        <GridColumn Field="UnitsInStock" FieldType="@typeof(short)" Width="130px">
+        </GridColumn>
+        <GridCommandColumn Width="150px">
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+</GridColumns>
+</TelerikGrid>}
+
+
+@code {
+    // the actual data table you get from the legacy service
+    DataTable DataTable { get; set; }
+
+    List<string> ProductNames { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ProductNames = ProductService.GetProducts().Select(p => p.ProductName).Distinct().ToList();
+        DataTable = GetData(); // generate data for the sake of the demo
+                               // also prepares the DataTable settings - column types and default values
+                               // which you must do as well to ensure correct operations and values
+    }
+
+    public DataTable GetData()
+    {
+        DataTable table = new DataTable();
+
+        // Make sure you specify the correct types
+        // If you have any nulls in your (database) Column, you should use nullable type (int?, DateTime?,...)
+        table.Columns.Add("ProductId", typeof(int));
+        table.Columns.Add("ProductName", typeof(string));
+        table.Columns.Add("UnitPrice", typeof(decimal));
+        table.Columns.Add("UnitsInStock", typeof(short));
+
+        // You should set default values to the columns that could be skipped in Create/Edit.
+        // The alternative approach is to set the default values in the UpdateHandler and/or CreateHandler.
+
+        // Having a default value in this case will prevent having DBNull values in your DataTable, because
+        // DBNull is not parsable to any other primitive type and if you pass it to the grid, some of the operations could be broken
+        table.Columns["ProductName"].DefaultValue = default(string);
+        table.Columns["UnitPrice"].DefaultValue = default(decimal);
+        table.Columns["UnitsInStock"].DefaultValue = default(short);
+
+        for (int i = 1; i < 50; i++)
+        {
+            table.Rows.Add(i, ProductNames.ElementAt(i), i * 5.2, i * 2);
+        }
+
+        return table;
+    }
+
+    protected void ReadItems(GridReadEventArgs args)
+    {
+        // this provides sorting, filtering, paging - the advanced data source operations
+        var datasourceResult = DataTable.ToDataSourceResult(args.Request);
+
+        // this is how you can shape the data from the DataTable so it is usable by the grid
+        // and so that there are no invalid DBNull values which can break it
+        args.Data = (datasourceResult.Data as IEnumerable<Dictionary<string, object>>)
+            .Select(x => x.ToDictionary(
+                x => x.Key,
+                x =>
+                {
+                    // This is mandatory if you are having some data with empty values (nulls)
+                    // DBNull is not parsable to other primitive types and we should convert it manually
+                    if (x.Value == DBNull.Value)
+                    {
+                        return null;
+                    }
+
+                    return x.Value;
+                }))
+            .ToList();
+
+        args.Total = datasourceResult.Total;
+    }
+
+    // Sample CUD operations
+    public void UpdateHandler(GridCommandEventArgs args)
+    {
+        var model = (Dictionary<string, object>)args.Item;
+
+        // update the view model
+        foreach (DataRow row in DataTable.Rows)
+        {
+            // You can also apply SQL expression for finding the right row
+            if (row["ProductId"].Equals(model["ProductId"]))
+            {
+                foreach (DataColumn column in DataTable.Columns)
+                {
+                    row[column.ColumnName] = model[column.ColumnName] ?? column.DefaultValue;
+                }
+            }
+        }
+
+        // you may also want to send the updated data to a service so you can store it in the actual database
+    }
+
+    public void DeleteHandler(GridCommandEventArgs args)
+    {
+        var model = (Dictionary<string, object>)args.Item;
+
+        // update the view-model
+        DataRow rowForDelete = null;
+        foreach (DataRow row in DataTable.Rows)
+        {
+            if (row["ProductId"].Equals(model["ProductId"]))
+            {
+                rowForDelete = row;
+                break;
+            }
+        }
+
+        rowForDelete?.Delete();
+
+        // you may also want to send the deleted row to a service so you can store it in the actual database
+    }
+
+    public void CreateHandler(GridCommandEventArgs args)
+    {
+        var model = (Dictionary<string, object>)args.Item;
+
+        // update the view-model
+        var row = DataTable.NewRow();
+        row["ProductId"] = DataTable.Rows.Count + 1;
+        foreach (var item in model)
+        {
+            row[item.Key] = item.Value;
+        }
+
+        DataTable.Rows.InsertAt(row, 0);
+
+        // you may also want to send the new row to a service so you can store it in the actual database
+    }
+}

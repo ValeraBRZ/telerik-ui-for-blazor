@@ -1,0 +1,14 @@
+@page "/dateinput/keyboard-navigation"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="selected-date" class="k-label k-form-label">Selected Date</label>
+        <div class="k-form-field-wrap">
+            <TelerikDateInput @bind-Value="@SelectedDate" Format="F" Id="selected-date" />
+        </div>
+    </div>
+</div>
+
+@code {
+    protected DateTime SelectedDate { get; set; } = DateTime.Now;
+}

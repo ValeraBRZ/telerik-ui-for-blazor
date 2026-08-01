@@ -1,0 +1,30 @@
+@page "/grid/filter-checkboxlist"
+
+@inject ProductService ProductService
+
+<TelerikGrid Data="@GridData"
+             Height="@Height"
+             FilterMode="@GridFilterMode.FilterMenu"
+             FilterMenuType="@FilterMenuType.CheckBoxList"
+             Pageable="true"
+             PageSize="@PageSize">
+    <GridColumns>
+        <GridColumn Width="200px" Field=@nameof(ProductDto.ProductName) Title="Product Name" />
+        <GridColumn Width="100px" Field=@nameof(ProductDto.ProductId) Title="Product Id" />
+        <GridColumn Width="100px" Field=@nameof(ProductDto.CategoryName) Title="Category" />
+        <GridColumn Width="100px" Field=@nameof(ProductDto.ReorderLevel) Title="Reorder Level" />
+        <GridColumn Width="150px" Field=@nameof(ProductDto.UnitPrice) Title="Unit Price" />
+        <GridColumn Width="150px" Field=@nameof(ProductDto.UnitsInStock) Title="Units In Stock" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<ProductDto> GridData { get; set; }
+    public int PageSize = 10;
+    public string Height = "400px";
+
+    protected override void OnInitialized()
+    {
+        GridData = ProductService.GetProducts();
+    }
+}

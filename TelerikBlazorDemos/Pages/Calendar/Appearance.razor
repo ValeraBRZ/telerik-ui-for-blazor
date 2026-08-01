@@ -1,0 +1,28 @@
+@page "/calendar/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Week Numbers">
+        <TelerikCheckBox @bind-Value="@ShowWeekNumbers" Title="Show week numbers" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikCalendar Value="@Value" Size="@Size" ShowWeekNumbers="@ShowWeekNumbers"></TelerikCalendar>
+</div>
+
+@code {
+    private DateTime Value { get; set; } = new DateTime(2025, 10, 31);
+
+    private string Size { get; set; } = ThemeConstants.Calendar.Size.Medium;
+
+    private bool ShowWeekNumbers { get; set; } = true;
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string> {
+        { "Small", ThemeConstants.Calendar.Size.Small },
+        { "Medium", ThemeConstants.Calendar.Size.Medium },
+        { "Large", ThemeConstants.Calendar.Size.Large }
+    };
+}

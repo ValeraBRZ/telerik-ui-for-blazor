@@ -1,0 +1,48 @@
+@page "/maskedtextbox/customization"
+
+@using Telerik.Blazor.Components
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enabled toggle">
+        <TelerikCheckBox Id="maskedtextbox-enabled-checkbox" @bind-Value="@Enabled"></TelerikCheckBox>
+        <label for="maskedtextbox-enabled-checkbox" class="k-checkbox-label checkbox-label">Enabled</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Include literals toggle">
+        <TelerikCheckBox Id="maskedtextbox-include-literals-checkbox" @bind-Value="@IncludeLiterals"></TelerikCheckBox>
+        <label for="maskedtextbox-include-literals-checkbox" class="k-checkbox-label checkbox-label">Include Literals</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Prompt character">
+        <TelerikTextBox @bind-Value="@PromptString"></TelerikTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Prompt placeholder character">
+        <TelerikTextBox @bind-Value="@PromptPlaceholderString"></TelerikTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<h3 style="white-space:pre">Value: @Value</h3>
+
+<div class="k-form-field">
+    <label for="credit-card-number">Credit Card</label>
+    <br />
+    <TelerikMaskedTextBox @bind-Value="@Value"
+                          Mask="0000-0000-0000-0000"
+                          Id="credit-card-number"
+                          Prompt="@PromptChar"
+                          PromptPlaceholder="@PromptPlaceholderChar"
+                          IncludeLiterals="@IncludeLiterals"
+                          Enabled="@Enabled"></TelerikMaskedTextBox>
+</div>
+
+@code {
+
+    public string Value { get; set; }
+    public bool Enabled { get; set; } = true;
+    public bool IncludeLiterals { get; set; }
+    public string PromptString { get; set; } = "_";
+    public string PromptPlaceholderString { get; set; } = " ";
+    public string TrimmedPromptPlaceholderString => PromptPlaceholderString.Trim();
+
+    public char PromptChar => string.IsNullOrEmpty(PromptString) ? '_' : PromptString[0];
+    public char PromptPlaceholderChar => string.IsNullOrEmpty(TrimmedPromptPlaceholderString) ? ' ' : TrimmedPromptPlaceholderString[0];
+}
+

@@ -1,0 +1,16 @@
+@page "/rating/label"
+
+<h4>Rating With Label</h4>
+<TelerikRating @bind-Value="@RatingLValue"
+               Label="@RatingLabel">
+</TelerikRating>
+
+<h4>Rating Without Label</h4>
+<TelerikRating @bind-Value="@RatingValue" />
+
+@code {
+    private double RatingLValue { get; set; } = 2;
+    private double RatingValue { get; set; } = 2;
+
+    private string RatingLabel => $"{RatingLValue} out of 5 stars";
+}

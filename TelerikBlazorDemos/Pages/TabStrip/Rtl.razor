@@ -1,0 +1,58 @@
+@page "/tabstrip/rtl"
+
+<div class="demo-section" style="max-width: 400px;">
+    <TelerikTabStrip @bind-ActiveTabIndex="@ActiveTabIndex" Scrollable="true" Width="100%">
+        <TabStripTab Title="Sofia">
+            <WeatherCard City="Sofia"
+                         TempC="23"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="London">
+            <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Berlin">
+            <WeatherCard City="Berlin"
+                         TempC="25"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Paris">
+            <WeatherCard City="Paris"
+                         TempC="17"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Rome">
+            <WeatherCard City="Rome"
+                         TempC="20"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Vienna">
+            <WeatherCard City="Vienna"
+                         TempC="19"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Stockholm">
+            <WeatherCard City="Stockholm"
+                         TempC="10"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Barcelona">
+            <WeatherCard City="Sunny"
+                         TempC="26"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+    </TelerikTabStrip>
+</div>
+
+@code {
+    public int ActiveTabIndex { get; set; } = 1;
+}

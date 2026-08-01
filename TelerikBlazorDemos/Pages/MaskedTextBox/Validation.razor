@@ -1,0 +1,97 @@
+@page "/maskedtextbox/validation"
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-horizontal" style="width: 350px;">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@Payment" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="required" class="k-label k-form-label">Credit Card:</label>
+                    <TelerikMaskedTextBox ValidateOn="@ValidationEvent" Mask="0000-0000-0000-0000" IncludeLiterals="true" Id="card-input" @bind-Value="@Payment.CreditCard"></TelerikMaskedTextBox>
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="required" class="k-label k-form-label">Phone Number:</label>
+                    <TelerikMaskedTextBox ValidateOn="@ValidationEvent" Mask="+1-000-000-0000" Id="phone-input" @bind-Value="@Payment.PhoneNumber" PromptPlaceholder="null"></TelerikMaskedTextBox>
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="required" class="k-label k-form-label">Payment Address:</label>
+                    <TelerikTextBox ValidateOn="@ValidationEvent" Id="payment-address-input" @bind-Value="@Payment.Address"></TelerikTextBox>
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="required" class="k-label k-form-label">Post Code:</label>
+                    <TelerikMaskedTextBox ValidateOn="@ValidationEvent" Mask="00000-9999" IncludeLiterals="true" Id="zip-input" @bind-Value="@Payment.Zip" PromptPlaceholder="null"></TelerikMaskedTextBox>
+                </div>
+            </div>
+
+            <TelerikButton ButtonType="@ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" Class="mt-sm">Submit</TelerikButton>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    public PaymentDetails Payment { get; set; } = new PaymentDetails();
+    public string SuccessMessage { get; set; }
+    
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    async void HandleValidSubmit(EditContext context)
+    {
+        if (context.Validate())
+        {
+            SuccessMessage = "Form Submitted Successfully!";
+            await Task.Delay(2000);
+            SuccessMessage = string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    public class PaymentDetails
+    {
+        [Required]
+        [RegularExpression("^[1-9][0-9]{3}-[1-3]{4}-[0-9]{4}-[0-9]{4}$", ErrorMessage = "Please Enter valid credit card number")]
+        public string CreditCard { get; set; }
+
+        [MinLength(10)]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        [RegularExpression("^[0-9]{5}-[0-9]{4}$", ErrorMessage = "Please Enter valid zip")]
+        public string Zip { get; set; }
+
+        public string Address { get; set; }
+    }
+}
+

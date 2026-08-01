@@ -1,0 +1,32 @@
+@page "/marketing-campaigns/product-page/aiprompt"
+
+@layout MainLayout
+
+<div class="kd-marketing-campaign-page">
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <TelerikAIPrompt OnPromptRequest="@HandlePromptRequest"
+                         PromptSuggestions="@Suggestions"
+                         Width="500px">
+        </TelerikAIPrompt>
+    </div>
+</div>
+
+@code {
+    private List<string> Suggestions { get; set; } = new List<string>()
+    {
+        "Generate an Out of Office email.",
+        "Write a LinkedIn post for the importance of work/life balance."
+    };
+
+    private List<Dictionary<string, string>> PromptData { get; set; }
+
+    private void HandlePromptRequest(AIPromptPromptRequestEventArgs args)
+    {
+        args.Output = "For real prompt processing, please connect the component to a preferred AI service.";
+    }
+
+    private void HandleCommandExecute(AIPromptCommandExecuteEventArgs args)
+    {
+        args.Output = "For real prompt processing, please connect the component to a preferred AI service.";
+    }
+}

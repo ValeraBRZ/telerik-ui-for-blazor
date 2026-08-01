@@ -1,0 +1,48 @@
+@using Telerik.Blazor
+
+<TelerikChart @ref="@ChartRef" Height="100%">
+    <ChartLegend Visible="false"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="@ChartSeriesType.Column" Data="@Data"></ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Categories="@Categories">
+            <ChartCategoryAxisMajorGridLines Visible="false" />
+            <ChartCategoryAxisLabels>
+                <ChartCategoryAxisLabelsRotation Angle="@LabelsRotation" />
+            </ChartCategoryAxisLabels>
+        </ChartCategoryAxis>
+    </ChartCategoryAxes>
+
+    <ChartValueAxes>
+        <ChartValueAxis MajorUnit="10000" Min="0" Max="100000">
+            <ChartValueAxisLabels Step="5"></ChartValueAxisLabels>
+        </ChartValueAxis>
+    </ChartValueAxes>
+
+</TelerikChart>
+
+@code {
+    public class ModelData
+    {
+        public double Series1 { get; set; }
+        public double Series2 { get; set; }
+        public double Series3 { get; set; }
+        public double Series4 { get; set; }
+    }
+
+    public TelerikChart ChartRef { get; set; }
+
+    public string[] Categories = new string[] { "Home", "Price", "Sign-up", "Product", "Blog" };
+
+    string LabelsRotation = "auto";
+
+    public List<object> Data = new List<object>() { 90000, 60000, 40000, 30000, 10000 };
+
+    public void Refresh()
+    {
+        ChartRef.Refresh();
+    }
+}

@@ -1,0 +1,13 @@
+@page "/colorpalette/rtl"
+
+<div class="demo-section auto">
+    <TelerikColorPalette @bind-Value="@SelectedColor"
+                         Columns="10"
+                         TileWidth="24px"
+                         TileHeight="24px">
+    </TelerikColorPalette>
+</div>
+
+@code {
+    public string SelectedColor { get; set; }
+}

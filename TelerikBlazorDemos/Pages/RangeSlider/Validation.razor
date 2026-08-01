@@ -1,0 +1,80 @@
+@page "/rangeslider/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-section auto k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@validationModel"
+                  OnValidSubmit="@HandleValidSubmit"
+                  OnInvalidSubmit="@HandleInvalidSubmit">
+
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="price-range" class="k-label k-form-label">Price Range</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikRangeSlider @bind-StartValue="@validationModel.StartPrice"
+                                            @bind-EndValue="@validationModel.EndPrice"
+                                            Min="5.0"
+                                            Max="25.0"
+                                            Decimals="1"
+                                            SmallStep="0.5"
+                                            LargeStep="1.0"
+                                            Width="400px">
+                        </TelerikRangeSlider>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k-form-field" style="padding-top: 16px">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    SliderValidationModel validationModel { get; set; }
+    string SuccessMessage = string.Empty;
+
+    class SliderValidationModel
+    {
+        [Required(ErrorMessage = "Enter start price range")]
+        [Range(10.0, 15.0, ErrorMessage = "Start Price Range should be between 10.0 and 15.0")]
+        public double? StartPrice { get; set; }
+
+        [Required(ErrorMessage = "Enter end price range")]        
+        [Range(15.0, 20.0, ErrorMessage = "End Price Range should be between 15.0 and 20.0")]
+        public double? EndPrice { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        validationModel = new SliderValidationModel();
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

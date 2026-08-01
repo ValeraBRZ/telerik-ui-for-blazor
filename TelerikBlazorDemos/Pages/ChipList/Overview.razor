@@ -1,0 +1,121 @@
+@page "/chiplist/overview"
+
+@inject CustomerService CustomerService
+
+<TelerikForm Model="@CustomerNotification">
+    <FormItems>
+        <FormItem>
+            <Template>
+                <div class="k-form-field">
+                    <label for="select-customers" class="k-label k-form-label">Add Recipients:</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikAutoComplete Data="@Customers"
+                                             @bind-Value="@AutoCompleteValue"
+                                             OnChange="@OnAutoCompleteChange"
+                                             ValueField="@nameof(CustomerDto.ContactName)"
+                                             Filterable="true"
+                                             FilterOperator="@StringFilterOperator.Contains"
+                                             Id="select-customers"
+                                             Placeholder="Type a name..." />
+                    </div>
+                </div>
+            </Template>
+        </FormItem>
+        <FormItem LabelText="To">
+            <Template>
+                <div class="k-form-field">
+                    <label class="k-label k-form-label">To:</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikChipList Data="@CustomerNotification.Recipients"
+                                         Removable="true"
+                                         OnRemove="@OnChipListRemove">
+                            <ItemTemplate>
+                                @{
+                                    var customer = context.ToString();
+                                    var customerDto = Customers.FirstOrDefault(x => x.ContactName == customer);
+                                    if (customerDto != null)
+                                    {
+                                        <img src="images/customers/@(customerDto.CustomerId).jpg"
+                                             alt="@customerDto.ContactName"
+                                             style="height:13px" />
+                                        <span>@customerDto.ContactName</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: red">@customer</span>
+                                    }
+                                }
+                            </ItemTemplate>
+                        </TelerikChipList>
+                    </div>
+                </div>
+            </Template>
+        </FormItem>
+        <FormItem LabelText="Subject" Field="@nameof(EmailMessage.Subject)" />
+        <FormItem LabelText="Message" Field="@nameof(EmailMessage.Message)"
+                  EditorType="@FormEditorType.TextArea" />
+    </FormItems>
+    <FormButtons>
+        <TelerikButton Enabled="false"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Send</TelerikButton>
+        <TelerikButton ButtonType="@ButtonType.Reset"
+                       OnClick="@OnButtonClick">Clear</TelerikButton>
+    </FormButtons>
+</TelerikForm>
+
+@code {
+    private IEnumerable<CustomerDto> Customers { get; set; } = new List<CustomerDto>();
+
+    private EmailMessage CustomerNotification { get; set; }
+
+    private string AutoCompleteValue { get; set; }
+
+    private void OnButtonClick()
+    {
+        CustomerNotification.Recipients = new List<string>();
+    }
+
+    private void OnChipListRemove(ChipListRemoveEventArgs args)
+    {
+        CustomerNotification.Recipients.Remove(args.Item.ToString());
+    }
+
+    private void OnAutoCompleteChange(object newValue)
+    {
+        var customerName = newValue?.ToString();
+
+        if (!string.IsNullOrEmpty(customerName) && CustomerNotification.Recipients.IndexOf(customerName) == -1)
+        {
+            CustomerNotification.Recipients.Add(customerName);
+            AutoCompleteValue = string.Empty;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        CustomerNotification = new EmailMessage()
+        {
+            Recipients = new List<string>()
+            {
+                "Pedro Afonso",
+                "John Doe"
+            },
+            Subject = "New Products in Stock",
+            Message = "Dear Partners,\nWe have received some exciting new products. Check our website for more details!\n\nBest,\nSales Team"
+        };
+        
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Customers = CustomerService.GetCustomers();
+    }
+
+    public class EmailMessage
+    {
+        public List<string> Recipients { get; set; }
+        public string Subject { get; set; }
+        public string Message { get; set; }
+    }
+}

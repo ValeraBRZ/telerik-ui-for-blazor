@@ -1,0 +1,114 @@
+@page "/filemanager/flat-data"
+
+@inject NavigationManager NavigationManager
+@inject FlatFileService FileService
+
+<TelerikFileManager Height="400px"
+                    Data="@Data"
+                    @bind-Path="@DirectoryPath"
+                    NameField="@(nameof(FlatFileEntry.Name))"
+                    SizeField="@(nameof(FlatFileEntry.Size))"
+                    PathField="@(nameof(FlatFileEntry.Path))"
+                    ExtensionField="@(nameof(FlatFileEntry.Extension))"
+                    IsDirectoryField="@(nameof(FlatFileEntry.IsDirectory))"
+                    HasDirectoriesField="@(nameof(FlatFileEntry.HasDirectories))"
+                    IdField="@(nameof(FlatFileEntry.Id))"
+                    ParentIdField="@(nameof(FlatFileEntry.ParentId))"
+                    DateCreatedField="@(nameof(FlatFileEntry.DateCreated))"
+                    DateCreatedUtcField="@(nameof(FlatFileEntry.DateCreatedUtc))"
+                    DateModifiedField="@(nameof(FlatFileEntry.DateModified))"
+                    DateModifiedUtcField="@(nameof(FlatFileEntry.DateModifiedUtc))"
+                    OnCreate="@OnCreate"
+                    OnModelInit="@OnModelInit"
+                    OnUpdate="@OnUpdate"
+                    OnDelete="@OnDelete"
+                    OnDownload="@OnDownload">
+    <FileManagerSettings>
+        <FileManagerUploadSettings SaveUrl="@UploadUrl"
+                                   Multiple="true"
+                                   OnSuccess="@OnUploadSuccess">
+        </FileManagerUploadSettings>
+    </FileManagerSettings>
+</TelerikFileManager>
+
+@code {
+    [CascadingParameter]
+    public DialogFactory Dialogs { get; set; }
+
+    public string DirectoryPath { get; set; }
+    public List<FlatFileEntry> Data { get; set; } = new List<FlatFileEntry>();
+
+    public string UploadUrl =>
+        NavigationManager
+            .ToAbsoluteUrl($"api/filemanager/{nameof(FileManagerController.UploadFlatFiles).ToLower()}");
+
+    protected override async Task OnInitializedAsync()
+    {
+        DirectoryPath = FileManagerConstants.FilesPath;
+
+        await LoadDataAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    public async Task LoadDataAsync()
+    {
+        Data = await FileService.ReadFlatDataAsync();
+    }
+
+    public async Task OnCreate(FileManagerCreateEventArgs args)
+    {
+        await FileService.CreateAsync(args.Item as FlatFileEntry, DirectoryPath);
+
+        await LoadDataAsync();
+    }
+
+    public FlatFileEntry OnModelInit()
+    {
+        var item = FileService.ModelInit(DirectoryPath);
+        return item;
+    }
+
+    public async Task OnUpdate(FileManagerUpdateEventArgs args)
+    {
+        var item = (FlatFileEntry)args.Item;
+
+        if (item.IsDirectory)
+        {
+            // avoid changes to folders intentionally
+            // simulate access rights violation, name clash, etc.
+            args.IsCancelled = true;
+
+            await Dialogs.AlertAsync(
+                title: "Information",
+                text: "The specified folder name is not accepted.");
+        }
+        else
+        {
+            await FileService.UpdateAsync(args.Item as FlatFileEntry, DirectoryPath);
+
+            await LoadDataAsync();
+        }
+    }
+
+    public async Task OnDelete(FileManagerDeleteEventArgs args)
+    {
+        await FileService.DeleteAsync(args.Item as FlatFileEntry);
+
+        await LoadDataAsync();
+    }
+
+    public async Task OnDownload(FileManagerDownloadEventArgs args)
+    {
+        await FileService.DownloadAsync(args);
+
+        await LoadDataAsync();
+    }
+
+    public async Task OnUploadSuccess(UploadSuccessEventArgs args)
+    {
+        await FileService.UploadAsync(args, DirectoryPath);
+
+        await LoadDataAsync();
+    }
+}

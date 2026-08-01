@@ -1,0 +1,10 @@
+@page "/dateinput/rtl"
+
+<div class="demo-section auto">
+    <TelerikDateInput @bind-Value="@Value">
+    </TelerikDateInput>
+</div>
+
+@code{
+    public DateTime Value { get; set; } = DateTime.Now;
+}

@@ -1,0 +1,46 @@
+@page "/rangeslider/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <TelerikDropDownList @bind-Value="@SliderOrientation"
+                             Data="@Orientations"
+                             ValueField="Orientation"
+                             Width="">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+<div class="demo-section auto">
+    <TelerikRangeSlider @bind-StartValue="@Value"
+                        @bind-EndValue="@EndValue"
+                        Orientation="@SliderOrientation"
+                        SmallStep="10"
+                        LargeStep="20"
+                        Min="0"
+                        Max="100">
+    </TelerikRangeSlider>
+</div>
+
+@code {
+    public int Value { get; set; } = 30;
+    public int EndValue { get; set; } = 70;
+    public SliderOrientation SliderOrientation { get; set; } = SliderOrientation.Vertical;
+    public List<SliderOrientationItem> Orientations { get; set; } = new List<SliderOrientationItem>();
+
+    protected override Task OnInitializedAsync()
+    {
+        foreach (SliderOrientation item in Enum.GetValues(typeof(SliderOrientation)))
+        {
+            Orientations.Add(new SliderOrientationItem { Text = item.ToString(), Orientation = item });
+        }
+        return base.OnInitializedAsync();
+    }
+
+    public class SliderOrientationItem
+    {
+        public string Text { get; set; }
+        public SliderOrientation Orientation { get; set; }
+    }
+}

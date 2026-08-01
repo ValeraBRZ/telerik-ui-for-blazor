@@ -1,0 +1,31 @@
+@page "/breadcrumb/separator"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items" SeparatorIcon="@SvgIcon.ShapeLine" Class="k-justify-content-center"></TelerikBreadcrumb>
+</div>
+
+@code {
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    protected override void OnInitialized()
+    {
+        Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Components", Icon = SvgIcon.Globe },
+            new BreadcrumbItem { Text = "Breadcrumb" },
+            new BreadcrumbItem { Text = "Separator" },
+        };
+    }
+
+    public class BreadcrumbItem
+    {
+        public ISvgIcon Icon { get; set; }
+        public string Text { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(385px + 6em) !important;
+    }
+</style>

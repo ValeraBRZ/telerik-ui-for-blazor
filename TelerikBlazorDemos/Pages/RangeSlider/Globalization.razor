@@ -1,0 +1,22 @@
+@page "/rangeslider/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikRangeSlider @bind-StartValue="@StartValue"
+                        @bind-EndValue="@EndValue"
+                        Min="0.0m"
+                        Max="1.0m"
+                        SmallStep="0.1m"
+                        LargeStep="0.2m"
+                        Decimals="1">
+    </TelerikRangeSlider>
+</div>
+@code {
+    public decimal StartValue { get; set; } = 0.5m;
+    public decimal EndValue { get; set; } = 0.9m;
+}

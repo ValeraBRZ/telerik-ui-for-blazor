@@ -1,0 +1,239 @@
+@page "/drawer/templates"
+
+<div class="row">
+    <div class="col-6 mb-md">
+        <div class="custom-toolbar">
+            <TelerikButton OnClick="@(() => ToggleDrawer(Drawer1))" Icon="@SvgIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
+            <span style="margin-left: 20px; font-weight: bold; font-size: 17px;">Drawer with Item Template</span>
+        </div>
+
+        <TelerikDrawer @ref="@Drawer1"
+                       @bind-SelectedItem="SelectedItem"
+                       @bind-Expanded="@ExpandedDrawer1"
+                       Data="Data"
+                       MiniMode="true"
+                       Mode="@Mode">
+            <ItemTemplate>
+                <span class="flag @context.IconFlag"></span>
+                @if (ExpandedDrawer1)
+                {
+                    <div class="item-descr-wrap">
+                        <div>@context.Text</div>
+                        <span class="item-descr">@context.Description</span>
+                    </div>
+                }
+            </ItemTemplate>
+            <DrawerContent>
+                <span class="weather-icon @SelectedItem.IconClass"></span>
+                <span class="weather">
+                    <h2>@SelectedItem.Temp<span>ºC</span></h2>
+                    <p>Sunny weather in @SelectedItem.Text</p>
+                </span>
+            </DrawerContent>
+        </TelerikDrawer>
+    </div>
+
+    <div class="col-6">
+        <div class="custom-toolbar text-right">
+            <span style="font-weight: bold; font-size: 17px;" class="pull-right">Drawer with Template</span>
+            <TelerikButton OnClick="@(() => ToggleDrawer(Drawer2))" Icon="@SvgIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)" Class="pull-right"></TelerikButton>
+        </div>
+
+        <TelerikDrawer @ref="@Drawer2"
+                       @bind-SelectedItem="SelectedItem2"
+                       @bind-Expanded="@ExpandedDrawer2"
+                       Data="Data"
+                       MiniMode="true"
+                       Mode="@Mode"
+                       Position="@DrawerPosition.End">
+            <Template>
+                <ul class="k-drawer-items" role="menubar" aria-orientation="vertical">
+                    @if (SelectedItem2 != null && ExpandedDrawer2)
+                    {
+                        <div class="text-center drawer-header">
+                            <span class="weather-icon sunny"></span>
+                            <span class="weather">
+                                <h2>@SelectedItem2.Temp<span>ºC</span></h2>
+                                <p class="item-descr">Sunny weather in @SelectedItem2.Text</p>
+                            </span>
+                        </div>
+                    }
+
+                    @foreach (var item in context.Where(x => !x.Separator))
+                    {
+                        <li class="k-drawer-item" @onclick="@(() => SelectedItem2 = item)">
+                            <span class="flag @item.IconFlag"></span>
+                            @if (ExpandedDrawer2)
+                            {
+                                <div class="item-descr-wrap">
+                                    <div>@item.Text</div>
+                                    <span class="item-descr">@item.Description</span>
+                                </div>
+                            }
+                        </li>
+                    }
+
+                    @if (ExpandedDrawer2)
+                    {
+                        <div class="text-center drawer-footer">
+                            <p class="item-descr k-item-text">Search your city</p>
+                            <TelerikTextBox Width="12.4em"></TelerikTextBox>
+                        </div>
+                    }
+                </ul>
+            </Template>
+            <DrawerContent>
+                <h6 class="kd-demo-heading mt-0">Open the drawer and select item</h6>
+            </DrawerContent>
+        </TelerikDrawer>
+    </div>
+</div>
+@code {
+    public TelerikDrawer<DrawerItem> Drawer1 { get; set; }
+    public TelerikDrawer<DrawerItem> Drawer2 { get; set; }
+    public bool ExpandedDrawer1 { get; set; }
+    public bool ExpandedDrawer2 { get; set; }
+    public bool IsOverlay { get; set; }
+    public DrawerItem SelectedItem { get; set; }
+    public DrawerItem SelectedItem2 { get; set; }
+    public DrawerMode Mode => IsOverlay ? DrawerMode.Overlay : DrawerMode.Push;
+    public IEnumerable<DrawerItem> Data { get; set; } =
+        new List<DrawerItem>
+        {
+            new DrawerItem { Text = "Paris", Description="Capital of France", IconFlag = "france-flag", Temp = 21, IconClass = "sunny"},
+            new DrawerItem { Separator = true},
+            new DrawerItem { Text = "Rome", Description="Capital of Italy", IconFlag = "italy-flag", Temp = 30, IconClass = "sunny"},
+            new DrawerItem { Separator = true},
+            new DrawerItem { Text = "Berlin", Description="Capital of Germany", IconFlag = "germany-flag", Temp = 18 , IconClass = "cloudy"},
+            new DrawerItem { Separator = true},
+            new DrawerItem { Text = "Madrid", Description="Capital of Spain", IconFlag = "spain-flag", Temp = 31 , IconClass = "sunny"},
+        };
+
+    public async Task ToggleDrawer(TelerikDrawer<DrawerItem> drawer) => await drawer.ToggleAsync();
+
+    protected override void OnInitialized()
+    {
+        SelectedItem = Data.First();
+
+        base.OnInitialized();
+    }
+
+    public class DrawerItem
+    {
+        public string Text { get; set; }
+
+        public string IconFlag { get; set; }
+
+        public int Temp { get; set; }
+
+        public string IconClass { get; set; }
+
+        public string Description { get; set; }
+
+        public bool Separator { get; set; }
+    }
+}
+
+<style>
+    #demo-runner {
+        height: 600px;
+    }
+
+    .k-drawer-content {
+        padding: 20px;
+    }
+
+    .k-drawer-container {
+        position: relative;
+        width: 100%;
+        height: 95%;
+    }
+
+    .drawer-header, .drawer-footer {
+        margin: 10px 0;
+    }
+
+    .k-drawer-item {
+        align-items: center;
+    }
+
+    .weather {
+        margin: 0 auto 30px;
+        text-align: center;
+    }
+
+    .drawer-header .weather-icon {
+        display: block;
+        margin: 10px auto;
+        width: 36px;
+        height: 36px;
+        background-size: cover;
+    }
+
+    .weather-icon {
+        display: block;
+        margin: 30px auto 10px;
+        width: 128px;
+        height: 128px;
+    }
+
+    .custom-toolbar {
+        width: 100%;
+        background-color: #f6f6f6;
+        line-height: 10px;
+        border-bottom: inset;
+        border-bottom-width: 1px;
+        padding: 3px 8px;
+        color: #656565;
+    }
+
+    .sunny {
+        background: url('https://demos.telerik.com/kendo-ui/content/web/tabstrip/weather.png') transparent no-repeat 0 0;
+    }
+
+    .cloudy {
+        background: url('https://demos.telerik.com/kendo-ui/content/web/tabstrip/weather.png') transparent no-repeat -128px 0;
+    }
+
+    .item-descr {
+        margin-top: -5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .item-descr-wrap > span {
+        font-size: 70%;
+    }
+
+    .item-descr-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .flag {
+        flex-shrink: 0;
+        width: 1em;
+        height: 35px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: transparent;
+        margin-right: 8px;
+    }
+
+    .france-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/france-flag.png');
+    }
+
+    .spain-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/spain-flag.png');
+    }
+
+    .italy-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/italy-flag.png');
+    }
+
+    .germany-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/germany-flag.png');
+    }
+</style>

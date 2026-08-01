@@ -1,0 +1,154 @@
+@page "/listbox/templates"
+
+@inject CustomerService customerService
+
+<div class="demo-section auto">
+    <TelerikListBox Id="@ListBoxId"
+                    ConnectedListBoxId="@ConnectedListBoxId"
+                    Data="@Employees"
+                    TextField="@nameof(CustomerDto.ContactName)"
+                    @bind-SelectedItems="@SelectedEmployees"
+                    OnReorder="@((ListBoxReorderEventArgs<CustomerDto> args) => OnReorder(args))"
+                    OnTransfer="@((ListBoxTransferEventArgs<CustomerDto> args) => OnTransfer(args))"
+                    OnRemove="@((ListBoxRemoveEventArgs<CustomerDto> args) => OnRemove(args))">
+        <ItemTemplate>
+            <TelerikAvatar Type="AvatarType.Image"
+                           Width="25px"
+                           Height="25px">
+                <img src="images/customers/@(context.CustomerId).jpg" />
+            </TelerikAvatar>
+            <p style="margin:5px">@context.ContactName </p>
+        </ItemTemplate>
+    </TelerikListBox>
+
+    <TelerikListBox Id="@ConnectedListBoxId"
+                    Data="@Developers"
+                    TextField="@nameof(CustomerDto.ContactName)"
+                    @bind-SelectedItems="@SelectedDevelopers">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+        <ItemTemplate>
+            <TelerikAvatar Type="AvatarType.Image"
+                           Width="25px"
+                           Height="25px">
+                <img src="images/customers/@(context.CustomerId).jpg" />
+            </TelerikAvatar>
+            <p style="margin:5px">@context.ContactName </p>
+        </ItemTemplate>
+        <NoDataTemplate>
+            <div style="margin-top: 7em;">
+                <TelerikSvgIcon Icon="@SvgIcon.User"
+                                Size="@ThemeConstants.SvgIcon.Size.ExtraExtraLarge" />
+                <br />
+                <br />
+                Assign developers to the project
+            </div>            
+        </NoDataTemplate>
+    </TelerikListBox>
+</div>
+
+
+@code {
+    private string ListBoxId = "first-listbox";
+    private string ConnectedListBoxId = "connected-listbox";
+
+    private IEnumerable<CustomerDto> Employees { get; set; } = new List<CustomerDto>();
+    private IEnumerable<CustomerDto> SelectedEmployees { get; set; } = new List<CustomerDto>();
+
+    private IEnumerable<CustomerDto> Developers { get; set; } = new List<CustomerDto>();
+    private IEnumerable<CustomerDto> SelectedDevelopers { get; set; } = new List<CustomerDto>();
+
+    #region Tools Handlers
+
+    private void OnRemove(ListBoxRemoveEventArgs<CustomerDto> args)
+    {
+        var itemsToRemove = Employees.Where(x => args.Items.Select(y => y.CustomerId).Contains(x.CustomerId));
+
+        var data = Employees.Where(x => !itemsToRemove.Contains(x)).ToList();
+
+        Employees = data;
+    }
+
+    private void OnReorder(ListBoxReorderEventArgs<CustomerDto> args)
+    {
+        if (args.ToIndex >= Employees.Count() || args.ToIndex < 0)
+        {
+            return;
+        }
+
+        var data = Employees.ToList();
+        var itemsToShift = data.Skip(args.FromIndex).Take(args.Items.Count).ToList();
+
+        data.RemoveAll(x => itemsToShift.Contains(x));
+        data.InsertRange(args.ToIndex, itemsToShift);
+
+        Employees = data;
+    }
+
+    private void OnTransfer(ListBoxTransferEventArgs<CustomerDto> args)
+    {
+        (IEnumerable<CustomerDto> origin, IEnumerable<CustomerDto> destination) output;
+
+        if (args.DestinationListBoxId == ConnectedListBoxId)
+        {
+            output = Transfer(Employees, Developers, args.Items);
+            Employees = output.origin.ToList();
+            Developers = output.destination.ToList();
+            SelectedEmployees = Enumerable.Empty<CustomerDto>();
+        }
+        else
+        {
+            output = Transfer(Developers, Employees, args.Items);
+            Developers = output.origin.ToList();
+            Employees = output.destination.ToList();
+            SelectedDevelopers = Enumerable.Empty<CustomerDto>();
+        }
+    }
+
+    private (IEnumerable<CustomerDto> origin, IEnumerable<CustomerDto> destination) Transfer(
+        IEnumerable<CustomerDto> origin,
+        IEnumerable<CustomerDto> destination,
+        IEnumerable<CustomerDto> payload)
+    {
+        var originData = origin.ToList();
+        var destinationData = destination.ToList();
+
+        _ = originData.RemoveAll(x => payload.Select(x => x.CustomerId).Contains(x.CustomerId));
+
+        destinationData.AddRange(payload);
+
+        return (originData, destinationData);
+    }
+
+    #endregion Tools Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        Employees = customerService.GetCustomers().Take(20).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    #endregion Data
+}
+
+<style>
+    .k-listbox {
+        height: 360px;
+    }
+
+    #first-listbox {
+        width: 270px;
+    }
+
+    #connected-listbox {
+        margin-left: 0.6em;
+        width: 232px;
+    }
+</style>

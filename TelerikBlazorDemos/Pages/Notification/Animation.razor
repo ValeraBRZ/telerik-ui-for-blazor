@@ -1,0 +1,103 @@
+@page "/notification/animation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Select Animation Type">
+        <TelerikDropDownList @bind-Value="@AnimationType"
+                             Data="@AnimationTypes"
+                             Width=""
+                             ValueField="Type">
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Select Animation Duration">
+        <TelerikNumericTextBox @bind-Value="@AnimationDuration"
+                               Step="10"
+                               Min="100"
+                               Max="1000">
+        </TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikButton Icon="@SvgIcon.Bell"
+               Enabled="@NotificationButtonEnabled"
+               OnClick="@ShowUnreadNotifications">
+    Show unread notifications
+    <span class="k-badge k-badge-md k-badge-solid k-badge-solid-primary k-rounded-md">2</span>
+</TelerikButton>
+
+<TelerikNotification @ref="@Notification"
+                     Class="demo-notification"
+                     AnimationType="@AnimationType"
+                     AnimationDuration="@AnimationDuration">
+</TelerikNotification>
+
+@code {
+    public TelerikNotification Notification { get; set; }
+
+    public AnimationType AnimationType { get; set; } = AnimationType.Fade;
+    public int AnimationDuration { get; set; } = 300;
+    public List<AnimationItem> AnimationTypes { get; set; } = new List<AnimationItem>();
+
+    public bool NotificationButtonEnabled { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        foreach (AnimationType item in Enum.GetValues(typeof(AnimationType)))
+        {
+            AnimationTypes.Add(new AnimationItem { Text = item.ToString(), Type = item });
+        }
+
+        base.OnInitialized();
+    }
+
+    public async Task ShowUnreadNotifications()
+    {
+        var closeDelay = 3000;
+
+        NotificationButtonEnabled = false;
+
+        Notification.Show(new NotificationModel()
+        {
+            Text = "Checkout! What's new in Telerik UI for Blazor.",
+            ThemeColor = ThemeConstants.Notification.ThemeColor.Info,
+            CloseAfter = closeDelay
+        });
+
+        Notification.Show(new NotificationModel()
+        {
+            Text = "Trial version of Telerik UI for Blazor expires tomorrow.",
+            ThemeColor = ThemeConstants.Notification.ThemeColor.Warning,
+            CloseAfter = closeDelay
+        });
+
+        await Task.Delay(closeDelay);
+
+        NotificationButtonEnabled = true;
+    }
+
+    public class AnimationItem
+    {
+        public AnimationType Type { get; set; }
+        public string Text { get; set; }
+    }
+}
+<style>
+    .demo-notification {
+        position: absolute;
+    }
+
+        .demo-notification .k-notification {
+            width: 420px;
+        }
+
+    #demo-runner {
+        height: 320px;
+    }
+
+    .k-badge {
+        margin-left: 5px;
+    }
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+</style>

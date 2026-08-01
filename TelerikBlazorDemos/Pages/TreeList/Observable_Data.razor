@@ -1,0 +1,57 @@
+@page "/treelist/observable-data"
+
+@using System.Collections.ObjectModel
+
+@inject WeatherService weatherService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Add a forecast">
+        <TelerikButton OnClick="@AddForecast">Add</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Remove a forecast">
+        <TelerikButton OnClick="@RemoveForecast">Remove</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<TelerikTreeList Data=@TreeListData Height="400px">
+    <TreeListColumns>
+        <TreeListColumn Field="Date" Width="250px" />
+        <TreeListColumn Field="Tmax" Title="Max Temp." />
+        <TreeListColumn Field="Tmin" Title="Min Temp." />
+        <TreeListColumn Field="Wind" />
+        <TreeListColumn Field="Rain" />
+        <TreeListColumn Field="Snow" />
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<WeatherDto> Data { get; set; }
+    public ObservableCollection<WeatherDto> TreeListData { get; set; }
+    Random rand;
+
+    protected override void OnInitialized()
+    {
+        rand = new Random();
+        LoadData();
+        TreeListData = new ObservableCollection<WeatherDto>(Data.Take(6));
+    }
+
+    private void LoadData()
+    {
+        Data = weatherService.GetWeathers();
+    }
+
+    void AddForecast()
+    {
+        TreeListData.Add(Data.ElementAt(rand.Next(100)));
+    }
+
+    void RemoveForecast()
+    {
+        if (TreeListData.Count > 0)
+        {
+            TreeListData.RemoveAt(0);
+        }
+    }
+}

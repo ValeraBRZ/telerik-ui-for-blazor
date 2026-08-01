@@ -1,0 +1,80 @@
+@page "/dialog/predefined-dialogs"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Dialog Title">
+        <TelerikTextBox @bind-Value="@Title" Placeholder="Dialog title. Not required."></TelerikTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@ActivateAlert">Alert</TelerikButton>
+<TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@ActivateConfirm">Confirm</TelerikButton>
+<TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@ActivatePrompt">Prompt</TelerikButton>
+
+<p class="return-message">
+    @Message
+</p>
+
+@code {
+    [CascadingParameter]
+    public DialogFactory Dialogs { get; set; }
+
+    public string Title { get; set; }
+
+    public string Message { get; set; }
+
+    public async Task ActivateAlert()
+    {
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            await Dialogs.AlertAsync("Something went wrong!");
+        }
+        else
+        {
+            await Dialogs.AlertAsync("Something went wrong!", Title);
+        }
+
+        Message = "The user saw and closed an Alert dialog.";
+    }
+
+    public async Task ActivateConfirm()
+    {
+        bool confirmed;
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            confirmed = await Dialogs.ConfirmAsync("Are you sure?");
+        }
+        else
+        {
+            confirmed = await Dialogs.ConfirmAsync("Are you sure?", Title);
+        }
+
+        var confirmMessage = confirmed ? "confirmed" : "canceled";
+
+        Message = $"The user {confirmMessage} the dialog.";
+    }
+
+    public async Task ActivatePrompt()
+    {
+        string input;
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            input = await Dialogs.PromptAsync("Please, enter your answer.");
+        }
+        else
+        {
+            input = await Dialogs.PromptAsync("Please, enter your answer.", Title);
+        }
+
+        Message = $"The returned user input is \"{input}\".";
+    }
+}
+
+<style>
+    .k-dialog-content {
+        min-width: 170px;
+    }
+
+    .return-message {
+        font-size: 1.3em;
+    }
+</style>

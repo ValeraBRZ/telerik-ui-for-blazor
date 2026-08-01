@@ -1,0 +1,34 @@
+@page "/numerictextbox/formats"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="general" class="k-label k-form-label">General Number Format</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="4" Max="5" Value="1.23m" Id="general"></TelerikNumericTextBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="currency" class="k-label k-form-label">Currency Format</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="2" Format="C" Step="0.5m" Value="2.34m" Id="currency"></TelerikNumericTextBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="percentage1" class="k-label k-form-label">Percentage Format (Value between 0 and 1)</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="4" Format="P" Max="1" Min="0" Value="0.0345m" Id="percentage1"></TelerikNumericTextBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="percentage2" class="k-label k-form-label">Custom Percentage Format (Value between 0 and 100)</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="2" Format="#.## '%'" Max="100" Min="0" Value="4.56m" Id="percentage2"></TelerikNumericTextBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="custom" class="k-label k-form-label">Custom Format</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="3" Format="#.### 'kg'" Value="5.67m" Id="custom"></TelerikNumericTextBox>
+        </div>
+    </div>
+</div>

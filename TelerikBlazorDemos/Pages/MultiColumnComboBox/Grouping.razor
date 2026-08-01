@@ -1,0 +1,31 @@
+@page "/multicolumncombobox/grouping"
+
+@inject CustomerService CustomerService
+
+<div class="demo-section">
+    <label for="customers-combo">Customers</label>
+    <TelerikMultiColumnComboBox Data="@Data"
+                                GroupField="Country"
+                                ValueField="CustomerId"
+                                TextField="ContactName"
+                                @bind-Value="@Value"
+                                Id="customers-combo"
+                                Placeholder="Browse customers grouped by country"
+                                ListHeight="250px">
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.ContactName)" Title="Contact Name" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.ContactTitle)" Title="Contact Title" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.CompanyName)" Title="Company Name" Width="200px" />
+        </MultiColumnComboBoxColumns>
+    </TelerikMultiColumnComboBox>
+</div>
+
+@code {
+    private string Value { get; set; }
+    private List<CustomerDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = CustomerService.GetCustomers().ToList();
+    }
+}

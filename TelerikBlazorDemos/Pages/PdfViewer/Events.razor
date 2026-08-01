@@ -1,0 +1,94 @@
+@page "/pdfviewer/events"
+
+@using System.IO
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using TelerikBlazorDemos.Constants
+
+<TelerikPdfViewer @ref="@PdfViewerRef"
+                  Width="100%"
+                  Height="800px"
+                  OnOpen="@OnOpen"
+                  OnDownload="@OnDownload"
+                  Data="@FileData">
+</TelerikPdfViewer>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public TelerikPdfViewer PdfViewerRef { get; set; }
+    public byte[] FileData { get; set; }
+
+    [CascadingParameter]
+    public DialogFactory Dialogs { get; set; }
+
+    public string EventLog { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fileBytes = Convert.FromBase64String(PdfViewerConstants.SampleFileBase64);
+
+        FileData = fileBytes;
+
+        await base.OnInitializedAsync();
+    }
+
+    public void LogToConsole(string text)
+    {
+        EventLog = EventLog.Insert(0, text);
+    }
+
+    public void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public async Task OnOpen(PdfViewerOpenEventArgs args)
+    {
+        var log = string.Empty;
+        log += "<div>";
+        log += $"<div><strong>Open event</strong> triggered.";
+        log += "</div>";
+
+        LogToConsole(log);
+
+        // intentionally prevent opening the new file
+        args.IsCancelled = true;
+
+        await Dialogs.AlertAsync(
+            title: "Information",
+            text: "The selected file will not be displayed for demo purposes.");
+    }
+
+    public async Task OnDownload(PdfViewerDownloadEventArgs args)
+    {
+        var log = string.Empty;
+        log += "<div>";
+        log += $"<div><strong>Download event</strong> triggered.";
+        log += "</div>";
+
+        LogToConsole(log);
+
+        await Dialogs.AlertAsync(
+            title: "Information",
+            text: "The file will be downloaded with a customized name.");
+
+        args.FileName = $"{DateTime.Now.ToShortDateString()}";
+    }
+
+    public async Task OnError(PdfViewerErrorEventArgs args)
+    {
+        var log = string.Empty;
+        log += "<div>";
+        log += $"<div><strong>Error event</strong> triggered.";
+        log += $"<div>Message: {args.Message}</div>";
+        log += "</div>";
+
+        LogToConsole(log);
+
+        await Dialogs.AlertAsync(
+            title: "Information",
+            text: "The selected file is corrupted and cannot be opened.");
+    }
+}
+

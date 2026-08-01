@@ -1,0 +1,54 @@
+@page "/aiprompt/views"
+
+@inject AIPromptService AIPromptAnswerService
+
+@* This demo sample uses a real AI model to simulate a real use case. To test it in the offline demo version, replace the demo service and API key with your own AI service details. *@
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+
+<div class="demo-section k-d-flex" style="max-width: 600px;">
+    <TelerikAIPrompt Commands="@PromptCommands" @ref="@AIPromptRef" Width="500px">
+        <AIPromptViews>
+            <AIPromptPromptView ButtonText="Prompt" ButtonIcon="@SvgIcon.Comment">
+                <ViewTemplate>
+                    <div class="k-prompt-view">
+                        <TelerikTextBox @bind-Value="@Prompt" Placeholder="Custom Input">
+                        </TelerikTextBox>
+                    </div>
+                </ViewTemplate>
+                <FooterTemplate>
+                    <TelerikButton OnClick="@(()=>HandlePromptRequest(Prompt))">Custom generate</TelerikButton>
+                </FooterTemplate>
+            </AIPromptPromptView>
+            <AIPromptOutputView ButtonText="AI Responses">
+            </AIPromptOutputView>
+            <AIPromptCustomView ButtonText="Custom">
+                <ViewTemplate>My Custom View</ViewTemplate>
+            </AIPromptCustomView>
+        </AIPromptViews>
+    </TelerikAIPrompt>
+</div>
+
+@code {
+    private string Prompt { get; set; }
+
+    private TelerikAIPrompt AIPromptRef { get; set; }
+
+    private List<AIPromptCommandDescriptor> PromptCommands { get; set; } = new List<AIPromptCommandDescriptor>()
+    {
+        new AIPromptCommandDescriptor() { Title = "Command 1", Icon = "copy"},
+        new AIPromptCommandDescriptor() { Title = "Command 2", Icon = "copy"},
+        new AIPromptCommandDescriptor() { Title = "Command 3", Icon = "copy"},
+    };
+
+    private async Task HandlePromptRequest(string question)
+    {
+        string output = await AIPromptAnswerService.AnswerQuestion(question);
+
+        AIPromptRef.AddOutput(output, "Prompt:", Prompt, Prompt, null, true);
+    }
+}

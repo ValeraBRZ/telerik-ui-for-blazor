@@ -1,0 +1,30 @@
+@page "/datepicker/incremental-steps"
+
+<div class="demo-alert demo-alert-info">Focus the date input and use the <code>Up</code> and <code>Down</code> arrows to change the selected date and time. They change with the increment steps defined in the code, not by the default 1.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="datepicker" class="k-label k-form-label">Date</label>
+        <div class="k-form-field-wrap">
+            <TelerikDatePicker @bind-Value="@SelectedDate" Format="yyyy MMM dd" Id="datepicker">
+                <DatePickerSteps Year="@Year"
+                                 Month="@Month"
+                                 Day="@Day">
+                </DatePickerSteps>
+            </TelerikDatePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        Steps: Year: @Year, Month: @Month, Day: @Day
+    </div>
+</div>
+
+@code {
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    public DateTime? SelectedDate =  DateTime.Now;
+
+    public int Year { get; set; } = 2;
+    public int Month { get; set; } = 3;
+    public int Day { get; set; } = 5;
+}

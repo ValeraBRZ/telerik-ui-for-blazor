@@ -1,0 +1,49 @@
+@page "/splitbutton/overview"
+
+<TelerikSplitButton Icon="@SvgIcon.Clipboard" OnClick="@(() => OnButtonClick("Paste"))">
+    <SplitButtonContent>Paste</SplitButtonContent>
+
+    <SplitButtonItems>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardText" OnClick="@(() => OnItemClick("Paste Text"))">Paste Text</SplitButtonItem>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardCode" OnClick="@(() => OnItemClick("Paste as HTML"))">Paste as HTML</SplitButtonItem>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardMarkdown" OnClick="@(() => OnItemClick("Paste Markdown"))">Paste Markdown</SplitButtonItem>
+    </SplitButtonItems>
+
+    <SplitButtonSettings>
+        <SplitButtonPopupSettings Height=""></SplitButtonPopupSettings>
+    </SplitButtonSettings>
+</TelerikSplitButton>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string EventLog { get; set; } = string.Empty;
+
+    public void OnButtonClick(string text)
+    {
+        var log = string.Empty;
+        log += $"<div><strong>{text}</strong> button clicked.</div>";
+
+        LogToConsole(log);
+    }
+
+    public void OnItemClick(string text)
+    {
+        var log = string.Empty;
+        log += $"<div><strong>{text}</strong> item button clicked.</div>";
+
+        LogToConsole(log);
+    }
+
+    public void LogToConsole(string text)
+    {
+        EventLog = EventLog.Insert(0, text);
+    }
+
+    public void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+}
+
+

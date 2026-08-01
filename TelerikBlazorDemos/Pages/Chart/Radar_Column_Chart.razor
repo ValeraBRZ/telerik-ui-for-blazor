@@ -1,0 +1,38 @@
+@page "/chart/radar-column-chart"
+
+<TelerikChart Width="100%" Height="400px">
+    <ChartTitle Text="Nutrient balance: Apples, raw"></ChartTitle>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.RadarColumn"
+                     Data="@RadarColumnData">
+            <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Categories="@RadarColumnCategories"></ChartCategoryAxis>
+    </ChartCategoryAxes>
+
+    <ChartValueAxes>
+        <ChartValueAxis Visible="false"></ChartValueAxis>
+    </ChartValueAxes>
+</TelerikChart>
+
+@code {
+    public string[] RadarColumnCategories = new string[]
+    {
+        "Df", "Pr", "A", "C", "D", "E",
+        "Th", "Ri", "Ni", "B", "F", "B",
+        "Se", "Mn", "Cu", "Zn", "K", "P",
+        "Fe", "Ca", "Na", "Ch", "Sf"
+    };
+
+    public List<object> RadarColumnData = new List<object>()
+    {
+        5, 1, 1, 5, 0, 1,
+        1, 2, 1, 2, 1, 0,
+        0, 2, 1, 0, 3, 1,
+        1, 1, 0, 0, 0
+    };
+}

@@ -1,0 +1,46 @@
+@page "/switch/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Track Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@TrackRoundnesses" @bind-Value="@TrackRounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Thumb Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThumbRoundnesses" @bind-Value="@ThumbRounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikSwitch Value="@true" TrackRounded="@TrackRounded" ThumbRounded="@ThumbRounded" Size="@Size"></TelerikSwitch>
+</div>
+
+@code {
+    public string TrackRounded { get; set; } = ThemeConstants.Switch.TrackRounded.Full;
+    public string ThumbRounded {  get; set; } = ThemeConstants.Switch.ThumbRounded.Full;
+    public string Size {  get; set; } = ThemeConstants.Switch.Size.Medium;
+
+    public Dictionary<string, string> TrackRoundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Switch.TrackRounded.Small },
+        { "Medium", ThemeConstants.Switch.TrackRounded.Medium },
+        { "Large", ThemeConstants.Switch.TrackRounded.Large },
+        { "Full", ThemeConstants.Switch.TrackRounded.Full }
+    };
+
+    public Dictionary<string, string> ThumbRoundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Switch.ThumbRounded.Small },
+        { "Medium", ThemeConstants.Switch.ThumbRounded.Medium },
+        { "Large", ThemeConstants.Switch.ThumbRounded.Large },
+        { "Full", ThemeConstants.Switch.ThumbRounded.Full },
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Switch.Size.Small },
+        { "Medium", ThemeConstants.Switch.Size.Medium },
+        { "Large", ThemeConstants.Switch.Size.Large }
+    };
+}

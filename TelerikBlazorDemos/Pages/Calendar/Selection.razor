@@ -1,0 +1,142 @@
+@page "/calendar/selection"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Selection Mode">
+        <TelerikDropDownList Data="@SelectionModes" @bind-Value="@SelectedMode">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" Width="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+@if (SelectedMode == CalendarSelectionMode.Single)
+{
+    <h4>Single Selection</h4>
+    <p>Select a date by clicking on it - you can choose only one.</p>
+    <div class="k-d-flex">
+        <div>
+            <TelerikCalendar SelectionMode="@CalendarSelectionMode.Single"
+                             ValueChanged="@SingleSelectionChangeHandler"
+                             @bind-Date="@StartDate">
+            </TelerikCalendar>
+        </div>
+        <div class="p-sm text-small">
+            <h6 class="kd-demo-heading mt-sm">Selected Date</h6>
+            <div>
+                @SelectedDate?.ToString("dd MMM yyyy")
+            </div>
+        </div>
+    </div>
+}
+
+@if (SelectedMode == CalendarSelectionMode.Multiple)
+{
+    <h4>Multiple Selection</h4>
+    <p>
+        Select several dates by holding down the <code>Shift</code> or <code>Ctrl</code>
+        keys when clicking on it.
+    </p>
+    <div class="k-d-flex">
+        <div>
+            <TelerikCalendar SelectionMode="@CalendarSelectionMode.Multiple"
+                             ValueChanged="@MultipleSelectionChangeHandler"
+                             @ref="@MultipleSelectionCalendar">
+            </TelerikCalendar>
+        </div>
+        <div class="p-sm text-small">
+            <h6 class="kd-demo-heading mt-sm">Selected Dates</h6>
+            <div style="height: 230px; overflow-y: auto;">
+                @if (ChosenDates != null && ChosenDates.Count > 0)
+                {
+                    @foreach (DateTime date in ChosenDates)
+                    {
+                        <div>
+                            @date.ToString("dd MMM yyyy")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (SelectedMode == CalendarSelectionMode.Range)
+{
+    <h4>Range Selection</h4>
+    <p>
+        When you select the first date, it is marked as the start of the range and
+        the Calendar will highlight the range you would choose with the second click.
+    </p>
+    <div class="k-d-flex k-flex-wrap">
+        <TelerikCalendar Views="2"
+                         @bind-RangeStart="@RangeStart"
+                         @bind-RangeEnd="@RangeEnd"
+                         SelectionMode="@CalendarSelectionMode.Range"
+                         ShowOtherMonthDays="false">
+        </TelerikCalendar>
+        <div class="p-sm">
+            <h6 class="kd-demo-heading mt-sm">Selected Range</h6>
+            <div><strong>Range Start: </strong>@RangeStart.ToString("dd MMM yyyy")</div>
+            <div><strong>Range End: </strong>@RangeEnd.ToString("dd MMM yyyy")</div>
+        </div>
+    </div>
+
+    <h4>Range Reverse Selection</h4>
+    <p>
+        Even if you select an end date that precedes the start date,
+        the Calendar will highlight this range.
+    </p>
+    <div class="k-d-flex k-flex-wrap">
+        <TelerikCalendar Views="2"
+                         @bind-RangeStart="@RangeReverseStart"
+                         @bind-RangeEnd="@RangeReverseEnd"
+                         SelectionMode="@CalendarSelectionMode.Range"
+                         ShowOtherMonthDays="false"
+                         AllowReverse="true">
+        </TelerikCalendar>
+        <div class="p-sm">
+            <h6 class="kd-demo-heading mt-sm">Selected Range</h6>
+            <div><strong>Range Start: </strong>@RangeReverseStart.ToString("dd MMM yyyy")</div>
+            <div><strong>Range End: </strong>@RangeReverseEnd.ToString("dd MMM yyyy")</div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<CalendarSelectionMode> SelectionModes => new List<CalendarSelectionMode>
+    {
+        CalendarSelectionMode.Single,
+        CalendarSelectionMode.Multiple,
+        CalendarSelectionMode.Range
+    };
+
+    private CalendarSelectionMode SelectedMode { get; set; } = CalendarSelectionMode.Single;
+
+    private DateTime StartDate = new DateTime(2025, 7, 1);//set the initial date of the calendar
+
+    //fields to store and render the user selection
+    private DateTime? SelectedDate { get; set; } = null;
+    private List<DateTime> ChosenDates { get; set; }
+
+    //reference used to obtain the selected dates from a multiple selection calendar
+    private TelerikCalendar MultipleSelectionCalendar { get; set; }
+
+    private DateTime RangeStart = new DateTime(2025, 7, 5);
+    private DateTime RangeEnd = new DateTime(2025, 7, 10);
+
+    private DateTime RangeReverseStart = new DateTime(2025, 7, 5);
+    private DateTime RangeReverseEnd = new DateTime(2025, 7, 10);
+
+    private void SingleSelectionChangeHandler(DateTime newValue)
+    {
+        //with single selection, the argument is a single DateTime object
+        SelectedDate = newValue;
+    }
+
+    private void MultipleSelectionChangeHandler()
+    {
+        //with multiple selection, get the selected dates from a component reference
+        ChosenDates = MultipleSelectionCalendar.SelectedDates;
+    }
+}

@@ -1,0 +1,104 @@
+@page "/wizard/buttons"
+
+@using System.ComponentModel.DataAnnotations
+
+<div style="width: 70%; margin: 0 auto;">
+    <TelerikWizard @bind-Value="@Value" Height="500px">
+        <WizardSteps>
+            <WizardStep Label="Registration">
+                <Content>
+                    <h2>Registration Form</h2>
+                    <TelerikForm EditContext="@RegistrationEditContext">
+                        <FormButtons> </FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Terms">
+                <Content>
+                    <h2>Terms and conditions</h2>
+
+                    <TelerikForm Model="@TermsModel" Orientation="FormOrientation.Horizontal">
+                        <FormValidation>
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                        </FormValidation>
+                        <FormButtons> </FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Finish">
+                <Content>
+                    <h2>The registration is completed</h2>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+        <WizardButtons>
+            @{
+                var index = context;
+                if (index == 0)
+                {
+                    <TelerikButton ButtonType="ButtonType.Button" OnClick="@OnClear">Reset Form</TelerikButton>
+                }
+                else
+                {
+                    <TelerikButton ButtonType="ButtonType.Button" OnClick="@(() => Value -= 1)">Previous</TelerikButton>
+                }
+
+                if (index != 2)
+                {
+                    <TelerikButton ButtonType="ButtonType.Button" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => Value += 1)">Next</TelerikButton>
+                    <TelerikButton ButtonType="ButtonType.Button" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => Value = 2)">Go to last page</TelerikButton>
+                }
+            }
+        </WizardButtons>
+    </TelerikWizard>
+</div>
+
+@code {
+    public int Value { get; set; }
+    public Terms TermsModel { get; set; } = new Terms();
+
+    public Registration RegistrationModel { get; set; } = new Registration();
+
+    public EditContext RegistrationEditContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        InitRegistration();
+
+        base.OnInitialized();
+    }
+
+    private void OnClear()
+    {
+        RegistrationModel = new Registration();
+
+        InitRegistration();
+    }
+
+    private void InitRegistration()
+    {
+        RegistrationEditContext = new EditContext(RegistrationModel);
+#pragma warning disable CS0618 // we can switch to the new overload only after we drop support for .NET 6
+        RegistrationEditContext.EnableDataAnnotationsValidation();
+#pragma warning restore CS0618
+        
+    }
+
+    public class Terms
+    {
+        [Display(Name = "Accept Terms and Conditions?")]
+        public bool AcceptTerms { get; set; }
+    }
+
+    public class Registration
+    {
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string UserName { get; set; }
+
+        [Required]
+        [StringLength(20, MinimumLength = 3)]
+        public string Password { get; set; }
+    }
+}
+

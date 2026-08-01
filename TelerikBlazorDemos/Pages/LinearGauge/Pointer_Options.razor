@@ -1,0 +1,88 @@
+@page "/lineargauge/pointer-options"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Shape">
+        <TelerikDropDownList @bind-Value="@PointerShape"
+                             Data="@ShapeItems"
+                             Width="">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikNumericTextBox @bind-Value="@PointerSize"
+                               Min="10"
+                               Max="15"
+                               Step="1"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Opacity">
+        <TelerikNumericTextBox @bind-Value="@PointerOpacity"
+                               Min="0.1"
+                               Max="1"
+                               Step="0.1"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Margin">
+        <TelerikNumericTextBox @bind-Value="@PointerMargin"
+                               Min="0"
+                               Max="10"
+                               Step="1"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Color">
+        <TelerikColorPalette @bind-Value="@PointerColor"
+                             Colors="@Colors"
+                             Columns="4"></TelerikColorPalette>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikLinearGauge>
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="50">
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="20"
+                                Size="@PointerSize"
+                                Margin="@PointerMargin"
+                                Opacity="@PointerOpacity"
+                                Color="@PointerColor"
+                                Shape="@PointerShape">
+            </LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>
+
+@code {
+    public int MyProperty { get; set; }
+
+    public double PointerSize { get; set; } = 10;
+    public double PointerMargin { get; set; } = 10;
+    public double PointerOpacity { get; set; } = 1;
+
+    public string PointerColor { get; set; } = "#FF6358";
+    public List<string> Colors { get; set; } = new List<string>()
+    {
+        "#FF6358",
+        "#FFE162",
+        "#4CD180",
+        "#707070",
+        "#017CFF",
+        "#8888E5",
+        "#FF8400",
+        "#BABABA"
+    };
+
+    public LinearGaugePointerShape PointerShape { get; set; } = LinearGaugePointerShape.Arrow;
+    public List<ShapeItem> ShapeItems { get; set; } = new List<ShapeItem>()
+    {
+        new ShapeItem() { Text = "Arrow", Value = LinearGaugePointerShape.Arrow },
+        new ShapeItem() { Text = "Bar", Value = LinearGaugePointerShape.BarIndicator },
+    };
+
+    public class ShapeItem
+    {
+        public string Text { get; set; }
+        public LinearGaugePointerShape Value { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+@page "/circulargauge/center-template"
+
+<div class="demo-section auto">
+    <TelerikCircularGauge>
+        <CircularGaugeCenterLabel>
+            <Template>
+                <div><strong>@(context.Pointers[0].Value)%</strong></div>
+                <div>Progress</div>
+            </Template>
+        </CircularGaugeCenterLabel>
+        <CircularGaugeScales>
+            <CircularGaugeScale Min="0" Max="100">
+            </CircularGaugeScale>
+        </CircularGaugeScales>
+        <CircularGaugePointers>
+            <CircularGaugePointer Value="20"></CircularGaugePointer>
+        </CircularGaugePointers>
+    </TelerikCircularGauge>
+</div>

@@ -1,0 +1,76 @@
+@page "/calendar/disabled-dates"
+
+<div class="demo-alert demo-alert-info">
+    You will not be able to book an event hall for the dates between April 10th 2020 and April 12th 2020 (Easter Day).
+    You can select multiple dates.
+</div>
+
+@{
+    if (SelectedDatesList.Any())
+    {
+        DateTime firstSelectedDate = SelectedDatesList.FirstOrDefault();
+        DateTime lastSelectedDate = SelectedDatesList.LastOrDefault();
+        <div class="k-state-success p-sm mb-sm">
+            The event hall will be booked between <strong>@FormatDate(firstSelectedDate) and @FormatDate(lastSelectedDate)</strong>
+        </div>
+        if (firstSelectedDate < EasterDate && lastSelectedDate > EasterDate)
+        {
+            string firstDisabledDate = FormatDate(DisabledDatesList.FirstOrDefault());
+            string lastDisabledDate = FormatDate(DisabledDatesList.LastOrDefault());
+            <div class="k-state-error p-sm mb-sm">
+                In the selected time period you will not be able to use the hall between <strong>@firstDisabledDate and @lastDisabledDate</strong>
+            </div>
+        }
+    }
+}
+
+<TelerikCalendar Min="@MinDate"
+                 Max="@MaxDate"
+                 @bind-Date="@DateToNavigate"
+                 DisabledDates="@DisabledDatesList"
+                 SelectionMode="CalendarSelectionMode.Multiple"
+                 @ref="CalendarReference"
+                 ValueChanged="@SelectionHandler">
+</TelerikCalendar>
+
+@code {
+    DateTime EasterDate { get; set; }
+    DateTime MinDate { get; set; }
+    DateTime MaxDate { get; set; }
+    DateTime DateToNavigate { get; set; }
+    List<DateTime> DisabledDatesList { get; set; } = new List<DateTime>();
+    List<DateTime> SelectedDatesList { get; set; } = new List<DateTime>();
+
+    TelerikCalendar CalendarReference;
+
+    protected override void OnInitialized()
+    {
+        EasterDate = GetEasterDate();
+        MinDate = EasterDate.AddMonths(-3);
+        MaxDate = EasterDate.AddMonths(3);
+        DateToNavigate = EasterDate;
+
+        DisabledDatesList = new List<DateTime>()
+{
+            EasterDate.AddDays(-2),
+            EasterDate.AddDays(-1),
+            EasterDate
+        };
+    }
+
+    DateTime GetEasterDate()
+    {
+        return new DateTime(2025, 4, 12);
+    }
+
+    void SelectionHandler()
+    {
+        SelectedDatesList = CalendarReference.SelectedDates;
+        SelectedDatesList.Sort();
+    }
+
+    string FormatDate(DateTime dateToFormat)
+    {
+        return dateToFormat.ToString("dd MMM yyyy");
+    }
+}

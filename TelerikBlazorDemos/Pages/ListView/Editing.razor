@@ -1,0 +1,154 @@
+@page "/listview/editing"
+
+@inject ProductService productService
+@inject CategoryService categoryService
+
+<TelerikListView Data=@Data
+                 Pageable="true"
+                 Height="500px"
+                 OnUpdate="@UpdateHandler"
+                 OnDelete="@DeleteHandler"
+                 OnCreate="@CreateHandler">
+    <HeaderTemplate>
+        <ListViewCommandButton Command="Add">Add</ListViewCommandButton>
+    </HeaderTemplate>
+    <Template>
+        <div class="k-card k-card-horizontal">
+            <div class="k-card-body">
+                <div class="k-hbox k-justify-content-between k-flex-wrap mr-sm">
+                    <div class="product-group">
+                        <h4 class="k-card-title">@context.ProductName</h4>
+                        <h5 class="k-card-subtitle">@context.CategoryName</h5>
+                    </div>
+                    <div class="product-group">
+                        <div>Unit price: @context.UnitPrice</div>
+                        <div>Quantity per unit: @context.QuantityPerUnit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <ListViewCommandButton Command="Edit" Class="mb-sm">Edit</ListViewCommandButton>
+                <ListViewCommandButton Command="Delete" Class="mb-sm">Delete</ListViewCommandButton>
+            </div>
+        </div>
+    </Template>
+    <EditTemplate>
+        <div class="k-card k-card-horizontal">
+            <div class="k-card-body">
+                <div class="k-hbox k-justify-content-between k-flex-wrap mr-sm">
+                    <div class="product-group">
+                        <label class="editor-label">Name</label>
+                        <TelerikTextBox @bind-Value="@context.ProductName"
+                                        DebounceDelay="0"
+                                        Class="mb-md" />
+
+                        <label class="editor-label">Category</label>
+                        <TelerikDropDownList Data="@Categories"
+                                             @bind-Value="@context.CategoryId"
+                                             DefaultText="Choose Category"
+                                             TextField="CategoryName"
+                                             ValueField="CategoryId">
+                        </TelerikDropDownList>
+                    </div>
+                    <div class="product-group">
+                        <label class="editor-label">Unit price</label>
+                        <TelerikNumericTextBox @bind-Value="@context.UnitPrice"
+                                               DebounceDelay="0"
+                                               Class="mb-md" />
+
+                        <label class="editor-label">Quantity per unit</label>
+                        <TelerikTextBox @bind-Value="@context.QuantityPerUnit"
+                                        DebounceDelay="0" />
+                    </div>
+                </div>
+            </div>
+            <div class="product-actions">
+                <ListViewCommandButton Command="Save" Class="mb-sm">Save</ListViewCommandButton>
+                <ListViewCommandButton Command="Cancel" Class="mb-sm">Cancel</ListViewCommandButton>
+            </div>
+        </div>
+    </EditTemplate>
+</TelerikListView>
+
+@code {
+    public IEnumerable<ProductDto> Data { get; set; }
+    public IEnumerable<CategoryDto> Categories { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = productService.GetProducts();
+        Categories = categoryService.GetCategories();
+    }
+
+    public void UpdateHandler(ListViewCommandEventArgs args)
+    {
+        var item = args.Item as ProductDto;
+        item.CategoryName = Categories.FirstOrDefault(c => c.CategoryId == item.CategoryId)?.CategoryName;
+        productService.UpdateProduct(item);
+        LoadData();
+    }
+
+    public void DeleteHandler(ListViewCommandEventArgs args)
+    {
+        productService.DeleteProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    public void CreateHandler(ListViewCommandEventArgs args)
+    {
+        var item = args.Item as ProductDto;
+        item.CategoryName = Categories.FirstOrDefault(c => c.CategoryId == item.CategoryId)?.CategoryName;
+        productService.CreateProduct(item);
+        LoadData();
+    }
+}
+
+<style>
+    .k-listview-header {
+        padding: 10px 20px;
+    }
+
+    .k-card {
+        padding: 10px 20px;
+        border-width: 0 0 1px 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .k-card-body {
+        padding: 0;
+    }
+
+    .k-card:last-child {
+        border-bottom: 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1.2em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 1em;
+        margin-bottom: 0;
+    }
+
+    .product-group {
+        min-width: 45%;
+        margin-right: 16px;
+        padding: 5px 0;
+    }
+
+    .editor-label {
+        margin: 0;
+        font-size: .875em;
+        display: block;
+    }
+</style>

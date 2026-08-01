@@ -1,0 +1,389 @@
+@page "/chat/person-to-bot"
+
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.AI
+@using System.IO
+@using System.Threading
+@using TelerikBlazorDemos.Models.Chat
+@inject AIPromptService AIPromptService
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostEnvironment
+
+@* This demo uses a real AI model to simulate a real use case. To test it in the offline demo version, replace the demo service and API key with your own AI service details. *@
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+
+<div class="chat-container">
+    <TelerikChat Data="@ChatData"
+                 @ref="@ChatRef"
+                 AuthorId="@ChatAuthors["jane"].Id"
+                 EnableFileUpload="true"
+                 EnableSpeechToText="true"
+                 Height="600px"
+                 OnDownload="@OnChatDownload"
+                 OnSendMessage="@OnChatSendMessage"
+                 SuggestedActionsLayoutMode="@ChatSuggestedActionsLayoutMode.ScrollButtons"
+                 Width="400px">
+        <ChatSettings>
+            <AIPromptSpeechToTextButtonSettings Lang="en-US" />
+        </ChatSettings>
+        <ChatFileActions>
+            <ChatFileAction Icon="@SvgIcon.Download" Text="Download" OnClick="@OnFileActionClick" />
+        </ChatFileActions>
+    </TelerikChat>
+</div>
+
+<script>
+    window.downloadFileFromBytes = (base64Data, filename, mimeType) => {
+        try {
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            a.href = objectUrl;
+            a.download = filename;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(objectUrl);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+        }
+    };
+</script>
+
+<style>
+    .chat-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .k-message-group-full-width .k-chat-file {
+        width: 100%;
+    }
+
+    .k-chat-send {
+        border-radius: 9999px;
+    }
+</style>
+
+@code {
+    private TelerikChat<Message> ChatRef;
+
+    private List<Message> ChatData { get; set; }
+
+    private CancellationTokenSource TokenSource { get; set; } = new();
+
+    private List<CompletionRequestDto> Messages { get; set; } = new List<CompletionRequestDto>();
+
+    private readonly Dictionary<string, Author> ChatAuthors = new() {
+        { "chatbot", new Author() { Id = "chatbot", Name = "Chatbot", ImageUrl = "https://demos.telerik.com/blazor-ui/images/devcraft-ninja-small.svg" } },
+        { "jane", new Author() { Id = "jane", Name = "Jane Doe", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jane.jpg" } }
+    };
+
+    private async Task OnChatSendMessage(ChatSendMessageEventArgs args)
+    {
+        string messageText = args.Message;
+
+        try
+        {
+            var userMessage = new Message
+            {
+                AuthorId = ChatAuthors["jane"].Id,
+                AuthorName = ChatAuthors["jane"].Name,
+                AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+                // User files are not saved in this demo
+                Files = args.Files.Select(x => new FileSelectFileInfo { Id = x.Id, Name = x.Name, Size = x.Size, Extension = x.Extension } ).ToList(),
+                Text = messageText
+            };
+
+            ChatData.Add(userMessage);
+
+            if (userMessage.Files.Count() > 0)
+            {
+                ChatData.Add(new Message()
+                {
+                    AuthorId = ChatAuthors["chatbot"].Id,
+                    AuthorName = ChatAuthors["chatbot"].Name,
+                    AuthorImageUrl = ChatAuthors["chatbot"].ImageUrl,
+                    Text = "File handling is disabled for this AI service. The file was received successfully, but not saved, so it cannot be downloaded."
+                });
+            }
+
+            if (string.IsNullOrEmpty(messageText))
+            {
+                return;
+            }
+
+            var userServiceMessage = new CompletionRequestDto
+            {
+                Role = "user",
+                Contents = new List<ChatContentRequestDto>
+                {
+                    new ChatContentRequestDto
+                    {
+                        Type = "text",
+                        Text = messageText
+                    }
+                }
+            };
+
+            Messages.Add(userServiceMessage);
+
+            var botResponse = new Message()
+            {
+                AuthorId = ChatAuthors["chatbot"].Id,
+                AuthorName = ChatAuthors["chatbot"].Name,
+                AuthorImageUrl = ChatAuthors["chatbot"].ImageUrl,
+                IsTyping = true
+            };
+
+            ChatData.Add(botResponse);
+
+            RefreshChats();
+
+            var response = await AIPromptService.SendChatBotMessageAsync(Messages);
+
+            botResponse.Text = response.Message;
+            botResponse.IsTyping = false;
+
+            if (response.Success)
+            {
+                Messages.Add(response.BotMessage);
+
+                botResponse.SuggestedActions = response.SuggestedActions;
+            }
+
+            RefreshChats();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+        }
+    }
+
+    #region File Download
+
+    private async Task OnChatDownload(ChatDownloadEventArgs args)
+    {
+        foreach (FileSelectFileInfo file in args.Files)
+        {
+            await TriggerFileDownload(file);
+        }
+    }
+
+    private async Task OnFileActionClick(ChatFileActionClickEventArgs args)
+    {
+        await TriggerFileDownload(args.File);
+    }
+
+    private async Task TriggerFileDownload(FileSelectFileInfo file)
+    {
+        try
+        {
+            var filePath = Path.Combine(WebHostEnvironment.WebRootPath, "chat-files", file.Name);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+                var base64String = Convert.ToBase64String(fileBytes);
+
+                var mimeType = GetMimeType(file.Extension);
+
+                await JS.InvokeVoidAsync("downloadFileFromBytes", base64String, file.Name, mimeType);
+            }
+            else
+            {
+                Console.WriteLine($"File not found: {filePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading file {file.Name}: {ex.Message}");
+        }
+    }
+
+    #endregion File Download
+
+    private void RefreshChats()
+    {
+        ChatRef?.Refresh();
+    }
+
+    #region Chatbot Setup
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InitializeChatBot();
+        }
+    }
+
+    private async Task InitializeChatBot()
+    {
+        try
+        {
+            Messages = CreateInitialPrompt();
+
+            var response = await AIPromptService.SendChatBotMessageAsync(Messages);
+
+            if (response.Success)
+            {
+                Messages.Add(response.BotMessage);
+
+                var initialBotMessage = new Message
+                {
+                    AuthorId = ChatAuthors["chatbot"].Id,
+                    AuthorName = ChatAuthors["chatbot"].Name,
+                    AuthorImageUrl = ChatAuthors["chatbot"].ImageUrl,
+                    Text = response.Message,
+                    SuggestedActions = response.SuggestedActions
+                };
+
+                ChatData.Add(initialBotMessage);
+
+                StateHasChanged();
+                RefreshChats();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing chatbot: {ex.Message}");
+        }
+    }
+
+    private List<CompletionRequestDto> CreateInitialPrompt()
+    {
+        const string chatBotPrompt = @"You are a Chat Bot assisting users with career applications and job interviews for the Progress Software company. For every user input, always respond with:
+1. A human-like message relevant to the user's previous input (e.g., ""Here are some options to choose from"").
+2. An array of objects in the following JSON format: [{ ""text"": ""Option 1"" }, { ""text"": ""Option 2"" }, ...]. The options must be related to the user's previous input.
+3. The bot must not respond with any formatting or markdown for the array. It must start and end with exactly []. No extra characters or whitespace are allowed.
+Always follow this format for every response.
+4. There are a few predefined messages that show existing communication. The user has already attached a CV and other files. For the first response, start with 'Would you like to explore some options to help you prepare for your interview?' and provide several options for the user to pick from, like 'Learn more about the company', 'Get tips on preparing for the interview', 'Interview Guidelines'";
+
+        return new List<CompletionRequestDto>
+        {
+            new CompletionRequestDto
+            {
+                Role = "user",
+                Contents = new List<ChatContentRequestDto>
+                {
+                    new ChatContentRequestDto
+                    {
+                        Type = "text",
+                        Text = chatBotPrompt
+                    }
+                }
+            }
+        };
+    }
+
+    #endregion Chatbot Setup
+
+    #region File Helpers
+
+    private long GetFileSize(string fileName)
+    {
+        try
+        {
+            string filePath = Path.Combine(WebHostEnvironment.WebRootPath, "chat-files", fileName);
+            if (System.IO.File.Exists(filePath))
+            {
+                return new FileInfo(filePath).Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting file size for {fileName}: {ex.Message}");
+        }
+
+        return 123_456; // Size for unsaved user files
+    }
+
+    private string GetMimeType(string extension)
+    {
+        return extension.ToLowerInvariant() switch
+        {
+            ".pdf" => "application/pdf",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".doc" => "application/msword",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xls" => "application/vnd.ms-excel",
+            ".txt" => "text/plain",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+    }
+
+    #endregion File Helpers
+
+    protected override void OnInitialized()
+    {
+        ChatData = new List<Message>()
+        {
+            new Message()
+            {
+                AuthorId = ChatAuthors["chatbot"].Id,
+                AuthorName = ChatAuthors["chatbot"].Name,
+                AuthorImageUrl = ChatAuthors["chatbot"].ImageUrl,
+                Text = "Hi there! Welcome to our Careers Portal. I see you're interested in the Designer position. Could you please upload your application documents (CV, portfolio and cover letter) so we can get started? *",
+                Timestamp = DateTime.Now.AddSeconds(-60)
+            },
+            new Message()
+            {
+                AuthorId = ChatAuthors["jane"].Id,
+                AuthorName = ChatAuthors["jane"].Name,
+                AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+                Text = "Sure, here are the files",
+                Timestamp = DateTime.Now.AddSeconds(-15),
+                Files = CreateFileAttachments()
+            },
+            new Message()
+            {
+                AuthorId = ChatAuthors["chatbot"].Id,
+                AuthorName = ChatAuthors["chatbot"].Name,
+                AuthorImageUrl = ChatAuthors["chatbot"].ImageUrl,
+                Text = "Great! Your application has been successfully submitted. Our hiring team will review your files and get back to you within 5-7 business days. *"
+            }
+        };
+    }
+
+    private List<FileSelectFileInfo> CreateFileAttachments()
+    {
+        var attachments = new List<FileSelectFileInfo>();
+
+        var fileNames = new[] { "portfolio.pdf", "cover_letter.pdf", "cv.pdf" };
+
+        foreach (var fileName in fileNames)
+        {
+            var fileInfo = new FileSelectFileInfo
+            {
+                Id = Path.GetFileNameWithoutExtension(fileName),
+                Name = fileName,
+                Size = GetFileSize(fileName),
+                Extension = Path.GetExtension(fileName)
+            };
+
+            attachments.Add(fileInfo);
+        }
+
+        return attachments;
+    }
+}

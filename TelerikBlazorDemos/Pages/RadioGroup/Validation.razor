@@ -1,0 +1,75 @@
+@page "/radiogroup/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@TheFormModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="validate-date" class="k-label k-form-label">Choose type of confirmation:</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikRadioGroup @bind-Value="@TheFormModel.CommunicationPreference"
+                                           Data="@CommunicationTypes">
+                        </TelerikRadioGroup>
+                    </div>
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code  {
+    public string SuccessMessage { get; set; } = string.Empty;
+    public FormModel TheFormModel { get; set; } = new FormModel();
+    public List<ConfirmationTypeModel> CommunicationTypes { get; set; } = new List<ConfirmationTypeModel>()
+    {
+        new ConfirmationTypeModel() { Text = "Via SMS", Value = "sms" },
+        new ConfirmationTypeModel() { Text = "Via E-mail", Value = "mail" },
+        new ConfirmationTypeModel() { Text = "Via phone call", Value = "phone" }
+    };
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "You must choose the way you will be contacted.")]
+        public string CommunicationPreference { get; set; }
+    }
+
+    public class ConfirmationTypeModel
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        TheFormModel.CommunicationPreference = default;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

@@ -1,0 +1,11 @@
+@page "/rating/overview"
+
+<h4>Rate Us</h4>
+<TelerikRating @bind-Value="@Value"
+               Label="@Label">
+</TelerikRating>
+
+@code {
+    private double Value { get; set; } = 1;
+    private string Label => $"{Value} / 5";
+}

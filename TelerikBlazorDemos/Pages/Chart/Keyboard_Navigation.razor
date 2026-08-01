@@ -1,0 +1,575 @@
+@page "/chart/keyboard-navigation"
+
+<div>
+    <div class="kd-border kd-rounded">
+        @if (CategoricalChartData?.ProductAggregation != null)
+        {
+            <TelerikChart Height="230px">
+                <ChartTooltip Visible="true" Shared="true" />
+                <ChartTitle Text="Sales and Revenue Total" />
+                <ChartSubtitle Text="The sales and revenue total over a calendar year" />
+
+                <ChartSeriesItems>
+                    @foreach (var product in CategoricalChartData.ProductAggregation)
+                    {
+                        <ChartSeries Type="ChartSeriesType.Column"
+                                     Name="@product.ProductName"
+                                     Data="@product.ProductRevenueAndSales"
+                                     Field="@nameof(ProductRevenueAndSalesModel.SalesCount)"
+                                     CategoryField="@nameof(ProductRevenueAndSalesModel.Category)">
+                                <ChartSeriesLabels Visible="false"
+                                                   AriaTemplate="chartSeriesAriaTemplate">
+                                </ChartSeriesLabels>
+                        </ChartSeries>
+                    }
+
+                    <ChartSeries Type="ChartSeriesType.Line"
+                                 Name="Total Revenue"
+                                 Data="@CategoricalChartData.TotalAggregation"
+                                 Field="@nameof(ProductRevenueAndSalesModel.Revenue)"
+                                 Axis="RevenueAxis">
+                    </ChartSeries>
+                </ChartSeriesItems>
+
+                <ChartValueAxes>
+                    <ChartValueAxis>
+                        <ChartValueAxisTitle Text="Sold items (thousands)" />
+                        <ChartValueAxisMajorGridLines Visible="false" />
+                    </ChartValueAxis>
+                    <ChartValueAxis Name="RevenueAxis">
+                        <ChartValueAxisTitle Text="Revenue" />
+                        <ChartValueAxisLabels Format="{0:C}M" />
+                        <ChartValueAxisMajorGridLines Visible="false" />
+                    </ChartValueAxis>
+                </ChartValueAxes>
+
+                <ChartCategoryAxes>
+                    <ChartCategoryAxis AxisCrossingValue="@(new object[] { 20, 0 })" />
+                </ChartCategoryAxes>
+            </TelerikChart>
+        }
+    </div>
+
+    <div class="kd-border kd-rounded">
+        @if (DonutChartData != null)
+        {
+            <TelerikChart Height="290px">
+                <ChartTitle Text="Sales Distribution" />
+                <ChartSubtitle Text="Per product for the last year" />
+
+                <ChartSeriesItems>
+                    <ChartSeries Type="ChartSeriesType.Donut"
+                                 Data="@DonutChartData"
+                                 Field="SalesCount"
+                                 CategoryField="ProductName">
+                        <ChartSeriesLabels Visible="true"
+                                           Template="#=category#"
+                                           Background="transparent"
+                                           Position="ChartSeriesLabelsPosition.OutsideEnd" />
+                        <ChartSeriesTooltip Visible="true" />
+                    </ChartSeries>
+                </ChartSeriesItems>
+
+                <ChartLegend Visible="true" />
+            </TelerikChart>
+        }
+    </div>
+
+    <div class="mt-md k-d-flex k-flex-wrap">
+        <div class="k-flex-grow mb-md kd-border kd-rounded chart-item">
+            @if (PieChartData != null)
+            {
+                <TelerikChart Height="230px">
+                    <ChartSeriesItems>
+                        <ChartSeries Type="ChartSeriesType.Pie" 
+                                     Data="@PieChartData"
+                                     Field="@nameof(PieChartModel.PieSegmentValue)" 
+                                     CategoryField="@nameof(PieChartModel.PieSegmentName)">
+                                     <ChartSeriesLabels Visible="true"
+                                                        Background="transparent"
+                                                        Position="ChartSeriesLabelsPosition.InsideEnd" />
+                        </ChartSeries>
+                    </ChartSeriesItems>
+
+                    <ChartTitle Text="Revenue per product" />
+
+                    <ChartLegend Visible="true" />
+                </TelerikChart>
+            }
+        </div>
+
+        <div class="k-flex-grow mb-md kd-border kd-rounded chart-item">
+            @if (ScatterChartData != null)
+            {
+                <TelerikChart Height="250px">
+                    <ChartTitle Text="Unrecoverable Errors Per Minute" />
+
+                    <ChartSeriesItems>
+                        <ChartSeries Type="ChartSeriesType.Scatter"
+                                     Data="@ScatterChartData"
+                                     Name="APSK modulation"
+                                     XField="@nameof(ScatterChartModel.Strength)"
+                                     YField="@nameof(ScatterChartModel.Errors)">
+                        </ChartSeries>
+                    </ChartSeriesItems>
+
+                    <ChartXAxes>
+                        <ChartXAxis Max="-30" AxisCrossingValue="@(new object[] { -100 })">
+                            <ChartXAxisTitle Text="Signal Strength, dBm" />
+                        </ChartXAxis>
+                    </ChartXAxes>
+
+                    <ChartYAxes>
+                        <ChartYAxis>
+                            <ChartYAxisTitle Text="Error count" />
+                        </ChartYAxis>
+                    </ChartYAxes>
+                </TelerikChart>
+            }
+        </div>
+
+        <div class="k-flex-grow mb-md kd-border kd-rounded chart-item">
+            @if (RadarChartHighData != null && RadarChartLowData != null)
+            {
+                <TelerikChart Height="250px">
+                    <ChartSeriesItems>
+                        <ChartSeries Type="@ChartSeriesType.RadarLine" 
+                                     Name="Avg. High" 
+                                     Data="@RadarChartHighData" 
+                                     Color="red">
+                        </ChartSeries>
+                        <ChartSeries Type="@ChartSeriesType.RadarLine" 
+                                     Name="Avg. Low" 
+                                     Data="@RadarChartLowData" 
+                                     Color="blue">
+                        </ChartSeries>
+                    </ChartSeriesItems>
+
+                    <ChartCategoryAxes>
+                        <ChartCategoryAxis Categories="@RadarChartXaxisItems" />
+                    </ChartCategoryAxes>
+
+                    <ChartValueAxes>
+                        <ChartValueAxis>
+                            <ChartValueAxisLabels Visible="false" />
+                        </ChartValueAxis>
+                    </ChartValueAxes>
+
+                    <ChartTitle Text="Monthly temperatures in Rovaniemi (the Santa Claus village)" />
+
+                    <ChartLegend Visible="true" />
+                </TelerikChart>
+            }
+        </div>
+
+        <div class="k-flex-grow mb-md kd-border kd-rounded chart-item">
+            @if (HeatmapChartData != null)
+            {
+                <TelerikChart Height="250px">
+                    <ChartSeriesItems>
+                        <ChartSeries Type="@ChartSeriesType.Heatmap"
+                                     Name="Commits Made per developer"
+                                     Data="@HeatmapChartData"
+                                     XField="@(nameof(HeatmapChartModel.Week))"
+                                     YField="@(nameof(HeatmapChartModel.Day))"
+                                     Field="@(nameof(HeatmapChartModel.CommitsNumber))">
+                        </ChartSeries>
+                    </ChartSeriesItems>
+
+                    <ChartTitle Text="Developers Commits Number" />
+
+                    <ChartLegend Visible="true" />
+                </TelerikChart>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Move JavaScript code to a separate JS file in production -->
+<script suppress-error="BL9992">
+    function chartSeriesAriaTemplate(context) {
+        return "Value " + context.value + " mln, " +
+               "Category: " + context.category;
+    }
+</script>
+
+@code {
+    #region Properties
+    private ProductsAggregationModel CategoricalChartData { get; set; } = new ProductsAggregationModel();
+    private IEnumerable<object> DonutChartData { get; set; } = Enumerable.Empty<object>();
+    private List<PieChartModel> PieChartData { get; set; }
+    private List<ScatterChartModel> ScatterChartData { get; set; }
+    private List<object> RadarChartHighData { get; set; }
+    private List<object> RadarChartLowData { get; set; }
+    private string[] RadarChartXaxisItems { get; set; }
+    private List<HeatmapChartModel> HeatmapChartData { get; set; }
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        CategoricalChartData = GetData();
+
+        DonutChartData = CategoricalChartData.ProductAggregation.Select(x => new
+        {
+            x.ProductName,
+            SalesCount = x.ProductRevenueAndSales.Sum(p => p.SalesCount)
+        });
+
+        PieChartData = new List<PieChartModel>
+        {
+            new PieChartModel
+            {
+                PieSegmentName = "Product 1",
+                PieSegmentValue = 2
+            },
+            new PieChartModel
+            {
+                PieSegmentName = "Product 2",
+                PieSegmentValue = 3
+            },
+            new PieChartModel
+            {
+                PieSegmentName = "Product 3",
+                PieSegmentValue = 4
+            }
+        };
+
+        ScatterChartData = new List<ScatterChartModel>
+        {
+            new ScatterChartModel { Strength = -82, Errors = 15  },
+            new ScatterChartModel { Strength = -79, Errors = 13  },
+            new ScatterChartModel { Strength = -77, Errors = 10  },
+            new ScatterChartModel { Strength = -74, Errors = 7  },
+            new ScatterChartModel { Strength = -70, Errors = 3  },
+            new ScatterChartModel { Strength = -65, Errors = 1  },
+            new ScatterChartModel { Strength = -80, Errors = 25  },
+            new ScatterChartModel { Strength = -76, Errors = 22  },
+            new ScatterChartModel { Strength = -73, Errors = 17  },
+            new ScatterChartModel { Strength = -70, Errors = 15  },
+            new ScatterChartModel { Strength = -65, Errors = 12  },
+            new ScatterChartModel { Strength = -61, Errors = 10  },
+            new ScatterChartModel { Strength = -55, Errors = 7  },
+            new ScatterChartModel { Strength = -50, Errors = 3  }
+        };
+
+        RadarChartHighData = new List<object>() { -8, -6, 0, 6, 13, 18, 22, 18, 13, 5, 0, -4 };
+        RadarChartLowData = new List<object>() { -16, -14, -10, -3, 3, 8, 12, 9, 5, -1, -6, -11 };
+
+        RadarChartXaxisItems = new string[] { "January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December" };
+
+        HeatmapChartData = new List<HeatmapChartModel>()
+        {
+            new HeatmapChartModel ("John", 14, 1, "Mon"),
+            new HeatmapChartModel ("Idell", 8, 2, "Mon"),
+            new HeatmapChartModel ("Ines", 13, 3, "Mon"),
+            new HeatmapChartModel ("Stephen", 22, 4, "Mon"),
+            new HeatmapChartModel ("John", 7, 1, "Tue"),
+            new HeatmapChartModel ("Idell", 18, 2, "Tue"),
+            new HeatmapChartModel ("Ines", 2, 3, "Tue"),
+            new HeatmapChartModel ("Stephen", 5, 4, "Tue"),
+            new HeatmapChartModel ("John", 10, 1, "Wed"),
+            new HeatmapChartModel ("Idell", 11, 2, "Wed"),
+            new HeatmapChartModel ("Ines", 20, 3, "Wed"),
+            new HeatmapChartModel ("Stephen", 15, 4, "Wed")
+        };
+    }
+
+    #region Load Categorical Chart Data 
+    private ProductsAggregationModel GetData()
+    {
+        var data = new ProductsAggregationModel()
+            {
+                ProductAggregation = new List<ProductAggregationModel>()
+            {
+                new ProductAggregationModel()
+                {
+                    ProductName = "HL Mountain Rear Wheel",
+                    ProductRevenueAndSales = new List<ProductRevenueAndSalesModel>()
+                    {
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 13422.621072m,
+                            SalesCount = 69,
+                            Category = "May"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 23559.48m,
+                            SalesCount = 120,
+                            Category = "Jun"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 20056.31621m,
+                            SalesCount = 104,
+                            Category = "Jul"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 10798.095m,
+                            SalesCount = 55,
+                            Category = "Aug"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 17080.623m,
+                            SalesCount = 87,
+                            Category = "Sep"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 13154.043m,
+                            SalesCount = 67,
+                            Category = "Oct"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 8049.489m,
+                            SalesCount = 41,
+                            Category = "Nov"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 10012.779m,
+                            SalesCount = 51,
+                            Category = "Dec"
+                        },
+                    }
+                },
+                new ProductAggregationModel()
+                {
+                    ProductName = "ML Mountain Rear Wheel",
+                    ProductRevenueAndSales = new List<ProductRevenueAndSalesModel>()
+                    {
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 8616.04542m,
+                            SalesCount = 62,
+                            Category = "May"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 16621.06932m,
+                            SalesCount = 118,
+                            Category = "Jun"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 15166.35369m,
+                            SalesCount = 110,
+                            Category = "Jul"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 6231.06m,
+                            SalesCount = 44,
+                            Category = "Aug"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 11895.66m,
+                            SalesCount = 84,
+                            Category = "Sep"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 11470.815m,
+                            SalesCount = 81,
+                            Category = "Oct"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 5381.37m,
+                            SalesCount = 38,
+                            Category = "Nov"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 6231.06m,
+                            SalesCount = 44,
+                            Category = "Dec"
+                        },
+                    }
+                },
+                new ProductAggregationModel()
+                {
+                    ProductName = "LL Road Rear Wheel",
+                    ProductRevenueAndSales = new List<ProductRevenueAndSalesModel>()
+                    {
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 3849.723m,
+                            SalesCount = 57,
+                            Category = "May"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 8577.453m,
+                            SalesCount = 127,
+                            Category = "Jun"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 5470.659m,
+                            SalesCount = 81,
+                            Category = "Jul"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 4525.113m,
+                            SalesCount = 67,
+                            Category = "Aug"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 7226.673m,
+                            SalesCount = 107,
+                            Category = "Sep"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 3782.184m,
+                            SalesCount = 56,
+                            Category = "Oct"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 2026.17m,
+                            SalesCount = 30,
+                            Category = "Nov"
+                        },
+                        new ProductRevenueAndSalesModel()
+                        {
+                            Revenue = 4525.113m,
+                            SalesCount = 67,
+                            Category = "Dec"
+                        },
+                    }
+                },
+            },
+                TotalAggregation = new List<ProductRevenueAndSalesModel>()
+            {
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 25888.389492m,
+                    SalesCount = 188,
+                    Category = "May"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 48758.00232m,
+                    SalesCount = 365,
+                    Category = "Jun"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 40693.3289m,
+                    SalesCount = 295,
+                    Category = "Jul"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 21554.268m,
+                    SalesCount = 166,
+                    Category = "Aug"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 36202.956m,
+                    SalesCount = 278,
+                    Category = "Sep"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 28407.042m,
+                    SalesCount = 204,
+                    Category = "Oct"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 15457.029m,
+                    SalesCount = 109,
+                    Category = "Nov"
+                },
+                new ProductRevenueAndSalesModel()
+                {
+                    Revenue = 20768.952m,
+                    SalesCount = 162,
+                    Category = "Dec"
+                }
+            }
+            };
+
+        return data;
+    }
+    #endregion
+
+
+    #region Models
+    private class ProductsAggregationModel
+    {
+        public List<ProductAggregationModel> ProductAggregation { get; set; }
+
+        public List<ProductRevenueAndSalesModel> TotalAggregation { get; set; }
+    }
+
+    private class ProductAggregationModel
+    {
+        public string ProductName { get; set; }
+
+        public List<ProductRevenueAndSalesModel> ProductRevenueAndSales { get; set; }
+    }
+
+    private class ProductRevenueAndSalesModel
+    {
+        public decimal Revenue { get; set; }
+
+        public int SalesCount { get; set; }
+
+        public string Category { get; set; }
+    }
+
+    public class PieChartModel
+    {
+        public string PieSegmentName { get; set; }
+        public double PieSegmentValue { get; set; }
+    }
+
+    public class ScatterChartModel
+    {
+        public double Strength { get; set; }
+        public double Errors { get; set; }
+    }
+
+    public class HeatmapChartModel
+    {
+        public HeatmapChartModel() { }
+
+        public HeatmapChartModel(string devName, int commits, int week, string day)
+        {
+            DeveloperName = devName;
+            CommitsNumber = commits;
+            Week = week;
+            Day = day;
+        }
+
+        public string DeveloperName { get; set; }
+        public int CommitsNumber { get; set; }
+        public int Week { get; set; }
+        public string Day { get; set; }
+    }
+    #endregion
+}
+
+<style>
+    .chart-item {
+        width: 50%;
+        min-width: 500px;
+    }
+
+    @@media only screen and (max-width:600px) {
+        .chart-item {
+            min-width: 250px;
+        }
+    }
+</style>

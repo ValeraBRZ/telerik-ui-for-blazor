@@ -1,0 +1,147 @@
+@page "/tilelayout/persist-state"
+
+@inject LocalStorage LocalStorage
+@inject IJSRuntime JsInterop
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@SaveState" Icon="@SvgIcon.Save" Class="mr-xs">Save State</TelerikButton>
+        <TelerikButton OnClick="@ReloadPage" Icon="@SvgIcon.ArrowRotateCw" Class="mr-xs">Reload the page</TelerikButton>
+        <TelerikButton OnClick="@LoadState" Icon="@SvgIcon.Download" Class="mr-xs">Load last State</TelerikButton>
+        <TelerikButton OnClick="@SetExplicitState" Icon="@SvgIcon.Gear" Class="mr-xs">Configure State</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <strong>Change the Tile Layout</strong> (resize and reorder some tiles, remember their order) and
+    <strong>Save</strong> the TileLayout state, then <strong>Reload</strong> the page to see the state persisted.
+    <strong>Change</strong> the layout some more and <strong>Load</strong> the state to see the last one preserved.
+    You can manage the TileLayout state with your own code to put it in a specific configuration through the <strong>Configure</strong> button.
+    This demo will remember your last layout until your clear your browser storage or click the Configure button to put it in its initial state.
+</div>
+
+<div style="display: inline-block;">
+    <TelerikTileLayout @ref="@TileLayoutInstance"
+                       Columns="3"
+                       ColumnWidth="285px"
+                       RowHeight="285px"
+                       Resizable="true"
+                       Reorderable="true">
+        <TileLayoutItems>
+            <TileLayoutItem HeaderText="San Francisco">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sanfran.jpg" alt="San Francisco" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="South Africa">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/south-africa.jpg" alt="South Africa" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Sofia" RowSpan="2">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sofia.jpg" alt="Sofia" />
+                    <div class="text-center">
+                        <div class="k-card-body">
+                            <p>Sofia is the largest city and capital of Bulgaria. Sofia City Province has an area of 1344 km<sup>2</sup> while the surrounding and much bigger Sofia Province is 7,059 km<sup>2</sup>. The city is situated in the western part of the country at the northern foot of the Vitosha mountain, in the Sofia Valley that is surrounded by the Balkan mountains to the north. The valley has an average altitude of 550 metres (1,800 ft). Unlike most European capitals, Sofia does not straddle any large river, but is surrounded by comparatively high mountains on all sides.</p>
+                            <br />
+                            <em>* The data used in this demo is taken from <a href="https://wikipedia.com" target="_blank"><em>wikipedia.com</em></a></em>
+                        </div>
+                    </div>
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Rome" ColSpan="2" RowSpan="2">
+                <Content>
+                    <img class="k-card-image image-center" draggable="false" src="images/cards/places/rome.jpg" />
+                    <div class="text-center">
+                        <div class="k-card-body">
+                            <p>
+                                Rome is the capital city and a special <a href="https://en.wikipedia.org/wiki/Comune" target="_blank">comune</a> of Italy as well as the capital of the Lazio region. With 2,860,009 residents in 1,285 km<sup>2</sup> (496.1 sq mi), it is also the most populated comune. Rome is in the Lazio region of central Italy on the Tiber river. The original settlement developed on hills that faced onto a ford beside the Tiber Island, the only natural ford of the river in this area. The Rome of the Kings was built on seven hills: the Aventine Hill, the Caelian Hill, the Capitoline Hill, the Esquiline Hill, the Palatine Hill, the Quirinal Hill, and the Viminal Hill. Modern Rome is also crossed by another river, the Aniene, which flows into the Tiber north of the historic centre.
+                            </p>
+                            <p>
+                                <em>* The data used in this demo is taken from <a href="https://wikipedia.com" target="_blank"><em>wikipedia.com</em></a></em>
+                            </p>
+                        </div>
+                    </div>
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Barcelona">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/barcelona.jpg" alt="Barcelona" />
+                </Content>
+            </TileLayoutItem>
+        </TileLayoutItems>
+    </TelerikTileLayout>
+</div>
+
+@code { TelerikTileLayout TileLayoutInstance { get; set; }
+            TileLayoutState SavedState { get; set; }
+            string stateStorageKey = "TelerikBlazorTileLayoutStateDemoKey";
+
+            async Task SaveState()
+            {
+                var state = TileLayoutInstance.GetState();
+                await LocalStorage.SetItem(stateStorageKey, state);
+            }
+
+            async Task LoadState()
+            {
+                TileLayoutState storedState = await LocalStorage.GetItem<TileLayoutState>(stateStorageKey);
+                if (storedState != null)
+                {
+                    TileLayoutInstance.SetState(storedState);
+                }
+            }
+
+            void ReloadPage()
+            {
+                JsInterop.InvokeVoidAsync("window.location.reload");
+            }
+
+            async void SetExplicitState()
+            {
+                TileLayoutState desiredState = GetDefaultDemoState();
+                TileLayoutInstance.SetState(desiredState);
+                await SaveState();
+            }
+
+            protected override async Task OnAfterRenderAsync(bool firstRender)
+            {
+                var state = await LocalStorage.GetItem<TileLayoutState>(stateStorageKey);
+                if (state != null && TileLayoutInstance != null)
+                {
+                    TileLayoutInstance.SetState(state);
+                }
+            }
+
+            TileLayoutState GetDefaultDemoState()
+            {
+                TileLayoutState defaultDemoState = new TileLayoutState()
+                {
+                    ItemStates = new List<TileLayoutItemState>()
+            {
+                new TileLayoutItemState { Order = 1, ColSpan = 1, RowSpan = 1 },
+                new TileLayoutItemState { Order = 2, ColSpan = 1, RowSpan = 1 },
+                new TileLayoutItemState { Order = 3, ColSpan = 1, RowSpan = 2 },
+                new TileLayoutItemState { Order = 4, ColSpan = 2, RowSpan = 2 },
+                new TileLayoutItemState { Order = 5, ColSpan = 1, RowSpan = 1 },
+            }
+                };
+                return defaultDemoState;
+            } }
+
+<style>
+    .k-card-image {
+        width: 285px;
+        height: 189px;
+    }
+
+    .k-card-body {
+        overflow: auto;
+    }
+
+    .image-center {
+        display: block;
+        margin: auto;
+    }
+</style>

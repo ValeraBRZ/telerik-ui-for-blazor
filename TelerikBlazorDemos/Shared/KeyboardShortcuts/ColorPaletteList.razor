@@ -1,0 +1,50 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Left arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the previous color in the list.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Right arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the next color in the list.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the color of the previous row in the list.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the color of the next row in the list.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            selects the currently focused color tile.
+        </span>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public bool IsNested { get; set; }
+}

@@ -1,0 +1,62 @@
+@page "/timepicker/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Auto switch parts">
+        <TelerikCheckBox @bind-Value="@AutoSwitchParts" Id="autoswitchparts-checkbox"></TelerikCheckBox>
+        <label for="autoswitchparts-checkbox" class="k-checkbox-label checkbox-label">Auto switch parts</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Auto switch keys">
+        <TelerikCheckBox Value="@AutoSwitchKeysEnabled"
+                         ValueChanged="@((bool value) => OnAutoSwitchKeysChanged(value))"
+                         Id="autoswitchkeys-checkbox"></TelerikCheckBox>
+        <label for="autoswitchkeys-checkbox" class="k-checkbox-label checkbox-label">Auto switch keys: ["/", "."]</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Allow caret mode">
+        <TelerikCheckBox @bind-Value="@AllowCaretMode" Id="allowcaretmode-checkbox"></TelerikCheckBox>
+        <label for="allowcaretmode-checkbox" class="k-checkbox-label checkbox-label">Allow caret mode</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="travel-date" class="k-label k-form-label">Selected Date</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker @bind-Value="@Value"
+                               Min="@Min"
+                               Max="@Max"
+                               Format="hh:mm:ss tt"
+                               AllowCaretMode="@AllowCaretMode"
+                               AutoSwitchParts="@AutoSwitchParts"
+                               AutoSwitchKeys="@AutoSwitchKeys">
+            </TelerikTimePicker>
+        </div>
+    </div>
+</div>
+
+@code {
+    public DateTime? Value { get; set; } = DateTime.Now;
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    public bool AutoSwitchParts { get; set; } = true;
+    public bool AutoSwitchKeysEnabled { get; set; } = false;
+    public List<object> CustomAutoSwitchKeys { get; set; } = new List<object>() { "/", "." };
+    public List<object> AutoSwitchKeys { get; set; }
+    public bool AllowCaretMode { get; set; }
+
+    public void OnAutoSwitchKeysChanged(bool value)
+    {
+        AutoSwitchKeysEnabled = value;
+
+        if (AutoSwitchKeysEnabled)
+        {
+            AutoSwitchKeys = CustomAutoSwitchKeys;
+        }
+        else
+        {
+            AutoSwitchKeys = new List<object>();
+        }
+    }
+
+}

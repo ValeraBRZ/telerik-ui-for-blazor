@@ -1,0 +1,70 @@
+@page "/grid/keyboard-navigation"
+
+@inject ProductService productService
+
+@LastCustomAction
+
+<TelerikGrid Data=@GridData Navigable="true" Height="450px"
+             Pageable="true"
+             Sortable="true"
+             Groupable="true"
+             EditMode="GridEditMode.Inline"
+             FilterMode="@GridFilterMode.FilterMenu"
+             SelectionMode="@GridSelectionMode.Multiple"
+             OnUpdate="@UpdateHandler" OnDelete="@DeleteHandler" OnCreate="@CreateHandler">
+    <GridColumns>
+        <GridColumn Field="ProductName" Title="Product Name" />
+        <GridColumn Field="UnitPrice" Title="Unit Price" />
+        <GridColumn Field="Discontinued" />
+        <GridCommandColumn Width="250px">
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+            <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Product</GridCommandButton>
+        <TelerikButton OnClick="@( _ => LastCustomAction = $"Custom Toolbar button clicked on {DateTime.Now}" )">Custom Toolbar Action</TelerikButton>
+    </GridToolBarTemplate>
+    <DetailTemplate>
+        <p>In this example we will only have a button so you can see how to focus a detail template and walk through it with the keyboard.</p>
+        <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)"
+                       OnClick="@( _ => LastCustomAction = $"Clicked detail template for item {(context as ProductDto).ProductId}" )">
+            Focus me with the Tab key and press Enter
+        </TelerikButton>
+    </DetailTemplate>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<ProductDto> GridData { get; set; }
+    string LastCustomAction;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        GridData = productService.GetProducts();
+    }
+
+    public void UpdateHandler(GridCommandEventArgs args)
+    {
+        productService.UpdateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    public void DeleteHandler(GridCommandEventArgs args)
+    {
+        productService.DeleteProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    public void CreateHandler(GridCommandEventArgs args)
+    {
+        productService.CreateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+}

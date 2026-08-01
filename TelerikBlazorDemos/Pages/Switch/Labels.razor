@@ -1,0 +1,25 @@
+@page "/switch/labels"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikSwitch @bind-Value="@Value"
+                           Width="70px"
+                           OnLabel="Yes"
+                           OffLabel="Nope">
+            </TelerikSwitch>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool Value { get; set; }
+}
+
+<div class="demo-alert demo-alert-info" role="alert">
+    By design, the Switch does not render any labels when the component is styled with the Bootstrap or Material theme.
+    To change the default setup and achieve any of the additional predefined layouts, refer to
+    <a href="https://docs.telerik.com/blazor-ui/knowledge-base/switch-display-labels-in-bootstrap" target="_blank">this
+    knowledge base for showing the labels in Bootstrap and Material</a> or the article on changing the Switch layout
+    in the <a href="https://github.com/telerik/kendo-themes/wiki/Change-the-Switch-Layout">kendo-themes</a> Wiki.
+</div>

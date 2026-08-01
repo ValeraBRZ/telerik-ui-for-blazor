@@ -1,0 +1,59 @@
+@page "/loader/overview"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Pick the Loader's Type">
+        <TelerikDropDownList Data="@Types"
+                             TItem="@LoaderType"
+                             TValue="LoaderType"
+                             OnChange="@TypeChanged">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="loaders">
+    <div class="loader-container">
+        <span class="loader-size-title">Small</span>
+        <TelerikLoader Class="loader-indicator" Type="@LoaderType" Size="@(ThemeConstants.Loader.Size.Small)"></TelerikLoader>
+    </div>
+    <div class="loader-container">
+        <span class="loader-size-title">Medium</span>
+        <TelerikLoader Class="loader-indicator" Type="@LoaderType" Size="@(ThemeConstants.Loader.Size.Medium)"></TelerikLoader>
+    </div>
+    <div class="loader-container">
+        <span class="loader-size-title">Large</span>
+        <TelerikLoader Class="loader-indicator" Type="@LoaderType" Size="@(ThemeConstants.Loader.Size.Large)"></TelerikLoader>
+    </div>
+</div>
+
+@code {
+    List<LoaderType> Types { get; set; } = new List<LoaderType>
+{
+        LoaderType.Pulsing,
+        LoaderType.InfiniteSpinner,
+        LoaderType.ConvergingSpinner
+    };
+
+    LoaderType LoaderType { get; set; }
+
+    void TypeChanged(object item)
+    {
+        LoaderType = (LoaderType)item;
+    }
+}
+
+<style>
+    .loader-size-title {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .loader-container {
+        text-align: center;
+        width: 150px;
+        display: inline-table;
+        padding-top: 10px;
+    }
+</style>

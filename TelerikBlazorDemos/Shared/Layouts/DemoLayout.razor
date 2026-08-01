@@ -1,0 +1,327 @@
+@layout MainLayout
+
+@namespace TelerikBlazorDemos.Shared
+
+@using Microsoft.AspNetCore.Components
+
+@inherits SharedLayoutComponentBase
+
+@inject NavigationManager NavigationManager
+@inject TelerikBlazorDemos.Services.IDemoList demoList
+
+@using Microsoft.JSInterop;
+@using Microsoft.AspNetCore.Localization;
+@using System.Globalization;
+
+<Banner></Banner>
+
+<div id="header-placeholder" style="background-color: #f5f6f7;"></div>
+
+<SearchHeader ShowNavigationButton="true" OnNavigationButtonClick="@OnNavigationButtonClick"
+              SearchQueryChanged="@ShowSearchResults" SearchQuery="@SearchQuery"
+              DarkModeChanged="@DarkModeChanged" />
+
+<main class="kd-blazor">
+    <div class="kd-content-container">
+
+        <aside class="@( "kd-sidebar " + (MobileMenuToggled ? "expanded" : "") )">
+            <NavMenu Demo="@CurrentDemo" />
+        </aside>
+
+        <div class="kd-demo-content" @onclick="@HideMobileMenu">
+            @if (!string.IsNullOrEmpty(SearchQuery))
+            {
+                <SearchResults SearchQuery="@SearchQuery" OnSeachClear="@(() => SearchQuery = string.Empty)" />
+            }
+            else
+            {
+                <div class="container container-sm">
+                    @if (CurrentDemo.BasePath == "aicomponents/overview")
+                    {
+                        @Body
+                    }
+                    else
+                    {
+
+                        <DemoBreadCrumb Demo="@CurrentDemo" />
+
+                        @if (DemoHasPath && !CurrentDemo.Path.ToLowerInvariant().Contains("overview"))
+                        {
+                            <CTAPanelSM />
+                        }
+
+                        <DemoTitle Demo="@CurrentDemo" />
+
+                        <div class="kd-example-runner tabstrip-container">
+                            <div class="tabstrip">
+                                <ul class="tabstrip-items">
+                                    <li class="@( "tabstrip-item tabstrip-tab " + ( SourceTabActive ? "" : "active" ) )"
+                                        @onclick="@(() => SourceTabActive = false)">
+                                        <span class="tabstrip-link">EXAMPLE</span>
+                                    </li>
+                                    <li class="@( "tabstrip-item tabstrip-tab " + ( SourceTabActive ? "active" : "" ) )"
+                                        @onclick="@SourceTabClicked">
+                                        <span class="tabstrip-link">VIEW SOURCE</span>
+                                    </li>
+
+                                    @if (CurrentDemo.SnippetId != null)
+                                    {
+                                        <EditTabItem Demo="@CurrentDemo"></EditTabItem>
+                                    }
+
+                                    <li class="spacer"></li>
+                                    <li class="tabstrip-item theme-builder-dropdown dropdown">
+                                        <ThemeManager @ref="@themeManager" ThemeChanged="@ThemeChanged" ShowEditInThemeBuilderButton="@CurrentDemo.EditableInThemeBuilder" />
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div id="demo-runner" class="k-body @( "tabstrip-pane " + (IsRevampedOverviewDemo ? "kd-overview " : "") + ( SourceTabActive ? "" : "active" ) )">
+                                @Body
+                            </div>
+
+                            <div id="source-code-pane" class="@( "tabstrip-pane example-code-container " + ( SourceTabActive ? "active" : "" ) )">
+                                <div class="source-code tabstrip-container">
+                                    <div class="tabstrip">
+                                        <ul class="tabstrip-items">
+                                            <li class="@( "tabstrip-item tabstrip-tab " + ( SelectedFileSourceCodeIndex == 0 ? "active" : "" ) )"
+                                                @onclick="@ShowDemoSourceCodeAsync">
+                                                <span class="tabstrip-link">@(CurrentDemo.GetFileName().ToPascalCase())</span>
+                                            </li>
+                                            @for (int i = 0; i < CurrentDemo.Files?.Count(); i++)
+                                            {
+                                                var fileIndex = i + 1;
+                                                var file = CurrentDemo.Files[i];
+
+                                                <li class="@( "tabstrip-item tabstrip-tab " + ( SelectedFileSourceCodeIndex == fileIndex ? "active" : "" ) )"
+                                                    @onclick="@(() => OnDemoFileClick(file.Path, fileIndex))">
+                                                    <span class="tabstrip-link">@file.Name</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div id="codecontainer" class="tabstrip-pane active">Loading the demo source code...please wait.</div>
+                                </div>
+                            </div>
+
+                            <div class="themebuilder-banner">
+                                <span class="themebuilder-banner-label">Style in <strong>ThemeBuilder</strong></span>
+                                <ul>
+                                    <li>Custom SASS variables</li>
+                                    <li>Atomic customizations</li>
+                                    <li>Sharing projects</li>
+                                </ul>
+                                <a href="https://www.telerik.com/themebuilder?utm_source=google&utm_medium=banner&utm_campaign=themebuilder-blazor-demos"
+                                   target="_blank">Start Theming</a>
+                            </div>
+                        </div>
+
+                        @if (IsOverviewPage)
+                        {
+                            <CTAComponentPanel Component="@ComponentName" />
+                        }
+
+                        <div class="kd-demo-content-container">
+                            @if (DemoHasPath && CurrentDemo.Path.ToLowerInvariant().Contains("keyboard-navigation"))
+                            {
+                                <KeyboardList Demo="@CurrentDemo" />
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(CurrentDemo.Description))
+                            {
+                                <DemoDescription Demo="@CurrentDemo" />
+                            }
+
+                            @if (CurrentDemo.Links != null)
+                            {
+                                <SuggestedLinks Demo="@CurrentDemo" />
+                            }
+
+                            @if (IsOverviewPage)
+                            {
+                                <AdditionalLinks />
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            <div id="telerik-global-footer-container"></div>
+        </div>
+    </div>
+</main>
+<feedback-form product-code="BLAZOR"
+               icon-url="images/devcraft-ninja-small.svg"
+               question-msg="Is this demo helpful?">
+</feedback-form>
+
+@code {
+    public bool MobileMenuToggled = false;
+    private DemoItem CurrentDemo { get; set; }
+    bool SourceTabActive { get; set; }
+    int SelectedFileSourceCodeIndex { get; set; } = 0;
+    public string SelectedTheme = "Default";
+    public bool DarkMode { get; set; }
+    ThemeManager themeManager { get; set; }
+    public string SourceTabActiveFileName = "";
+    string SearchQuery { get; set; }
+    public string ComponentName => CurrentDemo?.SubComponent ?? CurrentDemo?.Component;
+    public bool DemoHasPath => CurrentDemo.Path != null;
+    public bool IsOverviewPage => DemoHasPath && CurrentDemo.Path.ToLowerInvariant().Contains("overview");
+    public bool ShouldInitFeedbackForm { get; set; }
+    private bool IsRevampedOverviewDemo { get; set; }
+    private List<string> revampedOverviewDemos = new List<string>() {
+                "autocomplete/overview",
+                "combobox/overview",
+                "colorgradient/overview",
+                "colorpicker/overview",
+                "dateinput/overview",
+                "datepicker/overview",
+                "daterangepicker/overview",
+                "datetimepicker/overview",
+                "dropdownlist/overview",
+                "dropdowntree/overview",
+                "flatcolorpicker/overview",
+                "maskedtextbox/overview",
+                "multicolumncombobox/overview",
+                "multiselect/overview",
+                "numerictextbox/overview",
+                "textarea/overview",
+                "textbox/overview",
+                "timepicker/overview"
+            };
+
+    string ComponentPage()
+    {
+        return demoList.GetCurrentDemoPage(NavigationManager);
+    }
+
+    readonly List<string> DemosWithCultureReset = new List<string>() { "localization", "globalization" };
+
+    protected override void OnInitialized()
+    {
+        CurrentDemo = demoList.GetDemoFromUri(ComponentPage());
+        NavigationManager.LocationChanged += OnLocationChanged;
+        IsRevampedOverviewDemo = revampedOverviewDemos.Contains(CurrentDemo.Path);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (ShouldInitFeedbackForm)
+        {
+            ShouldInitFeedbackForm = false;
+
+            await JsRuntime.InvokeVoidAsync("initFeedbackForm");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        SearchQuery = string.Empty;
+        SourceTabActive = false;
+        CurrentDemo = demoList.GetDemoFromUri(ComponentPage());
+
+        if (!DemosWithCultureReset.Any(x => CurrentDemo.Text.Contains(x, StringComparison.InvariantCultureIgnoreCase)))
+        {
+            ResetCulture();
+        }
+
+        ShouldInitFeedbackForm = true;
+
+        IsRevampedOverviewDemo = revampedOverviewDemos.Contains(CurrentDemo.Path);
+
+        StateHasChanged();
+    }
+
+    private void ResetCulture()
+    {
+        // default request culture is specified in Startup.cs
+        if (CultureInfo.CurrentUICulture.Name == "en-US")
+        {
+            return;
+        }
+
+        var uri = new Uri(NavigationManager.Uri).GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+        var query = $"?redirectUri={Uri.EscapeDataString(uri)}";
+
+        NavigationManager.NavigateTo("/blazor-ui/Culture/ResetCulture" + query, forceLoad: true);
+    }
+
+    private async Task InvokeCodeRender()
+    {
+        MobileMenuToggled = false;
+
+        if (!string.IsNullOrWhiteSpace(ComponentPage()))
+        {
+            await JsRuntime.InvokeAsync<string>("codeManager.renderCode", string.Format("/{0}", ComponentPage()));
+        }
+    }
+
+    private async Task SourceTabClicked()
+    {
+        SourceTabActive = true;
+
+        await ShowDemoSourceCodeAsync();
+    }
+
+    private async Task ShowDemoSourceCodeAsync()
+    {
+        SelectedFileSourceCodeIndex = 0;
+
+        await InvokeCodeRender();
+    }
+
+    private async Task OnDemoFileClick(string filePath, int fileIndex)
+    {
+        SelectedFileSourceCodeIndex = fileIndex;
+        await InvokeShowDemoFileContentAsync(filePath);
+    }
+
+    private async Task InvokeShowDemoFileContentAsync(string filePath)
+    {
+        MobileMenuToggled = false;
+
+        if (!string.IsNullOrWhiteSpace(filePath))
+        {
+            await JsRuntime.InvokeAsync<string>("codeManager.renderDemoFileContent", filePath);
+        }
+    }
+
+    void ToggleMobileMenu()
+    {
+        MobileMenuToggled = !MobileMenuToggled;
+    }
+
+    void OnNavigationButtonClick()
+    {
+        ToggleMobileMenu();
+    }
+
+    void HideMobileMenu()
+    {
+        MobileMenuToggled = false;
+    }
+
+    void ThemeChanged(string theme)
+    {
+        SourceTabActive = false;
+        SelectedTheme = theme;
+    }
+
+    async Task DarkModeChanged(bool isDark)
+    {
+        DarkMode = isDark;
+        await themeManager.ChangeSwatch(isDark);
+    }
+
+    void ShowSearchResults(string query)
+    {
+        SearchQuery = query;
+    }
+}

@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "Component": {
+        "type": "string"
+      },
+      "Category": {
+        "type": "string"
+      },
+      "Items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Text": {
+              "type": "string"
+            },
+            "Path": {
+              "type": "string"
+            },
+            "Description": {
+              "type": "string"
+            },
+            "SeoDescription": {
+              "type": "string"
+            },
+            "SeoTitle": {
+              "type": "string"
+            },
+            "SnippetId": {
+              "type": "string"
+            },
+            "StagingSnippetId": {
+              "type": "string"
+            },
+            "SubComponent": {
+              "type": "string"
+            },
+            "BasePath": {
+              "type": "string"
+            },
+            "ExcludeFromThemeBuilder": {
+              "type": "boolean"
+            },
+            "SkipReplSnippetGeneration": {
+              "type": "boolean"
+            },
+            "IsNew": {
+              "type": "boolean"
+            },
+            "IsUpdated": {
+              "type": "boolean"
+            },
+            "Links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "Text": {
+                    "type": "string"
+                  },
+                  "Url": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "KeyboardNavigationDemoSettings": {
+              "type": "object",
+              "properties": {
+                "Selector": {
+                  "type": "string"
+                }
+              }
+            },
+            "Files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "Items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "Text": {
+                    "type": "string"
+                  },
+                  "Path": {
+                    "type": "string"
+                  },
+                  "Description": {
+                    "type": "string"
+                  },
+                  "SeoDescription": {
+                    "type": "string"
+                  },
+                  "SeoTitle": {
+                    "type": "string"
+                  },
+                  "SnippetId": {
+                    "type": "string"
+                  },
+                  "StagingSnippetId": {
+                    "type": "string"
+                  },
+                  "SubComponent": {
+                    "type": "string"
+                  },
+                  "BasePath": {
+                    "type": "string"
+                  },
+                  "ExcludeFromThemeBuilder": {
+                    "type": "boolean"
+                  },
+                  "SkipReplSnippetGeneration": {
+                    "type": "boolean"
+                  },
+                  "IsNew": {
+                    "type": "boolean"
+                  },
+                  "IsUpdated": {
+                    "type": "boolean"
+                  },
+                  "Links": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "Text": {
+                          "type": "string"
+                        },
+                        "Url": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "KeyboardNavigationDemoSettings": {
+                    "type": "object",
+                    "properties": {
+                      "Selector": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

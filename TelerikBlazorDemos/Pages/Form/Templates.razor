@@ -1,0 +1,131 @@
+@page "/form/templates"
+
+@inject NavigationManager NavigationManager
+
+@using TelerikBlazorDemos.Models.Form
+
+<div class="demo-section">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm EditContext="@JobEditContext"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <TelerikValidationSummary />
+            </FormValidation>
+            <FormItems>
+                <FormItem LabelText="First Name" Field="@(nameof(Application.FirstName))" />
+                <FormItem LabelText="Last Name" Field="@(nameof(Application.LastName))" />
+                <FormGroup LabelText="Work Preferences">
+                    <FormItem LabelText="Position you are applying for:" Field="@(nameof(Application.Position))" />
+                    <FormItem Field="@(nameof(Application.Hours))">
+                        <Template>
+                            <label for="hours" class="k-label k-form-label">Preferred work hours*:</label>
+                            <TelerikRadioGroup Layout="RadioGroupLayout.Horizontal"
+                                               Id="hours"
+                                               @bind-Value="@JobApplication.Hours"
+                                               Data="@HourRanges">
+                            </TelerikRadioGroup>
+                            <TelerikValidationMessage For="@(() => JobApplication.Hours)"></TelerikValidationMessage>
+                        </Template>
+                    </FormItem>
+                    <FormItem Field="@(nameof(Application.StartDate))" LabelText="Start Date" Hint="Hint: Sooner date is considered a privilege." />
+                </FormGroup>
+                <FormItem Field="@(nameof(Application.LettersConfirmation))">
+                    <Template>
+                        <label for="mails" class="k-label k-form-label">Send me any job opportunities:</label>
+                        <TelerikSwitch @bind-Value="@JobApplication.LettersConfirmation" OffLabel="No" OnLabel="Yes"></TelerikSwitch>
+                        <TelerikValidationMessage For="@(() => JobApplication.LettersConfirmation)"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+            </FormItems>
+            <FormItemsTemplate Context="formContext">
+                @{
+                    //formContext.Items contains all FormItems and FormGroups at root level
+                    var formObjects = formContext.Items;
+                }
+                <TelerikTabStrip>
+                    <TabStripTab Title="Personal Information">
+                        <TelerikFormItemRenderer Item="@( (IFormItem)formObjects[0] )" />
+                        <TelerikFormItemRenderer Item="@( (IFormItem)formObjects[1] )" />
+                    </TabStripTab>
+                    <TabStripTab Title="Job Application">
+                        <TelerikFormGroupRenderer Group="@( (IFormGroup)formObjects[2] )">
+                            <Template Context="groupContext">
+                                @{
+                                    //groupContext.Items contains all FormItems in the given FormGroup
+                                    var groupItems = groupContext.Items.Cast<IFormItem>().ToList();
+                                }
+                                <TelerikFormItemRenderer Item="@( groupItems.First(x => x.Field == nameof(Application.Position)) )" />
+                                <TelerikFormItemRenderer Item="@( groupItems.First(x => x.Field == nameof(Application.Hours)) )" />
+                                <TelerikFormItemRenderer Item="@( groupItems.First(x => x.Field == nameof(Application.StartDate)) )" />
+                            </Template>
+                        </TelerikFormGroupRenderer>
+                        <div style="background-color: rgba(128,128,128, 0.1); margin-top: 2em; padding: .4em;">
+                            <TelerikFormItemRenderer Item="@( (IFormItem)formObjects.Last() )" />
+                        </div>
+                    </TabStripTab>
+                </TelerikTabStrip>
+            </FormItemsTemplate>
+            <FormButtons>
+                <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Apply</TelerikButton>
+                <TelerikButton ButtonType="ButtonType.Button" OnClick="@ClearForm">Reset</TelerikButton>
+            </FormButtons>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    private EditContext JobEditContext { get; set; }
+
+    private bool ValidSubmit { get; set; } = false;
+
+    private Application JobApplication { get; set; } = new Application();
+
+    private List<HourModel> HourRanges { get; set; } = new List<HourModel>() {
+        new HourModel() { Value = 1, Text = "20 - 30" },
+        new HourModel() { Value = 2, Text = "30 - 40" },
+        new HourModel() { Value = 3, Text = "40+" },
+    };
+
+    private void ClearForm()
+    {
+        JobApplication = new Application();
+
+        JobEditContext = new EditContext(JobApplication);
+#pragma warning disable CS0618 // we can switch to the new overload only after we drop support for .NET 6
+        JobEditContext.EnableDataAnnotationsValidation();
+#pragma warning restore CS0618
+        
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        JobEditContext = new EditContext(JobApplication);
+
+        base.OnInitialized();
+    }
+}

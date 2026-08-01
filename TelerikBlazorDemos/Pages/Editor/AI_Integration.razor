@@ -1,0 +1,131 @@
+@page "/editor/ai-integration"
+
+@using Telerik.Blazor.Components.Editor
+@* Avoid ambiguous reference with SVG icons *@
+@using EditorNS = Telerik.Blazor.Components.Editor;
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+<div class="demo-container">
+    <TelerikEditor @bind-Value="@Value"
+                   Tools="@Tools"
+                   EnableAIPrompt="@EnableAIPromptPanel"
+                   EnableInlineAIPrompt="true"
+                   Height="500px">
+        <EditorCustomTools>
+            <EditorCustomTool Name="ToggleAIPromptPanel">
+                <TelerikButton Icon="@(EnableAIPromptPanel ? SvgIcon.ChevronLeft : SvgIcon.Sparkles )"
+                               ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                               Rounded="@ThemeConstants.Button.Rounded.Full"
+                               Title="Toggle AI Prompt Panel"
+                               OnClick="@(()=> EnableAIPromptPanel = !EnableAIPromptPanel)"
+                               Class="k-button-toggle-ai-prompt">
+                </TelerikButton>
+            </EditorCustomTool>
+        </EditorCustomTools>
+    </TelerikEditor>
+
+    <TelerikNotification @ref="@NotificationReference"
+                         VerticalPosition="@NotificationVerticalPosition.Top"
+                         AnimationType="@AnimationType.SlideLeft"
+                         Class="ai-notification"></TelerikNotification>
+</div>
+
+@code {
+    private TelerikNotification NotificationReference { get; set; }
+
+    private bool EnableAIPromptPanel { get; set; }
+
+    private List<IEditorTool> Tools { get; set; }
+
+    private string Value { get; set; } = @"
+        <p style=""text-align:center; font-size: large; font-family:Verdana, Geneva, sans-serif;"">
+                <strong>UI for Blazor Editor with AI Prompt Features</strong>
+        </p>
+        <p style =""text-align: center; font-size: large; font-family:Verdana, Geneva, sans-serif;"">Your Smart Writing Assistant</p>
+        <div style=""text-align: center; "">
+            <img src=""images/blazor-ninja.svg"" width=""165px"" height=""150px""/>
+        </div>
+        <p style=""font-family:Verdana, Geneva, sans-serif;"">✨ The <strong>AI Prompts</strong> in the <strong>UI for Blazor Editor</strong> is designed to elevate your writing experience by offering intelligent suggestions that improve clarity, tone, and structure. Whether you're documenting a product, drafting a report, or creating marketing content, this tool helps you generate <strong>high-quality writing quickly and efficiently</strong> by providing <strong>relevant ideas</strong>, correcting <strong>grammar and spelling</strong>, and recommending <strong>stronger phrasing</strong>. It's especially valuable for overcoming writer’s block or refining your personal writing style. By embracing this feature, you can <strong>save time, increase productivity</strong>, and ensure your content is consistently <strong>polished, professional</strong>, and ready to share. ✍️</p>";
+
+    protected override Task OnInitializedAsync()
+    {
+        Tools = new List<IEditorTool>()
+        {
+            new CustomTool("ToggleAIPromptPanel"),
+            new EditorButtonGroup(new EditorNS.Undo(), new EditorNS.Redo()),
+            new Format(),
+            new EditorButtonGroup(new EditorNS.Indent(), new EditorNS.Outdent()),
+        };
+
+        return base.OnInitializedAsync();
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            NotificationReference.Show(new NotificationModel()
+                {
+                    Text = "Want faster AI help? Select text and use the inline AI Prompt.",
+                    Icon = SvgIcon.InfoCircle,
+                    ThemeColor = ThemeConstants.Notification.ThemeColor.Info,
+                    CloseAfter = 0
+                });
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
+}
+
+<style>
+    .k-button-toggle-ai-prompt,
+    .k-button-toggle-ai-prompt.k-button-solid-primary:hover,
+    .k-button-toggle-ai-prompt.k-button-solid-primary.k-hover,
+    .k-button-toggle-ai-prompt.k-button-solid-primary:active,
+    .k-button-toggle-ai-prompt.k-button-solid-primary.k-active,
+    .k-button-toggle-ai-prompt.k-button-solid-primary.k-selected,
+    .k-prompt .k-prompt-footer .k-button-solid-primary,
+    .k-prompt .k-prompt-footer .k-button-solid-primary:hover,
+    .k-prompt .k-prompt-footer .k-button-solid-primary.k-hover,
+    .k-prompt .k-prompt-footer .k-button-solid-primary:active,
+    .k-prompt .k-prompt-footer .k-button-solid-primary.k-active,
+    .k-prompt .k-prompt-footer .k-button-solid-primary.k-selected {
+        border-color: transparent;
+        color: #FFFFFF;
+        background: linear-gradient(90deg, #4B5AFA 0%, #AC58FF 100%);
+        background-origin: border-box
+    }
+
+        .k-button-toggle-ai-prompt:focus,
+        .k-button-toggle-ai-prompt.k-focus,
+        .k-prompt .k-prompt-actions .k-button-solid-primary:focus,
+        .k-prompt .k-prompt-actions .k-button-solid-primary.k-focus,
+        .k-prompt .k-prompt-footer .k-button-solid-primary,
+        .k-prompt .k-prompt-footer .k-button-solid-primary:hover,
+        .k-prompt .k-prompt-footer .k-button-solid-primary.k-hover,
+        .k-prompt .k-prompt-footer .k-button-solid-primary:active,
+        .k-prompt .k-prompt-footer .k-button-solid-primary.k-active,
+        .k-prompt .k-prompt-footer .k-button-solid-primary.k-selected {
+            box-shadow: none;
+        }
+
+    .demo-container {
+        position: relative;
+    }
+
+    .ai-notification {
+        width: 300px;
+        height: 50px;
+        position: absolute;
+        margin: 60px 20px;
+    }
+
+    .k-prompt .k-prompt-header .k-button-flat-primary {
+        color: var(--kendo-color-on-base, #424242);
+        background-color: var(--kendo-color-base, #f5f5f5);
+    }
+</style>

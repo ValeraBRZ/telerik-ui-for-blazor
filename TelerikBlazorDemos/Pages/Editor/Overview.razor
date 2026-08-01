@@ -1,0 +1,189 @@
+@page "/editor/overview"
+
+@using Telerik.Blazor.Components.Editor
+
+<TelerikEditor @bind-Value="@Value"
+               Tools="@Tools"
+               Height="880px">
+</TelerikEditor>
+
+@code{
+    public List<IEditorTool> Tools { get; set; } =
+        new List<IEditorTool>()
+        {
+            new EditorButtonGroup(new Telerik.Blazor.Components.Editor.Bold(), new Telerik.Blazor.Components.Editor.Italic(), new Telerik.Blazor.Components.Editor.Underline()),
+            new EditorButtonGroup(new Telerik.Blazor.Components.Editor.AlignLeft(), new Telerik.Blazor.Components.Editor.AlignCenter(), new Telerik.Blazor.Components.Editor.AlignRight()),
+            new UnorderedList(),
+            new EditorButtonGroup(new CreateLink(), new Telerik.Blazor.Components.Editor.Unlink(), new InsertImage()),
+            new InsertTable(),
+            new EditorButtonGroup(new AddRowBefore(), new AddRowAfter(), new MergeCells(), new SplitCell()),
+            new Format(),
+            new Telerik.Blazor.Components.Editor.FontSize(),
+            new Telerik.Blazor.Components.Editor.FontFamily()
+        };
+    public string Value { get; set; } =
+@"
+<div style=""padding: 30px 30px 0px 30px;"">
+	<h1 style=""text-align:center; font-size: large"">
+		<span style=""font-family:Verdana, Geneva, sans-serif;"">
+		  <strong> One of the Most Beautiful Islands on Earth - Tenerife</strong>
+		</span>
+	</h1>
+	<img src = ""images/destinations/tenerife-sm.jpg"" alt=""Tenerife"" width=""252"" height=""450"" style=""float: right; margin-left: 30px; margin-bottom: 30px; margin-top:30px;"" />
+	<p>
+		<span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" ><strong> Overview </strong>
+		</span>
+	</p>
+	<p>
+		<strong>Tenerife</strong> is the largest and most populated island of the eight <a href=""https://en.wikipedia.org/wiki/Canary_Islands"" target=""_blank"">Canary Islands</a>. It is also the most populated island of <strong>Spain</strong>, with a land area of 2,034.38 square kilometers (785 sq mi) and 904,713 inhabitants, 43% of the total population of the <strong>Canary Islands</strong>.
+		The archipelago's beaches, climate and important natural attractions, make it a major tourist destination with over 12 million visitors per year.
+	</p>
+	<p><span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" >
+		<strong> Trip Highlights in Tenerife</strong></span></p><span style = ""white-space:pre;"" ></span>
+		   <ul>
+			   <li>
+				   <strong>
+						<span  style=""color: #3E579A"">
+							Trip to Loro Parque
+						</span>
+				   </strong>
+				<br />
+				Out top tip is to visit the famous <em>Loro Parque</em> or 'Loro Park. It is a 13.5-hectare zoo on the outskirts of Puerto de la Cruz on Tenerife, Spain where it houses an extensive and diverse reserve of animal and plant species.
+				<br />
+			</li>
+			<li>
+				<strong>
+					<span  style=""color: #3E579A"">
+						Whale and Dolphin Watching Tour
+					</span>
+				</strong>
+				<br />
+				Another great option is to take boat excursion with almost guaranteed sightings of whales and dolphins.This is a day-long trip that includes lunch, island visits, fishing, and amazing views of ocean sceneries.
+				<br />
+			</li>
+			<li>
+				<strong>
+					<span  style=""color: #3E579A"">
+						Teide National Park Stargazing
+					</span>
+				</strong>
+				<br />
+				Last, but not least you can take a stargaze trip to Teide National Park, the 3rd best place in the world to view stars and described by NASA as a window to the universe.
+				<br />
+			</li>
+		</ul>
+	<p>
+		<span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"">
+			<strong> Climate </strong>
+		</span>
+	</p>
+	<table>
+		<tbody>
+		<tr>
+			<td colspan=""17"">
+				<p style= ""text-align:center; font-size: medium; color: #3E579A; background-color: #dbebfa; margin: -3px -5px; padding: 10px"">
+					<strong>
+						Climate Data for Santa Cruz de Tenerife</a>
+					</strong>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan=""4"">
+				<p style=""text-align: center"">
+					<span style= ""color: #3E579A;"" >
+						<strong> Month </ strong>
+					</span>
+				</p>
+			</td>
+			<td><p style=""text-align: center""><strong>Jan</strong></p></td>
+			<td><p style=""text-align: center""><strong>Feb</strong></p></td>
+			<td><p style=""text-align: center""><strong>Mar</strong></p></td>
+			<td><p style=""text-align: center""><strong>Apr</strong></p></td>
+			<td><p style=""text-align: center""><strong>May</strong></p></td>
+			<td><p style=""text-align: center""><strong>Jun</strong></p></td>
+			<td><p style=""text-align: center""><strong>Jul</strong></p></td>
+			<td><p style=""text-align: center""><strong>Aug</strong></p></td>
+			<td><p style=""text-align: center""><strong>Sep</strong></p></td>
+			<td><p style=""text-align: center""><strong>Oct</strong></p></td>
+			<td><p style=""text-align: center""><strong>Nov</strong></p></td>
+			<td><p style=""text-align: center""><strong>Dec</strong></p></td>
+			<td><p style=""text-align: center""><strong>Year</strong></p></td>
+		</tr>
+		<tr>
+			<td colspan=""4"">
+				<p style=""text-align: center"">
+					<span style= ""color: #3E579A;"" >
+						<strong>Daily mean &#8451; (&#8457;)</strong>
+					</span>
+				</p>
+			</td>
+			<td><p style=""text-align: center"">18.2<br />(64.8)</p></td>
+			<td><p style=""text-align: center"">18.3<br />(64.9)</p></td>
+			<td><p style=""text-align: center"">19.0<br />(66.2)</p></td>
+			<td><p style=""text-align: center"">19.7<br />(67.5)</p></td>
+			<td><p style=""text-align: center"">21.0<br />(69.8)</p></td>
+			<td><p style=""text-align: center"">22.9<br />(73.2)</p></td>
+			<td><p style=""text-align: center"">25.0<br />(77.0)</p></td>
+			<td><p style=""text-align: center"">25.5<br />(77.9)</p></td>
+			<td><p style=""text-align: center"">24.9<br />(76.8)</p></td>
+			<td><p style=""text-align: center"">23.4<br />(74.1)</p></td>
+			<td><p style=""text-align: center"">21.3<br />(70.3)</p></td>
+			<td><p style=""text-align: center"">19.4<br />(66.9)</p></td>
+			<td><p style=""text-align: center"">21.5<br />(70.7)</p></td>
+		</tr>
+		<tr>
+			<td colspan=""4"">
+				<p style=""text-align: center"">
+					<span style=""color: #3E579A;"">
+						<strong>Average rainy days (&#8805; 1.0 mm)</strong></strong>
+					</span>
+				</p>
+			</td>
+			<td><p style=""text-align: center"">8.0</p></td>
+			<td><p style=""text-align: center"">7.2</p></td>
+			<td><p style=""text-align: center"">6.9</p></td>
+			<td><p style=""text-align: center"">5.5</p></td>
+			<td><p style=""text-align: center"">2.9</p></td>
+			<td><p style=""text-align: center"">0.9</p></td>
+			<td><p style=""text-align: center"">0.2</p></td>
+			<td><p style=""text-align: center"">0.8</p></td>
+			<td><p style=""text-align: center"">2.7</p></td>
+			<td><p style=""text-align: center"">6.1</p></td>
+			<td><p style=""text-align: center"">8.8</p></td>
+			<td><p style=""text-align: center"">9.4</p></td>
+			<td><p style=""text-align: center"">59.4</p></td>
+		</tr>
+		<tr>
+			<td colspan=""4"">
+				<p style=""text-align: center"">
+					<span style=""color: #3E579A;"">
+						<strong>
+							Mean monthly sunshine hours
+						</strong>
+					</span>
+				</p>
+			</td>
+			<td><p style=""text-align: center"">178</p></td>
+			<td><p style=""text-align: center"">186</p></td>
+			<td><p style=""text-align: center"">221</p></td>
+			<td><p style=""text-align: center"">237</p></td>
+			<td><p style=""text-align: center"">282</p></td>
+			<td><p style=""text-align: center"">306</p></td>
+			<td><p style=""text-align: center"">337</p></td>
+			<td><p style=""text-align: center"">319</p></td>
+			<td><p style=""text-align: center"">253</p></td>
+			<td><p style=""text-align: center"">222</p></td>
+			<td><p style=""text-align: center"">178</p></td>
+			<td><p style=""text-align: center"">168</p></td>
+			<td><p style=""text-align: center"">2,887</p></td>
+		</tr>
+		</tbody>
+	</table>
+	<p style=""font-size: small"">
+	<em>* The data used in this demo is taken from <a href= ""https://wikipedia.com"" target= ""_blank"" >wikipedia.com</a>.</em>
+	<br />
+	<em>**The displayed photos are sourced from <a href=""https://pixabay.com"" target=""_blank"">pixabay.com</a>.</em>
+	</p>
+</div>";
+}

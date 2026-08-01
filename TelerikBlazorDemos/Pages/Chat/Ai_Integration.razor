@@ -1,0 +1,472 @@
+@page "/chat/ai-integration"
+
+@using System.Threading
+@using Microsoft.AspNetCore.Hosting
+@using System.IO
+@using System.Text
+@using TelerikBlazorDemos.Models.Chat
+@inject IJSRuntime JS
+@inject IWebHostEnvironment WebHostEnvironment
+
+@* This demo sample uses a real AI model to simulate a real use case. To test it in the offline demo version, replace the demo service and API key with your own AI service details. *@
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Chat Streaming">
+        <div>
+            <label class="k-checkbox-label">
+                <TelerikCheckBox @bind-Value="@EnableChatStreaming" />
+                Enable Streaming
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+
+<div class="chat-container">
+    <TelerikChat @ref="@ChatRef"
+                 Data="@ChatData"
+                 AuthorId="user"
+                 EnableAIChatClient="true"
+                 EnableFileUpload="true"
+                 EnableSpeechToText="true"
+                 Height="600px"
+                 MessageWidthMode="@MessageWidthMode.Full"
+                 OnMessageUnpin="@OnChatMessageUnpin"
+                 OnSendMessage="@OnChatSendMessage"
+                 Width="400px">
+        <ChatSettings>
+            <AIPromptSpeechToTextButtonSettings Lang="en-US" />
+            <ChatAIClientSettings EnableStreaming="@EnableChatStreaming"
+                                  HistoryMessageCount="5"
+                                  AIName="@ChatAuthors["ai"].Name"
+                                  AIImageUrl="@ChatAuthors["ai"].ImageUrl" />
+        </ChatSettings>
+        <HeaderTemplate>
+            <div class="chat-header-container">
+                <span>AI Assistant</span>
+                <span>
+                    <TelerikDropDownButton FillMode="ThemeConstants.Button.FillMode.None"
+                                           Icon="@SvgIcon.MoreVertical"
+                                           ThemeColor="ThemeConstants.Button.ThemeColor.Primary">
+                        <DropDownButtonItems>
+                            <DropDownButtonItem Icon="@SvgIcon.Download" OnClick="@OnDownloadChatClick">Download Conversation</DropDownButtonItem>
+                            <DropDownButtonItem Icon="@SvgIcon.Trash" OnClick="@OnClearChatClick">Clear Conversation</DropDownButtonItem>
+                        </DropDownButtonItems>
+                    </TelerikDropDownButton>
+                </span>
+            </div>
+        </HeaderTemplate>
+        <ChatFileActions>
+            <ChatFileAction Icon="@SvgIcon.Download" Text="Download" OnClick="@OnDownloadFileClick" />
+            <ChatFileAction Icon="@SvgIcon.Share" Text="Share" OnClick="@OnShareFileClick" />
+        </ChatFileActions>
+    </TelerikChat>
+</div>
+
+<TelerikDialog @ref="@DialogRef"
+               @bind-Visible="@DialogVisible"
+               CloseOnOverlayClick="true"
+               Height="133px"
+               ShowCloseButton="true"
+               Title="Share Attachment"
+               Width="346px">
+    <DialogContent>
+        <div style="display: flex; justify-content: center; gap: 8px; padding: 10px 0;">
+        @foreach (ISvgIcon icon in ShareIcons)
+        {
+            <TelerikButton @key="@icon"
+                           Icon="@icon"
+                           ButtonType="@ButtonType.Button"
+                           FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           OnClick="@(() => DialogVisible = false)">
+            </TelerikButton>
+        }
+        </div>
+    </DialogContent>
+</TelerikDialog>
+
+<style>
+    .chat-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .k-chat-header .k-appbar-section {
+        width: 100%;
+    }
+
+    .chat-header-container {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 38px;
+    }
+
+        .chat-header-container > span:first-child {
+            font-weight: 400;
+            font-size: 20px;
+        }
+
+    .k-chat-header .k-button {
+        border: none;
+    }
+
+    .k-message-group-full-width .k-chat-file {
+        width: 100%;
+    }
+
+    .k-chat-send {
+        border-radius: 9999px;
+    }
+</style>
+
+<script>
+    window.downloadConversation = (content, filename) => {
+        try {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading conversation:', error);
+        }
+    };
+
+    window.downloadFileFromBytes = (base64Data, filename, mimeType) => {
+        try {
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = objectUrl;
+            a.download = filename;
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(objectUrl);
+        } catch (error) {
+            console.error("Error downloading file: ", error);
+        }
+    };
+</script>
+
+@code {
+    private TelerikChat<Message> ChatRef;
+
+    private List<Message> ChatData { get; set; } = new();
+
+    private readonly Dictionary<string, Author> ChatAuthors = new() {
+        { "ai", new Author() { Id = "ai", Name = "AI Assistant", ImageUrl = "https://demos.telerik.com/blazor-ui/images/devcraft-ninja-small.svg" } },
+        { "user", new Author() { Id = "user", Name = "John Doe", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jamie.jpg" } }
+    };
+
+    private const string ProvideCVTemplateAction = "Provide CV Template";
+    private const string GenerateCoverLetterAction = "Generate Cover Letter";
+    private List<string> SuggestedActions = new List<string>() { ProvideCVTemplateAction, GenerateCoverLetterAction };
+
+    private bool EnableChatStreaming { get; set; } = true;
+
+    private TelerikDialog DialogRef;
+
+    private bool DialogVisible { get; set; }
+
+    private CancellationTokenSource TokenSource = new CancellationTokenSource();
+
+    private readonly ISvgIcon[] ShareIcons = { SvgIcon.Facebook, SvgIcon.Envelop, SvgIcon.XLogo, SvgIcon.Linkedin, SvgIcon.Google, SvgIcon.Instagram, SvgIcon.Whatsapp };
+
+    private async Task OnDownloadFileClick(ChatFileActionClickEventArgs args)
+    {
+        try
+        {
+            string filePath = Path.Combine(WebHostEnvironment.WebRootPath, "chat-files", args.File.Name);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+                string base64String = Convert.ToBase64String(fileBytes);
+
+                string mimeType = GetMimeType(args.File.Extension);
+
+                await JS.InvokeVoidAsync("downloadFileFromBytes", base64String, args.File.Name, mimeType);
+            }
+            else
+            {
+                Console.WriteLine($"File not found: {filePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading file {args.File.Name}: {ex.Message}");
+        }
+    }
+
+    private void OnChatMessageUnpin(ChatMessageUnpinEventArgs args)
+    {
+        Message message = ChatData.FirstOrDefault(x => x.Id == args.MessageId);
+        if (message != null)
+        {
+            message.IsPinned = false;
+        }
+        else
+        {
+            Console.WriteLine($"Message with ID {args.MessageId} not found.");
+        }
+    }
+
+    private void OnShareFileClick(ChatFileActionClickEventArgs args)
+    {
+        DialogVisible = true;
+    }
+
+    #region New Message Handlers
+
+    private async Task OnChatSendMessage(ChatSendMessageEventArgs args)
+    {
+        if (SuggestedActions.Contains(args.Message))
+        {
+            await HandleSuggestedAction(args);
+            return;
+        }
+
+        TokenSource = new CancellationTokenSource();
+        Message prompt = new Message()
+        {
+            AuthorId = ChatAuthors["user"].Id,
+            AuthorName = ChatAuthors["user"].Name,
+            AuthorImageUrl = ChatAuthors["user"].ImageUrl,
+            // User files are not saved in this demo
+            Files = args.Files.Select(x => new FileSelectFileInfo { Id = x.Id, Name = x.Name, Size = x.Size, Extension = x.Extension }).ToList(),
+            Text = args.Message
+        };
+
+        ChatData.Add(prompt);
+
+        if (prompt.Files.Count() > 0)
+        {
+            ChatData.Add(new Message()
+            {
+                AuthorId = ChatAuthors["ai"].Id,
+                AuthorName = ChatAuthors["ai"].Name,
+                AuthorImageUrl = ChatAuthors["ai"].ImageUrl,
+                Text = "File handling is disabled for this AI service. The file was received successfully, but not saved, so it cannot be downloaded."
+            });
+        }
+
+        if (string.IsNullOrEmpty(args.Message))
+        {
+            args.IsCancelled = true;
+        }
+    }
+
+    private async Task HandleSuggestedAction(ChatSendMessageEventArgs args)
+    {
+        Message userMessage = new Message()
+        {
+            AuthorId = ChatAuthors["user"].Id,
+            AuthorName = ChatAuthors["user"].Name,
+            AuthorImageUrl = ChatAuthors["user"].ImageUrl,
+            Text = args.Message
+        };
+
+        ChatData.Add(userMessage);
+
+        if (args.Message == ProvideCVTemplateAction)
+        {
+            SuggestedActions.Remove(ProvideCVTemplateAction);
+
+            Message cvTemplateMessage = new Message
+            {
+                AuthorId = ChatAuthors["ai"].Id,
+                AuthorName = ChatAuthors["ai"].Name,
+                AuthorImageUrl = ChatAuthors["ai"].ImageUrl,
+                Text = "Sure. Here is a CV template file in PDF format. Can I help you with something else? *",
+                Files = new List<FileSelectFileInfo>
+                {
+                    new FileSelectFileInfo
+                    {
+                        Id = "cv-template",
+                        Name = "cv_template.pdf",
+                        Size = GetFileSize("cv_template.pdf"),
+                        Extension = ".pdf"
+                    }
+                },
+                SuggestedActions = new List<string>(SuggestedActions)
+            };
+
+            ChatData.Add(cvTemplateMessage);
+        }
+        else if (args.Message == GenerateCoverLetterAction)
+        {
+            SuggestedActions.Remove(GenerateCoverLetterAction);
+
+            Message coverLetterMessage = new Message
+            {
+                AuthorId = ChatAuthors["ai"].Id,
+                AuthorName = ChatAuthors["ai"].Name,
+                AuthorImageUrl = ChatAuthors["ai"].ImageUrl,
+                Text = "Here's a professional cover letter template for you to download and customize. Don't hesitate to ask if there's anything else I can do for you. *",
+                Files = new List<FileSelectFileInfo>
+                {
+                    new FileSelectFileInfo
+                    {
+                        Id = "cover-letter",
+                        Name = "cover_letter.pdf",
+                        Size = GetFileSize("cover_letter.pdf"),
+                        Extension = ".pdf"
+                    }
+                },
+                SuggestedActions = new List<string>(SuggestedActions)
+            };
+
+            ChatData.Add(coverLetterMessage);
+        }
+
+        // Wait for new messages to render
+        await Task.Delay(1);
+
+        // Scroll to last message
+        ChatRef?.Refresh();
+    }
+
+    #endregion New Message Handlers
+
+    #region Chat Header Actions
+
+    private async Task OnDownloadChatClick()
+    {
+        try
+        {
+            var formattedMessages = new List<string>();
+
+            foreach (Message message in ChatData)
+            {
+                string messageText = $"{message.AuthorName}: {message.Text}";
+
+                if (message.Files?.Any() == true)
+                {
+                    string fileNames = string.Join(", ", message.Files.Select(f => f.Name));
+                    messageText += $"\n[Note: This message contains file(s): {fileNames}]";
+                }
+
+                formattedMessages.Add(messageText);
+            }
+
+            string conversationText = string.Join("\n\n", formattedMessages);
+
+            await JS.InvokeVoidAsync("downloadConversation", conversationText, "conversation.txt");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading conversation: {ex.Message}");
+        }
+    }
+
+    private void OnClearChatClick()
+    {
+        ChatData.Clear();
+        ChatRef?.Refresh();
+    }
+
+    #endregion Chat Header Actions
+
+    #region File Helpers
+
+    private long GetFileSize(string fileName)
+    {
+        try
+        {
+            string filePath = Path.Combine(WebHostEnvironment.WebRootPath, "chat-files", fileName);
+            if (System.IO.File.Exists(filePath))
+            {
+                return new FileInfo(filePath).Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting file size for {fileName}: {ex.Message}");
+        }
+
+        return 123_456; // Size for unsaved user files
+    }
+
+    private string GetMimeType(string extension)
+    {
+        return extension.ToLowerInvariant() switch
+        {
+            ".pdf" => "application/pdf",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".doc" => "application/msword",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xls" => "application/vnd.ms-excel",
+            ".txt" => "text/plain",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+    }
+
+    #endregion File Helpers
+
+    protected override void OnInitialized()
+    {
+        ChatData  = new List<Message>()
+        {
+            new Message()
+            {
+                AuthorId = ChatAuthors["user"].Id,
+                AuthorName = ChatAuthors["user"].Name,
+                AuthorImageUrl = ChatAuthors["user"].ImageUrl,
+                Text = "Analyze my photo",
+                Files = new List<FileSelectFileInfo>
+                {
+                    new FileSelectFileInfo
+                    {
+                        Id = "corgi",
+                        Name = "corgi.jpg",
+                        Size = 35500,
+                        Extension = ".jpg"
+                    }
+                }
+            },
+            new Message
+            {
+                AuthorId = ChatAuthors["ai"].Id,
+                AuthorName = ChatAuthors["ai"].Name,
+                AuthorImageUrl = ChatAuthors["ai"].ImageUrl,
+                Status = "",
+                Text = "The image shows a corgi surrounded by red hearts on a gray background. *"
+            },
+            new Message
+            {
+                AuthorId = ChatAuthors["ai"].Id,
+                AuthorName = ChatAuthors["ai"].Name,
+                AuthorImageUrl = ChatAuthors["ai"].ImageUrl,
+                Text = "Now let me know if I can help you with your career aspirations.",
+                SuggestedActions = new List<string>(SuggestedActions)
+            }
+        };
+    }
+}

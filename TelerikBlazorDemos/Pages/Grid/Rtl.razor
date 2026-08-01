@@ -1,0 +1,76 @@
+@page "/grid/rtl"
+
+@inject ProductService ProductService
+
+<TelerikGrid Data=@GridData
+             EditMode="@GridEditMode.Inline"
+             Height="500px"
+             Resizable="true"
+             Pageable="true"
+             Groupable="true"
+             PageSize="@PageSize"
+             ConfirmDelete="true"
+             OnUpdate="@UpdateItem"
+             OnDelete="@DeleteItem"
+             OnCreate="@CreateItem">
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Product</GridCommandButton>
+        <span class="k-toolbar-spacer"></span>
+        <GridSearchBox Placeholder="Search product..."
+                       Width="200px">
+        </GridSearchBox>
+    </GridToolBarTemplate>
+    <GridColumns>        
+        <GridColumn Field=@nameof(ProductDto.ProductId) Width="80px" Title="ID" Editable="false" />
+        <GridColumn Field=@nameof(ProductDto.ProductName) Width="200px" Title="Product Name" />
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Width="140px" Title="Price" DisplayFormat="{0:C2}" />
+        <GridColumn Field=@nameof(ProductDto.Discontinued) Width="160px" Title="In Stock" />
+        <GridColumn Field=@nameof(ProductDto.UnitsInStock) Width="160px" Title="Units" />
+        <GridColumn Field=@nameof(ProductDto.QuantityPerUnit) Width="210px" Title="Quantity per unit" />
+        <GridCommandColumn Width="250px">
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+
+            @if ((context as ProductDto).ProductId % 2 == 0)
+            {
+                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            }
+
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    int PageSize = 15;
+    public List<ProductDto> GridData { get; set; }
+    public bool EnabledValidation { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+
+    private void CreateItem(GridCommandEventArgs args)
+    {
+        ProductService.CreateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(GridCommandEventArgs args)
+    {
+        ProductService.DeleteProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void UpdateItem(GridCommandEventArgs args)
+    {
+        ProductService.UpdateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+}

@@ -1,0 +1,73 @@
+@page "/daterangepicker/calendarcellformatting"
+
+<div class="demo-section auto">
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            PopupClass="daterangepicker-calendar-formatting"
+                            OnCalendarCellRender="@OnCalendarCellRenderHandler">
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    private DateTime StartValue { get; set; } = new DateTime(2025, 12, 12);
+    private DateTime EndValue { get; set; } = new DateTime(2025, 12, 16);
+
+    private List<string> WeatherOptions = new List<string>() { "cloudy", "rainy", "snowy", "sunny", "partly-sunny" };
+
+    void OnCalendarCellRenderHandler(DateRangePickerCalendarCellRenderEventArgs args)
+    {
+        foreach (var weather in WeatherOptions)
+        {
+            args.Class = "with-forecast " + WeatherOptions[args.Date.Day % WeatherOptions.Count];
+        }
+    }
+}
+
+<style>
+    .daterangepicker-calendar-formatting .k-calendar-view {
+        padding: 0;
+        width: 600px;
+        height: 280px;
+    }
+
+    .daterangepicker-calendar-formatting .k-calendar-monthview .k-link {
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        line-height: 1;
+        flex-flow: column nowrap;
+    }
+
+    .daterangepicker-calendar-formatting .calendar-monthview .k-calendar-td.with-forecast {
+        width: 40px;
+        height: 40px;
+    }
+
+    .with-forecast .k-link::after {
+        margin-top: 1px;
+        font-size: 14px;
+        font-family: apple color emoji, segoe ui emoji, noto color emoji, android emoji, emojisymbols, emojione mozilla, twemoji mozilla, segoe ui symbol;
+        display: block;
+    }
+
+    .k-calendar-monthview .sunny .k-link::after {
+        content: '☀️';
+    }
+
+    .k-calendar-monthview .partly-sunny span::after {
+        content: '🌤️';
+    }
+
+    .k-calendar-monthview .cloudy .k-link::after {
+        content: '☁️';
+    }
+
+    .k-calendar-monthview .rainy .k-link::after {
+        content: '🌧️';
+    }
+
+    .k-calendar-monthview .snowy .k-link::after {
+        content: '🌨️';
+    }
+</style>
+

@@ -1,0 +1,68 @@
+@page "/grid/group-loadondemand"
+
+@using Telerik.DataSource;
+
+@inject ProductService ProductService
+@inject CategoryService CategoryService
+
+<TelerikGrid Data=@GridData
+             Groupable="true"
+             LoadGroupsOnDemand="true"
+             Pageable="true"
+             PageSize="15"
+             Resizable="true"
+             OnStateInit="@((GridStateEventArgs<ProductDto> args) => OnStateInitHandler(args))">
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductName) Width="280px;" />
+        <GridColumn Field=@nameof(ProductDto.CategoryName) Width="220px" Title="Category Name">
+            <GroupHeaderTemplate>
+                <span>Category Name: @context.Value (@context.Count)</span>
+            </GroupHeaderTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Width="150px" DisplayFormat="{0:C2}" Title="Standard Cost" />
+        <GridColumn Field=@nameof(ProductDto.ReorderLevel) Width="150px" Title="Reorder Level" />
+    </GridColumns>
+    <GridAggregates>
+        <GridAggregate Field=@nameof(ProductDto.CategoryName) Aggregate="@GridAggregateType.Count" />
+    </GridAggregates>
+</TelerikGrid>
+
+@code {
+    public List<ProductDto> GridData { get; set; }
+    public List<CategoryDto> Categories { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    void LoadData()
+    {
+        GridData = ProductService.GetProducts().ToList();
+        Categories = CategoryService.GetCategories().ToList();
+    }
+
+    void OnStateInitHandler(GridStateEventArgs<ProductDto> args)
+    {
+        GridState<ProductDto> desiredState = new GridState<ProductDto>()
+            {
+                GroupDescriptors = new List<GroupDescriptor>()
+                {
+                new GroupDescriptor()
+                {
+                    Member = nameof(ProductDto.CategoryName),
+                    MemberType = typeof(string)
+                }
+            }
+        };
+
+        args.GridState = desiredState;
+    }
+}
+
+<style>
+    .warning {
+        color: #ffa907;
+        font-weight: 400;
+    }
+</style>

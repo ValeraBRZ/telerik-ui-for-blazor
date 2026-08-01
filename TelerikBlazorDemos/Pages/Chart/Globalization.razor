@@ -1,0 +1,110 @@
+@page "/chart/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<div class="mt-md">
+    <TelerikChart Height="300px">
+        <ChartTooltip Visible="true"></ChartTooltip>
+        <ChartTitle Text="Sales and Revenue Total" />
+        <ChartSeriesItems>
+            <ChartSeries Type="ChartSeriesType.Line"
+                         Name="Total Revenue"
+                         Data="@chartData"
+                         Field="@nameof(SalesChartViewModel.TotalRevenue)"
+                         Axis="RevenueAxis" />
+
+            <ChartSeries Type="ChartSeriesType.Column"
+                         Name="Product 1"
+                         Data="@chartData"
+                         Field="@nameof(SalesChartViewModel.Product1Sales)"
+                         CategoryField="@nameof(SalesChartViewModel.Year)" />
+
+            <ChartSeries Type="ChartSeriesType.Column"
+                         Name="Product 2"
+                         Data="@chartData"
+                         Field="@nameof(SalesChartViewModel.Product2Sales)" />
+
+            <ChartSeries Type="ChartSeriesType.Column"
+                         Name="Product 3"
+                         Data="@chartData"
+                         Field="@nameof(SalesChartViewModel.Product3Sales)" />
+        </ChartSeriesItems>
+
+        <ChartValueAxes>
+            <ChartValueAxis>
+                <ChartValueAxisTitle Text="Sold items (thousands)" />
+                <ChartValueAxisLabels Format="0.00" />
+                <ChartValueAxisMajorGridLines Visible="false" />
+            </ChartValueAxis>
+            <ChartValueAxis Name="RevenueAxis">
+                <ChartValueAxisTitle Text="Revenue" />
+                <ChartValueAxisLabels Format="C" />
+                <ChartValueAxisMajorGridLines Visible="false" />
+            </ChartValueAxis>
+        </ChartValueAxes>
+
+        <ChartCategoryAxes>
+            <ChartCategoryAxis AxisCrossingValue="@(new object[] { 20, 0 })">
+                <ChartCategoryAxisLabels Format="dd/yyyy">
+                    <ChartCategoryAxisLabelsRotation Angle="45"></ChartCategoryAxisLabelsRotation>
+                </ChartCategoryAxisLabels>
+            </ChartCategoryAxis>
+        </ChartCategoryAxes>
+    </TelerikChart>
+</div>
+
+@code {
+    List<SalesChartViewModel> chartData { get; set; } = new List<SalesChartViewModel>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        chartData = SalesChartViewModel.GenerateData();
+    }
+
+    public class SalesChartViewModel
+    {
+        public int Product1Sales { get; set; }
+        public int Product2Sales { get; set; }
+        public int Product3Sales { get; set; }
+        public double Product1Revenue { get; set; }
+        public double Product2Revenue { get; set; }
+        public double Product3Revenue { get; set; }
+        public double TotalRevenue { get; set; }
+        public DateTime Year { get; set; }
+
+        private static double Product1Cost = 3.45;
+        private static double Product2Cost = 5.67;
+        private static double Product3Cost = 8.76;
+
+        public static List<SalesChartViewModel> GenerateData()
+        {
+            List<SalesChartViewModel> data = new List<SalesChartViewModel>();
+
+            for (int i = 10; i < 20; i++)
+            {
+                SalesChartViewModel itm = new SalesChartViewModel
+                {
+                    Product1Sales = 1 * (i / 3) * i,
+                    Product2Sales = 2 * (i / 4) + i,
+                    Product3Sales = 4 * (i / 2) / 3
+                };
+                itm.Product1Revenue = itm.Product1Sales * SalesChartViewModel.Product1Cost;
+                itm.Product2Revenue = itm.Product2Sales * SalesChartViewModel.Product2Cost;
+                itm.Product3Revenue = itm.Product3Sales * SalesChartViewModel.Product3Cost;
+                itm.TotalRevenue = itm.Product1Revenue + itm.Product2Revenue + itm.Product3Revenue;
+                itm.Year = new DateTime(2000 + i, 3, i);
+
+                data.Add(itm);
+            }
+
+            return data;
+        }
+    }
+}

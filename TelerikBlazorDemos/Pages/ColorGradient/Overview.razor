@@ -1,0 +1,11 @@
+@page "/colorgradient/overview"
+
+<TShirtDesignTemplate SelectedColor="@Value">
+    <TelerikColorGradient @bind-Value="@Value"></TelerikColorGradient>
+</TShirtDesignTemplate>
+
+@code {
+    public string Value { get; set; } = "#8174F2";
+}
+
+

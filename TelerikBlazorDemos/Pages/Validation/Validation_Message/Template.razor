@@ -1,0 +1,130 @@
+@page "/validation/validation-message/template"
+
+@using System.ComponentModel.DataAnnotations;
+
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            You successfully registered!
+        </div>
+    }
+    else
+    {
+        <h3 style="text-align: center;">Registration Form</h3>
+        <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="name" class="k-label k-form-label">Username</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.UserName" Id="name" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.UserName)">
+                    <Template Context="ValidationMessages">
+                        @foreach (var validationMessage in ValidationMessages)
+                        {
+                            <span class="custom-error">
+                                @validationMessage
+                            </span>
+                        } 
+                    </Template>
+                </TelerikValidationMessage>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="email" class="k-label k-form-label">Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.Email" Id="email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.Email)">
+                    <Template Context="ValidationMessages">
+                        @foreach (var validationMessage in ValidationMessages)
+                        {
+                            <span class="custom-error">
+                                @validationMessage
+                            </span>
+                        } 
+                    </Template>
+                </TelerikValidationMessage>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="repeat-email" class="k-label k-form-label">Repeat Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.RepeatEmail" Id="repeat-email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.RepeatEmail)">
+                    <Template Context="ValidationMessages">
+                        @foreach (var validationMessage in ValidationMessages)
+                        {
+                            <span class="custom-error">
+                                @validationMessage
+                            </span>
+                        } 
+                    </Template>
+                </TelerikValidationMessage>
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Register</TelerikButton>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    public RegistrationModel Model { get; set; } = new RegistrationModel();
+
+    public class RegistrationModel
+    {
+        [Required]
+        [MinLength(3)]
+        public string UserName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Compare(nameof(Email))]
+        public string RepeatEmail { get; set; }
+    }
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}
+
+<style>
+    .custom-error {
+        color: white;
+        background-color: rgba(243, 23, 0, 0.7);
+        display: block;
+
+        padding-left: 4px;
+        margin-top: 4px;
+    }
+</style>

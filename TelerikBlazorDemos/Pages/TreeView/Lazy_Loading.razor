@@ -1,0 +1,50 @@
+@page "/treeview/lazy-loading"
+
+@inject CategoryService categoryService
+@inject ProductService productService
+
+<TelerikTreeView @ref="Tree" Data="@HierarchicalData" OnExpand="@OnExpand">
+    <TreeViewBindings>
+        <TreeViewBinding TextField="CategoryName" ItemsField="Products"></TreeViewBinding>
+        <TreeViewBinding Level="1" TextField="ProductName"></TreeViewBinding>
+    </TreeViewBindings>
+</TelerikTreeView>
+
+@code {
+    public TelerikTreeView Tree { get; set; }
+    public IEnumerable<CategoryDto> HierarchicalData { get; set; }
+    public IEnumerable<ProductDto> Products { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        HierarchicalData = categoryService.GetCategories();
+        Products = productService.GetProducts();
+    }
+
+    private void OnExpand(TreeViewExpandEventArgs args)
+    {
+        // You could also add binding dynamically instead of adding it in the TreeView mark up declaration
+        //Tree.AddBinding(new TelerikTreeViewBinding()
+        //{
+        //    Level = 1,
+        //    TextField = "ProductName"
+        //});
+
+        if (args.Expanded && ((CategoryDto)args.Item).Products.Count() == 0)
+        {
+            CategoryDto category = (args.Item as CategoryDto);
+            var products = Products
+                .Where(p => p.CategoryId.Equals(category.CategoryId))
+                .Select(x => new ProductDto() { ProductName = x.ProductName });
+
+            category.Products.AddRange(products);
+
+            StateHasChanged();
+        }
+    }
+}

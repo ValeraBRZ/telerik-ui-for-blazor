@@ -1,0 +1,97 @@
+@page "/treelist/editing-custom-form"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Height="330px"
+                 Pageable="true">
+    <TreeListColumns>
+        <TreeListCommandColumn Width="150px">
+            <TreeListCommandButton OnClick="@((args)=> SelectItem(args.Item as EmployeeDirectoryDto))" Icon="@SvgIcon.Pencil">Edit</TreeListCommandButton>
+        </TreeListCommandColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@if (selectedItem != null)
+{
+    <hr />
+    <div class="mb-sm">
+        <label class="k-label" for="firstname">
+            First Name
+        </label>
+        <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" @bind="@selectedItem.FirstName" id="firstname" name="firstname" type="text" />
+    </div>
+    <div class="mb-sm">
+        <label class="k-label" for="lastname">
+            Last Name
+        </label>
+        <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" @bind="@selectedItem.LastName" id="lastname" name="lastname" type="text" />
+    </div>
+    <div class="mb-sm">
+        <label class="k-label" for="hiredate">
+            Hire Date
+        </label>
+        <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" @bind="@selectedItem.HireDate" id="hiredate" name="hiredate" type="date" />
+    </div>
+    <div class="mb-sm">
+        <div>
+            <TelerikButton Icon="@SvgIcon.Save" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" Class="mr-sm" OnClick="@Save">Save</TelerikButton>
+            <TelerikButton Icon="@SvgIcon.Cancel" OnClick="@ClearSelection">Cancel</TelerikButton>
+        </div>
+    </div>
+}
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    EmployeeDirectoryDto selectedItem { get; set; }
+    EmployeeDirectoryDto originalItem { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    void SelectItem(EmployeeDirectoryDto item)
+    {
+        if (item != null)
+        {
+            originalItem = item;
+            selectedItem = new EmployeeDirectoryDto() {
+                EmployeeId = item.EmployeeId,
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                HireDate = item.HireDate
+            };
+        }
+        else
+        {
+            ClearSelection();
+        }
+
+        StateHasChanged();
+    }
+
+    void Save()
+    {
+        originalItem.FirstName = selectedItem.FirstName;
+        originalItem.LastName = selectedItem.LastName;
+        originalItem.HireDate = selectedItem.HireDate;
+
+        ClearSelection();
+    }
+
+    void ClearSelection()
+    {
+        originalItem = selectedItem = null;
+    }
+}

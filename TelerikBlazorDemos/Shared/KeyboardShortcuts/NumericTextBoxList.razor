@@ -1,0 +1,26 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-descr">
+            increases the value of the focused numeric textbox with the Step.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            decreases the value of the focused numeric textbox with the Step.
+        </span>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public bool IsNested { get; set; }
+}

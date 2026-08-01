@@ -1,0 +1,45 @@
+@using Telerik.Blazor
+
+<TelerikChart @ref="@ChartRef" Height="100%">
+    <ChartLegend Visible="true" Position="ChartLegendPosition.Bottom"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Donut"
+                     Data="@Data"
+                     Field="@nameof(ModelData.Value)"
+                     CategoryField="@nameof(ModelData.Type)"
+                     StartAngle="70"
+                     HoleSize="30">
+        </ChartSeries>
+    </ChartSeriesItems>
+
+</TelerikChart>
+
+@code {
+    public class ModelData
+    {
+        public string Type { get; set; }
+        public Int32 Value { get; set; }
+    }
+
+    public TelerikChart ChartRef { get; set; }
+
+    public List<ModelData> Data = new List<ModelData>()
+    {
+        new ModelData()
+        {
+            Type = "New",
+            Value = 70
+        },
+        new ModelData()
+        {
+            Type = "Returning",
+            Value = 30
+        }
+    };
+
+    public void Refresh()
+    {
+        ChartRef.Refresh();
+    }
+}

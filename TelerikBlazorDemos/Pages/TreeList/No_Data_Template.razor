@@ -1,0 +1,86 @@
+@page "/treelist/no-data-template"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data" Height="500px"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Sortable="true"
+                 OnDelete="@DeleteItem">
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+        <TreeListCommandColumn>
+            <TreeListCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+    <NoDataTemplate>
+        <span class="k-badge-container">
+            <TelerikSvgIcon Icon="@SvgIcon.Cloud" Class="cloud" />
+            <span class="k-badge k-badge-solid k-badge-sm k-badge-solid-error k-rounded-full">
+                <TelerikSvgIcon Icon="@SvgIcon.X" />
+            </span>
+        </span>
+        <p>There is no data to display.</p>
+        <TelerikButton OnClick="@AddItem" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Add New</TelerikButton>
+    </NoDataTemplate>
+</TelerikTreeList>
+
+@code{
+
+    public List<EmployeeDirectoryDto> Data { get; set; }
+    public List<EmployeeDirectoryDto> SourceData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        SourceData = employeeDirectoryService.GetEmployeeDirectories().Take(1).ToList();
+    }
+
+    private void AddItem()
+    {
+        Data = SourceData.ToList();
+    }
+
+    private void DeleteItem(TreeListCommandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+        Data.Remove(argsItem);
+    }
+}
+
+<style>
+    .cloud {
+        color: #EBEBEB;
+        width: 90px;
+        height: 90px;
+    }
+
+    .k-grid-norecords .k-badge-container {
+        display: inline-block
+    }
+
+    .k-grid-norecords .k-badge-container > .k-badge {
+        position: absolute;
+        left: 70px;
+        top: 25px;
+    }
+
+    .k-grid-norecords {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .k-grid-norecords:hover{
+        background-color:#ffffff !important;
+    }
+</style>
+

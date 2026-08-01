@@ -1,0 +1,135 @@
+@page "/gantt/editing-popup"
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+
+<TelerikGantt Data="@Data"
+              TreeListEditMode="@GanttTreeListEditMode.Popup"
+              Width="100%"
+              @bind-TreeListWidth="@TreeListWidth"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              OnUpdate="UpdateTask"
+              OnDelete="DeleteTask"
+              OnCreate="CreateTask">
+    <GanttToolBarTemplate>
+        <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+    </GanttToolBarTemplate>
+    <GanttColumns>
+        <GanttCommandColumn Title="Commands" Width="120px">
+            <GanttCommandButton AriaLabel="Add item" Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton AriaLabel="Edit item" Command="Edit" Icon="@SvgIcon.Pencil"></GanttCommandButton>
+            <GanttCommandButton AriaLabel="Delete item" Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+        </GanttCommandColumn>
+        <GanttColumn Field="Id"
+                     Visible="false">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type"
+                           OnCreate="@CreateDependency"
+                           OnDelete="@DeleteDependency">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code {
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+
+    private async Task CreateTask(GanttCreateEventArgs args)
+    {
+        GanttTaskService.CreateTask(args.Item as GanttTaskDto, args.ParentItem as GanttTaskDto);
+        await LoadDataAsync();
+    }
+
+    private async Task UpdateTask(GanttUpdateEventArgs args)
+    {
+        var updatedItem = (GanttTaskDto)args.Item;
+        var parentItem = (GanttTaskDto)args.ParentItem;
+
+        GanttTaskService.UpdateTask(updatedItem, parentItem);
+
+        UpdateDependencies(args);
+
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private void UpdateDependencies(GanttUpdateEventArgs args)
+    {
+        args?.CreatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.CreateDependency((int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.UpdatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.UpdateDependency(x.DataItem as GanttDependencyDto, (int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.DeletedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.DeleteDependency((x.DataItem as GanttDependencyDto).Id);
+        });
+    }
+
+    private async Task DeleteTask(GanttDeleteEventArgs args)
+    {
+        GanttTaskService.DeleteTask(args.Item as GanttTaskDto);
+        await LoadDataAsync();
+    }
+
+    private async Task CreateDependency(GanttDependencyCreateEventArgs args)
+    {
+        GanttDependencyService.CreateDependency((int)args.PredecessorId, (int)args.SuccessorId, (int)args.Type);
+        await LoadDependenciesAsync();
+    }
+
+    private async Task DeleteDependency(GanttDependencyDeleteEventArgs args)
+    {
+        GanttDependencyService.DeleteDependency((args.Item as GanttDependencyDto).Id);
+        await LoadDependenciesAsync();
+    }
+}

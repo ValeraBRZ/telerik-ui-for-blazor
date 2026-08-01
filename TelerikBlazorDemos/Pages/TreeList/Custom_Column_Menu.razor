@@ -1,0 +1,64 @@
+@page "/treelist/custom-column-menu"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        Click the three dots in the column header to see the
+        column menu and open the "Columns" section for a customized view of the column list.
+    </p>
+</div>
+
+<TelerikTreeList Data="@Data"
+                 IdField="@nameof(EmployeeDirectoryDto.EmployeeId)"
+                 ParentIdField="@nameof(EmployeeDirectoryDto.ReportsTo)"
+                 ShowColumnMenu="true"
+                 Pageable="true"
+                 Sortable="true"
+                 Resizable="true"
+                 Reorderable="true">
+    <TreeListSettings>
+        <TreeListColumnMenuSettings Sortable="true"
+                                    FilterMode="@ColumnMenuFilterMode.FilterMenu"
+                                    ShowColumnChooser="true">
+            <TreeListColumnMenuChooser>
+                <Template>
+                    <TreeListColumnMenuChooserGroup Title="Personal Information">
+                        <TreeListColumnMenuChooserItem Title="First Name"
+                                                       ColumnId="@nameof(EmployeeDirectoryDto.FirstName)">
+                        </TreeListColumnMenuChooserItem>
+
+                        <TreeListColumnMenuChooserItem Title="Last Name"
+                                                       ColumnId="@nameof(EmployeeDirectoryDto.LastName)">
+                        </TreeListColumnMenuChooserItem>
+                    </TreeListColumnMenuChooserGroup>
+                    <TreeListColumnMenuChooserGroup Title="Employee Information">
+                        <TreeListColumnMenuChooserItem Title="Hire Date"
+                                                       ColumnId="@nameof(EmployeeDirectoryDto.HireDate)">
+                        </TreeListColumnMenuChooserItem>
+                    </TreeListColumnMenuChooserGroup>
+                </Template>
+            </TreeListColumnMenuChooser>
+        </TreeListColumnMenuSettings>
+    </TreeListSettings>
+    <TreeListColumns>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.EmployeeId)" Title="Id"></TreeListColumn>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.FirstName)" Title="First Name" Id="@nameof(EmployeeDirectoryDto.FirstName)" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.LastName)" Title="Last Name" Id="@nameof(EmployeeDirectoryDto.LastName)"></TreeListColumn>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.HireDate)" Title="Hire Date" Id="@nameof(EmployeeDirectoryDto.HireDate)" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

@@ -1,0 +1,76 @@
+@page "/grid/grouping"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@EnabledGroupSorting" Id="groupSortingCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="groupSortingCheckBox">Enable Group Sorting</label>
+        <TelerikCheckBox @bind-Value="@EnabledGroupReordering" Id="groupReorderingCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="groupReorderingCheckBox">Enable Group Reordering</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData
+             Groupable="true"
+             Sortable="true"
+             Pageable="true"
+             PageSize="15">
+    <GridSettings>
+        <GridGroupableSettings Reorderable="@EnabledGroupReordering"
+                               Sortable="@EnabledGroupSorting" />
+    </GridSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductName) Groupable="false" />
+        <GridColumn Field=@nameof(ProductDto.CategoryId) Title="Category Id">
+            <GroupFooterTemplate>
+                Products in category: @context.Count
+            </GroupFooterTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.UnitsInStock) Title="In Stock">
+            <GroupHeaderTemplate>
+                @{
+                    <span>Products in stock: @productsCount &nbsp;</span>
+                    var expensiveProducts = GridData.Where(x => x.UnitPrice > 35);
+                    if (expensiveProducts.Count() > 40)
+                    {
+                        <span class="warning">There are too many expensive products</span>
+                    }
+                }
+            </GroupHeaderTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Title="List Price" Groupable="false">
+            <GroupFooterTemplate>
+                Total price of all products: @context.Sum
+                <br />
+                <span class="text-info">Most expensive product: @context.Max</span>
+            </GroupFooterTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.Discontinued) Title="Discontinued" />
+    </GridColumns>
+    <GridAggregates>
+        <GridAggregate Field=@nameof(ProductDto.CategoryId) Aggregate="@GridAggregateType.Count" />
+        <GridAggregate Field=@nameof(ProductDto.UnitPrice) Aggregate="@GridAggregateType.Sum" />
+        <GridAggregate Field=@nameof(ProductDto.UnitPrice) Aggregate="@GridAggregateType.Max" />
+    </GridAggregates>
+</TelerikGrid>
+
+@code {
+    public List<ProductDto> GridData { get; set; }
+    public int productsCount { get; set; }
+    public bool EnabledGroupSorting { get; set; }
+    public bool EnabledGroupReordering { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = ProductService.GetProducts().ToList();
+        productsCount = GridData.Count();
+    }
+}
+
+<style>
+    .warning {
+        color: #ffa907;
+        font-weight: 400;
+    }
+</style>

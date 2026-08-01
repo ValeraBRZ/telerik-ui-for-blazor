@@ -1,0 +1,56 @@
+@page "/window/position"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Top Position">
+        <TelerikNumericTextBox @bind-Value="@Top" Step="0.1d" Min="0" Max="0.9d" Format="# %"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Left Position">
+        <TelerikNumericTextBox @bind-Value="@Left" Step="0.1d" Min="0" Max="0.9d" Format="# %"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Window Visibility">
+        <label>
+            <TelerikCheckBox @bind-Value="@IsWindowVisible" />
+            @(IsWindowVisible ? "Visible" : "Not Visible")
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikWindow Class="demo-window"
+               Size="@(ThemeConstants.Window.Size.Small)"
+               Draggable="false"
+               Top="@TopStyle"
+               Left="@LeftStyle"
+               @bind-Visible="@IsWindowVisible">
+    <WindowTitle>
+        <strong>Status</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">User Details</legend>
+
+                <label class="k-form-field">
+                    <span>First Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Name" />
+                </label>
+                <label class="k-form-field">
+                    <span>Last Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Last Name" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    private double? Top { get; set; } = 0.6d;
+    private double? Left { get; set; } = 0.5d;
+    private string TopStyle { get { return Top != null ? (Top * 100).ToString() + "%" : string.Empty; } }
+    private string LeftStyle { get { return Left != null ? (Left * 100).ToString() + "%" : string.Empty; } }
+    private bool IsWindowVisible { get; set; } = true;
+}

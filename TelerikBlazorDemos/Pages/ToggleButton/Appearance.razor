@@ -1,0 +1,69 @@
+@page "/togglebutton/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikToggleButton FillMode="@FillMode"
+                         Rounded="@Rounded"
+                         Size="@Size"
+                         ThemeColor="@ThemeColor">Button</TelerikToggleButton>
+</div>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.Button.FillMode.Solid;
+    public string Rounded { get; set; } = ThemeConstants.Button.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.Button.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.Button.ThemeColor.Base;
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.Button.FillMode.Solid },
+        { "Flat", ThemeConstants.Button.FillMode.Flat },
+        { "Outline", ThemeConstants.Button.FillMode.Outline },
+        { "Link", ThemeConstants.Button.FillMode.Link },
+        { "Clear", ThemeConstants.Button.FillMode.Clear }
+    };
+
+    public Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Button.Rounded.Small },
+        { "Medium", ThemeConstants.Button.Rounded.Medium },
+        { "Large", ThemeConstants.Button.Rounded.Large },
+        { "Full", ThemeConstants.Button.Rounded.Full }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Button.Size.Small },
+        { "Medium", ThemeConstants.Button.Size.Medium },
+        { "Large", ThemeConstants.Button.Size.Large }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.Button.ThemeColor.Base },
+        { "Primary", ThemeConstants.Button.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.Button.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.Button.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.Button.ThemeColor.Info },
+        { "Success", ThemeConstants.Button.ThemeColor.Success },
+        { "Warning", ThemeConstants.Button.ThemeColor.Warning },
+        { "Error", ThemeConstants.Button.ThemeColor.Error },
+        { "Dark", ThemeConstants.Button.ThemeColor.Dark },
+        { "Light", ThemeConstants.Button.ThemeColor.Light },
+        { "Inverse", ThemeConstants.Button.ThemeColor.Inverse }
+    };
+}

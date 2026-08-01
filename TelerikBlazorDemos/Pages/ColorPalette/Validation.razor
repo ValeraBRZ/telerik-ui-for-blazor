@@ -1,0 +1,61 @@
+@page "/colorpalette/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@validationModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <div class="k-form-field-wrap">
+                        <TelerikColorPalette @bind-Value="@validationModel.FavoriteColor"
+                                             Colors="@( new List<string> { "red", "green", "blue" } )">
+                        </TelerikColorPalette>
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.FavoriteColor)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    ColorValidationModel validationModel { get; set; } = new ColorValidationModel();
+    string SuccessMessage = string.Empty;
+
+    class ColorValidationModel
+    {
+        [Required]
+        public string FavoriteColor { get; set; }
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

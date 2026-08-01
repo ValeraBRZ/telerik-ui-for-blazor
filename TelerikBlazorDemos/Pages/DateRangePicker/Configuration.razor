@@ -1,0 +1,68 @@
+@page "/daterangepicker/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Auto switch parts">
+        <TelerikCheckBox @bind-Value="@AutoSwitchParts" Id="autoswitchparts-checkbox"></TelerikCheckBox>
+        <label for="autoswitchparts-checkbox" class="k-checkbox-label checkbox-label">Auto switch parts</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Auto switch keys">
+        <TelerikCheckBox Value="@AutoSwitchKeysEnabled"
+                         ValueChanged="@((bool value) => OnAutoSwitchKeysChanged(value))"
+                         Id="autoswitchkeys-checkbox"></TelerikCheckBox>
+        <label for="autoswitchkeys-checkbox" class="k-checkbox-label checkbox-label">Auto switch keys: ["/", "."]</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Allow caret mode">
+        <TelerikCheckBox @bind-Value="@AllowCaretMode" Id="allowcaretmode-checkbox"></TelerikCheckBox>
+        <label for="allowcaretmode-checkbox" class="k-checkbox-label checkbox-label">Allow caret mode</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Allow reverse selection">
+        <TelerikCheckBox @bind-Value="@AllowReverseSelection" Id="allowreverseselection-checkbox"></TelerikCheckBox>
+        <label for="allowreverseselection-checkbox" class="k-checkbox-label checkbox-label">Allow reverse selection</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <label for="picker" class="k-label k-form-label">Set date range</label>
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            Title="Set date range"
+                            Min="@Min"
+                            Max="@Max"
+                            Format="MM/dd/yyyy"
+                            AllowCaretMode="@AllowCaretMode"
+                            AutoSwitchParts="@AutoSwitchParts"
+                            AutoSwitchKeys="@AutoSwitchKeys"
+                            AllowReverse="@AllowReverseSelection">
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 7, 5);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 7, 10);
+    public DateTime Min { get; set; } = new DateTime(1, 1, 1);
+    public DateTime Max { get; set; } = new DateTime(9999, 1, 1);
+    public bool AutoSwitchParts { get; set; } = true;
+    public bool AutoSwitchKeysEnabled { get; set; } = false;
+    public bool AllowReverseSelection { get; set; }
+    public List<object> CustomAutoSwitchKeys { get; set; } = new List<object>() { "/", "." };
+    public List<object> AutoSwitchKeys { get; set; }
+    public bool AllowCaretMode { get; set; }
+
+    public void OnAutoSwitchKeysChanged(bool value)
+    {
+        AutoSwitchKeysEnabled = value;
+
+        if (AutoSwitchKeysEnabled)
+        {
+            AutoSwitchKeys = CustomAutoSwitchKeys;
+        }
+        else
+        {
+            AutoSwitchKeys = new List<object>();
+        }
+    }
+
+}

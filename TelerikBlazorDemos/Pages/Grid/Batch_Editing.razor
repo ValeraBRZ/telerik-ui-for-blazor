@@ -1,0 +1,428 @@
+@page "/grid/batch-editing"
+
+@inject ProductService ProductService
+
+@using System.Linq
+@using System.Collections.ObjectModel
+
+<TelerikGrid Data="@GridData"
+             EditMode="@GridEditMode.Incell"
+             Pageable="true"
+             FilterMode="@GridFilterMode.FilterMenu"
+             SelectionMode="@GridSelectionMode.Multiple"
+             @bind-SelectedItems="@SelectedItems"
+             OnCancel="@CancelItemEdit"
+             OnCreate="@InsertItem"
+             OnDelete="@RemoveItem"
+             OnEdit="@EditItem"
+             OnUpdate="@ModifyItem"
+             OnRowRender="@OnGridRowRender"
+             Resizable="true"
+             Sortable="true"
+             Class="batch-grid">
+    <GridToolBarTemplate>
+        @{
+            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Product</GridCommandButton>
+            <TelerikButton Enabled="@EnableGlobalSaveCancelButtons" Icon="@SvgIcon.Save" OnClick="@SaveAllChanges" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Save All Changes</TelerikButton>
+            <TelerikButton Enabled="@EnableGlobalSaveCancelButtons" Icon="@SvgIcon.X" OnClick="@RevertAllChanges">Cancel All Changes</TelerikButton>
+            if (SelectedItems.Count() > 0)
+            {
+                if (SelectionNotDeleted)
+                {
+                    <TelerikButton Icon="@SvgIcon.Trash" OnClick="@DeleteSelected">Delete Selected </TelerikButton>
+                }
+
+                if (SelectionIsDirty)
+                {
+                    <TelerikButton Icon="@SvgIcon.X" OnClick="@RevertSelected">Cancel Selected</TelerikButton>
+                }
+            }
+        }
+    </GridToolBarTemplate>
+    <GridSettings>
+        <GridValidationSettings Enabled="false"></GridValidationSettings>
+    </GridSettings>
+    <GridColumns>
+        <GridCheckboxColumn />
+        <GridColumn OnCellRender="@((GridCellRenderEventArgs args) => OnGridCellRender(args, "ProductName"))" Field=@nameof(BatchEditModel.ProductName) Title="Product Name" />
+        <GridColumn OnCellRender="@((GridCellRenderEventArgs args) => OnGridCellRender(args, "UnitPrice"))" Field=@nameof(BatchEditModel.UnitPrice) Width="140px" Title="Price" DisplayFormat="{0:C2}" TextAlign="@ColumnTextAlign.Right" />
+        <GridColumn OnCellRender="@((GridCellRenderEventArgs args) => OnGridCellRender(args, "Discontinued"))" Field=@nameof(ProductDto.Discontinued) Width="160px" Title="Discontinued" TextAlign="@ColumnTextAlign.Center" />
+        <GridCommandColumn Width="265px" Locked="true">
+            <HeaderTemplate>
+                <span style="display: flex; align-items: center; gap: var(--kendo-spacing-1);">
+                    <TelerikSvgIcon Icon="@SvgIcon.Gear" /> <span>Actions</span>
+                </span>
+            </HeaderTemplate>
+            <Template>
+                @{ BatchEditModel currItem = context as BatchEditModel; }
+
+                @if (currItem.IsDeleted)
+                {
+                    <TelerikButton Icon="@SvgIcon.Undo" OnClick="@( () => RestoreItem(currItem) )">Restore</TelerikButton>
+                }
+                else
+                {
+                    <GridCommandButton Icon="@SvgIcon.Trash" Command="Delete">Delete</GridCommandButton>
+                }
+
+                @if (currItem.IsDirty && !currItem.IsDeleted && !currItem.IsNew)
+                {
+                    <GridCommandButton Icon="@SvgIcon.Undo" OnClick="@(() => RevertItem(currItem))">Undo</GridCommandButton>
+                }
+            </Template>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
+
+<style>
+    .batch-grid td:first-child,
+    .batch-grid th:first-child {
+        text-align: center !important;
+    }
+    .batch-grid .k-new-row, .batch-grid .k-changed-cell {
+        background-color: rgb(94, 194, 50, 0.5) !important;
+    }
+
+    .batch-grid .k-new-row:hover {
+        background-color: rgb(94, 194, 50, 0.6) !important;
+    }
+
+    .batch-grid .k-deleted-row td:not(:first-child):not(.k-command-cell) {
+        outline: none;
+        cursor: default;
+        opacity: 0.6;
+        filter: grayscale(0.1);
+        pointer-events: none;
+        box-shadow: none;
+    }
+</style>
+
+@code {
+    private ObservableCollection<BatchEditModel> GridData { get; set; } = new ObservableCollection<BatchEditModel>();
+    private List<BatchEditModel> PristineItems { get; set; } = new List<BatchEditModel>();
+    private List<BatchEditModel> DataToUpdate { get; set; } = new List<BatchEditModel>();
+    private IEnumerable<BatchEditModel> SelectedItems { get; set; } = new List<BatchEditModel>();
+
+    private bool EnableGlobalSaveCancelButtons => GridIsDirty && !GridIsInEditMode;
+    private bool GridIsDirty => GridData.ToList().Exists(itm => itm.IsDirty);
+    private bool SelectionIsDirty => SelectedItems.ToList().Exists(itm => itm.IsDirty);
+    private bool SelectionNotDeleted => SelectedItems.ToList().Exists(itm => !itm.IsDeleted);
+    private bool GridIsInEditMode { get; set; }
+
+    #region Grid CRUD events
+
+    private void EditItem(GridCommandEventArgs args)
+    {
+        BatchEditModel item = (BatchEditModel)args.Item;
+
+        if (item.IsDeleted)
+        {
+            args.IsCancelled = true;
+        }
+        else
+        {
+            GridIsInEditMode = true;
+        }
+    }
+
+    private void CancelItemEdit(GridCommandEventArgs args)
+    {
+        GridIsInEditMode = false;
+    }
+
+    private void ModifyItem(GridCommandEventArgs args)
+    {
+        BatchEditModel updatedItem = (BatchEditModel)args.Item;
+        BatchEditModel originalItem = GridData.FirstOrDefault(x => x.ProductId == updatedItem.ProductId);
+
+        var originalValue = typeof(BatchEditModel).GetProperty(args.Field).GetValue(originalItem);
+        var updatedValue = typeof(BatchEditModel).GetProperty(args.Field).GetValue(updatedItem);
+
+        if (updatedValue != null && !updatedValue.Equals(originalValue))
+        {
+            if (!updatedItem.IsDirty)
+            {
+                BatchEditModel pristineItem = GetItemFromCollection(PristineItems, updatedItem);
+                if (pristineItem == null)
+                {
+                    PristineItems.Add(GetItemFromCollection(GridData, updatedItem));
+                }
+            }
+
+            updatedItem.IsChanged = true;
+            updatedItem.DirtyFields.Add(args.Field);
+
+            ReplaceLocalItem(updatedItem);
+        }
+
+        GridIsInEditMode = false;
+    }
+
+    private void InsertItem(GridCommandEventArgs args)
+    {
+        BatchEditModel item = (BatchEditModel)args.Item;
+        item.ProductId = GridData.Max(model => model.ProductId) + 1;
+        item.IsNew = true;
+        GridData.Insert(0, item);
+    }
+
+    private void RemoveItem(GridCommandEventArgs args)
+    {
+        BatchEditModel item = (BatchEditModel)args.Item;
+
+        MarkItemAsDeleted(item);
+    }
+
+    #endregion
+
+    #region Grid Render Events
+
+    private void OnGridRowRender(GridRowRenderEventArgs args)
+    {
+        BatchEditModel item = args.Item as BatchEditModel;
+
+        if (item.IsNew)
+        {
+            args.Class = "k-new-row";
+        }
+
+        if (item.IsDeleted)
+        {
+            args.Class = "k-deleted-row";
+        }
+    }
+
+    private void OnGridCellRender(GridCellRenderEventArgs args, string field)
+    {
+        BatchEditModel item = args.Item as BatchEditModel;
+
+        args.Class = !item.IsNew && item.DirtyFields.Contains(field) == true ? "k-changed-cell" : string.Empty;
+    }
+
+    #endregion
+
+    #region Grid Toolbar commands
+
+    private void DeleteSelected()
+    {
+        foreach (BatchEditModel item in SelectedItems)
+        {
+            MarkItemAsDeleted(item);
+        }
+
+        SelectedItems = new List<BatchEditModel>();
+    }
+
+    private void RevertSelected()
+    {
+        foreach (BatchEditModel item in SelectedItems)
+        {
+            RevertItem(item);
+        }
+
+        SelectedItems = new List<BatchEditModel>();
+    }
+
+    private void RevertAllChanges()
+    {
+        for (int i = GridData.Count - 1; i >= 0; i--)
+        {
+            if (GridData[i].IsDirty)
+            {
+                RevertItem(GridData[i]);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task SaveAllChanges()
+    {
+        List<BatchEditModel> deletedItems = GridData.Where(itm => itm.IsDeleted == true).ToList();
+        List<BatchEditModel> newItems = GridData.Where(itm => itm.IsNew == true).ToList();
+        List<BatchEditModel> updatedItems = GridData.Where(itm => itm.IsChanged == true && itm.IsDeleted == false).ToList();
+
+        GridData.Clear();
+        SelectedItems = Enumerable.Empty<BatchEditModel>();
+
+        List<BatchEditModel> newData = await BatchUpdate(deletedItems, newItems, updatedItems);
+        GridData = new ObservableCollection<BatchEditModel>(newData);
+    }
+
+    #endregion
+
+    #region Button events in the Changes colum
+
+    private void RestoreItem(BatchEditModel item)
+    {
+        BatchEditModel localItem = GetItemFromCollection(GridData, item);
+        if (localItem != null)
+        {
+            localItem.IsDeleted = false;
+        }
+    }
+
+    private void RevertItem(BatchEditModel item)
+    {
+        if (item.IsNew)
+        {
+            GridData.Remove(item);
+        }
+        if (item.IsDeleted)
+        {
+            item.IsDeleted = false;
+            ReplaceLocalItem(item);
+        }
+        if (item.IsChanged)
+        {
+            BatchEditModel pristineItem = GetItemFromCollection(PristineItems, item);
+            if (pristineItem != null)
+            {
+                ReplaceLocalItem(pristineItem);
+                PristineItems.Remove(pristineItem);
+
+                pristineItem.DirtyFields = new List<string>();
+            }
+        }
+    }
+
+    #endregion
+
+    #region Demo helper methods
+
+    private void MarkItemAsDeleted(BatchEditModel itmToDelete)
+    {
+        BatchEditModel localItem = GetItemFromCollection(GridData, itmToDelete);
+        if (localItem != null)
+        {
+            if (localItem.IsDeleted)
+            {
+                return;
+            }
+            else if (localItem.IsNew)
+            {
+                GridData.Remove(localItem);
+            }
+            else
+            {
+                localItem.IsDeleted = true;
+            }
+        }
+    }
+
+    private BatchEditModel GetItemFromCollection(IList<BatchEditModel> collection, BatchEditModel itmToFind)
+    {
+        var index = collection.ToList().FindIndex(i => i.ProductId == itmToFind.ProductId);
+        if (index != -1)
+        {
+            return collection[index];
+        }
+        return null;
+    }
+
+    private void ReplaceLocalItem(BatchEditModel item)
+    {
+        var index = GridData.ToList().FindIndex(i => i.ProductId == item.ProductId);
+
+        if (index != -1)
+        {
+            var existingItem = GridData[index];
+
+            if (SelectedItems.Contains(existingItem))
+            {
+                var tempSelectedItems = SelectedItems.ToList();
+
+                tempSelectedItems.Remove(existingItem);
+                tempSelectedItems.Add(item);
+
+                GridData[index] = item;
+
+                SelectedItems = new List<BatchEditModel>(tempSelectedItems);
+            }
+            else
+            {
+                GridData[index] = item;
+            }
+        }
+    }
+
+    private Task<List<BatchEditModel>> BatchUpdate(List<BatchEditModel> deletedItems,
+    List<BatchEditModel> insertedItems, List<BatchEditModel> updatedItems)
+    {
+        foreach (BatchEditModel item in deletedItems)
+        {
+            DataToUpdate.Remove(item);
+        }
+
+        foreach (BatchEditModel item in insertedItems)
+        {
+            item.ProductId = DataToUpdate.Max(item => item.ProductId) + 1;
+            DataToUpdate.Insert(0, item);
+        }
+
+        foreach (BatchEditModel item in updatedItems)
+        {
+            var index = DataToUpdate.FindIndex(i => i.ProductId == item.ProductId);
+            if (index != -1)
+            {
+                DataToUpdate[index] = item;
+            }
+        }
+
+        foreach (BatchEditModel item in DataToUpdate)
+        {
+            item.IsChanged = false;
+            item.IsDeleted = false;
+            item.IsNew = false;
+            item.DirtyFields = new List<string>();
+        }
+
+        return Task.FromResult(DataToUpdate);
+    }
+
+    #endregion
+
+    #region Grid Data Generation
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        var products = ProductService.GetProducts();
+        var listOfBatchItems = new ObservableCollection<BatchEditModel>();
+
+        foreach (var item in products)
+        {
+            var batchEditModel = new BatchEditModel(item);
+            listOfBatchItems.Add(batchEditModel);
+        }
+
+        GridData = listOfBatchItems;
+        DataToUpdate = listOfBatchItems.ToList();
+    }
+
+    #endregion
+
+    public class BatchEditModel : ProductDto
+    {
+        public bool IsDeleted { get; set; }
+        public bool IsChanged { get; set; }
+        public bool IsNew { get; set; }
+        public bool IsDirty => this.IsDeleted || this.IsChanged || this.IsNew;
+        public List<string> DirtyFields { get; set; }
+
+        public BatchEditModel(ProductDto product)
+        {
+            ProductId = product.ProductId;
+            ProductName = product.ProductName;
+            UnitPrice = product.UnitPrice;
+            Discontinued = product.Discontinued;
+            QuantityPerUnit = product.QuantityPerUnit;
+            DirtyFields = new List<string>();
+        }
+
+        public BatchEditModel() { DirtyFields = new List<string>(); }
+    }
+}

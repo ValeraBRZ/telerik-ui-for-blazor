@@ -1,0 +1,36 @@
+@page "/card/data-cards"
+
+@using System.Linq
+
+@inject ArticleService ArticleService
+
+<div class="k-card-deck flex-center flex-wrap">
+    @foreach (var item in Data)
+	{
+		 <TelerikCard Width="250px">
+             <CardImage Src="@($"images/articles/{item.ImageUrl}")"></CardImage>
+             <CardBody>
+                 <CardTitle>@item.Title</CardTitle>
+                 <CardSubTitle>@item.Subtitle</CardSubTitle>
+             </CardBody>
+            <CardActions>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Save for later</TelerikButton>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Add to favourites</TelerikButton>
+            </CardActions>
+         </TelerikCard>
+	}
+</div>
+
+@code {
+    public IEnumerable<ArticleDto> Data { get; set; } = new List<ArticleDto>();
+
+    protected override void OnInitialized()
+    {
+        Data = ArticleService.GetArticles().Take(8);
+    }
+}
+<style>
+    .flex-wrap {
+        flex-wrap: wrap;
+    }
+</style>

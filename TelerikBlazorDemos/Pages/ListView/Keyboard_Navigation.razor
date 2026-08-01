@@ -1,0 +1,38 @@
+@page "/listview/keyboard-navigation"
+
+@inject ProductService ProductService
+
+<TelerikListView Data="@Data"
+                 Pageable="true"
+                 Height="300px">
+    <Template>
+        <div>
+            @context.ProductName
+        </div>
+    </Template>
+</TelerikListView>
+
+<style>
+    .k-listview-item:focus {
+        border: 1px solid black;
+    }
+
+    .k-listview-item {
+        padding: 10px;
+        border-bottom: 1px solid lightgrey;
+    }
+</style>
+
+@code {
+    private IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

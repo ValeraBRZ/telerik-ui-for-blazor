@@ -1,0 +1,65 @@
+@page "/breadcrumb/templates"
+
+<h4>Item Template</h4>
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items" Class="k-justify-content-center">
+        <ItemTemplate>
+            <div class="item" role="button">
+                <span>@context.Text</span>
+                @if (context.Important)
+                {
+                    <span>❕</span>
+                }
+            </div>
+        </ItemTemplate>
+    </TelerikBreadcrumb>
+</div>
+
+<h4>Separator Template</h4>
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items" Class="k-justify-content-center">
+        <SeparatorTemplate>
+            <span>&#8614;</span>
+        </SeparatorTemplate>
+    </TelerikBreadcrumb>
+</div>
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(640px + 6em) !important;
+    }
+    .item {
+        font-family: cursive;
+        display: flex;
+        align-items: center;
+        font-size: 17px;
+        color: white;
+        background-color: #71ae48;
+        border-radius: 10px;
+        padding: 3px 5px;
+        cursor: pointer;
+    }
+</style>
+
+@code {
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    protected override void OnInitialized()
+    {
+        Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Telerik UI for Blazor", Important = true },
+            new BreadcrumbItem { Text = "Components" },
+            new BreadcrumbItem { Text = "Breadcrumb", Important = true  },
+            new BreadcrumbItem { Text = "Templates" },
+        };
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public bool Important { get; set; }
+    }
+}

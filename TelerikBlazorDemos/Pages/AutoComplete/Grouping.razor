@@ -1,0 +1,27 @@
+@page "/autocomplete/grouping"
+
+@inject ProductService ProductService
+
+<div class="demo-section auto">
+    <label for="selectId">Select a product:</label>
+    <br/>
+    <TelerikAutoComplete Data="@Data"
+                         GroupField="CategoryName"
+                         ValueField="ProductName"
+                         @bind-Value="@SelectedProduct"
+                         Width="300px"
+                         Id="selectId">
+    </TelerikAutoComplete>
+</div>
+
+
+@code {
+    public String SelectedProduct { get; set; }
+
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

@@ -1,0 +1,110 @@
+@page "/form/appearance"
+
+@using User = TelerikBlazorDemos.Models.Form.User
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Size="@Size"
+                 Model="@TestUser"
+                 OnValidSubmit="@HandleValidSubmit"
+                 OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                <FormItem Field="@nameof(User.FirstName)"></FormItem>
+                <FormItem Field="@nameof(User.LastName)"></FormItem>
+                <FormItem Field="@nameof(User.Email)">
+                    <Template>
+                        <label for="mail" class="k-label k-form-label">Email*:</label>
+                        <TelerikTextBox Size="@Size" Id="mail" @bind-Value="@TestUser.Email" InputMode="email" PlaceHolder="example@domain.com"></TelerikTextBox>
+                        <TelerikValidationMessage For="@(() => TestUser.Email)"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(User.Password)">
+                    <Template>
+                        <label for="pass" class="k-label k-form-label">Password*:</label>
+                        <TelerikTextBox Size="@Size" Id="pass" @bind-Value="@TestUser.Password" Password="true"></TelerikTextBox>
+                        <TelerikValidationMessage For="@(() => TestUser.Password)"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(User.BirthDate)" />
+                <FormItem Class="accept-terms" Field="@nameof(User.AcceptTerms)">
+                    <Template>
+                        <label for="accept-terms" class="k-label k-form-label">Agree to Terms*</label>
+                        <TelerikCheckBox Size="@Size" Id="accept-terms" @bind-Value="@TestUser.AcceptTerms"></TelerikCheckBox>
+                        <TelerikValidationMessage For="@(() => TestUser.AcceptTerms)" Class="accept-terms-val"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+            </FormItems>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    public User TestUser { get; set; } = new User()
+        {
+            FirstName = "Johny",
+            LastName = "Doe",
+            Email = "johny.doe@email.com",
+            Password = "testpassword",
+            BirthDate = new DateTime(2000, 12, 10),
+            City = "Sofia",
+            Country = "Bulgaria",
+            AddressLine = "City Center"
+        };
+
+    public string Size { get; set; } = ThemeConstants.Form.Size.Medium;
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Form.Size.Small },
+        { "Medium", ThemeConstants.Form.Size.Medium },
+        { "Large", ThemeConstants.Form.Size.Large }
+    };
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}
+
+<style>
+    .accept-terms-val{
+        width:100%;
+    }
+    div.k-form-field.accept-terms {
+        display: flex;
+        flex-wrap:wrap;
+        flex-direction: row-reverse;
+        align-items:center;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+</style>

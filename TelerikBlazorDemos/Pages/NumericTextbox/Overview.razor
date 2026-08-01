@@ -1,0 +1,10 @@
+@page "/numerictextbox/overview"
+@page "/numerictextbox/index"
+
+<MyProfileTemplate Title="Weight" SplitTemplate="true">
+    <TelerikNumericTextBox Decimals="2" @bind-Value="IntValue"></TelerikNumericTextBox>
+</MyProfileTemplate>
+
+@code {
+    private int IntValue = 76;
+}

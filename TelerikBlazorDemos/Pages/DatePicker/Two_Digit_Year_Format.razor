@@ -1,0 +1,28 @@
+@page "/datepicker/two-digit-year-format"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Two-digit year max">
+        <TelerikNumericTextBox @bind-Value="@TwoDigitYearMax" Min="1" Max="99" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="travel-date" class="k-label k-form-label">Selected Date</label>
+        <div class="k-form-field-wrap">
+            <TelerikDatePicker @bind-Value="@Value"
+                               Format="dd/MMM/yy"
+                               TwoDigitYearMax="@TwoDigitYearMax">
+            </TelerikDatePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <p>The selected date is: <strong>@Value.ToShortDateString()</strong></p>
+    </div>
+</div>
+
+
+@code {
+    public DateTime Value { get; set; } = DateTime.Now;
+    public int TwoDigitYearMax { get; set; } = 23;
+}

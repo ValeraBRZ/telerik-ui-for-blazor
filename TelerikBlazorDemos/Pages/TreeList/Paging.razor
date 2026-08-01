@@ -1,0 +1,81 @@
+@page "/treelist/paging"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Page Sizes">
+        <TelerikCheckBox @bind-Value="@ShowPageSizeDropdown" Id="show-page-size-dropdown"></TelerikCheckBox>
+        <label for="show-page-size-dropdown" class="k-checkbox-label checkbox-label">Show Page Sizes</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Input Type">
+        <TelerikDropDownList Data="InputTypes" @bind-Value="@InputType" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Buttons Count">
+        <TelerikNumericTextBox Min="1" @bind-Value="@ButtonsCount"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pager Position">
+        <TelerikDropDownList Data="PagerPositions" @bind-Value="@PagerPosition" Width="150px">
+            <DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 @bind-PageSize="@PageSize"
+                 @bind-Page="@CurrentPage"
+                 Height="300px">
+    <TreeListSettings>
+        <TreeListPagerSettings InputType="@InputType" PageSizes="@PageSizes" ButtonCount="@ButtonsCount" Position="@PagerPosition" />
+    </TreeListSettings>
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    int PageSize = 10;
+    int CurrentPage = 3;
+    int _buttonsCount = 5;
+    public int Page { get; set; } = 3;
+    public int ButtonsCount
+    {
+        get
+        {
+            return _buttonsCount;
+        }
+        set
+        {
+            if (value < 1)
+            {
+                _buttonsCount = 1;
+            }
+            else
+            {
+                _buttonsCount = value;
+            }
+        }
+    }
+
+    public PagerInputType InputType { get; set; }
+    public PagerPosition PagerPosition { get; set; } = PagerPosition.Bottom;
+    public bool ShowPageSizeDropdown { get; set; }
+    public List<int?> PageSizes => ShowPageSizeDropdown ? new List<int?> { 5, 10, 25, null } : null;
+    public List<PagerInputType> InputTypes => new List<PagerInputType> { PagerInputType.Buttons, PagerInputType.Input };
+    public List<PagerPosition> PagerPositions => new List<PagerPosition> { PagerPosition.Bottom, PagerPosition.Top };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

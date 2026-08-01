@@ -1,0 +1,66 @@
+@page "/tabstrip/persist-content"
+
+<h4>Do Not Persist Tab Content</h4>
+<div class="first-tabstrip-wrapper">
+    <div class="demo-section first-tabstrip-wrapper">
+        <TelerikTabStrip PersistTabContent="false">
+            <TabStripTab Title="Sofia">
+                <WeatherCard City="Sofia"
+                             TempC="23"
+                             Forecast="ForecastType.Sunny"
+                             DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+            <TabStripTab Title="London">
+                <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy"
+                         DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+            <TabStripTab Title="Paris">
+                <WeatherCard City="Paris"
+                             TempC="17"
+                             Forecast="ForecastType.Rainy"
+                             DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+        </TelerikTabStrip>
+    </div>
+</div>
+
+<h4>Persist Tab Content</h4>
+<div class="second-tabstrip-wrapper">
+    <div class="demo-section">
+        <TelerikTabStrip PersistTabContent="true">
+            <TabStripTab Title="Sofia">
+                <WeatherCard City="Sofia"
+                             TempC="23"
+                             Forecast="ForecastType.Sunny"
+                             DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+            <TabStripTab Title="London">
+                <WeatherCard City="London"
+                             TempC="21"
+                             Forecast="ForecastType.Cloudy"
+                             DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+            <TabStripTab Title="Paris">
+                <WeatherCard City="Paris"
+                             TempC="17"
+                             Forecast="ForecastType.Rainy"
+                             DeliberateDelay="true">
+                </WeatherCard>
+            </TabStripTab>
+        </TelerikTabStrip>
+    </div>
+</div>
+
+
+<style>
+    .second-tabstrip-wrapper {
+        margin-top: 20px;
+    }
+</style>

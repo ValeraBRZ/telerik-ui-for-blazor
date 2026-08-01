@@ -1,0 +1,91 @@
+@page "/loadercontainer/custom-integration"
+
+<div class="box-content form-wrapper">
+
+    <TelerikLoaderContainer Visible="@LoaderContainerVisible"></TelerikLoaderContainer>
+
+    @if (CheckoutCompleted)
+    {
+        <h3 class="order-number">Order number: #2195712</h3>
+
+        <h4><TelerikSvgIcon Icon="@SvgIcon.CheckCircle" Class="k-state-success mr-sm" /> The payment is successfully completed</h4>
+    }
+    else
+    {
+<EditForm Model="@Model" OnValidSubmit="@Checkout">
+    <h4 class="mb-sm">Payment Information</h4>
+
+    <label for="credit-card-number">Credit Card</label>
+    <br />
+    <TelerikMaskedTextBox Width="200px"
+                          Id="credit-card-number"
+                          Mask="0000-0000-0000-0000"
+                          @bind-Value="@Model.CreditCard"></TelerikMaskedTextBox>
+
+    <h4 class="mb-sm">Shipping Information</h4>
+
+    <label for="address">Address</label>
+    <br />
+    <TelerikTextArea @bind-Value="@Model.Address" Id="address" ResizeMode="@TextAreaResizeMode.Auto"></TelerikTextArea>
+
+    <TelerikButton Class="mt-md" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" ButtonType="@ButtonType.Submit">Checkout</TelerikButton>
+</EditForm>
+    }    
+</div>
+
+
+@code {
+    public DemoModel Model { get; set; } = new DemoModel()
+    {
+        CreditCard = "3543123512659237",
+        Address = "John Jones, +1-541-754-3010 \n123 MAIN ST \nANYTOWN, CA, 12345-6789 \nUSA"
+    };
+    public bool LoaderContainerVisible { get; set; }
+    public bool CheckoutCompleted { get; set; }
+
+    async Task Checkout(EditContext context)
+    {
+        LoaderContainerVisible = true;
+        await Task.Delay(3000);
+        CheckoutCompleted = true;
+        LoaderContainerVisible = false;
+    }
+
+
+    public class DemoModel
+    {
+        public string CreditCard { get; set; }
+        public string Address { get; set; }
+    }
+}
+
+<style>
+    .address-line {
+        margin: 3px 0;
+    }
+    
+    .order-number {
+        text-align: center;
+    }
+
+    .form-wrapper {
+        margin: auto;
+        position: relative;
+    }
+
+    .k-i-check-circle {
+        font-size: 40px;
+    }
+
+    .k-i-check-circle::before {
+        color: #1d5e00
+    }
+
+    .k-textarea-container {
+        width: 100%
+    }
+
+    .k-loader-container {
+        z-index: 1;
+    }
+</style>

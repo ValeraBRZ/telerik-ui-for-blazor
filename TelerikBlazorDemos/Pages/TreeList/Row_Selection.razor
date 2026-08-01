@@ -1,0 +1,119 @@
+@page "/treelist/row-selection"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Choose the TreeList selection mode:">
+        <TelerikDropDownList Data="@SelectionModes" @bind-Value="@SelectionMode" OnChange="@OnSelectionChange">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@IsCheckBoxColumnVisible"
+                         Id="toggle-checkbox-col">
+        </TelerikCheckBox>
+        <label for="toggle-checkbox-col">Toggle <strong>CheckBox</strong> column</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@ShowSelectAll"
+                         Id="select-all-checkbox"
+                         Enabled="@(IsCheckBoxColumnVisible && SelectionMode == TreeListSelectionMode.Multiple)">
+        </TelerikCheckBox>
+        <label for="select-all-checkbox">Enable <strong>Select All</strong></label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@CheckBoxOnlySelection"
+                         Id="checkbox-only-checkbox"
+                         Enabled="@(IsCheckBoxColumnVisible)">
+        </TelerikCheckBox>
+        <label for="checkbox-only-checkbox">CheckBox Only Selection</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 SelectionMode="@SelectionMode"
+                 @bind-SelectedItems="@SelectedItems"
+                 Height="300px">
+    <TreeListColumns>
+        <TreeListCheckboxColumn Visible="@IsCheckBoxColumnVisible"
+                                SelectAll="@ShowSelectAll"
+                                CheckBoxOnlySelection="@CheckBoxOnlySelection">
+        </TreeListCheckboxColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+<h2>Selected Items:</h2>
+<ul>
+    @foreach (EmployeeDirectoryDto item in SelectedItems)
+    {
+        <li>
+            @item?.FirstName @item?.LastName
+        </li>
+    }
+</ul>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    public TreeListSelectionMode SelectionMode { get; set; } = TreeListSelectionMode.Multiple;
+    private bool ShowSelectAll { get; set; }
+    public IEnumerable<EmployeeDirectoryDto> SelectedItems { get; set; } = Enumerable.Empty<EmployeeDirectoryDto>();
+    private bool IsCheckBoxColumnVisible { get; set; }
+    private bool CheckBoxOnlySelection { get; set; }
+    private bool SelectChildren { get; set; }
+
+    private List<TreeListSelectionMode> SelectionModes => new List<TreeListSelectionMode>
+    {
+        TreeListSelectionMode.Single,
+        TreeListSelectionMode.Multiple,
+        TreeListSelectionMode.None
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+
+        SelectedItems = Data.Take(1);
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void OnSelectionChange(object selection)
+    {
+        TreeListSelectionMode selectionMode = (TreeListSelectionMode)selection;
+        SelectionMode = selectionMode;
+
+        //cater for choosing different selection modes
+        //this is used only for the demo to update the rendering, you are not likely to need it in a real app
+        if (selectionMode == TreeListSelectionMode.Single)
+        {
+            EmployeeDirectoryDto selectedItem = null;
+            var TempItems = new List<EmployeeDirectoryDto>();
+
+            if (SelectedItems.Count() > 0)
+            {
+                selectedItem = SelectedItems.Last();
+            }
+
+            if (selectedItem != null)
+            {
+                TempItems.Add(selectedItem);
+            }
+            SelectedItems = TempItems.AsEnumerable<EmployeeDirectoryDto>();
+        }
+        else if (selectionMode == TreeListSelectionMode.None)
+        {
+            SelectedItems = new List<EmployeeDirectoryDto>();
+        }
+    }
+}

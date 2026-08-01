@@ -1,0 +1,137 @@
+@page "/listbox/rtl"
+
+@inject CustomerService customerService
+
+<div dir="rtl" class="demo-section auto">
+    <TelerikListBox Id="@ListBoxId"
+                    ConnectedListBoxId="@ConnectedListBoxId"
+                    Data="@Employees"
+                    TextField="@nameof(CustomerDto.ContactName)"
+                    @bind-SelectedItems="@SelectedEmployees"
+                    OnReorder="@((ListBoxReorderEventArgs<CustomerDto> args) => OnReorder(args))"
+                    OnTransfer="@((ListBoxTransferEventArgs<CustomerDto> args) => OnTransfer(args))"
+                    OnRemove="@((ListBoxRemoveEventArgs<CustomerDto> args) => OnRemove(args))">
+    </TelerikListBox>
+
+    <TelerikListBox Id="@ConnectedListBoxId"
+                    Data="@Developers"
+                    TextField="@nameof(CustomerDto.ContactName)"
+                    @bind-SelectedItems="@SelectedDevelopers">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+</div>
+
+
+@code {
+    private string ListBoxId = "first-listbox";
+    private string ConnectedListBoxId = "connected-listbox";
+
+    private IEnumerable<CustomerDto> Employees { get; set; } = new List<CustomerDto>();
+    private IEnumerable<CustomerDto> SelectedEmployees { get; set; } = new List<CustomerDto>();
+
+    private IEnumerable<CustomerDto> Developers { get; set; } = new List<CustomerDto>();
+    private IEnumerable<CustomerDto> SelectedDevelopers { get; set; } = new List<CustomerDto>();
+
+    #region Tools Handlers
+
+    private void OnRemove(ListBoxRemoveEventArgs<CustomerDto> args)
+    {
+        var itemsToRemove = Employees.Where(x => args.Items.Select(y => y.CustomerId).Contains(x.CustomerId));
+
+        var data = Employees.Where(x => !itemsToRemove.Contains(x)).ToList();
+
+        Employees = data;
+    }
+
+    private void OnReorder(ListBoxReorderEventArgs<CustomerDto> args)
+    {
+        if (args.ToIndex >= Employees.Count() || args.ToIndex < 0)
+        {
+            return;
+        }
+
+        var data = Employees.ToList();
+        var itemsToShift = data.Skip(args.FromIndex).Take(args.Items.Count).ToList();
+
+        data.RemoveAll(x => itemsToShift.Contains(x));
+        data.InsertRange(args.ToIndex, itemsToShift);
+
+        Employees = data;
+    }
+
+    private void OnTransfer(ListBoxTransferEventArgs<CustomerDto> args)
+    {
+        (IEnumerable<CustomerDto> origin, IEnumerable<CustomerDto> destination) output;
+
+        if (args.DestinationListBoxId == ConnectedListBoxId)
+        {
+            output = Transfer(Employees, Developers, args.Items);
+            Employees = output.origin;
+            Developers = output.destination;
+            SelectedEmployees = Enumerable.Empty<CustomerDto>();
+        }
+        else
+        {
+            output = Transfer(Developers, Employees, args.Items);
+            Developers = output.origin;
+            Employees = output.destination;
+            SelectedDevelopers = Enumerable.Empty<CustomerDto>();
+        }
+    }
+
+    private (IEnumerable<CustomerDto> origin, IEnumerable<CustomerDto> destination) Transfer(
+        IEnumerable<CustomerDto> origin,
+        IEnumerable<CustomerDto> destination,
+        IEnumerable<CustomerDto> payload)
+    {
+        var originData = origin.ToList();
+        var destinationData = destination.ToList();
+
+        _ = originData.RemoveAll(x => payload.Select(x => x.CustomerId).Contains(x.CustomerId));
+
+        destinationData.AddRange(payload);
+
+        return (originData, destinationData);
+    }
+
+    #endregion Tools Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        var allData = customerService.GetCustomers().Take(25).ToList();
+
+        Employees = allData.Take(20).ToList();
+        Developers = allData.Skip(20).Take(5).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+
+        SetPreselectedItems();
+    }
+
+
+    private void SetPreselectedItems() => SelectedEmployees = Employees.Skip(2).Take(1).ToList();
+
+    #endregion Data
+}
+
+<style>
+    .k-listbox {
+        height: 360px;
+    }
+
+    #first-listbox {
+        width: 270px;
+    }
+
+    #connected-listbox {
+        margin-left: 0.6em;
+        width: 232px;
+    }
+</style>

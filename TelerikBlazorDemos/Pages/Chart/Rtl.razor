@@ -1,0 +1,31 @@
+@page "/chart/rtl"
+
+@using Telerik.Blazor
+
+<TelerikChart>
+    <ChartTooltip Visible="true"></ChartTooltip>
+    <ChartTitle Text="Site Visitors Stats"></ChartTitle>
+    <ChartLegend Visible="false"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Column" Name="Total Visits" Data="@Series1Data">
+        </ChartSeries>
+        <ChartSeries Type="ChartSeriesType.Column" Name="Unique visitors" Data="@Series2Data">
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartValueAxes>
+        <ChartValueAxis Max="140000"></ChartValueAxis>
+    </ChartValueAxes>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Categories="@Categories"></ChartCategoryAxis>
+    </ChartCategoryAxes>
+
+</TelerikChart>
+
+@code {
+    public List<object> Series1Data = new List<object>() { 56000, 63000, 74000, 91000, 117000, 138000 };
+    public List<object> Series2Data = new List<object>() { 52000, 34000, 23000, 48000, 67000, 83000 };
+    public string[] Categories = new string[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" };
+}

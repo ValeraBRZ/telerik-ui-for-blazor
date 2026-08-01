@@ -1,0 +1,72 @@
+@page "/multicolumncombobox/custom-values"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enable custom values">
+        <TelerikCheckBox @bind-Value="@AllowCustom" Id="customValuesCheckBox" />
+        <label class="k-checkbox-label" for="customValuesCheckBox">Allow Custom Values</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="size" class="k-label k-form-label">Size:</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiColumnComboBox Data="@Data"
+                                        @bind-Value="@Value"
+                                        TextField="Text"
+                                        ValueField="Text"
+                                        AllowCustom="@AllowCustom"
+                                        Placeholder="Select or write your t-shirt size"
+                                        Id="size"
+                                        Width="100%"
+                                        ListHeight="auto">
+                <MultiColumnComboBoxColumns>
+                    <MultiColumnComboBoxColumn Field="@nameof(Size.Metric)" />
+                    <MultiColumnComboBoxColumn Field="@nameof(Size.Text)" />
+                </MultiColumnComboBoxColumns>
+            </TelerikMultiColumnComboBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <div class="mt-lg">
+            Selected size: <strong>@Value</strong>
+        </div>
+
+        <div class="mt-md">
+            Custom size:
+
+            @if (!string.IsNullOrEmpty(Value))
+            {
+                <strong>@IsCustom</strong>
+            }
+        </div>
+    </div>
+</div>
+
+@code  {
+    private string Value { get; set; }
+    private List<Size> Data { get; set; }
+    private bool AllowCustom { get; set; } = true;
+    private bool IsCustom => Data.FirstOrDefault(size => size.Text == Value) == null;
+
+    private void LoadData() => Data = new List<Size>
+    {
+        new Size { Text = "X-Small", Metric = 6 },
+        new Size { Text = "Small", Metric = 9 },
+        new Size { Text = "Medium", Metric = 12 },
+        new Size { Text = "Large", Metric = 15 },
+        new Size { Text = "X-Large", Metric = 18 },
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+        base.OnInitialized();
+    }
+
+    private class Size
+    {
+        public string Text { get; set; }
+        public int? Metric { get; set; }
+    }
+}

@@ -1,0 +1,93 @@
+@page "/gantt/column-menu"
+
+@inject GanttTaskService GanttTaskService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Id in Column Chooser">
+        <TelerikCheckBox @bind-Value="@ShowIdInChooser"
+                         Id="IdInChooser">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="IdInChooser">Include Id</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Status Lockable">
+        <TelerikCheckBox @bind-Value="@IsStatusLockable"
+                         Id="StatusLockable">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="StatusLockable">Disable Lockable</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Column Menu for Task Title">
+        <TelerikCheckBox @bind-Value="@ShowTitleColumnMenu"
+                         Id="TitleColumnMenu">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="TitleColumnMenu">Enable Column Menu</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGantt Data="@Data"
+              Width="100%"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              Navigable="true"
+              TreeListEditMode="GanttTreeListEditMode.None"
+              ColumnResizable="true"
+              Sortable="true"
+              View="@SelectedView"
+              TreeListWidth="@TreeListWidth"
+              ShowColumnMenu="true">
+    <GanttColumns>
+        <GanttColumn Field="Id"
+                     Width="75px"
+                     VisibleInColumnChooser="@ShowIdInChooser">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="400px"
+                     Title="Task Title"
+                     ShowColumnMenu="@ShowTitleColumnMenu">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Title="Status"
+                     Width="100px"
+                     DisplayFormat="{0:P}"
+                     Lockable="@IsStatusLockable">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+</TelerikGantt>
+
+@code {
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public GanttView SelectedView { get; set; } = GanttView.Week;
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    private bool ShowIdInChooser { get; set; }
+
+    private bool IsStatusLockable { get; set; }
+
+    private bool ShowTitleColumnMenu { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+}

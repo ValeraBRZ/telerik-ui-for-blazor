@@ -1,0 +1,104 @@
+@page "/diagram/workflow"
+
+<TelerikDiagram Height="900px" MinZoom="0.5" MaxZoom="1.5" Zoom="0.75">
+    <DiagramShapeDefaults Type="@DiagramShapeType.Process"
+                          CornerRadius="6"
+                          Height="100"
+                          Width="150">
+        <DiagramShapeDefaultsContent Color="#212529"
+                                     RelativePadding="0.1"
+                                     TextWrap="@DiagramShapesContentTextWrap.Wrap" />
+        <DiagramShapeDefaultsFill Color="#e2d9f3" />
+        <DiagramShapeDefaultsStroke Color="#c5b3e6" Width="2" />
+    </DiagramShapeDefaults>
+    <DiagramConnectionDefaults>
+        <DiagramConnectionDefaultsEndCap Type="@DiagramConnectionsEndCapType.ArrowEnd" />
+    </DiagramConnectionDefaults>
+    <DiagramShapes>
+        <DiagramShape Id="shape1" Type="@DiagramShapeType.Terminator"
+                      X="220" Y="50" Width="300">
+            <DiagramShapeContent Text="Start" />
+            <DiagramShapeFill Color="#cfe2ff" />
+            <DiagramShapeStroke Color="#9ec5fe" />
+        </DiagramShape>
+        <DiagramShape Id="shape2" X="270" Y="220">
+            <DiagramShapeContent Text="Define Requirements" />
+        </DiagramShape>
+        <DiagramShape Id="shape3" Type="@DiagramShapeType.Document"
+                      X="270" Y="390">
+            <DiagramShapeContent Text="Specification" />
+            <DiagramShapeFill Color="#fff" />
+            <DiagramShapeStroke Color="#a3cfbb" />
+        </DiagramShape>
+        <DiagramShape Id="shape4" Type="@DiagramShapeType.Decision"
+                      X="270" Y="560">
+            <DiagramShapeContent Text="Approved?">
+            </DiagramShapeContent>
+            <DiagramShapeTooltip Class="shape-approved" Visible="true">
+                <Template>
+                    <div>by PM</div>
+                </Template>
+            </DiagramShapeTooltip>
+            <DiagramShapeFill Color="#fff" />
+            <DiagramShapeStroke Color="#ffe69c" />
+        </DiagramShape>
+        <DiagramShape Id="shape5" X="270" Y="730">
+            <DiagramShapeContent Text="Develop" />
+        </DiagramShape>
+        <DiagramShape Id="shape6" X="270" Y="900">
+            <DiagramShapeContent Text="Quality Assurance" />
+        </DiagramShape>
+        <DiagramShape Id="shape7" Type="@DiagramShapeType.Decision"
+                      X="270" Y="1070">
+            <DiagramShapeContent Text="Bugs Found?" />
+            <DiagramShapeFill Color="#fff" />
+            <DiagramShapeStroke Color="#ffe69c" />
+        </DiagramShape>
+        <DiagramShape Id="shape8" X="50" Y="1070">
+            <DiagramShapeContent Text="Bug Fixing" />
+        </DiagramShape>
+        <DiagramShape Id="shape9" X="490" Y="1070">
+            <DiagramShapeContent Text="Release" />
+        </DiagramShape>
+        <DiagramShape Id="shape10" Type="@DiagramShapeType.Terminator"
+                      X="710" Y="1070" Width="300">
+            <DiagramShapeContent Text="Done" />
+            <DiagramShapeFill Color="#cfe2ff" />
+            <DiagramShapeStroke Color="#9ec5fe" />
+        </DiagramShape>
+    </DiagramShapes>
+    <DiagramConnections>
+        <DiagramConnection FromId="shape1" ToId="shape2" />
+        <DiagramConnection FromId="shape2" ToId="shape3" />
+        <DiagramConnection FromId="shape3" ToId="shape4" />
+        <DiagramConnection FromId="shape4" ToId="shape5">
+            <DiagramConnectionContent Text=" Yes" />
+        </DiagramConnection>
+        <DiagramConnection Id="connectionNo" FromId="shape4" ToId="shape2"
+                           FromConnector="@DiagramConnectionsFromConnector.Right"
+                           ToConnector="@DiagramConnectionsToConnector.Right">
+            <DiagramConnectionContent Text="No" Offset="10" Color="red">
+                <DiagramConnectionContentPosition Vertical="@DiagramConnectionsContentPositionVertical.Bottom"
+                                                  Horizontal="@DiagramConnectionsContentPositionHorizontal.Right" />
+            </DiagramConnectionContent>
+            <DiagramConnectionTooltip Class="connection-no" Visible="true">
+                <Template>
+                    <div>
+                        see details in the comments
+                    </div>
+                </Template>
+            </DiagramConnectionTooltip>
+        </DiagramConnection>
+        <DiagramConnection FromId="shape5" ToId="shape6" />
+        <DiagramConnection FromId="shape6" ToId="shape7" />
+        <DiagramConnection FromId="shape7" ToId="shape8">
+            <DiagramConnectionContent Text="Yes" />
+        </DiagramConnection>
+        <DiagramConnection FromId="shape7" ToId="shape9">
+            <DiagramConnectionContent Text="No" />
+        </DiagramConnection>
+        <DiagramConnection FromId="shape8" ToId="shape6"
+                           FromConnector="@DiagramConnectionsFromConnector.Top" />
+        <DiagramConnection FromId="shape9" ToId="shape10" />
+    </DiagramConnections>
+</TelerikDiagram>

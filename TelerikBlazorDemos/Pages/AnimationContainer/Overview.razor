@@ -1,0 +1,33 @@
+@page "/animationcontainer/overview"
+@page "/animationcontainer/index"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikDropDownList Data="@Animations" @bind-Value="@AnimationType" Width="150px" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@Toggle">@(isShown ? "Hide Animation Container" : "Show Animation Container")</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+
+<div class="mt-sm text-center kd-border" style="position: relative; height: 250px;">
+    <TelerikAnimationContainer @ref="@AnimationContainer" Top="50px" Left="50px" Width="200px" Height="150px" AnimationType="@AnimationType" Class="k-popup">
+        The parent element has <code>position: relative</code> to control my position.
+    </TelerikAnimationContainer>
+</div>
+
+@code {
+    public AnimationType AnimationType { get; set; } = AnimationType.Fade;
+    public TelerikAnimationContainer AnimationContainer { get; set; }
+    public List<AnimationType> Animations { get; set; } = Enum.GetValues(typeof(AnimationType)).Cast<AnimationType>().ToList();
+
+    private bool isShown { get; set; } = false;
+
+    public async void Toggle()
+    {
+        isShown = !isShown;
+        await AnimationContainer.ToggleAsync();
+    }
+}

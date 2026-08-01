@@ -1,0 +1,25 @@
+<div data-slide="0" class="kd-carousel-slide">
+    <div class="kd-application-image">
+        <picture>
+            <img loading="lazy" src="@Slide.ImageSrc" alt="@Slide.ImageAlt" class="kd-img application-image" />
+        </picture>
+    </div>
+    <div class="kd-application-content">
+        <div class="kd-application-title">
+            <h2 class="kd-title">@Slide.Title</h2>
+        </div>
+        <div class="kd-application-button">
+            <a href="@Slide.Url" class="kd-button kd-button-rounded kd-button-sm kd-button-tertiary">
+                Run Sample
+                <span class="kd-button-icon">
+                    <TelerikBlazorDemos.Shared.SVG.Arrow />
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CarouselItem Slide { get; set; } = new CarouselItem();
+}

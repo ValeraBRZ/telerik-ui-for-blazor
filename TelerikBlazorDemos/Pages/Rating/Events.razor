@@ -1,0 +1,34 @@
+@page "/rating/events"
+
+<h4>Rating Events</h4>
+<TelerikRating Value="@Value"
+               ValueChanged="@( (double newValue) => RatingValueChanged(newValue) )"
+               Label="@Label">
+</TelerikRating>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private double Value { get; set; } = 1;
+    private string Label => $"{Value} / 5";
+
+    private void RatingValueChanged(double newValue)
+    {
+        Value = newValue;
+
+        var log = $"<div>The ValueChanged event has been triggered, the new rating is <strong>{Value}</strong>.</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    #region Configurator
+
+    private string EventLog { get; set; } = string.Empty;
+
+    private void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    #endregion Configurator
+}

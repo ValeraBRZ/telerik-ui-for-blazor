@@ -1,0 +1,50 @@
+@page "/spreadsheet/events"
+
+@using TelerikBlazorDemos.Constants
+
+<TelerikSpreadsheet Data="@FileData"
+                    OnDownload="@OnSpreadsheetDownload"
+                    OnOpen="@OnSpreadsheetOpen">
+</TelerikSpreadsheet>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private byte[] FileData { get; set; }
+
+    private void OnSpreadsheetDownload(SpreadsheetDownloadEventArgs args)
+    {
+        args.FileName = $"telerik-spreadsheet-{DateTime.Now.ToString("HH-mm-ss")}";
+
+        var log = $"<div><strong>OnDownload event</strong> fired for file <strong>{args.FileName}.xlsx</strong></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnSpreadsheetOpen(SpreadsheetOpenEventArgs args)
+    {
+        var file = args.Files.First();
+
+        var log = $"<div><strong>OnOpen event</strong> fired for file <strong>{file.Name}</strong> with size <strong>{file.Size.ToString("n0")}</strong> bytes.</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FileData = Convert.FromBase64String(SpreadsheetConstants.SampleFileBase64);
+
+        await base.OnInitializedAsync();
+    }
+
+    #region Event Log
+
+    private string EventLog { get; set; } = string.Empty;
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    #endregion Event Log
+}

@@ -1,0 +1,285 @@
+@page "/gridlayout/overview"
+
+@using TelerikBlazorDemos.Models
+
+<div class="grid-layout-container">
+    <TelerikGridLayout RowSpacing="6px" ColumnSpacing="10px" Class="grid-layout">
+        <GridLayoutRows>
+            <GridLayoutRow Height="20px"></GridLayoutRow>
+            <GridLayoutRow Height="100px"></GridLayoutRow>
+            <GridLayoutRow Height="100px"></GridLayoutRow>
+            <GridLayoutRow Height="20px"></GridLayoutRow>
+            <GridLayoutRow Height="580px"></GridLayoutRow>
+        </GridLayoutRows>
+        <GridLayoutColumns>
+            <GridLayoutColumn Width="270px"></GridLayoutColumn>
+            <GridLayoutColumn Width="270px"></GridLayoutColumn>
+            <GridLayoutColumn Width="300px"></GridLayoutColumn>
+        </GridLayoutColumns>
+        <GridLayoutItems>
+            <GridLayoutItem Row="1" Column="1" ColumnSpan="3">
+                <div class="grid-layout-heading k-text-uppercase k-font-weight-bold k-text-inverse">Trending articles</div>
+            </GridLayoutItem>
+            <GridLayoutItem Row="2" Column="1">
+                <GridLayoutArticleHeader Position="1" Article="@Articles.ElementAt(0)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="2" Column="2">
+                <GridLayoutArticleHeader Position="2" Article="@Articles.ElementAt(1)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="2" Column="3">
+                <GridLayoutArticleHeader Position="3" Article="@Articles.ElementAt(2)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="3" Column="1">
+                <GridLayoutArticleHeader Position="4" Article="@Articles.ElementAt(3)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="3" Column="2">
+                <GridLayoutArticleHeader Position="5" Article="@Articles.ElementAt(4)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="3" Column="3">
+                <GridLayoutArticleHeader Position="6" Article="@Articles.ElementAt(5)"></GridLayoutArticleHeader>
+            </GridLayoutItem>
+            <GridLayoutItem Row="4" Column="1" ColumnSpan="2">
+                <div class="grid-layout-heading k-text-uppercase k-font-weight-bold k-text-inverse">Recommended for you</div>
+            </GridLayoutItem>
+            <GridLayoutItem Row="5" Column="1" ColumnSpan="2">
+                @foreach (var item in RecommendedArticles)
+                {
+                    <GridLayoutCardArticle Article="@item"></GridLayoutCardArticle>
+                }
+            </GridLayoutItem>
+            <GridLayoutItem Row="4" Column="3">
+                <div class="grid-layout-heading k-text-uppercase k-font-weight-bold k-text-inverse">Events this month</div>
+            </GridLayoutItem>
+            <GridLayoutItem Row="5" Column="3">
+                <TelerikCalendar Class="event-calendar"
+                                 Value="@SelectedDate"
+                                 ValueChanged="@SelectedDateChanged"
+                                 BottomView="@CalendarView.Year"></TelerikCalendar>
+                <div class="grid-layout-heading k-text-uppercase k-font-weight-bold mt-sm k-text-inverse"> Discover more </div>
+
+                <div class="k-chip-list k-chip-list-md">
+                    @foreach (var tag in Tags)
+                    {
+                        <div class="k-chip k-chip-md k-rounded-full k-chip-solid k-chip-solid-base">
+                            <span class="k-chip-content">
+                                <span class="k-chip-label k-text-inverse">@tag</span>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </GridLayoutItem>
+        </GridLayoutItems>
+    </TelerikGridLayout>
+</div>
+
+<style>
+    .grid-layout-container {
+        overflow-x: auto;
+    }
+
+    .grid-layout {
+        width: 800px;
+        margin: auto;
+    }
+
+    .grid-layout-heading {
+        font-size: 14px;
+        color: #424242;
+        line-height: 20px;
+    }
+
+    .article, .card-article {
+        gap: 10px;
+        color: #656565;
+    }
+
+    .card-article {
+        padding: 8px;
+        margin-bottom: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 3px;
+    }
+
+    .article-description,
+    .card-article-description {
+        gap: 6px;
+    }
+
+    .article-position {
+        margin-right: 10px;
+        font-size: 32px;
+        font-weight: bold;
+        color: #ff6358;
+    }
+
+    .article-description .title {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: bold;
+    }
+
+    .card-article-description .title {
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: bold;
+    }
+
+    .card-article-description .sub-title {
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .article-description .author {
+        font-size: 12px;
+        line-height: 20px;
+    }
+
+    .card-article-description .author {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 20px;
+        padding-bottom: 4px;
+    }
+
+    .article-description .date,
+    .card-article-description .date {
+        font-size: 10px;
+        line-height: 20px;
+    }
+
+    .article-description .separator,
+    .card-article-description .separator {
+        padding: 0 5px;
+    }
+
+    .card-article-image {
+        width: 225px;
+    }
+
+    .card-article .photo-text {
+        text-align: right;
+        font-style: italic;
+        font-size: 10px;
+        opacity: 0.7;
+    }
+
+    .k-chip-list {
+        padding: 5px 0px;
+        grid-gap: 6px;
+        margin-top: 8px;
+    }
+
+    .k-chip {
+        color: #656565;
+        margin: 0px;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .event-calendar {
+        width: 100%;
+    }
+</style>
+
+@code {
+    public List<GridLayoutArticle> Articles { get; set; }
+    public List<GridLayoutArticle> RecommendedArticles { get; set; }
+    public DateTime SelectedDate { get; set; } = DateTime.Now;
+    public List<string> Tags { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GenerateData();
+
+        Tags = new List<string>() { "Art", "Books", "Film", "Gaming", "Music", "Photography", "Podcasts", "TV", "Visual Design" };
+    }
+
+    public void SelectedDateChanged(DateTime date)
+    {
+        SelectedDate = date;
+        GenerateData();
+    }
+
+    public void GenerateData()
+    {
+        var rnd = new Random();
+
+        Articles =  new List<GridLayoutArticle>()
+        {
+            new GridLayoutArticle()
+            {
+                Author = "Camille Fournier",
+                Title = "An incomplete list of skills senior engineers need",
+                MinsLength = 4,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Mathew MacDonald",
+                Title = "A Closer Look at 5 New Features in C# 10",
+                MinsLength = 6,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Camille Fournier",
+                Title = "20 Necessary Requirements of a Perfect Laptop",
+                MinsLength = 4,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Anton Subbotin",
+                Title = "Top 3 Coding Teachers",
+                MinsLength = 5,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Umair Haque",
+                Title = "Welcome to a New Dark Age",
+                MinsLength = 9,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Jean Campbell",
+                Title = "An Open Letter to Millennials",
+                MinsLength = 7,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+        }.OrderBy(a => a.Date).ToList();
+
+        RecommendedArticles = new List<GridLayoutArticle>()
+        {
+            new GridLayoutArticle()
+            {
+                Author = "Andreas Maier",
+                Title = "Pattern Recognition and the Fundamental Methods of Machine Learning",
+                SubTitle = "A Comprehensive Overview of Classical ML Methods",
+                MinsLength = 7,
+                ImageUrl = "images/grid-layout/machine-learning.jpg",
+                ImageRight = "Photo by Nathan Van Egmond on Unsplash",
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Whet Moser",
+                Title = "Our Climate Change Future Looks Like the Everglades",
+                SubTitle = "We are all Florida man.",
+                MinsLength = 6,
+                ImageUrl = "images/grid-layout/climate.jpg",
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Ali Tamaseb",
+                Title = "What I Learned About Startups by Collecting 30,000 Data Points",
+                SubTitle = "I spend 4 years conducting one of the largest studies.",
+                MinsLength = 8,
+                ImageUrl = "images/grid-layout/books.jpg",
+                ImageRight = "Photo by Firmbee.com on Unsplash",
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, rnd.Next(1, 28))
+            }
+        }.OrderBy(a => a.Date).ToList();
+    }
+}

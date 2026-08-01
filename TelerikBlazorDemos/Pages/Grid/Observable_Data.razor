@@ -1,0 +1,58 @@
+@page "/grid/observable-data"
+
+@using System.Collections.ObjectModel
+
+@inject WeatherService weatherService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Add a forecast to the Grid">
+        <TelerikButton OnClick="@AddForecast">Add</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Remove a forecast from the Grid">
+        <TelerikButton OnClick="@RemoveForecast">Remove</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData Height="400px">
+    <GridColumns>
+        <GridColumn Field="Date" Width="250px" />
+        <GridColumn Field="Tmax" Title="Max Temp." />
+        <GridColumn Field="Tmin" Title="Min Temp." />
+        <GridColumn Field="Wind" />
+        <GridColumn Field="Rain" />
+        <GridColumn Field="Snow" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public ObservableCollection<WeatherDto> GridData { get; set; }
+    public IEnumerable<WeatherDto> AllData { get; set; }
+    Random rand;
+
+    protected override void OnInitialized()
+    {
+        rand = new Random();
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        AllData = weatherService.GetWeathers();
+        var forecasts = AllData.Take(6);
+
+        GridData = new ObservableCollection<WeatherDto>(forecasts);
+    }
+
+    void AddForecast()
+    {
+        GridData.Add(AllData.ElementAt(rand.Next(100)));
+    }
+
+    void RemoveForecast()
+    {
+        if (GridData.Count > 0)
+        {
+            GridData.RemoveAt(0);
+        }
+    }
+}

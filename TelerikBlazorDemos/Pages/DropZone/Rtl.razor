@@ -1,0 +1,22 @@
+@page "/dropzone/rtl"
+
+@inject NavigationManager NavigationManager
+
+<TelerikDropZone Id="dropzone-id" />
+
+<TelerikUpload DropZoneId="dropzone-id"
+               SaveUrl="@UploadSaveUrl"
+               RemoveUrl="@UploadRemoveUrl"
+               MaxFileSize="@( 16 * 1024 * 1024 )">
+</TelerikUpload>
+
+@code {
+    private string UploadSaveUrl => ToAbsoluteUrl("api/upload/save");
+
+    private string UploadRemoveUrl => ToAbsoluteUrl("api/upload/remove");
+
+    private string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+}

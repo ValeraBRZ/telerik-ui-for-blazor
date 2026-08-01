@@ -1,0 +1,79 @@
+@page "/fonticon/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key"
+                             ValueField="Value"
+                             Data="@Sizes"
+                             @bind-Value="@Size"
+                             Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key"
+                             ValueField="Value"
+                             Data="@ThemeColors"
+                             @bind-Value="@ThemeColor"
+                             Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Icon">
+        <TelerikComboBox Data="@IconNames"
+                         Value="@SelectedIconName"
+                         Filterable="true"
+                         ValueChanged="@((string newIconName) => OnIconChanged(newIconName))">
+        </TelerikComboBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikFontIcon ThemeColor="@ThemeColor" Size="@Size" Icon="@Icon"/>
+</div>
+
+@code {
+    public string Size { get; set; } = ThemeConstants.FontIcon.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.FontIcon.ThemeColor.Base;
+    public string SelectedIconName { get; set; } = nameof(FontIcon.Play);
+    public FontIcon Icon { get; set; } = FontIcon.Play;
+    public List<string> IconNames { get; set; } = Enum.GetValues(typeof(FontIcon)).Cast<FontIcon>().Select(x => x.ToString()).ToList();
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "XSmall", ThemeConstants.FontIcon.Size.ExtraSmall },
+        { "Small", ThemeConstants.FontIcon.Size.Small },
+        { "Medium", ThemeConstants.FontIcon.Size.Medium },
+        { "Large", ThemeConstants.FontIcon.Size.Large },
+        { "XLarge", ThemeConstants.FontIcon.Size.ExtraLarge },
+        { "XXLarge", ThemeConstants.FontIcon.Size.ExtraExtraLarge },
+        { "XXXLarge", ThemeConstants.FontIcon.Size.ExtraExtraExtraLarge }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.FontIcon.ThemeColor.Base },
+        { "Primary", ThemeConstants.FontIcon.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.FontIcon.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.FontIcon.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.FontIcon.ThemeColor.Info },
+        { "Success", ThemeConstants.FontIcon.ThemeColor.Success },
+        { "Warning", ThemeConstants.FontIcon.ThemeColor.Warning },
+        { "Error", ThemeConstants.FontIcon.ThemeColor.Error },
+        { "Dark", ThemeConstants.FontIcon.ThemeColor.Dark },
+        { "Light", ThemeConstants.FontIcon.ThemeColor.Light },
+        { "Inverse", ThemeConstants.FontIcon.ThemeColor.Inverse }
+    };
+
+    private void OnIconChanged(string newIconName)
+    {
+        var result = Enum.TryParse(newIconName, out FontIcon parsedFontIcon);
+
+        Icon = result ? parsedFontIcon : FontIcon.Play;
+        SelectedIconName = Icon.ToString();
+    }
+}

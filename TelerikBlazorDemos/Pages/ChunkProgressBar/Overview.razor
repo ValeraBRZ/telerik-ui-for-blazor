@@ -1,0 +1,49 @@
+@page "/chunkprogressbar/overview"
+
+<div class="wrapper">
+    <div class="progress-info-title">Morning routine</div>
+    <div class="progress-info-version">@(ProgressValue / ProgressStep)/@(TaskCount) tasks done</div>
+
+    <div>
+        <TelerikButton OnClick="@DecreaseProgress" FillMode="@(ThemeConstants.Button.FillMode.Flat)" Enabled="@(ProgressValue != 0)">
+            <TelerikSvgIcon Icon="@SvgIcon.Rewind" />
+        </TelerikButton>
+
+        <TelerikChunkProgressBar Value="@ProgressValue" ChunkCount="@TaskCount" AriaLabel="Chunk Progress Bar"></TelerikChunkProgressBar>
+
+        <TelerikButton OnClick="@IncreaseProgress" FillMode="@(ThemeConstants.Button.FillMode.Flat)" Enabled="@(ProgressValue != 100)">
+            <TelerikSvgIcon Icon="@SvgIcon.Forward" />
+        </TelerikButton>
+    </div>
+</div>
+
+@code {
+    public const int TaskCount = 5;
+    public const int ProgressStep = 100 / TaskCount;
+    public double ProgressValue = 3 * ProgressStep;
+
+    public void DecreaseProgress()
+    {
+        ProgressValue -= ProgressStep;
+    }
+
+    public void IncreaseProgress()
+    {
+        ProgressValue += ProgressStep;
+    }
+}
+
+<style>
+    .wrapper {
+        text-align: center;
+    }
+
+    .progress-info-title {
+        font-weight: bold;
+        font-size: 1.4em;
+    }
+
+    .progress-info-version {
+        margin-bottom: 1em;
+    }
+</style>

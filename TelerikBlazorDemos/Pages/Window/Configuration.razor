@@ -1,0 +1,91 @@
+@page "/window/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Content Persistence">
+        <label><TelerikCheckBox @bind-Value="@PersistContent" /> Persist Content on Minimize</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Close Behavior">
+        <label><TelerikCheckBox @bind-Value="@CloseOnOverlayClick" /> Close on Modal Overlay Click</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Visibility">
+        <TelerikButton OnClick="@(() => Visible = !Visible)">Toggle Window</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikWindow Class="demo-window"
+               Width="500px"
+               Height="300px"
+               Modal="true"
+               @bind-Visible="@Visible"
+               CloseOnOverlayClick="@CloseOnOverlayClick"
+               PersistContent="@PersistContent"
+               ThemeColor="@SelectedThemeColor">
+    <WindowTitle>
+        Blazor Window
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">Window ThemeColor</legend>
+
+                <div class="k-form-field">
+                    <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+                        @foreach (var color in WindowThemeColors)
+                        {
+                            <ButtonGroupToggleButton Selected="@( SelectedThemeColor == color )"
+                                                     SelectedChanged="@( (bool newSelected) => OnThemeColorSelect(newSelected, color) )">
+                                @GetThemeColorName(color)
+                            </ButtonGroupToggleButton>
+                        }
+                    </TelerikButtonGroup>
+                </div>
+            </fieldset>
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">Dynamic Content</legend>
+
+                <label class="k-form-field">
+                    <span>User Input</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid"
+                           placeholder="Type and minimize Window to compare content persistence modes" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    public bool Visible { get; set; } = true;
+    public bool PersistContent { get; set; } = true;
+    public bool CloseOnOverlayClick { get; set; } = true;
+    private string SelectedThemeColor { get; set; } = ThemeConstants.Window.ThemeColor.Primary;
+
+    private void OnThemeColorSelect(bool newSelected, string newThemeColor)
+    {
+        if (newSelected)
+        {
+            SelectedThemeColor = newThemeColor;
+        }
+    }
+
+    private string GetThemeColorName(string themeColor)
+    {
+        if (!string.IsNullOrEmpty(themeColor))
+        {
+            return themeColor;
+        }
+
+        return "none (default)";
+    }
+
+    List<string> WindowThemeColors = new List<string>() {
+        string.Empty,
+        ThemeConstants.Window.ThemeColor.Primary,
+        ThemeConstants.Window.ThemeColor.Dark,
+        ThemeConstants.Window.ThemeColor.Light
+    };
+}

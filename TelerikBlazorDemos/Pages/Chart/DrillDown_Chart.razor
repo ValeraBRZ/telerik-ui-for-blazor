@@ -1,0 +1,210 @@
+@page "/chart/drilldown-chart"
+
+<TelerikChartBreadcrumb ChartId="@ChartId"></TelerikChartBreadcrumb>
+
+<TelerikChart Id="@ChartId"
+              @ref="@ChartRef">
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Column"
+                     Name="Battery EVs registered in 2022"
+                     Data="@Data"
+                     Field="@nameof(CompanyModel.Sales)"
+                     CategoryField="@nameof(CompanyModel.Name)"
+                     DrilldownField="@nameof(CompanyModel.Details)">
+        </ChartSeries>
+    </ChartSeriesItems>
+    <ChartLegend Position="@ChartLegendPosition.Bottom"/>
+</TelerikChart>
+
+@code {
+    private const string ChartId = "drilldown-chart";
+    private List<CompanyModel> Data { get; set; } = new List<CompanyModel>();
+    private TelerikChart ChartRef { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Data = GetSeriesData();
+        return base.OnInitializedAsync();
+    }
+
+    private static List<CompanyModel> GetSeriesData()
+    {
+        var data = new List<CompanyModel>()
+        {
+            new CompanyModel()
+            {
+                Name = "Tesla",
+                Sales = 314159,
+                Details = new ChartSeriesDescriptor()
+                {
+                    Name = "Tesla Sales By Model",
+                    Type = ChartSeriesType.Column,
+                    Field = nameof(ProductModel.Sales),
+                    CategoryField = nameof(ProductModel.Name),
+                    DrilldownField = nameof(ProductModel.Details),
+                    Data = new List<ProductModel>()
+                    {
+                        new ProductModel()
+                        {
+                            Name = "Model 3",
+                            Sales = 225350,
+                            Details = new ChartSeriesDescriptor()
+                            {
+                                Name = "Model 3 Sales by Quater",
+                                Type = ChartSeriesType.Column,
+                                Field = nameof(ProductModel.Sales),
+                                CategoryField = nameof(ProductModel.Name),
+                                Data = new List<QuaterModel>()
+                                {
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q1",
+                                        Sales = 97436
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q2",
+                                        Sales = 103436
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q3",
+                                        Sales = 113461
+                                    }
+                                }
+                            }
+                        },
+                        new ProductModel()
+                        {
+                            Name = "Model Y",
+                            Sales = 40159,
+                            Details = new ChartSeriesDescriptor()
+                            {
+                                Name = "Model Y Sales by Quater",
+                                Type = ChartSeriesType.Column,
+                                Field = nameof(ProductModel.Sales),
+                                CategoryField = nameof(ProductModel.Name),
+                                Data = new List<QuaterModel>()
+                                {
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q1",
+                                        Sales = 7738
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q2",
+                                        Sales = 11932
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q3",
+                                        Sales = 20489
+                                    }
+                                }
+                            }
+                        },
+                    }
+                }
+            },
+            new CompanyModel()
+            {
+                Name = "VW" ,
+                Sales = 112645,
+                Details = new ChartSeriesDescriptor()
+                {
+                    Name = "VW Sales By Model",
+                    Type = ChartSeriesType.Column,
+                    Field = nameof(ProductModel.Sales),
+                    CategoryField = nameof(ProductModel.Name),
+                    DrilldownField = nameof(ProductModel.Details),
+                    Data = new List<ProductModel>()
+                    {
+                        new ProductModel()
+                        {
+                            Name = "ID.3",
+                            Sales = 60274,
+                            Details = new ChartSeriesDescriptor()
+                            {
+                                Name = "ID.3 Sales by Quater",
+                                Type = ChartSeriesType.Column,
+                                Field = nameof(ProductModel.Sales),
+                                CategoryField = nameof(ProductModel.Name),
+                                Data = new List<QuaterModel>()
+                                {
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q1",
+                                        Sales = 18164
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q2",
+                                        Sales = 20087
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q3",
+                                        Sales = 22023
+                                    }
+                                }
+                            }
+                        },
+                        new ProductModel()
+                        {
+                            Name = "ID.4",
+                            Sales = 20302,
+                            Details = new ChartSeriesDescriptor()
+                            {
+                                Name = "ID.4 Sales by Quater",
+                                Type = ChartSeriesType.Column,
+                                Field = nameof(ProductModel.Sales),
+                                CategoryField = nameof(ProductModel.Name),
+                                Data = new List<QuaterModel>()
+                                {
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q1",
+                                        Sales = 5841
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q2",
+                                        Sales = 6715
+                                    },
+                                    new QuaterModel
+                                    {
+                                        Name="2022 Q3",
+                                        Sales = 7746
+                                    }
+                                }
+                            }
+                        },
+                    }
+                }
+            }
+        };
+        return data;
+    }
+
+    public class CompanyModel
+    {
+        public string Name { get; set; }
+        public decimal Sales { get; set; }
+        public ChartSeriesDescriptor Details { get; set; }
+    }
+
+    public class ProductModel
+    {
+        public string Name { get; set; }
+        public decimal Sales { get; set; }
+        public ChartSeriesDescriptor Details { get; set; }
+    }
+
+    public class QuaterModel
+    {
+        public string Name { get; set; }
+        public decimal Sales { get; set; }
+        public ChartSeriesDescriptor Details { get; set; }
+    }
+}

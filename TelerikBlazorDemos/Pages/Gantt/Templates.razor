@@ -1,0 +1,260 @@
+@page "/gantt/templates"
+
+@using System.Globalization;
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+
+<TelerikGantt Data="@Data"
+              Width="100%"
+              @bind-TreeListWidth="@TreeListWidth"
+              Height="500px"
+              RowHeight="60"
+              IdField="Id"
+              ParentIdField="ParentId"
+              @bind-View="@SelectedView"
+              OnUpdate="@UpdateTask"
+              OnDelete="@DeleteTask"
+              OnCreate="@CreateTask">
+    <TooltipTemplate Context="Context">
+        <div class="tooltip">
+            <h3>@(((TooltipTemplateContext)Context).Title)</h3>
+            <div class="percent">
+                <TelerikSvgIcon Icon="@SvgIcon.Rotate" />
+                @(((TooltipTemplateContext)Context).DataAttributes["percent"])%
+            </div>
+            <br />
+            <div class="start">
+                <TelerikSvgIcon Icon="@SvgIcon.Play" />
+                @(((TooltipTemplateContext)Context).DataAttributes["start"])
+            </div>
+            <br />
+            <div class="end">
+                <TelerikSvgIcon Icon="@SvgIcon.Stop" />
+                @(((TooltipTemplateContext)Context).DataAttributes["end"])
+            </div>
+        </div>
+    </TooltipTemplate>
+    <TaskTemplate>
+        @{ var widthPercentage = $"{Math.Min(100, context.PercentComplete * 100)}%"; }
+        <div class="wrapper">
+            <span class="task-title">@context.Title</span>
+            <div class="progress" style="width:@(widthPercentage)"></div>
+        </div>
+    </TaskTemplate>
+    <GanttColumns>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Title="Task Title"
+                     Width="220px">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Width="100px"
+                     Title="Status"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+        <GanttCommandColumn Title="Commands" Width="100px">
+            <GanttCommandButton AriaLabel="Add item" Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton AriaLabel="Delete item" Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+        </GanttCommandColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView>
+            <DayHeaderTemplate>
+                <strong>@string.Format("Date: {0:MMMM dd}", context)</strong>
+            </DayHeaderTemplate>
+            <TimeHeaderTemplate>
+                @string.Format("{0:HH:mm}", context)
+            </TimeHeaderTemplate>
+        </GanttDayView>
+        <GanttWeekView>
+            <WeekHeaderTemplate>
+                @{
+                    CultureInfo cul = CultureInfo.CurrentCulture;
+
+                    var firstDayWeek = cul.Calendar.GetWeekOfYear(
+                        context,
+                        CalendarWeekRule.FirstDay,
+                        DayOfWeek.Monday);
+
+                    int weekNumber = cul.Calendar.GetWeekOfYear(
+                            context,
+                            CalendarWeekRule.FirstDay,
+                            DayOfWeek.Monday);
+
+                    int year = weekNumber == 52 && context.Month == 1 ? context.Year - 1 : context.Year;
+                }
+                <strong>@string.Format("Week: {0} of year {1}", weekNumber, year)</strong>
+            </WeekHeaderTemplate>
+            <DayHeaderTemplate>
+                @string.Format("{0:dddd}", context)
+            </DayHeaderTemplate>
+        </GanttWeekView>
+        <GanttMonthView>
+            <MonthHeaderTemplate>
+                <strong>@string.Format("Month: {0:MMMM} of year {1}", context, context.Year)</strong>
+            </MonthHeaderTemplate>
+            <WeekHeaderTemplate>
+                @string.Format("{0:dd}", context)
+            </WeekHeaderTemplate>
+        </GanttMonthView>
+        <GanttYearView>
+            <YearHeaderTemplate>
+                <strong>@string.Format("Year: {0:yyyy}", context)</strong>
+            </YearHeaderTemplate>
+            <MonthHeaderTemplate>
+                @string.Format("{0:MMM}", context)
+            </MonthHeaderTemplate>
+        </GanttYearView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type"
+                           OnCreate="@CreateDependency"
+                           OnDelete="@DeleteDependency">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code{
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public GanttView SelectedView { get; set; } = GanttView.Week;
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+
+    private async Task CreateTask(GanttCreateEventArgs args)
+    {
+        GanttTaskService.CreateTask(args.Item as GanttTaskDto, args.ParentItem as GanttTaskDto);
+        await LoadDataAsync();
+    }
+
+    private async Task UpdateTask(GanttUpdateEventArgs args)
+    {
+        var updatedItem = (GanttTaskDto)args.Item;
+        var parentItem = (GanttTaskDto)args.ParentItem;
+
+        GanttTaskService.UpdateTask(updatedItem, parentItem);
+
+        UpdateDependencies(args);
+
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private void UpdateDependencies(GanttUpdateEventArgs args)
+    {
+        args?.CreatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.CreateDependency((int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.UpdatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.UpdateDependency(x.DataItem as GanttDependencyDto, (int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.DeletedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.DeleteDependency((x.DataItem as GanttDependencyDto).Id);
+        });
+    }
+
+    private async Task DeleteTask(GanttDeleteEventArgs args)
+    {
+        GanttTaskService.DeleteTask(args.Item as GanttTaskDto);
+        await LoadDataAsync();
+    }
+
+    private async Task CreateDependency(GanttDependencyCreateEventArgs args)
+    {
+        GanttDependencyService.CreateDependency((int)args.PredecessorId, (int)args.SuccessorId, (int)args.Type);
+        await LoadDependenciesAsync();
+    }
+
+    private async Task DeleteDependency(GanttDependencyDeleteEventArgs args)
+    {
+        GanttDependencyService.DeleteDependency((args.Item as GanttDependencyDto).Id);
+        await LoadDependenciesAsync();
+    }
+}
+
+<style>
+    .tooltip {
+        width: 190px;
+        padding: 10px;
+    }
+
+    .percent .k-icon {
+        color: gold;
+        padding: 4px;
+        font-size: 20px;
+    }
+
+    .start .k-icon {
+        color: forestgreen;
+        padding: 5px;
+    }
+
+    .end .k-icon {
+        color: crimson;
+        padding: 5px;
+    }
+
+    .k-task-template {
+        height: 100%;
+        padding: 0 !important;
+    }
+
+    .task-title {
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+    .wrapper {
+        padding: 8px;
+        color: #fff;
+    }
+
+    .k-task-template .wrapper > * {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .progress {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 4px;
+        background: rgba(0, 0, 0, .7);
+    }
+</style>

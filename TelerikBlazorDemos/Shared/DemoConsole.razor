@@ -1,0 +1,29 @@
+@{
+    var descr = new MarkupString(EventLog);
+
+    <div class="kd-example-console">
+        <div class="header">
+            <span class="title">CONSOLE</span>
+            <span class="clear kd-text-secondary" @onclick="@OnClearClick">Clear log</span>
+        </div>
+        <div class="console">
+            @descr
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string EventLog { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearLogClick { get; set; }
+
+    public void OnClearClick()
+    {
+        if (OnClearLogClick.HasDelegate)
+        {
+            OnClearLogClick.InvokeAsync(null);
+        }
+    }
+}

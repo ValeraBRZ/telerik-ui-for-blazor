@@ -1,0 +1,79 @@
+@page "/splitbutton/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@RoundedOptions" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikSplitButton Icon="@SvgIcon.Clipboard"
+                    FillMode="@FillMode"
+                    Rounded="@Rounded"
+                    Size="@Size"
+                    ThemeColor="@ThemeColor">
+    <SplitButtonContent>Paste</SplitButtonContent>
+
+    <SplitButtonItems>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardText">Paste Text</SplitButtonItem>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardCode">Paste as HTML</SplitButtonItem>
+        <SplitButtonItem Icon="@SvgIcon.ClipboardMarkdown">Paste Markdown</SplitButtonItem>
+    </SplitButtonItems>
+
+    <SplitButtonSettings>
+        <SplitButtonPopupSettings Height=""></SplitButtonPopupSettings>
+    </SplitButtonSettings>
+</TelerikSplitButton>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.SplitButton.FillMode.Solid;
+    public string Rounded { get; set; } = ThemeConstants.SplitButton.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.SplitButton.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.SplitButton.ThemeColor.Base;
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.SplitButton.FillMode.Solid },
+        { "Flat", ThemeConstants.SplitButton.FillMode.Flat },
+        { "Outline", ThemeConstants.SplitButton.FillMode.Outline },
+        { "Link", ThemeConstants.SplitButton.FillMode.Link }
+    };
+
+    public Dictionary<string, string> RoundedOptions { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.SplitButton.Rounded.Small },
+        { "Medium", ThemeConstants.SplitButton.Rounded.Medium },
+        { "Large", ThemeConstants.SplitButton.Rounded.Large },
+        { "Full", ThemeConstants.SplitButton.Rounded.Full }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.SplitButton.Size.Small },
+        { "Medium", ThemeConstants.SplitButton.Size.Medium },
+        { "Large", ThemeConstants.SplitButton.Size.Large }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.SplitButton.ThemeColor.Base },
+        { "Primary", ThemeConstants.SplitButton.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.SplitButton.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.SplitButton.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.SplitButton.ThemeColor.Info },
+        { "Success", ThemeConstants.SplitButton.ThemeColor.Success },
+        { "Warning", ThemeConstants.SplitButton.ThemeColor.Warning },
+        { "Error", ThemeConstants.SplitButton.ThemeColor.Error },
+        { "Dark", ThemeConstants.SplitButton.ThemeColor.Dark },
+        { "Light", ThemeConstants.SplitButton.ThemeColor.Light },
+        { "Inverse", ThemeConstants.SplitButton.ThemeColor.Inverse }
+    };
+}

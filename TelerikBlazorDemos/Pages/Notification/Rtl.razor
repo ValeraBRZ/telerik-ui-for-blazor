@@ -1,0 +1,63 @@
+@page "/notification/rtl"
+
+<TelerikNotification @ref="NotificationComponent"
+                     Class="demo-notification"
+                     HorizontalPosition="@NotificationHorizontalPosition.Center"
+                     VerticalPosition="@NotificationVerticalPosition.Top">
+</TelerikNotification>
+
+@code {
+    TelerikNotification NotificationComponent { get; set; }
+
+    void ShowNotifications()
+    {
+        NotificationComponent.Show(new NotificationModel
+        {
+            Text = "The password isn't right. Can we help you recover your password?",
+            ThemeColor = "error",
+            CloseAfter = 0
+        });
+        NotificationComponent.Show(new NotificationModel
+        {
+            Text = "Looks like you've exceeded your limit. Need an upgrade?",
+            ThemeColor = "warning",
+            CloseAfter = 0
+        });
+        NotificationComponent.Show(new NotificationModel
+        {
+            Text = "Items added to card. Yay!",
+            ThemeColor = "success",
+            CloseAfter = 0
+        });
+        NotificationComponent.Show(new NotificationModel
+        {
+            Text = "We've updated a few things. Check the patch notes!",
+            ThemeColor = "info",
+            CloseAfter = 0
+        });
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        ShowNotifications();
+        base.OnAfterRender(firstRender);
+    }
+}
+
+<style>
+    .demo-notification {
+        position: absolute;
+    }
+
+    .demo-notification .k-notification {
+        width: 530px;
+    }
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+
+    #demo-runner {
+        height: 320px;
+    }
+</style>

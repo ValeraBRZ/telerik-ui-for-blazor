@@ -1,0 +1,217 @@
+@namespace TelerikBlazorDemos.Pages
+
+@using Microsoft.AspNetCore.Http;
+@using Microsoft.AspNetCore.Localization
+@using System.Globalization
+
+@inject IHostEnvironment HostEnvironment
+@inject NavigationManager NavigationManager
+
+<!DOCTYPE html>
+<html class="kd-mode" data-is-dark="false" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/blazor-ui/" />
+    @if (HostEnvironment.IsStaging())
+    {
+        <meta name="robots" content="noindex, nofollow">
+    }
+
+    <TelerikBlazorDemos.Shared.SeoMetadata></TelerikBlazorDemos.Shared.SeoMetadata>
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+
+    @if (!IsMarketingPage && (HostEnvironment.IsStaging() || HostEnvironment.IsProduction()))
+    {
+        <link rel="preconnect" href="https://d6vtbcy3ong79.cloudfront.net" /> @* Telerik.com Header and Footer *@
+        <link rel="preload" href="https://d6vtbcy3ong79.cloudfront.net/fonts/latest/metric/Metric-Light.woff2" as="font" crossorigin="anonymous" />
+        <link rel="preload" href="https://d6vtbcy3ong79.cloudfront.net/fonts/latest/metric/Metric-Medium.woff2" as="font" crossorigin="anonymous" />
+        <link rel="preload" href="https://d6vtbcy3ong79.cloudfront.net/fonts/latest/metric/Metric-Regular.woff2" as="font" crossorigin="anonymous" />
+        <link rel="preload" href="https://d6vtbcy3ong79.cloudfront.net/fonts/latest/metric/Metric-Semibold.woff2" as="font" crossorigin="anonymous" />
+        <link rel="preconnect" href="https://stats.g.doubleclick.net">
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://geolocation.onetrust.com" />
+        <link rel="preconnect" href="https://cdn.cookielaw.org" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    }
+
+    @* See demo site setup information at https://github.com/telerik/blazor/wiki/Onboarding#demo-site *@
+    <link href="assets/css/bundle-all.min.css" rel="stylesheet" />
+    <link href="https://progressdevsupport.blob.core.windows.net/support-ops/feedback-form/pro/style.css" rel="stylesheet" />
+    <script src="https://progressdevsupport.blob.core.windows.net/support-ops/feedback-form/pro/index.min.js"></script>
+
+    @* To serve local CSS files, see https://github.com/telerik/kendo-docs-demos-assets *@
+    @*<link href="https://127.0.0.1:8080/styles/demos/blazor/bundle-all.min.css" rel="stylesheet" />
+    <link href="https://127.0.0.1:8080/styles/feedback-form/styles.min.css" rel="stylesheet" />
+    <script src="https://127.0.0.1:8080/scripts/feedback-form/index.min.js" ></script>*@
+
+    <link id="kendoCss" rel="stylesheet preload" as="style" type="text/css"
+          href="css/themes/default-ocean-blue.css" />
+
+    <link id="utilsCss" rel="stylesheet preload" as="style" type="text/css"
+          href="https://blazor.cdn.telerik.com/themes/12.3.0/utils/all.css" />
+
+    <link rel="stylesheet preload" as="style" type="text/css" href="https://unpkg.com/@@progress/kendo-font-icons@latest/dist/index.css" />
+
+    <link rel="stylesheet" type="text/css" href="https://d6vtbcy3ong79.cloudfront.net/fonts/2.0.0/css/metric.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/flex.css" />
+    <link rel="stylesheet" type="text/css" href="css/custom.css?themebuilder-banner-responsive" />
+</head>
+<body>
+    <app>
+        <Routes @rendermode="@RenderMode.InteractiveServer" />
+    </app>
+
+    @* Early script placement prevents flickering on dark theme restore *@
+    <script src="js/themeManager.js?@typeof(TelerikRootComponent).Assembly.GetName().Version"></script>
+    <script>window.theme.appTheme.init();</script>
+
+    <div id="blazor-error-ui" class="text-center">
+        @if (HostEnvironment.IsStaging() || HostEnvironment.IsProduction())
+        {
+            <div>
+                An error has occurred. This application may no longer respond until reloaded.
+            </div>
+        }
+        else if (HostEnvironment.IsDevelopment())
+        {
+            <div>
+                An unhandled exception has occurred. See browser dev tools for details.
+                <br />
+                If you are running this locally, make sure to use the base path: <a href="/blazor-ui/">/blazor-ui/</a>
+            </div>
+        }
+        else
+        {
+            <div>
+                <a href class="reload">
+                    Reload
+                    <span class="k-icon k-svg-icon k-svg-i-bold">
+                        <svg viewBox="0 0 512 512"><path d="M480 288c0 123.7-100.3 224-224 224S32 411.7 32 288 132.3 64 256 64V0l160 96-160 96v-64c-88.2 0-160 71.8-160 160s71.8 160 160 160 160-71.8 160-160c0-29.1-7.8-56.4-21.5-80l55.5-32c19.1 32.9 30 71.2 30 112z"></path></svg>
+                    </span>
+                </a>
+            </div>
+        }
+    </div>
+
+    <script src="_framework/blazor.web.js" autostart="false" defer></script>
+    <script src="_content/Telerik.UI.for.Blazor/js/telerik-blazor.js?@typeof(TelerikRootComponent).Assembly.GetName().Version" defer></script>
+
+    @if (HostEnvironment.EnvironmentName.Contains("JSDebug"))
+    {
+        <script type="module" src="http://localhost:3124/main-vite.js"></script>
+    }
+
+    <script src="js/helpers.js?updated20251128" defer></script>
+    <script src="js/refresh-page.js" defer></script>
+    <script src="js/telerik-cdn-loader.js" defer></script>
+    <script src="js/prettify.js" defer></script>
+    <script src="js/codeManager.js" defer></script>
+    <script src="js/download-upload-files.js" defer></script>
+    <script src="js/focus-component.js" defer></script>
+    <script src="js/google-search-service.js" defer></script>
+    <script src="js/google-analytics.js" defer></script>
+    <script src="js/carousel.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Blazor.start();
+        });
+    </script>
+
+    @if (!IsMarketingPage && (HostEnvironment.IsStaging() || HostEnvironment.IsProduction()))
+    {
+        <!-- GDPR cookie consent -->
+        <script src="https://cdn.cookielaw.org/consent/3dfce4f2-dab6-4128-9f33-df7e0597da82/otSDKStub.js"
+                data-language="en"
+                type="text/javascript"
+                charset="UTF-8"
+                data-domain-script="3dfce4f2-dab6-4128-9f33-df7e0597da82"></script>
+        <!-- End GDPR cookie consent -->
+        <!-- Google Tag Manager -->
+        <script type="text/plain" class="optanon-category-1">
+            (function() {
+            function isMobile() {
+            var result = false;
+            var matches = [
+            /(Windows Phone(?: OS)?)\s(\d+)\.(\d+(\.\d+)?)/,
+            /(Silk)\/(\d+)\.(\d+(\.\d+)?)/,
+            /(Android|Android.*(?:Opera|Firefox).*?\/)\s*(\d+)\.?(\d+(\.\d+)?)?/,
+            /(iPhone|iPod).*OS\s+(\d+)[\._]([\d\._]+)/,
+            /(iPad).*OS\s+(\d+)[\._]([\d_]+)/,
+            /(MeeGo).+NokiaBrowser\/(\d+)\.([\d\._]+)/,
+            /(webOS)\/(\d+)\.(\d+(\.\d+)?)/,
+            /(BlackBerry|BB10).*?Version\/(\d+)\.(\d+(\.\d+)?)/,
+            /(PlayBook).*?Tablet\s*OS\s*(\d+)\.(\d+(\.\d+)?)/,
+            /(MSIE)\s+(\d+)\.(\d+(\.\d+)?)/,
+            /(tizen).*?Version\/(\d+)\.(\d+(\.\d+)?)/i,
+            /(sailfish).*rv:(\d+)\.(\d+(\.\d+)?).*firefox/i,
+            /(Mobile).*rv:(\d+)\.(\d+(\.\d+)?).*Firefox/
+            ];
+            for (var i = 0; i < matches.length; i++) {
+            result = matches[i].test(window.navigator.userAgent);
+            if (result) {
+            break;
+            }
+            }
+            return result;
+            }
+
+            if (isMobile()) {
+            window._gaq = window._gaq || [];
+            window._gaq.push(['_setAccount', "UA-111455-1"],
+            ['_setDomainName', '.telerik.com'],
+            ['_addIgnoredRef', 'telerik.com'],
+            ['_trackPageview']);
+
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = '//stats.g.doubleclick.net/dc.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            } else {
+            (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+            'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-6X92');
+            }
+            })();
+        </script>
+        <!-- End Google Tag Manager -->
+    }
+</body>
+</html>
+
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; }
+
+    private string currentUri;
+    private bool IsMarketingPage;
+
+    protected override void OnInitialized()
+    {
+        currentUri = NavigationManager.Uri;
+        IsMarketingPage = currentUri.Contains("marketing", StringComparison.OrdinalIgnoreCase);
+        NavigationManager.LocationChanged += OnLocationChanged;
+
+        HttpContext?.Response?.Cookies?.Append(CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(
+                new RequestCulture(CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture)));
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        currentUri = e.Location;
+        IsMarketingPage = currentUri.Contains("marketing", StringComparison.OrdinalIgnoreCase);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

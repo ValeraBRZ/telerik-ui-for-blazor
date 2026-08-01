@@ -1,0 +1,84 @@
+@page "/listview/templates"
+
+@inject DestinationService DestinationService
+
+<TelerikListView Data=@ListViewData
+                 Height="600px">
+    <HeaderTemplate>
+        Top European destinations
+    </HeaderTemplate>
+    <Template>
+        <div>
+            <div class="k-card">
+                <img src="images/destinations/@context.ImageUrl" alt="@context.Title" />
+                <div class="k-card-body">
+                    <h4 class="k-card-title">@context.Title</h4>
+                    <h5 class="k-card-subtitle">@context.Description</h5>
+                </div>
+            </div>
+        </div>
+    </Template>
+    <FooterTemplate>
+        <div class="footer-note">Source: wwww.european.destinations</div>
+    </FooterTemplate>
+</TelerikListView>
+
+@code {
+    public IEnumerable<DestinationDto> ListViewData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    // sample Read operation
+    private void LoadData()
+    {
+        ListViewData = DestinationService.GetDestinations();
+    }
+}
+
+<style>
+    .k-listview-header,
+    .k-listview-content {
+        padding: 20px;
+    }
+
+    .k-listview-footer {
+        border-width: 0;
+        padding: 10px 20px;
+    }
+
+    .k-listview-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 180px);
+        gap: 30px 20px;
+    }
+
+    .k-card {
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .k-card-body {
+        padding: 10px 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 0.85em;
+    }
+
+    .footer-note {
+        text-align: right;
+        font-style: italic;
+        font-size: 0.85em;
+    }
+</style>

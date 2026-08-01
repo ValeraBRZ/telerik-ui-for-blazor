@@ -1,0 +1,101 @@
+@page "/treeview/item-formatting"
+
+<style>
+    .k-disabled .k-treeview-leaf {
+        color: #a19f9d
+    }
+
+    .red-node .k-treeview-leaf {
+        color: lightcoral;
+    }
+</style>
+
+<TelerikTreeView OnItemRender="@OnItemRender"
+                 CheckBoxMode="TreeViewCheckBoxMode.Multiple"
+                 Data="@FlatData"
+                 @bind-ExpandedItems="@ExpandedItems"/>
+
+@code {
+    public void OnItemRender(TreeViewItemRenderEventArgs args)
+    {
+        var item = args.Item as TreeItem;
+
+        if (item != null)
+        {
+            if (item.Text == "site.css")
+            {
+                args.Class = "k-disabled"; // disables the whole item
+            }
+
+            if (item.Id == 5)
+            {
+                args.Class = "red-node"; // changes the specific item color
+            }
+        }
+    }
+
+    IEnumerable<TreeItem> FlatData { get; set; }
+    IEnumerable<object> ExpandedItems { get; set; } = new List<TreeItem>();
+
+    protected override void OnInitialized()
+    {
+        FlatData = GetFlatData();
+
+        ExpandedItems = FlatData.Where(x => x.HasChildren == true).ToList();
+    }
+
+    List<TreeItem> GetFlatData()
+    {
+        List<TreeItem> items = new List<TreeItem>();
+
+        items.Add(new TreeItem()
+            {
+                Id = 1,
+                Text = "wwwroot",
+                ParentId = null,
+                HasChildren = true,
+                Icon = SvgIcon.Folder
+            });
+        items.Add(new TreeItem()
+            {
+                Id = 2,
+                Text = "css",
+                ParentId = 1,
+                HasChildren = true,
+                Icon = SvgIcon.Css
+            });
+        items.Add(new TreeItem()
+            {
+                Id = 3,
+                Text = "js",
+                ParentId = 1,
+                HasChildren = true,
+                Icon = SvgIcon.Js
+            });
+        items.Add(new TreeItem()
+            {
+                Id = 4,
+                Text = "site.css",
+                ParentId = 2,
+                Icon = SvgIcon.Css
+            });
+        items.Add(new TreeItem()
+            {
+                Id = 5,
+                Text = "scripts.js",
+                ParentId = 3,
+                Icon = SvgIcon.Js
+            });
+
+        return items;
+    }
+
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? ParentId { get; set; }
+        public bool HasChildren { get; set; }
+        public ISvgIcon Icon { get; set; }
+    }
+}

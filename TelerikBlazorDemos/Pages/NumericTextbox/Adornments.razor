@@ -1,0 +1,46 @@
+@page "/numerictextbox/adornments"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikNumericTextBox @bind-Value="@NumericTextBoxValue"
+                           Placeholder="Enter length"
+                           ShowPrefixSeparator="@ShowPrefixSeparator"
+                           ShowSuffixSeparator="@ShowSuffixSeparator">
+        <NumericTextBoxPrefixTemplate>
+            <TelerikDropDownList Data="@LengthUnits"
+                                 @bind-Value="@SelectedLengthUnit"
+                                 FillMode="@ThemeConstants.DropDownList.FillMode.Flat">
+                <DropDownListSettings>
+                    <DropDownListPopupSettings Height="auto" />
+                </DropDownListSettings>
+            </TelerikDropDownList>
+        </NumericTextBoxPrefixTemplate>
+        <NumericTextBoxSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           Icon="@SvgIcon.X"
+                           OnClick="@(()=> NumericTextBoxValue = null)"></TelerikButton>
+        </NumericTextBoxSuffixTemplate>
+    </TelerikNumericTextBox>
+</div>
+
+@code {
+    private double? NumericTextBoxValue { get; set; }
+
+    private List<string> LengthUnits { get; set; } = new List<string>() { "mm", "cm", "m", "km" };
+
+    private string SelectedLengthUnit { get; set; } = "mm";
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

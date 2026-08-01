@@ -1,0 +1,231 @@
+@page "/popup/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Animation">
+        <div>
+            <label>
+                Duration
+                <TelerikNumericTextBox @bind-Value="@PopupAnimationDuration" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Type
+                <TelerikDropDownList @bind-Value="@PopupAnimationType" Data="@AnimationTypes" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Anchor Alignment">
+        <div>
+            <label>
+                Horizontal Align
+                <TelerikDropDownList @bind-Value="@PopupAnchorHorizontalAlign" Data="@PopupAnchorHorizontalAligns" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Vertical Align
+                <TelerikDropDownList @bind-Value="@PopupAnchorVerticalAlign" Data="@PopupAnchorVerticalAligns" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Popup Alignment">
+        <div>
+            <label>
+                Horizontal Align
+                <TelerikDropDownList @bind-Value="@PopupHorizontalAlign" Data="@PopupHorizontalAligns" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Vertical Align
+                <TelerikDropDownList @bind-Value="@PopupVerticalAlign" Data="@PopupVerticalAligns" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Offsets">
+        <div>
+            <label>
+                Horizontal Offset
+                <TelerikNumericTextBox @bind-Value="@PopupHorizontalOffset" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Vertical Offset
+                <TelerikNumericTextBox @bind-Value="@PopupVertivalOffset" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Collision">
+        <div>
+            <label>
+                Horizontal Collision
+                <TelerikDropDownList @bind-Value="@PopupHorizontalCollision" Data="@PopupCollisions" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Vertical Collision
+                <TelerikDropDownList @bind-Value="@PopupVerticalCollision" Data="@PopupCollisions" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Dimensions">
+        <div>
+            <label>
+                Width
+                <TelerikNumericTextBox @bind-Value="@PopupWidth" Min="0" Max="5000" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Height
+                <TelerikNumericTextBox @bind-Value="@PopupHeight" Min="0" Max="5000" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<ul>
+    <li>The <strong>anchor alignment</strong> determines which part of the anchor will touch the Popup.</li>
+    <li>The <strong>Popup alignment</strong> determines which part of the Popup will touch the anchor.</li>
+    <li><strong>Flip collision</strong> allows the Popup to use the opposite alignment if it's too close to the viewport boundary.</li>
+    <li><strong>Fit collision</strong> allows the Popup to shift its position in order to be fully visible.</li>
+</ul>
+
+<TelerikPopup @ref="@PopupRef"
+              AnimationDuration="@PopupAnimationDuration"
+              AnimationType="@PopupAnimationType"
+              AnchorHorizontalAlign="@PopupAnchorHorizontalAlign"
+              AnchorSelector=".popup-anchor"
+              AnchorVerticalAlign="@PopupAnchorVerticalAlign"
+              Class="scrollable-popup"
+              Height="@($"{PopupHeight}px")"
+              HorizontalAlign="@PopupHorizontalAlign"
+              HorizontalCollision="@PopupHorizontalCollision"
+              HorizontalOffset="@PopupHorizontalOffset"
+              VerticalAlign="@PopupVerticalAlign"
+              VerticalCollision="@PopupVerticalCollision"
+              VerticalOffset="@PopupVertivalOffset"
+              Width="@($"{PopupWidth}px")">
+    <div class="popup-container">
+        <span>I popped!</span>
+        <TelerikButton Icon="@SvgIcon.XCircle" OnClick="@TogglePopup">Close</TelerikButton>
+    </div>
+</TelerikPopup>
+
+<style>
+    .configurator label {
+        display: inline-block;
+        width: min-content;
+        min-width: 11em;
+    }
+
+    .scrollable-popup .k-popup {
+        overflow: auto;
+    }
+
+    .popup-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        align-items: center;
+        justify-content: center;
+        padding: 1em;
+    }
+</style>
+
+<div style="text-align: center;">
+    <TelerikButton OnClick="@TogglePopup"
+                   Class="popup-anchor"
+                   Icon="@SvgIcon.QuestionCircle"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Toggle Popup</TelerikButton>
+</div>
+
+@code {
+    #region Popup Instance and Parameters
+
+    private TelerikPopup PopupRef { get; set; } = null!;
+
+    private int PopupAnimationDuration { get; set; } = 300;
+    private AnimationType PopupAnimationType { get; set; } = AnimationType.SlideDown;
+    private PopupAnchorHorizontalAlign PopupAnchorHorizontalAlign { get; set; } = PopupAnchorHorizontalAlign.Left;
+    private PopupAnchorVerticalAlign PopupAnchorVerticalAlign { get; set; } = PopupAnchorVerticalAlign.Bottom;
+    private PopupHorizontalAlign PopupHorizontalAlign { get; set; } = PopupHorizontalAlign.Left;
+    private PopupVerticalAlign PopupVerticalAlign { get; set; } = PopupVerticalAlign.Top;
+    private int PopupHorizontalOffset { get; set; }
+    private int PopupVertivalOffset { get; set; }
+    private PopupCollision PopupHorizontalCollision { get; set; } = PopupCollision.Flip;
+    private PopupCollision PopupVerticalCollision { get; set; } = PopupCollision.Flip;
+    private int PopupHeight { get; set; } = 100;
+    private int PopupWidth { get; set; } = 300;
+
+    #endregion Popup Instance and Parameters
+
+    #region Popup Visibility Control
+
+    private bool PopupVisible { get; set; }
+
+    private void TogglePopup()
+    {
+        if (PopupVisible)
+        {
+            PopupRef.Hide();
+            PopupVisible = false;
+        }
+        else
+        {
+            PopupRef.Show();
+            PopupVisible = true;
+        }
+    }
+
+    #endregion Popup Visibility Control
+
+    #region Popup Parameter Options
+
+    private readonly List<AnimationType> AnimationTypes = new List<AnimationType>() {
+        AnimationType.SlideDown,
+        AnimationType.SlideUp,
+        AnimationType.SlideLeft,
+        AnimationType.SlideRight,
+        AnimationType.Fade,
+        AnimationType.PushDown,
+        AnimationType.PushUp,
+        AnimationType.PushLeft,
+        AnimationType.PushRight,
+        AnimationType.ZoomIn
+    };
+
+    private readonly List<PopupAnchorHorizontalAlign> PopupAnchorHorizontalAligns = new List<PopupAnchorHorizontalAlign>() {
+        PopupAnchorHorizontalAlign.Left,
+        PopupAnchorHorizontalAlign.Center,
+        PopupAnchorHorizontalAlign.Right
+    };
+
+    private readonly List<PopupAnchorVerticalAlign> PopupAnchorVerticalAligns = new List<PopupAnchorVerticalAlign>() {
+        PopupAnchorVerticalAlign.Bottom,
+        PopupAnchorVerticalAlign.Center,
+        PopupAnchorVerticalAlign.Top
+    };
+
+    private readonly List<PopupHorizontalAlign> PopupHorizontalAligns = new List<PopupHorizontalAlign>() {
+        PopupHorizontalAlign.Left,
+        PopupHorizontalAlign.Center,
+        PopupHorizontalAlign.Right
+    };
+
+    private readonly List<PopupVerticalAlign> PopupVerticalAligns = new List<PopupVerticalAlign>() {
+        PopupVerticalAlign.Bottom,
+        PopupVerticalAlign.Center,
+        PopupVerticalAlign.Top
+    };
+
+    private readonly List<PopupCollision> PopupCollisions = new List<PopupCollision>() {
+        PopupCollision.Fit,
+        PopupCollision.Flip
+    };
+
+    #endregion Popup Parameter Options
+}

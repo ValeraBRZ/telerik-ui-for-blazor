@@ -1,0 +1,124 @@
+@page "/filemanager/toolbar"
+
+@inject FlatFileService FileService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enable View Details Tool">
+        <TelerikCheckBox @bind-Value="@EnableDetails" Id="viewDetailsTool" OnChange="@OnEnableDetailsChange"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="viewDetailsTool">Enable Details</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikFileManager @ref="@FileManagerRef"
+                    Data="@Data"
+                    @bind-Path="@DirectoryPath"
+                    @bind-SelectedItems="@SelectedItems"
+                    OnUpdate="@OnUpdate"
+                    OnDelete="@OnDelete"
+                    OnDownload="@OnDownload"
+                    Height="400px">
+    <FileManagerToolBar>
+        <FileManagerToolBarSearchTool></FileManagerToolBarSearchTool>
+        <FileManagerToolBarCustomTool>
+            <TelerikButtonGroup>
+                <ButtonGroupButton Icon="@SvgIcon.SelectAll" OnClick="@SelectAll">Select all</ButtonGroupButton>
+                <ButtonGroupButton Icon="@SvgIcon.Form" OnClick="@SelectNone">Select none</ButtonGroupButton>
+            </TelerikButtonGroup>
+        </FileManagerToolBarCustomTool>
+        <FileManagerToolBarSpacer></FileManagerToolBarSpacer>
+        @if (EnableDetails)
+        {
+            <FileManagerToolBarViewDetailsTool></FileManagerToolBarViewDetailsTool>
+        }
+        <FileManagerToolBarFileViewTool></FileManagerToolBarFileViewTool>
+    </FileManagerToolBar>
+</TelerikFileManager>
+
+@code {
+    private TelerikFileManager<FlatFileEntry> FileManagerRef;
+
+    private bool EnableDetails { get; set; }
+
+    [CascadingParameter]
+    private DialogFactory Dialogs { get; set; }
+
+    private string DirectoryPath { get; set; }
+
+    private List<FlatFileEntry> Data { get; set; } = new List<FlatFileEntry>();
+
+    private IEnumerable<FlatFileEntry> SelectedItems { get; set; } = new List<FlatFileEntry>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DirectoryPath = FileManagerConstants.FilesPath;
+
+        await LoadDataAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = await FileService.ReadFlatDataAsync();
+    }
+
+    private void SelectAll()
+    {
+        if (DirectoryPath == "file-manager-files")
+        {
+            SelectedItems = new List<FlatFileEntry>(Data.FindAll(x => x.ParentId == null || x.ParentId == "file-manager-files"));
+        }
+        else
+        {
+            SelectedItems = Data
+            .Where(entry => entry.Path == DirectoryPath)
+            .SelectMany(entry => Data.Where(child => child.ParentId == entry.Id));
+        }
+    }
+
+    private void SelectNone()
+    {
+        SelectedItems = new List<FlatFileEntry>();
+    }
+
+    private async Task OnUpdate(FileManagerUpdateEventArgs args)
+    {
+        var item = (FlatFileEntry)args.Item;
+
+        if (item.IsDirectory)
+        {
+            // avoid changes to folders intentionally
+            // simulate access rights violation, name clash, etc.
+            args.IsCancelled = true;
+
+            await Dialogs.AlertAsync(
+                title: "Information",
+                text: "The specified folder name is not accepted.");
+        }
+        else
+        {
+            await FileService.UpdateAsync(args.Item as FlatFileEntry, DirectoryPath);
+
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task OnDelete(FileManagerDeleteEventArgs args)
+    {
+        await FileService.DeleteAsync(args.Item as FlatFileEntry);
+
+        await LoadDataAsync();
+    }
+
+    private async Task OnDownload(FileManagerDownloadEventArgs args)
+    {
+        await FileService.DownloadAsync(args);
+
+        await LoadDataAsync();
+    }
+
+    private void OnEnableDetailsChange()
+    {
+        FileManagerRef.Rebind();
+    }
+}

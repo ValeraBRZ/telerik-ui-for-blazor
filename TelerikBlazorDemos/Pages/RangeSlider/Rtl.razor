@@ -1,0 +1,16 @@
+@page "/rangeslider/rtl"
+
+<div class="demo-section auto" dir="rtl">
+    <TelerikRangeSlider @bind-StartValue="@Value"
+                        @bind-EndValue="@EndValue"
+                        SmallStep="10"
+                        LargeStep="20"
+                        Min="0"
+                        Max="100"
+                        Width="400px">
+    </TelerikRangeSlider>
+</div>
+@code {
+    public int Value { get; set; } = 50;
+    public int EndValue { get; set; } = 70;
+}

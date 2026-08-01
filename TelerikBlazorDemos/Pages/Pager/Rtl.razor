@@ -1,0 +1,40 @@
+@page "/pager/rtl"
+
+<TelerikPager @bind-PageSize="@PageSize"
+              Total="@Total"
+              ButtonCount="@ButtonsCount"
+              @bind-Page="@Page"
+              PageSizes="@PageSizes"
+              InputType="@InputType">
+</TelerikPager>
+
+@code {
+    private int _buttonsCount = 7;
+    public int Page { get; set; } = 3;
+    public int PageSize { get; set; } = 10;
+    public int Total { get; set; } = 210;
+    public int ButtonsCount
+    {
+        get
+        {
+            return _buttonsCount;
+        }
+        set
+        {
+            if (value < 1)
+            {
+                _buttonsCount = 1;
+            }
+            else
+            {
+                _buttonsCount = value;
+            }
+        }
+    }
+
+    public PagerInputType InputType { get; set; }
+    public bool ShowPageSizeDropdown { get; set; }
+
+    public List<int?> PageSizes => ShowPageSizeDropdown ? new List<int?> { 5, 10, 25, 50, null } : null;
+    public List<PagerInputType> InputTypes => new List<PagerInputType> { PagerInputType.Buttons, PagerInputType.Input };
+}

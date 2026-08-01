@@ -1,0 +1,15 @@
+@page "/slider/rtl"
+
+<div class="demo-section auto" dir="rtl">
+    <TelerikSlider @bind-Value="@Value"
+                   SmallStep="10"
+                   LargeStep="20"
+                   Min="0"
+                   Max="100"
+                   Width="400px">
+    </TelerikSlider>
+</div>
+
+@code {
+    public int Value { get; set; } = 50;
+}

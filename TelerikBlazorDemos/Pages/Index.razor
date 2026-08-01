@@ -1,0 +1,721 @@
+@layout HomeLayout;
+@page "/"
+
+@implements IDisposable
+
+@inject IDemoList DemoListService
+@inject IJSRuntime js
+@inject NavigationManager NavigationManager
+
+<SearchHeader SearchQueryChanged="@ShowSearchResults" SearchQuery="@SearchQuery" />
+
+<main role="main" class="kd-demos-home kd-blazor">
+    @if (!string.IsNullOrEmpty(SearchQuery))
+    {
+        <SearchResults SearchQuery="@SearchQuery" OnSeachClear="@( () => SearchQuery = string.Empty )" />
+    }
+    else
+    {
+        <div class="kd-main-wrapper">
+            <h1>Telerik UI for Blazor Examples &amp; Demos</h1>
+
+            <p>Explore a variety of Telerik UI for Blazor examples and demos, showcasing powerful AI-enhanced components and tools, including grids, charts, and forms, designed to help you quickly build modern, high-performance Blazor applications with intelligent functionality.</p>
+
+            <h2>Popular Telerik UI for Blazor Elements</h2>
+
+            <ul class="kd-tabstrip-popular">
+                <li class="@GetPopularTabClass(0)" @onclick="@(() => SelectPopularTab(0, "popular-components"))" data-id="popular-components">Components</li>
+                <li class="@GetPopularTabClass(1)" @onclick="@(() => SelectPopularTab(1, "popular-ai"))" data-id="popular-ai">AI Components & Features</li>
+                <li class="@GetPopularTabClass(2)" @onclick="@(() => SelectPopularTab(2, "popular-bb"))" data-id="popular-bb">Building Blocks</li>
+                <li class="@GetPopularTabClass(3)" @onclick="@(() => SelectPopularTab(3, "popular-templates"))" data-id="popular-templates">Templates</li>
+                <li class="@GetPopularTabClass(4)" @onclick="@(() => SelectPopularTab(4, "popular-sample-apps"))" data-id="popular-sample-apps">Sample Apps</li>
+            </ul>
+
+            <div class="kd-popular kd-seo-hidden @GetPopularTabClass(0)">
+                <h3 class="kd-seo-hidden">Components</h3>
+
+                <ul class="kd-popular-c">
+                    <li>
+                        <a href="grid/overview">
+                            <span>
+                                <img src="images/home-page/popular-c-grid.svg" alt="Data Grid" />
+                                <div class="status-label">
+                                    <span class="k-badge k-badge-sm k-badge-solid k-badge-inline tag tag-updated">Updated</span>
+                                </div>
+                            </span>
+                            <span>Data Grid</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="chart/overview">
+                            <span><img src="images/home-page/popular-c-chart.svg" alt="Chart" /></span>
+                            <span>Chart</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="scheduler/overview">
+                            <span><img src="images/home-page/popular-c-scheduler.svg" alt="Scheduler" /></span>
+                            <span>Scheduler</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="form/overview">
+                            <span><img src="images/home-page/popular-c-form.svg" alt="Form" /></span>
+                            <span>Form</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dockmanager/overview">
+                            <span><img src="images/home-page/popular-c-dockmanager.svg" alt="DockManager" /></span>
+                            <span>DockManager</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="spreadsheet/overview">
+                            <span><img src="images/home-page/popular-c-spreadsheet.svg" alt="Spreadsheet" /></span>
+                            <span>Spreadsheet</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="aiprompt/overview">
+                            <span><img src="images/home-page/popular-c-aiprompt.svg" alt="AIPrompt" /></span>
+                            <span>AIPrompt</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="editor/overview">
+                            <span><img src="images/home-page/popular-c-editor.svg" alt="Editor" /></span>
+                            <span>Editor</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="kd-see-all">
+                    <a href="#all-components" class="kd-see-below">
+                        See All Components
+                    </a>
+                </p>
+            </div>
+
+            <div class="kd-popular kd-seo-hidden @GetPopularTabClass(1)">
+                <h3 class="kd-seo-hidden">AI Components & Features</h3>
+
+                <ul class="kd-popular-c">
+                    <li>
+                        <a href="chat/ai-integration" target="_blank">
+                            <span>
+                                <img src="images/aicomponents/Chat_Light_Small.svg" alt="AI Chat" />
+                            </span>
+                            <span class="title">AI Chat</span>
+                            <span class="sub-title">Chat Feature</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="aiprompt/overview" target="_blank">
+                            <span>
+                                <img src="images/aicomponents/AIPrompt_Light_Small.svg" alt="AI Prompt" />
+                            </span>
+                            <span class="title">AI Prompt</span>
+                            <span class="sub-title">UI Component</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="inlineaiprompt/overview" target="_blank">
+                            <span><img src="images/aicomponents/InlineAIPrompt_Light_Small.svg" alt="Inline AI Prompt" /></span>
+                            <span class="title">Inline AI Prompt</span>
+                            <span class="sub-title">UI Component</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="grid/ai-data-operations" target="_blank">
+                            <span>
+                                <img src="images/aicomponents/AI_Data_Operations_Light_Small.svg" alt="AI Data Operations" />
+                                <div class="status-label"><span class="k-badge k-badge-sm k-badge-solid k-badge-inline tag tag-updated">Updated</span></div>
+                            </span>
+                            <span class="title">AI Data Operations</span>
+                            <span class="sub-title">Smart Data Grid Feature</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="grid/ai-highlight" target="_blank">
+                            <span><img src="images/aicomponents/AI_Data_Highlight_Light_Small.svg" alt="AI Data Highlight" /></span>
+                            <span class="title">AI Data Highlight</span>
+                            <span class="sub-title">Smart Data Grid Feature</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="grid/ai-column" target="_blank">
+                            <span><img src="images/aicomponents/AI_Column_Assistant_Light_Small.svg" alt="AI Column Assistant" /></span>
+                            <span class="title">AI Column Assistant</span>
+                            <span class="sub-title">Smart Data Grid Feature</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="editor/ai-integration" target="_blank">
+                            <span><img src="images/aicomponents/Editor_AI_Integration_Light_Small.svg" alt="Editor AI Integration" /></span>
+                            <span class="title">Editor AI Integration</span>
+                            <span class="sub-title">Editor Feature</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="kd-see-all">
+                    <a href="aicomponents/overview" class="kd-see-right">
+                        See All AI Components &amp; Features
+                    </a>
+                </p>
+            </div>
+
+            <div class="kd-popular kd-seo-hidden @GetPopularTabClass(2)">
+                <h3 class="kd-seo-hidden">Building Blocks</h3>
+
+                <ul class="kd-popular-bb">
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/dashboard/dashboard-card/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-dashboard-card.svg" alt="Dashboard Card" /></span>
+                            <span>Dashboard Card</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/hero/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-hero.svg" alt="Hero" /></span>
+                            <span>Hero</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/login/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-login.svg" alt="Login" /></span>
+                            <span>Login</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/dashboard/top-navbar/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-top-navbar.svg" alt="Top Navbar" /></span>
+                            <span>Top Navbar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/stats/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-stats.svg" alt="Stats" /></span>
+                            <span>Stats</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/ai/welcome-ai/" target="_blank">
+                            <span><img src="images/home-page/popular-bb-welcome-ai.svg" alt="Welcome AI" /></span>
+                            <span>Welcome AI</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="kd-see-all">
+                    <a href="https://www.telerik.com/design-system/docs/ui-templates/overview/" target="_blank">
+                        See All Building Blocks
+                    </a>
+                </p>
+            </div>
+
+            <div class="kd-popular kd-seo-hidden @GetPopularTabClass(3)">
+                <h3 class="kd-seo-hidden">Templates</h3>
+
+                <ul class="kd-popular-pt">
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/templates/healthcare-admin/" target="_blank">
+                            <span style="background: #509ede;"><img src="images/home-page/popular-pt-healthcare-admin.png" alt="Healthcare Admin" /></span>
+                            <span>Healthcare Admin</span>
+                            <span>Get a medical dashboard page that provides information about key performance indicators, essential analytics, and real-time data.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/templates/fintech-dashboard/" target="_blank">
+                            <span style="background: #68988e;"><img src="images/home-page/popular-pt-fintech-dashboard.png" alt="Fintech Dashboard" /></span>
+                            <span>Fintech Dashboard</span>
+                            <span>Get a fintech dashboard template tailored to provide key performance metrics and analytics for optimal financial results.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.telerik.com/design-system/docs/ui-templates/templates/real-estate/" target="_blank">
+                            <span style="background: #be8f6a;"><img src="images/home-page/popular-pt-real-estate.png" alt="Real Estate" /></span>
+                            <span>Real Estate</span>
+                            <span>Create a comprehensive real estate listing page to help your customers find and compare properties that suit their needs and budget.</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="kd-see-all">
+                    <a href="https://www.telerik.com/design-system/docs/ui-templates/overview/" target="_blank">
+                        See All Templates
+                    </a>
+                </p>
+            </div>
+
+            <div class="kd-popular kd-seo-hidden @GetPopularTabClass(4)">
+                <h3 class="kd-seo-hidden">Sample Apps</h3>
+
+                <ul class="kd-popular-sa">
+                    <li>
+                        <a href="https://demos.telerik.com/blazor-financial-dashboard" target="_blank">
+                            <span style="background: #f1f2f4;"><img src="images/home-page/popular-sa-financial-dashboard.png" alt="Financial Dashboard Application" /></span>
+                            <span>Financial Dashboard Application</span>
+                            <span>A financial dashboard app that showcases the Telerik Grid, Charts, Drawer, and MediaQuery for Blazor, as well as the Telerik CSS Utilities.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://demos.telerik.com/blazor-dashboard-app/" target="_blank">
+                            <span style="background: #c9c9c9; "><img src="images/home-page/popular-sa-issues-dashboard.png" alt="Issues Dashboard Application" /></span>
+                            <span>Issues Dashboard Application</span>
+                            <span>A sample app that showcases the capabilities of the Telerik Grid and Charts for Blazor.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://demos.telerik.com/blazor-coffee/" target="_blank">
+                            <span style="background: #7a7cc0;"><img src="images/home-page/popular-sa-blazing-coffee.png" alt="Blazing Coffee Application" /></span>
+                            <span>Blazing Coffee Application</span>
+                            <span>Blazing Coffee PWA showcasing the capabilities of the Grid, Charts, TileLayout, and more.</span>
+                        </a>
+                    </li>
+                </ul>
+
+                @*<p class="kd-see-all">
+                    <a href="https://www.telerik.com/support" target="_blank">
+                        See All Sample Apps
+                    </a>
+                </p>*@
+            </div>
+
+            <TelerikBlazorDemos.Shared.CTAPanel />
+        </div>
+
+        <div id="kd-section-all">
+            <div class="kd-main-wrapper">
+                <h2 id="all-components">Explore All 110+ Telerik UI for Blazor Components</h2>
+
+                <p>
+                    110+ premium components, plus four complete, ready-to-use
+                    <a href="https://www.telerik.com/design-system/docs/themes/get-started/introduction/" target="_blank">design themes</a>
+                    (Default, Material, Bootstrap, Fluent),
+                    <a href="https://www.telerik.com/design-system/docs/ui-templates/overview/" target="_blank">page templates and building blocks</a>,
+                    and <a href="https://www.telerik.com/themebuilder" target="_blank">ThemeBuilder</a> tool.
+                </p>
+
+                <ul class="kd-tabstrip-all">
+                    <li class="@GetAllTabClass(0)" @onclick="@(() => SelectAllTab(0, "all-components"))" data-id="all-components">Components</li>
+                    <li class="@GetAllTabClass(1)" @onclick="@(() => SelectAllTab(1, "all-bb"))" data-id="all-bb">Building Blocks</li>
+                    <li class="@GetAllTabClass(2)" @onclick="@(() => SelectAllTab(2, "all-templates"))" data-id="all-templates">Templates</li>
+                    <li style="@(AllTabStripIndex != 0 ? "display: none;" : string.Empty)">
+                        <input @bind="@ComponentFilterQuery" @bind:event="oninput" placeholder="Filter ..." />
+                    </li>
+                </ul>
+            </div>
+
+            <div class="kd-all-wrapper">
+                <div class="kd-main-wrapper">
+                    <div class="kd-all kd-all-c kd-seo-hidden @GetAllTabClass(0)">
+                        <h3 class="kd-seo-hidden">Components</h3>
+
+                        @{
+                            foreach (var componentGroupName in ComponentGroups)
+                            {
+                                //var category = Categories.FirstOrDefault(c => c.Key == componentGroupName);
+                                var category = CategoriesFlat.Where(c => c.Category == componentGroupName).ToList();
+
+                                if (!string.IsNullOrEmpty(ComponentFilterQuery))
+                                {
+                                    category = category.Where(d =>
+                                    {
+                                        string componentName = string.IsNullOrEmpty(d.Text) ? d.Component : d.Text;
+                                        return componentName.ToLowerInvariant().Contains(ComponentFilterQuery.ToLowerInvariant()) ||
+                                                    ComponentFilterQuery.ToLowerInvariant().Contains(componentName.ToLowerInvariant());
+                                    }).ToList();
+                                }
+
+                                if (category.Count() > 0)
+                                {
+                                    <div @key="@category">
+                                        <h4>@componentGroupName</h4>
+
+                                        <ul>
+                                            @foreach (DemoItem component in category)
+                                            {
+                                                string componentName = string.IsNullOrEmpty(component.Text) ? component.Component : component.Text;
+                                                <li @key="@component">
+                                                    <NavLink href="@GetHref(component)">
+                                                        @componentName
+                                                        <DemoFlag Demo="@component" />
+                                                    </NavLink>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="kd-all kd-all-bb kd-seo-hidden @GetAllTabClass(1)">
+                        <h3 class="kd-seo-hidden">Building Blocks</h3>
+
+                        <div>
+                            <h4>Landing Page Blocks</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/cards/" target="_blank">Cards</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/contact-form/" target="_blank">Contact Form</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/features/" target="_blank">Features</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/footer/" target="_blank">Footer</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/hero/" target="_blank">Hero</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/incentives/" target="_blank">Incentives</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/locations/" target="_blank">Locations</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/newsletter/" target="_blank">Newsletter</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/partners/" target="_blank">Partners</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/pricing-section/" target="_blank">Pricing Section</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/stats/" target="_blank">Stats</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/landing-page/testimonials/" target="_blank">Testimonials</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>Dashboard Blocks</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/dashboard/compact-card/" target="_blank">Compact Card</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/dashboard/dashboard-card/" target="_blank">Dashboard Card</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/dashboard/top-navbar/" target="_blank">Top Navbar</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>Listing Page Blocks</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/filter/" target="_blank">Filter</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/flyout-navigation/" target="_blank">Flyout Navigation</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/login/" target="_blank">Login</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/product-card/" target="_blank">Product Card</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/sign-up/" target="_blank">Sign Up</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/listing-page/sorting/" target="_blank">Sorting</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>AI Blocks</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/ai/ai-powered-editor/" target="_blank">AI-Powered Editor</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/ai/conversational-sources/" target="_blank">Conversational Sources</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/building-blocks/ai/welcome-ai/" target="_blank">Welcome AI</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="kd-all kd-all-pt kd-seo-hidden @GetAllTabClass(2)">
+                        <h3 class="kd-seo-hidden">Templates</h3>
+
+                        <div>
+                            <h4>Landing Pages</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/automotive-industry/" target="_blank">Automotive Industry</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/international-bank/" target="_blank">International Bank</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/saas-product/" target="_blank">SaaS Product</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/travel/" target="_blank">Travel</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>Listing Pages</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/fashion-catalog/" target="_blank">Fashion Catalogue</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/real-estate/" target="_blank">Real Estate</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4>Dashboards</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/ai-usage-monitoring/" target="_blank">AI Usage Monitoring</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/fintech-dashboard/" target="_blank">Fintech Dashboard</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/healthcare-admin/" target="_blank">Healthcare Admin</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/machine-manufacturing/" target="_blank">Machine Manufacturing</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/project-tracker/" target="_blank">Project Tracker</a></li>
+                                <li><a href="https://www.telerik.com/design-system/docs/ui-templates/templates/social-management/" target="_blank">Social Media Management</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="kd-main-wrapper">
+                <h3 class="kd-other-demos">Check out other framework examples and demos</h3>
+
+                <ul class="kd-other-demos">
+                    <li class="kd-other-react"><a href="https://www.telerik.com/kendo-react-ui/components/" target="_blank">React</a></li>
+                    <li class="kd-other-angular"><a href="https://www.telerik.com/kendo-angular-ui/components" target="_blank">Angular</a></li>
+                    <li class="kd-other-vue"><a href="https://www.telerik.com/kendo-vue-ui/components" target="_blank">Vue</a></li>
+                    <li class="kd-other-jquery"><a href="https://demos.telerik.com/kendo-ui/" target="_blank">jQuery</a></li>
+                    <li class="kd-other-core"><a href="https://demos.telerik.com/aspnet-core/" target="_blank">ASP.NET Core</a></li>
+                    <li class="kd-other-mvc"><a href="https://demos.telerik.com/aspnet-mvc/" target="_blank">ASP.NET MVC</a></li>
+                    <li class="kd-other-ajax"><a href="https://demos.telerik.com/aspnet-ajax/" target="_blank">ASP.NET AJAX</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="kd-section-more">
+            <div class="kd-main-wrapper">
+                <h2>More Telerik UI for Blazor Resources</h2>
+
+                <div class="kd-more">
+                    <div id="kd-more-thumbs">
+                        <h3>Getting Started</h3>
+
+                        <ul>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/introduction" target="_blank">
+                                    <span><img src="images/home-page/more-intro.svg" alt="Introduction to Telerik UI for Blazor" /></span>
+                                    <span>Intro to Telerik UI for Blazor</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/installation/nuget" target="_blank">
+                                    <span><img src="images/home-page/more-nuget.svg" alt="Set up Telerik NuGet Feed" /></span>
+                                    <span>Set up Telerik NuGet Feed</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/installation/license-key" target="_blank">
+                                    <span><img src="images/home-page/more-license-keys.svg" alt="Set up Telerik License Key" /></span>
+                                    <span>Set up Telerik License Key</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/common-features/data-binding/overview" target="_blank">
+                                    <span><img src="images/home-page/more-data-bind.svg" alt="Data Bind Components" /></span>
+                                    <span>Data Bind Components</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <h3>Styling &amp; Themes</h3>
+
+                        <ul>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/styling-and-themes/custom-theme" target="_blank">
+                                    <span><img src="images/home-page/more-themes.svg" alt="Customizing Themes" /></span>
+                                    <span>Customizing Themes</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/common-features/icons" target="_blank">
+                                    <span><img src="images/home-page/more-icons.svg" alt="Icons" /></span>
+                                    <span>Icons</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/design-system/docs/resources/figma-ui-kits/" target="_blank">
+                                    <span><img src="images/home-page/more-figma.svg" alt="Design Kits for Figma" /></span>
+                                    <span>Design Kits for Figma</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.telerik.com/blazor-ui/documentation/styling-and-themes/themebuilder" target="_blank">
+                                    <span><img src="images/home-page/more-themebuilder.svg" alt="ThemeBuilder" /></span>
+                                    <span>ThemeBuilder</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="kd-more-lists">
+                        <div>
+                            <h3>Common Features</h3>
+
+                            <h4>AI Tools</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/ai/overview" target="_blank">AI Coding Assistant</a></li>
+                            </ul>
+
+                            <h4>Globalization</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/globalization/overview" target="_blank">Overview</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/globalization/localization" target="_blank">Localization</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/globalization/globalization-formats" target="_blank">Globalization Formats</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/globalization/rtl-support" target="_blank">RTL Support</a></li>
+                            </ul>
+
+                            <h4>Accessibility</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/accessibility/overview" target="_blank">Overview</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/accessibility/compliance" target="_blank">Compliance</a></li>
+                            </ul>
+
+                            <h4>Security</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/security/overview" target="_blank">Overview</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/security/faq" target="_blank">FAQ</a></li>
+                            </ul>
+
+                            <h4>Data Binding</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/common-features/data-binding/overview" target="_blank">Overview</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/common-features/data-binding/onread" target="_blank">Using OnRead Event</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3>Project Setup</h3>
+
+                            <h4>Licensing</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/installation/license-key" target="_blank">Install License Key</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/deployment/ci-cd-license-key" target="_blank">License Key in CI and CD</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/troubleshooting/license-key-errors" target="_blank">License Key Errors</a></li>
+                            </ul>
+
+                            <h4>NuGet</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/installation/nuget" target="_blank">Set Up Telerik NuGet</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/troubleshooting/nuget-feed" target="_blank">NuGet Troubleshooting</a></li>
+                            </ul>
+
+                            <h4><a href="https://www.telerik.com/blazor-ui/documentation/upgrade/overview" target="_blank">Keeping up to Date</a></h4>
+
+                            <h4>Extensions</h4>
+
+                            <ul>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/getting-started/vs-integration/introduction" target="_blank">Visual Studio Extension</a></li>
+                                <li><a href="https://www.telerik.com/blazor-ui/documentation/getting-started/vs-code-integration/introduction" target="_blank">VS Code Extension</a></li>
+                            </ul>
+
+                            <h3>Learning</h3>
+
+                            <h4><a href="https://www.telerik.com/blazor-ui/documentation/knowledge-base" target="_blank">Knowledge Base</a></h4>
+                            <h4><a href="https://www.telerik.com/blazor-ui/documentation/getting-started/video-onboarding" target="_blank">Video Onboarding</a></h4>
+                            <h4><a href="https://www.telerik.com/blazor-ui/documentation/troubleshooting/general-issues" target="_blank">Troubleshooting</a></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div id="kd-section-contact-wrapper">
+        <div id="kd-section-contact">
+            <div class="kd-main-wrapper">
+                <h3>Not finding the help you need?</h3>
+
+                <a href="https://www.telerik.com/account/support-tickets" target="_blank">Contact Support</a>
+
+                <img src="images/home-page/contact-ninja.svg" height="160" alt="Telerik UI for Blazor Mascot" />
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="TK-Footer"></div>
+
+@code {
+    //IEnumerable<IGrouping<string, DemoItem>> Categories { get; set; }
+    IEnumerable<DemoItem> CategoriesFlat { get; set; }
+
+    string SearchQuery { get; set; }
+
+    string ComponentFilterQuery { get; set; }
+
+    int PopularTabStripIndex { get; set; } = 0;
+    int AllTabStripIndex { get; set; } = 0;
+
+    readonly string[] ComponentGroups = new string[] {
+        "Data Management",
+        "File Management",
+        "Navigation",
+        "Editors",
+        "Icons",
+        //"Conversational UI",
+        "Labels",
+        "Charts",
+        "Gauges",
+        "Barcodes",
+        "PDF",
+        "Scheduling",
+        "Layout",
+        "Interactivity & UX",
+        "Diagrams and Maps"
+    };
+
+    string GetPopularTabClass(int tabIndex)
+    {
+        return tabIndex == PopularTabStripIndex ? "kd-active" : null;
+    }
+
+    string GetAllTabClass(int tabIndex)
+    {
+        return tabIndex == AllTabStripIndex ? "kd-active" : null;
+    }
+
+    private void SelectPopularTab(int tabIndex, string hashValue)
+    {
+        PopularTabStripIndex = tabIndex;
+        js.InvokeVoidAsync("updateUrlHash", hashValue);
+    }
+
+    private void SelectAllTab(int tabIndex, string hashValue)
+    {
+        AllTabStripIndex = tabIndex;
+        js.InvokeVoidAsync("updateUrlHash", hashValue);
+    }
+
+    void ShowSearchResults(string query)
+    {
+        SearchQuery = query;
+    }
+
+    string GetHref(DemoItem component)
+    {
+        if (string.IsNullOrEmpty(component.Path))
+        {
+            return component.Component.ToLowerInvariant().Replace(" ", "") + "/overview";
+        }
+        else
+        {
+            return component.Path;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        CategoriesFlat = DemoListService.GetAllDemosFlat().OrderBy(d => d.Component).OrderBy(d => d.Text).ToList();
+        //Categories = CategoriesFlat.GroupBy(d => d.Category).ToList();
+
+        base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await js.InvokeVoidAsync("theme.appTheme.disableDark");
+            if (NavigationManager.Uri.Contains("#"))
+            {
+                await js.InvokeVoidAsync("openHomePageTab");
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        _ = js.InvokeVoidAsync("theme.appTheme.restoreDark");
+    }
+}

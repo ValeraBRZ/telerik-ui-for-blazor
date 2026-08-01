@@ -1,0 +1,124 @@
+@page "/chart/donut-chart"
+
+<TelerikChart Height="500px">
+    <ChartTitle Text="Favourite Sports to Watch and Play"></ChartTitle>
+    <ChartLegend Visible="true" Position="ChartLegendPosition.Top"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Donut"
+                     Data="@SportsToPlay"
+                     Field="@nameof(DonutModel.Value)"
+                     CategoryField="@nameof(DonutModel.Category)"
+                     VisibleInLegendField="@nameof(DonutModel.VisibleInLegend)">
+            <ChartSeriesTooltip Visible="true" Context="item">
+                <Template>
+                    Playing @item.Category : @item.Percentage.ToString("P1")
+                </Template>
+            </ChartSeriesTooltip>
+            <ChartSeriesLabels Position="ChartSeriesLabelsPosition.Center"
+                               Visible="true"
+                               Background="transparent"
+                               Template="#= (percentage * 100).toFixed(1) #%">
+            </ChartSeriesLabels>
+        </ChartSeries>
+        <ChartSeries Type="ChartSeriesType.Donut"
+                     Data="@SportsToWatch"
+                     Field="@nameof(DonutModel.Value)"
+                     CategoryField="@nameof(DonutModel.Category)"
+                     VisibleInLegendField="@nameof(DonutModel.VisibleInLegend)">
+            <ChartSeriesTooltip Visible="true" Context="item">
+                <Template>
+                    Watching @item.Category : @item.Percentage.ToString("P1")
+                </Template>
+            </ChartSeriesTooltip>
+            <ChartSeriesLabels Position="ChartSeriesLabelsPosition.Center"
+                               Visible="true"
+                               Background="transparent"
+                               Template="#= (percentage * 100).toFixed(1) #%">
+            </ChartSeriesLabels>
+        </ChartSeries>
+    </ChartSeriesItems>
+</TelerikChart>
+
+@code {
+    public class DonutModel
+    {
+        public string Category { get; set; }
+        public decimal Value { get; set; }
+        public bool VisibleInLegend { get; set; }
+    }
+
+    private List<DonutModel> SportsToWatch = new()
+    {
+        new()
+        {
+            Category = "Basketball",
+            Value = 0.10m,
+            VisibleInLegend = true
+        },
+        new()
+        {
+            Category = "Football",
+            Value = 0.35m,
+            VisibleInLegend = true
+        },
+        new()
+        {
+            Category = "Formula 1",
+            Value = 0.20m,
+            VisibleInLegend = true
+        },
+        new()
+        {
+            Category = "MotoGP",
+            Value = 0.05m,
+            VisibleInLegend = true
+        },
+        new()
+        {
+            Category = "Tennis",
+            Value = 0.20m,
+            VisibleInLegend = true
+        },
+        new()
+        {
+            Category = "Volleyball",
+            Value = 0.10m,
+            VisibleInLegend = true
+        }
+    };
+
+    private List<DonutModel> SportsToPlay = new()
+    {
+        new()
+        {
+            Category = "Basketball",
+            Value = 0.20m
+        },
+        new()
+        {
+            Category = "Football",
+            Value = 0.40m
+        },
+        new()
+        {
+            Category = "Formula 1",
+            Value = 0
+        },
+        new()
+        {
+            Category = "MotoGP",
+            Value = 0
+        },
+        new()
+        {
+            Category = "Tennis",
+            Value = 0.30m
+        },
+        new()
+        {
+            Category = "Volleyball",
+            Value = 0.10m
+        }
+    };
+}

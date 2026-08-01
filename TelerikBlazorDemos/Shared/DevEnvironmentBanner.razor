@@ -1,0 +1,41 @@
+@using System.Timers
+
+@if (isVisible)
+{
+    <div id="staging-environment-banner">
+        This is a development environment
+    </div>
+}
+
+<style>
+    #staging-environment-banner {
+    position: fixed;
+    top: 24%;
+    z-index: 99999;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0.5em 2em;
+    background: #ffda3f;
+    border-radius: 10px;
+    }
+</style>
+
+@code {
+    private const int HIDE_AFTER_DELAY = 10000; // subjectively chosen
+    private bool isVisible = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await HideAfterDelayAsync(HIDE_AFTER_DELAY);
+        }
+    }
+
+    private async Task HideAfterDelayAsync(int delay)
+    {
+        await Task.Delay(delay);
+        isVisible = false;
+        await InvokeAsync(StateHasChanged);
+    }
+}

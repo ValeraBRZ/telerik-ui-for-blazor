@@ -1,0 +1,38 @@
+@page "/reporting-integration/grid-report"
+
+<!-- Source code is available here: https://github.com/telerik/reporting-samples/tree/master/BlazorGridAndReportViewer -->
+
+<TelerikLoaderContainer Visible="@LoaderContainerVisible"></TelerikLoaderContainer>
+
+<div class="demo-alert demo-alert-info">Filter, sort, group the grid, then click the <strong>Report</strong> tab to see the Telerik Reporting take the state of the grid and generate a report with it.</div>
+
+<iframe class="demo-iframe"
+        src="https://demos.telerik.com/blazor-reporting/grid-report"
+        @onload="OnLoad"></iframe>
+
+@code {
+    public bool LoaderContainerVisible { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoaderContainerVisible = true;
+
+        base.OnInitialized();
+    }
+
+    private void OnLoad()
+    {
+        LoaderContainerVisible = false;
+    }
+}
+
+<style>
+    .demo-iframe {
+        border: none;
+        width: 100%;
+        height: 750px;
+    }
+    .theme-builder-dropdown {
+        display: none;
+    }
+</style>

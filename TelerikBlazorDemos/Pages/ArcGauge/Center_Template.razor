@@ -1,0 +1,19 @@
+@page "/arcgauge/center-template"
+
+<div class="demo-section auto">
+    <TelerikArcGauge>
+        <ArcGaugeCenterLabel>
+            <Template>
+                <div><strong>@(context.Pointers[0].Value)%</strong></div>
+                <div>Progress</div>
+            </Template>
+        </ArcGaugeCenterLabel>
+        <ArcGaugeScales>
+            <ArcGaugeScale Min="0" Max="100">
+            </ArcGaugeScale>
+        </ArcGaugeScales>
+        <ArcGaugePointers>
+            <ArcGaugePointer Value="20"></ArcGaugePointer>
+        </ArcGaugePointers>
+    </TelerikArcGauge>
+</div>

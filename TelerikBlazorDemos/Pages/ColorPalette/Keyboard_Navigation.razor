@@ -1,0 +1,10 @@
+@page "/colorpalette/keyboard-navigation"
+
+<div class="demo-section auto">
+    <TelerikColorPalette @bind-Value="@SelectedColor">
+    </TelerikColorPalette>
+</div>
+
+@code {
+    public string SelectedColor { get; set; }
+}

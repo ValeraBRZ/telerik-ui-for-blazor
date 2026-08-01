@@ -1,0 +1,21 @@
+@page "/marketing-campaigns/product-page/spreadsheet"
+
+@layout MainLayout
+
+@using TelerikBlazorDemos.Constants
+
+<div class="kd-marketing-campaign-page">
+    <TelerikSpreadsheet Data="@FileData">
+    </TelerikSpreadsheet>
+</div>
+
+@code {
+    private byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FileData = Convert.FromBase64String(SpreadsheetConstants.SampleFileBase64);
+
+        await base.OnInitializedAsync();
+    }
+}

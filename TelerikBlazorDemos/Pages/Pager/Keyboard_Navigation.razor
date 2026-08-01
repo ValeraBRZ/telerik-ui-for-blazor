@@ -1,0 +1,50 @@
+﻿@page "/pager/keyboard-navigation"
+
+@inject CustomerService customerService
+
+<div class="k-grid">
+    <table>
+        <thead class="k-grid-header">
+            <tr>
+                <th class="k-header" scope="col">@nameof(CustomerDto.ContactName)</th>
+                <th class="k-header" scope="col">@nameof(CustomerDto.ContactTitle)</th>
+                <th class="k-header" scope="col">@nameof(CustomerDto.Address)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var pageData = Data.Skip((Page - 1) * PageSize).Take(PageSize).ToList();
+                foreach (var customer in pageData)
+                {
+                    <tr class="k-master-row">
+                        <td>@customer.ContactName</td>
+                        <td>@customer.ContactTitle</td>
+                        <td>@customer.Address</td>
+                    </tr>
+                }
+             }
+        </tbody>
+    </table>
+</div>
+
+<TelerikPager PageSize="@PageSize" Total="@Data.Count()" ButtonCount="7" @bind-Page="@Page"></TelerikPager>
+
+
+@code {
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public IEnumerable<CustomerDto> Data { get; set; } = Enumerable.Empty<CustomerDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadData();
+
+        await base.OnInitializedAsync();
+    }
+
+    private void LoadData()
+    {
+        Data = customerService.GetCustomers();
+    }
+}
+

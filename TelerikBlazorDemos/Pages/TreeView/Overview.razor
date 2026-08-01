@@ -1,0 +1,95 @@
+@page "/treeview/overview"
+@page "/treeview/index"
+
+<TelerikTreeView Data="@FlatData" @bind-ExpandedItems="@ExpandedItems">
+    <TreeViewBindings>
+        <TreeViewBinding ParentIdField="ParentIdValue"></TreeViewBinding>
+    </TreeViewBindings>
+</TelerikTreeView>
+
+@code {
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? ParentIdValue { get; set; }
+        public bool HasChildren { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool Expanded { get; set; }
+    }
+
+    public IEnumerable<TreeItem> FlatData { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadFlatData();
+    }
+
+    private void LoadFlatData()
+    {
+        List<TreeItem> items = new List<TreeItem>();
+        items.Add(new TreeItem()
+        {
+            Id = 1,
+            Text = "Project",
+            ParentIdValue = null,
+            HasChildren = true,
+            Icon = SvgIcon.Folder
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 2,
+            Text = "Design",
+            ParentIdValue = 1,
+            HasChildren = true,
+            Icon = SvgIcon.Brush
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 3,
+            Text = "Implementation",
+            ParentIdValue = 1,
+            HasChildren = true,
+            Icon = SvgIcon.Folder
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 4,
+            Text = "site.psd",
+            ParentIdValue = 2,
+            HasChildren = false,
+            Icon = SvgIcon.FilePsd
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 5,
+            Text = "index.js",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Js
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 6,
+            Text = "index.html",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Code
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 7,
+            Text = "styles.css",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Css
+        });
+
+        FlatData = items;
+        ExpandedItems = items.Take(3);
+    }
+}

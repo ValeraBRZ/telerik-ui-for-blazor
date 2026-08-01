@@ -1,0 +1,24 @@
+@page "/lineargauge/multiple-pointers"
+
+<div class="demo-section">
+    <TelerikLinearGauge>
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="50">
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="10"
+                                Color="#FFE162"
+                                Shape="@LinearGaugePointerShape.Arrow">
+            </LinearGaugePointer>
+            <LinearGaugePointer Value="20"
+                                Color="#4CD180"
+                                Shape="@LinearGaugePointerShape.Arrow">
+            </LinearGaugePointer>
+            <LinearGaugePointer Value="30"
+                                Color="#017CFF"
+                                Shape="@LinearGaugePointerShape.Arrow">
+            </LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>

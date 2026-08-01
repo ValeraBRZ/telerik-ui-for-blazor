@@ -1,0 +1,39 @@
+@page "/treelist/multi-column-headers"
+
+@inject ProductService productService
+
+<TelerikTreeList Data="@Data"
+                 Pageable="true"
+                 Resizable="true"
+                 Sortable="true">
+    <TreeListColumns>
+        <TreeListColumn Title="Product Info">
+            <Columns>
+                <TreeListColumn Field="@nameof(ProductDto.ProductId)" Title="Id" Width="100px" />
+                <TreeListColumn Field="@nameof(ProductDto.ProductName)" Title="Name" Width="200px" />
+            </Columns>
+        </TreeListColumn>
+
+        <TreeListColumn Field="@nameof(ProductDto.CategoryName)" Title="Category" Width="150px" />
+
+        <TreeListColumn Title="Units Info">
+            <Columns>
+                <TreeListColumn Field="@nameof(ProductDto.UnitsInStock)" Title="Units In Stock" Width="100px" />
+                <TreeListColumn Field="@nameof(ProductDto.UnitsOnOrder)" Title="Units On Order" Width="100px" />
+            </Columns>
+        </TreeListColumn>
+
+        <TreeListColumn Field="@nameof(ProductDto.UnitPrice)" Title="Unit Price" DisplayFormat="{0:C}" Width="200px" />
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = productService.GetProducts();
+
+        base.OnInitialized();
+    }
+}

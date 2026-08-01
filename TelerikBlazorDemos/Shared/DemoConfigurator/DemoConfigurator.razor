@@ -1,0 +1,11 @@
+<div class="configurator">
+    <div class="header">@Header</div>
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public string Header { get; set; } = "Configurator";
+}

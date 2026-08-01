@@ -1,0 +1,71 @@
+@page "/treelist/overview"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Sortable="true"
+                 EditMode="TreeListEditMode.Inline"
+                 FilterMode="@TreeListFilterMode.FilterMenu"
+                 SelectionMode="@TreeListSelectionMode.Multiple"
+                 Resizable="true"
+                 Reorderable="true"
+                 OnCreate="@CreateItem"
+                 OnUpdate="@UpdateItem"
+                 OnDelete="@DeleteItem"
+                 ConfirmDelete="true">
+    <TreeListToolBarTemplate>
+        <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</TreeListCommandButton>
+    </TreeListToolBarTemplate>
+    <TreeListColumns>
+        <TreeListCheckboxColumn SelectChildren="true"></TreeListCheckboxColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+        <TreeListCommandColumn>
+            <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus"></TreeListCommandButton>
+            <TreeListCommandButton Command="Edit" Icon="@SvgIcon.Pencil"></TreeListCommandButton>
+            <TreeListCommandButton Command="Delete" Icon="@SvgIcon.Trash"></TreeListCommandButton>
+            <TreeListCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true"></TreeListCommandButton>
+            <TreeListCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true"></TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void CreateItem(TreeListCommandEventArgs args)
+    {
+        var item = (EmployeeDirectoryDto)args.Item;
+
+        item.ReportsTo = ((EmployeeDirectoryDto)args.ParentItem)?.EmployeeId;
+
+        employeeDirectoryService.CreateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void UpdateItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.UpdateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.DeleteEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+}

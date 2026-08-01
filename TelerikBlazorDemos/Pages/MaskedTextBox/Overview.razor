@@ -1,0 +1,10 @@
+@page "/maskedtextbox/overview"
+
+<MyProfileTemplate SplitTemplate="true" Title="Phone Number">
+    <TelerikMaskedTextBox Id="phone-input" @bind-Value="@PhoneNumber" Mask="(359) 000-000-000"></TelerikMaskedTextBox>
+</MyProfileTemplate>
+
+
+@code {
+    public string PhoneNumber { get; set; } = "359555555555";
+} 

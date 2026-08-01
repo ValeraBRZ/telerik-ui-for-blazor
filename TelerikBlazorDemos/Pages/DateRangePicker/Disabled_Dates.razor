@@ -1,0 +1,19 @@
+@page "/daterangepicker/disabled-dates"
+
+<div class="demo-section">
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            DisabledDates="@disabledDates">
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    List<DateTime> disabledDates { get; set; } = new List<DateTime>()
+    {
+        DateTime.Today.AddDays(2),
+        DateTime.Today.AddDays(3)
+    };
+
+    public DateTime StartValue { get; set; } = DateTime.Today;
+    public DateTime EndValue { get; set; } = DateTime.Today.AddDays(8);
+}

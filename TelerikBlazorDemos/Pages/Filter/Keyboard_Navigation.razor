@@ -1,0 +1,49 @@
+@page "/filter/keyboard-navigation"
+
+@using Telerik.DataSource
+
+<TelerikFilter Value="@Value">
+    <FilterFields>
+        <FilterField Name="ProductId" Type="@(typeof(string))" Label="Product Id" />
+        <FilterField Name="ProductName" Type="@(typeof(string))" Label="Product Name" />
+        <FilterField Name="Available" Type="@(typeof(bool))" Label="Is Available" />
+    </FilterFields>
+</TelerikFilter>
+
+@code {
+    public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor()
+    {
+        LogicalOperator = FilterCompositionLogicalOperator.And,
+        FilterDescriptors = new FilterDescriptorCollection
+        {
+            new FilterDescriptor
+            {
+                Member = "Available",
+                MemberType = typeof(bool),
+                Value = true,
+                Operator = FilterOperator.IsEqualTo
+            },
+            new CompositeFilterDescriptor
+            {
+                LogicalOperator = FilterCompositionLogicalOperator.Or,
+                FilterDescriptors = new FilterDescriptorCollection
+                {
+                    new FilterDescriptor
+                    {
+                        Member = "ProductName",
+                        MemberType = typeof(string),
+                        Value = "Pasta",
+                        Operator = FilterOperator.Contains
+                    },
+                    new FilterDescriptor
+                    {
+                        Member = "ProductName",
+                        MemberType = typeof(string),
+                        Value = "Burger",
+                        Operator = FilterOperator.Contains
+                    }
+                },
+            }
+        }
+    };
+}

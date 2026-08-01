@@ -1,0 +1,32 @@
+@page "/circulargauge/overview"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Change pointer value">
+        <TelerikNumericTextBox @bind-Value="@Value"
+                               Min="0"
+                               Max="100"
+                               Step="10"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikCircularGauge>
+        <CircularGaugeCenterLabel>
+            <Template>
+                @(context.Pointers[0].Value)%
+            </Template>
+        </CircularGaugeCenterLabel>
+        <CircularGaugeScales>
+            <CircularGaugeScale Min="0" Max="100">
+            </CircularGaugeScale>
+        </CircularGaugeScales>
+        <CircularGaugePointers>
+            <CircularGaugePointer Value="@Value">
+            </CircularGaugePointer>
+        </CircularGaugePointers>
+    </TelerikCircularGauge>
+</div>
+
+@code {
+    public int Value { get; set; } = 20;
+}

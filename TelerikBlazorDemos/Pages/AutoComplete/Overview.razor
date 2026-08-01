@@ -1,0 +1,27 @@
+@page "/autocomplete/overview"
+
+@inject DestinationService DestinationService
+
+<OrderFoodTemplate>
+    <TelerikAutoComplete Data="@DestinationsData"
+                         @bind-Value="@SelectedDestination"
+                         ValueField="@nameof(DestinationDto.Title)"
+                         Placeholder="Please select a city..."
+                         Width="100%">
+    </TelerikAutoComplete>
+</OrderFoodTemplate>
+
+@code {
+    public string SelectedDestination { get; set; }
+    public IEnumerable<DestinationDto> DestinationsData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        DestinationsData = DestinationService.GetDestinations();
+    }
+}

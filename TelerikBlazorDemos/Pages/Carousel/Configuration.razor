@@ -1,0 +1,100 @@
+@page "/carousel/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Navigation Arrows">
+        <TelerikCheckBox @bind-Value="@ShowArrows" Id="show-arrows"></TelerikCheckBox>
+        <label for="show-arrows" class="k-checkbox-label checkbox-label">Show Arrows</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pager">
+        <TelerikCheckBox @bind-Value="@ShowPager" Id="show-pager"></TelerikCheckBox>
+        <label for="show-pager" class="k-checkbox-label checkbox-label">Show Pager</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Endless Loop">
+        <TelerikCheckBox @bind-Value="@LoopPages" Id="loop-pages"></TelerikCheckBox>
+        <label for="loop-pages" class="k-checkbox-label checkbox-label">Loop Pages</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Automatic Navigation">
+        <TelerikCheckBox @bind-Value="@AutoChange" Id="auto-navigate"></TelerikCheckBox>
+        <label for="auto-navigate" class="k-checkbox-label checkbox-label">Auto Page Change</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Navigation Interval">
+        <label for="change-interval">Change Interval (sec)</label>
+        <TelerikNumericTextBox @bind-Value="@ChangeIntervalSec" Id="change-interval" Min="1" Max="10" Decimals="0" Step="1" Width="5em" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Programmatic Navigation">
+        <label for="page-index">Go to Page</label>
+        <TelerikNumericTextBox @bind-Value="@PageIndex" Id="page-index" Min="1" Max="@(CarouselData.Count)" Decimals="0" Step="1" Width="5em" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pager Overlay">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikCarousel Arrows="@ShowArrows"
+                 Pageable="@ShowPager"
+                 LoopPages="@LoopPages"
+                 @bind-Page="@PageIndex"
+                 AutomaticPageChange="@AutoChange"
+                 AutomaticPageChangeInterval="@ChangeInterval"
+                 Data="@CarouselData"
+                 Width="512px"
+                 Height="384px"
+                 ThemeColor="@ThemeColor">
+    <Template>
+        <img src="images/photos/@(context.ImageID).jpg" alt="Photograph" width="512" height="384" />
+    </Template>
+</TelerikCarousel>
+
+<style>
+    /* center the Carousel horizontally */
+    /* k-scrollview is the default component class */
+    .k-scrollview {
+        margin: 0 auto;
+    }
+</style>
+
+@code {
+    public bool ShowArrows = true;
+    public bool ShowPager = true;
+    public bool LoopPages = true;
+    public bool AutoChange = true;
+    private int PageIndex = 1;
+    private int ChangeIntervalSec = 3;
+    public int ChangeInterval
+    {
+        get
+        {
+            return (ChangeIntervalSec >= 1 ? ChangeIntervalSec : 1) * 1000;
+        }
+    }
+
+    public string ThemeColor { get; set; } = ThemeConstants.Carousel.ThemeColor.Light;
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Light", ThemeConstants.Carousel.ThemeColor.Light },
+        { "Dark", ThemeConstants.Carousel.ThemeColor.Dark },
+        { "None", ThemeConstants.Carousel.ThemeColor.None },
+    };
+
+    public List<CarouselModel> CarouselData { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        CarouselData = Enumerable.Range(1, 7).Select(x => new CarouselModel
+        {
+            ImageID = x
+        }).ToList();
+
+        return base.OnInitializedAsync();
+    }
+
+    public class CarouselModel
+    {
+        public int ImageID { get; set; }
+    }
+}

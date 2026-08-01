@@ -1,0 +1,170 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <RootNamespace>TelerikBlazorDemos</RootNamespace>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CS0618</WarningsNotAsErrors>
+    <NoWarn>NU1603</NoWarn>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.AI" Version="9.5.0" />
+    <PackageReference Include="SmartComponents.LocalEmbeddings" Version="0.1.0-preview10148" />
+    <PackageReference Include="Telerik.AI.SmartComponents.Extensions" Version="2.0.0" />
+    <PackageReference Include="Telerik.Zip" Version="2025.4.1216" />
+    <PackageReference Include="Telerik.Documents.Core" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Flow" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Flow.FormatProviders.Pdf" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Fixed" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Spreadsheet" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Spreadsheet.FormatProviders.OpenXml" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.Spreadsheet.FormatProviders.Pdf" Version="2026.2.514" />
+    <PackageReference Include="Telerik.Documents.ImageUtils" Version="2026.2.514" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\robots.txt" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(IsTestEnv)' == 'true'">
+    <EnvironmentName>Staging</EnvironmentName>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsTestEnv)' == 'true'">
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="12.3.0" />
+    <Content Include="wwwroot\robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestEnv)' == 'false'">
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsTestEnv)' == ''">
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="12.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TelerikBlazorDemos.DataAccess\TelerikBlazorDemos.DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\TelerikDemoMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TelerikDemoMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Messages - Copy.designer.cs">
+      <DependentUpon>Messages.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\TelerikMessages.designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TelerikMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\TelerikDemoMessages.bg-BG.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\TelerikDemoMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>TelerikDemoMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\TelerikMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>TelerikMessages.designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- [region]
+    This allows the files in these directories to be read by the Code Manager
+    and displayed in the "View Source" tab of a demo
+  -->
+
+  <ItemGroup>
+    <Content Include="Controllers\**\*.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Pages\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Services\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Constants\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Extensions\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Models\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Shared\*.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Shared\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="DocumentProcessing\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- [endregion] -->
+  <ItemGroup>
+    <None Update="demos.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="IISUrlRewrite.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties wwwroot_4demolist_1json__JsonSchema="../demolist.schema.json" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
+

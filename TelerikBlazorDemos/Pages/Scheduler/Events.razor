@@ -1,0 +1,99 @@
+@page "/scheduler/events"
+
+@inject AppointmentService appointmentService
+
+<style>
+    .k-scheduler .break {
+        background-color: lightgreen;
+    }
+</style>
+
+<TelerikScheduler Data="@Appointments"
+                  @bind-Date="@StartDate"
+                  @bind-View="@CurrView"
+                  Height="600px"
+                  OnItemClick="@OnItemClick"
+                  OnItemDoubleClick="@OnItemDoubleClick"
+                  OnItemContextMenu="@OnItemContextMenu"
+                  OnCellRender="@OnCellRender">
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" />
+        <SchedulerWeekView StartTime="@DayStart" />
+        <SchedulerMultiDayView StartTime="@DayStart" />
+        <SchedulerMonthView></SchedulerMonthView>
+        <SchedulerTimelineView StartTime="@DayStart" />
+    </SchedulerViews>
+</TelerikScheduler>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string EventLog { get; set; } = "";
+
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+    public DateTime LunchBreakStart { get; set; } = new DateTime(2000, 1, 1, 12, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+
+    public void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnItemClick(SchedulerItemClickEventArgs args)
+    {
+        args.ShouldRender = false;
+        LogToConsole("OnItemClick", args.Item);
+    }
+
+    public void OnItemDoubleClick(SchedulerItemDoubleClickEventArgs args)
+    {
+        args.ShouldRender = false;
+        LogToConsole("OnItemDoubleClick", args.Item);
+    }
+
+    public void OnItemContextMenu(SchedulerItemContextMenuEventArgs args)
+    {
+        args.ShouldRender = false;
+        LogToConsole("OnItemContextMenu", args.Item);
+    }
+
+    public void OnCellRender(SchedulerCellRenderEventArgs args)
+    {
+        if(args.Start.TimeOfDay >= LunchBreakStart.TimeOfDay
+            && args.End.AddSeconds(-1).TimeOfDay <= LunchBreakStart.AddHours(1).TimeOfDay)
+        {
+            args.Class = "break";
+        }
+
+        if (args.Start.DayOfWeek == DayOfWeek.Saturday
+            || args.Start.DayOfWeek == DayOfWeek.Sunday)
+        {
+            args.Class = "break";
+        }
+    }
+
+    public void LogToConsole(string eventName, object item)
+    {
+        var appointment = item as AppointmentDto;
+        var log =
+            "<div>" +
+                $"<strong>{eventName}</strong> event fired for appointment with title: {appointment.Title}." +
+            "</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+}
+

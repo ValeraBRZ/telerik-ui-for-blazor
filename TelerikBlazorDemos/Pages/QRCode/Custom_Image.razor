@@ -1,0 +1,36 @@
+@page "/qrcode/custom-image"
+
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+
+<div id="example" class="demo-section k-content center">
+    <div class="qr-wrapper">
+        <h3>Custom Image</h3>
+
+        <TelerikQRCode Width="@Size"
+                       Height="@Size"
+                       Value="@Value"
+                       ErrorCorrection="@QRCodeErrorCorrectionLevel.H">
+            <QRCodeOverlay Type="@QRCodeOverlayType.Image"
+                           ImageUrl="images/devcraft-ninja-small.svg"
+                           Width="64"
+                           Height="64">
+            </QRCodeOverlay>
+        </TelerikQRCode>
+    </div>
+</div>
+
+<style>
+    #demo-runner {
+        text-align: center;
+    }
+
+    .demo-section {
+        display: inline-block;
+    }
+</style>
+
+@code {
+    public string Size { get; set; } = "220px";
+    public string Value { get; set; } = "https://docs.telerik.com/blazor-ui/components/barcodes/qrcode/qr-code-types#image-qrcode-type";
+}

@@ -1,0 +1,33 @@
+@page "/checkbox/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikCheckBox Value="@true" Rounded="@Rounded" Size="@Size"></TelerikCheckBox>
+</div>
+
+@code {
+    public string Rounded { get; set; } = ThemeConstants.CheckBox.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.CheckBox.Size.Medium;
+
+    public Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.CheckBox.Rounded.Small },
+        { "Medium", ThemeConstants.CheckBox.Rounded.Medium },
+        { "Large", ThemeConstants.CheckBox.Rounded.Large }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.CheckBox.Size.Small },
+        { "Medium", ThemeConstants.CheckBox.Size.Medium },
+        { "Large", ThemeConstants.CheckBox.Size.Large }
+    };
+}

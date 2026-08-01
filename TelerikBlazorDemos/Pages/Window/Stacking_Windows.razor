@@ -1,0 +1,92 @@
+@page "/window/stacking-windows"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Window 1">
+        <div>
+            <label>
+                <TelerikCheckBox @bind-Value="@Window1Modal" /> Modal
+            </label>
+        </div>
+        <div>
+            <label>
+                <TelerikCheckBox @bind-Value="@Window1Visible" /> Visible
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Window 2">
+        <div>
+            <label>
+                <TelerikCheckBox @bind-Value="@Window2Modal" /> Modal
+            </label>
+        </div>
+        <div>
+            <label>
+                <TelerikCheckBox @bind-Value="@Window2Visible" /> Visible
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikWindow @bind-Visible="@Window1Visible"
+               Modal="@Window1Modal"
+               @bind-Top="@Window1Top"
+               @bind-Left="@Window1Left"
+               @bind-Width="@Window1Width"
+               @bind-Height="@Window1Height">
+    <WindowTitle>
+        Window 1
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <TelerikButton OnClick="@( () => Window2Visible = true )"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                       Enabled="@(!Window2Visible)">Open Another Window on Top</TelerikButton>
+        <p class="demo-alert demo-alert-info" style="@( Window2Visible ? string.Empty : "display:none" )">
+            Click or focus a Window to make it appear on top.
+        </p>
+    </WindowContent>
+</TelerikWindow>
+
+<TelerikWindow @bind-Visible="@Window2Visible"
+               Modal="@Window2Modal"
+               @bind-Top="@Window2Top"
+               @bind-Left="@Window2Left"
+               @bind-Width="@Window2Width"
+               @bind-Height="@Window2Height"
+               ThemeColor="@ThemeConstants.Window.ThemeColor.Primary">
+    <WindowTitle>
+        Window 2
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <TelerikButton OnClick="@( () => Window1Visible = true )"
+                       Enabled="@(!Window1Visible)">Open Another Window on Top</TelerikButton>
+        <p class="demo-alert demo-alert-info" style="@( Window1Visible ? string.Empty : "display:none" )">
+            Click or focus a Window to make it appear on top.
+        </p>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    private bool Window1Visible { get; set; } = true;
+    private bool Window1Modal { get; set; }
+    private string Window1Top { get; set; } = "30vh";
+    private string Window1Left { get; set; } = "30vw";
+    private string Window1Width { get; set; } = "40vw";
+    private string Window1Height { get; set; } = "30vh";
+
+    private bool Window2Visible { get; set; }
+    private bool Window2Modal { get; set; }
+    private string Window2Top { get; set; } = "40vh";
+    private string Window2Left { get; set; } = "35vw";
+    private string Window2Width { get; set; } = "40vw";
+    private string Window2Height { get; set; } = "30vh";
+}

@@ -1,0 +1,85 @@
+@page "/notification/template"
+
+<TelerikButton Icon="@SvgIcon.Bell"
+               Enabled="@NotificationButtonEnabled"
+               OnClick="@ShowUnreadNotifications"
+               ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">
+    Subscribe for stock market updates
+</TelerikButton>
+
+<TelerikNotification @ref="@Notification"
+                        Class="demo-notification">
+    <Template>
+            <div class="stock-info">
+                <p class="stock-info-message">@context.Text</p>
+                <p class="stock-info-time">just now</p>
+            </div>
+    </Template>
+</TelerikNotification>
+
+@code {
+    public TelerikNotification Notification { get; set; }
+
+    public bool NotificationButtonEnabled { get; set; } = true;
+
+    public List<string> StockFeedMessages = new List<string>
+    {
+        "PRGS share jumps over 7.4% today",
+        "GOOGL falls 3.1% today. Will it keep dropping?",
+        "TRIP stock rises 5.2%",
+        "TSLA share gains as it rises over 5.1%",
+        "BMW.DE stock falls 8.2%"
+    };
+
+    public async Task ShowUnreadNotifications()
+    {
+        NotificationButtonEnabled = false;
+
+        foreach (var stockMessage in StockFeedMessages)
+        {
+            Notification.Show(new NotificationModel()
+            {
+                Text = stockMessage,
+                ThemeColor = "primary",
+                ShowIcon = false
+            });
+
+            await Task.Delay(1500);
+        }
+
+        NotificationButtonEnabled = true;
+    }
+}
+<style>
+    .demo-notification {
+        position: absolute;
+    }
+
+        .demo-notification .k-notification {
+            width: 420px;
+        }
+
+    #demo-runner {
+        height: 400px;
+    }
+
+    .stock-info-message {
+        font-size: 16px;
+        font-weight: bold;
+        padding-left: 6px;
+        padding-top: 5px;
+        margin: 0;
+    }
+
+    .stock-info-time {
+        padding-left: 6px;
+        font-size: 13px;
+        font-style: italic;
+        text-align: right;
+        margin: 3px;
+    }
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+</style>

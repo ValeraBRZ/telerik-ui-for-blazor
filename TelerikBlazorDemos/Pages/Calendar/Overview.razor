@@ -1,0 +1,36 @@
+@page "/calendar/overview"
+@page "/calendar/index"
+
+<div class="demo-wrap p-sm">
+    <div style="margin-right:5em;">
+        <h4>Month View</h4>
+        <TelerikCalendar Date="@StartDate"
+                         Min="@Min"
+                         Max="@Max"
+                         View="CalendarView.Month"
+                         SelectionMode="@CalendarSelectionMode.Multiple"
+                         ShowWeekNumbers="true">
+        </TelerikCalendar>
+    </div>
+    <div>
+        <h4>Decade View</h4>
+        <TelerikCalendar Min="@Min"
+                         Max="@Max"
+                         View="CalendarView.Decade"
+                         BottomView="@CalendarView.Year">
+        </TelerikCalendar>
+    </div>
+</div>
+
+@code {
+    private DateTime StartDate = new DateTime(2025, 5, 2);
+    private DateTime Min = new DateTime(2024, 1, 1);
+    private DateTime Max = new DateTime(2035, 12, 31);
+}
+
+<style>
+    .demo-wrap {
+        display: inline-flex;
+        flex-wrap: wrap;
+    }
+</style>

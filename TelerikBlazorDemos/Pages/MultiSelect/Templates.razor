@@ -1,0 +1,161 @@
+@page "/multiselect/templates"
+
+@using Telerik.Blazor.Components;
+
+@inject CustomerService customerService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tag Mode">
+        <TelerikDropDownList @bind-Value="@TagMode"
+                             Data="@TagModes"
+                             OnChange="@OnTagModeChanged"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <label for="selectId">Select customers:</label>
+    <br />
+    <TelerikMultiSelect Data="@Data"
+                        Class="multiselect-with-data"
+                        @bind-Value="@SelectedItems"
+                        TextField="@nameof(CustomerDto.ContactName)"
+                        ValueField="@nameof(CustomerDto.CustomerId)"
+                        AutoClose="false"
+                        TagMode="@TagMode"
+                        Placeholder="Select..."
+                        Id="customers"
+                        Width="100%">
+        <MultiSelectSettings>
+            <MultiSelectPopupSettings Height="300px" />
+        </MultiSelectSettings>
+        <HeaderTemplate>
+            <h4 class="multiselect-header">Customer list:</h4>
+        </HeaderTemplate>
+        <ItemTemplate>
+            <TelerikAvatar Type="AvatarType.Image"
+                           Width="40px"
+                           Height="40px">
+                <img src="images/customers/@(context.CustomerId).jpg" />
+            </TelerikAvatar>
+            <h4 style="margin-left:5px">@context.ContactName </h4>
+            <span style="font-style: italic">(@context.ContactTitle)</span>
+        </ItemTemplate>
+        <TagTemplate>
+            <TelerikAvatar Type="AvatarType.Image"
+                           Width="18px"
+                           Height="18px">
+                <img src="images/customers/@(context.CustomerId).jpg" />
+            </TelerikAvatar>
+            <span style="margin-left:3px">@context.ContactName </span>
+        </TagTemplate>
+        <SummaryTagTemplate>
+            Total customers selected: @context.Items.Count()
+            (
+            <span class="avatar-group">
+                @foreach (var customer in context.Items)
+                {
+                    <TelerikAvatar Type="AvatarType.Image"
+                                   Width="18px"
+                                   Height="18px"
+                                   Bordered="true"
+                                   Class="customer-avatar">
+                        <img src="images/customers/@(customer.CustomerId).jpg" />
+                    </TelerikAvatar>
+                }
+            </span>
+            )
+        </SummaryTagTemplate>
+        <FooterTemplate>
+            <div class="multiselect-footer">Total: @Data.Count()</div>
+        </FooterTemplate>
+    </TelerikMultiSelect>
+    <br />
+    <label for="selectId">No customers available:</label>
+    <br />
+    <TelerikMultiSelect Data="@NoData"
+                        @bind-Value="@SelectedItemsNoData"
+                        Placeholder="Select..."
+                        TextField="@nameof(CustomerDto.ContactName)"
+                        ValueField="@nameof(CustomerDto.CustomerId)">
+        <NoDataTemplate>
+            <div>
+                <TelerikSvgIcon Icon="@SvgIcon.InfoCircle"
+                                Size="@ThemeConstants.SvgIcon.Size.ExtraExtraLarge" />
+                <br />
+                <br />
+                No customers to display...
+            </div>
+        </NoDataTemplate>
+    </TelerikMultiSelect>
+</div>
+
+@code {
+    private List<CustomerDto> Data { get; set; } = new List<CustomerDto>();
+
+    private List<CustomerDto> NoData { get; set; } = new List<CustomerDto>();
+
+    private List<string> SelectedItems = new List<string>();
+
+    private List<string> SelectedItemsNoData = new List<string>();
+
+    private MultiSelectTagMode TagMode = MultiSelectTagMode.Multiple;
+
+    private List<MultiSelectTagMode> TagModes => new List<MultiSelectTagMode> { MultiSelectTagMode.Single, MultiSelectTagMode.Multiple };
+
+    void LoadData()
+    {
+        Data = customerService.GetCustomers().ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void OnTagModeChanged(object value)
+    {
+        var tagMode = Enum.Parse<MultiSelectTagMode>(value.ToString());
+
+        TagMode = tagMode;
+    }
+}
+
+<style>
+    .multiselect-with-data {
+        margin-bottom: 1.5em;
+    }
+
+    .multiselect-header {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        background-color: #fff;
+        padding: 5px 8px;
+    }
+
+    .multiselect-footer {
+        padding: 10px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .avatar-group {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .avatar-group .customer-avatar:first-child {
+        margin-left: 0;
+    }
+
+    .avatar-group .customer-avatar {
+        margin-left: -5px;
+    }
+</style>

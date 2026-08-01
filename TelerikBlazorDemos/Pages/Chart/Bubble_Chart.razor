@@ -1,0 +1,62 @@
+@page "/chart/bubble-chart"
+@using Telerik.Blazor
+
+<TelerikChart>
+    <ChartTitle Text="Job Growth for 2011"></ChartTitle>
+    <ChartLegend Visible="false"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Bubble"
+                     Data="@Series1Data"
+                     Name="0.8C"
+                     XField="@nameof(ModelData.X)"
+                     YField="@nameof(ModelData.Y)"
+                     SizeField="@nameof(ModelData.Size)">
+            <ChartSeriesTooltip Visible="true">
+                <Template>
+                    <div>
+                        X field: @((context.DataItem as ModelData).X)
+                    </div>
+                    <div>
+                        Y field: @((context.DataItem as ModelData).Y)
+                    </div>
+                </Template>
+            </ChartSeriesTooltip>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartXAxes>
+        <ChartXAxis AxisCrossingValue="new object[] { -5000 }" MajorUnit="2000">
+            <ChartXAxisLabels Format="{0:N0}" Skip="1"></ChartXAxisLabels>
+        </ChartXAxis>
+    </ChartXAxes>
+
+    <ChartYAxes>
+        <ChartYAxis>
+            <ChartYAxisLabels Format="{0:N0}"></ChartYAxisLabels>
+        </ChartYAxis>
+    </ChartYAxes>
+</TelerikChart>
+
+@code {
+    public class ModelData
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Size { get; set; }
+        public string Category { get; set; }
+    }
+
+    public List<ModelData> Series1Data = new List<ModelData>()
+    {
+        new ModelData() { X = -2500, Y = 50000, Size = 500000 },
+        new ModelData() { X = 500, Y = 110000, Size = 7600000 },
+        new ModelData() { X = 7000, Y = 19000, Size = 700000 },
+        new ModelData() { X = 1400, Y = 150000, Size = 700000 },
+        new ModelData() { X = 2400, Y = 30000, Size = 300000 },
+        new ModelData() { X = 2450, Y = 34000, Size = 90000  },
+        new ModelData() { X = 2700, Y = 34000, Size = 400000 },
+        new ModelData() { X = 2900, Y = 40000, Size = 450000 },
+        new ModelData() { X = 3000, Y = 55000, Size = 900000 }
+    };
+}

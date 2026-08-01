@@ -1,0 +1,16 @@
+@page "/daterangepicker/overview"
+
+<ScheduleVisitTemplate Title="Reservation Dates">
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            StartId="outbound-date"
+                            DebounceDelay="@DebounceDelay"
+                            ShowWeekNumbers="true">
+    </TelerikDateRangePicker>
+</ScheduleVisitTemplate>
+
+@code {
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 4, 3);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 4, 10);
+    public int DebounceDelay { get; set; } = 200;
+}

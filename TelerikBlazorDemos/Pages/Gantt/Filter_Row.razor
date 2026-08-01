@@ -1,0 +1,143 @@
+@page "/gantt/filter-row"
+
+@using Telerik.DataSource
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Filter Cell Buttons">
+        <TelerikCheckBox @bind-Value="@showFilterButtons" Id="filterableCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="filterableCheckBox">Show Filter Buttons</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Filter Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@filterDebounceDelay" Min="0" Max="1000" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Default filter operator for the `Title` column">
+        <TelerikDropDownList @bind-Value="@filterOperator"
+                             Data="@filterOperators"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info">
+    The <strong>Start</strong> column uses customized list of <strong>FilterOperators</strong>.
+</div>
+
+<TelerikGantt Data="@Data"
+              @bind-TreeListWidth="@TreeListWidth"
+              IdField="Id"
+              ParentIdField="ParentId"
+              FilterMode="@GanttFilterMode.FilterRow"
+              FilterRowDebounceDelay="filterDebounceDelay"
+              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )"
+              Width="100%"
+              Height="500px">
+    <GanttColumns>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title"
+                     ShowFilterCellButtons="@showFilterButtons"
+                     DefaultFilterOperator="@filterOperator">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="200px"
+                     DisplayFormat="{0:d}"
+                     ShowFilterCellButtons="@showFilterButtons"
+                     FilterOperators="@DateOperators">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="200px"
+                     DisplayFormat="{0:d}"
+                     ShowFilterCellButtons="@showFilterButtons">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Width="150px"
+                     Title="Status"
+                     DisplayFormat="{0:P}"
+                     ShowFilterCellButtons="@showFilterButtons">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttWeekView></GanttWeekView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code {
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    public int filterDebounceDelay { get; set; } = 200;
+    public bool showFilterButtons { get; set; } = true;
+    FilterOperator filterOperator { get; set; } = FilterOperator.StartsWith;
+
+    public List<FilterOperator> filterOperators { get; set; } = new List<FilterOperator>()
+{
+        FilterOperator.IsEqualTo,
+        FilterOperator.IsNotEqualTo,
+        FilterOperator.StartsWith,
+        FilterOperator.Contains,
+        FilterOperator.DoesNotContain
+    };
+
+    public List<FilterListOperator> DateOperators = new List<FilterListOperator>
+{
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "On" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThan, Text = "After" },
+        new FilterListOperator { Operator = FilterOperator.IsLessThan, Text = "Before" },
+        new FilterListOperator { Operator = FilterOperator.IsNotEqualTo, Text = "Is Not" },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+}
+
+<style>
+    /* Disable Timeline editing via CSS.
+        Will not be necessary when this is done:
+        https://feedback.telerik.com/blazor/1572900
+    */
+
+    /* delete button */
+    .k-gantt .k-task:hover .k-task-actions,
+    /* resize handles */
+    .k-gantt .k-task:hover .k-resize-handle,
+    /* progress drag handle */
+    .k-gantt .k-task-wrap:hover .k-task-draghandle,
+    /* dependency handles */
+    .k-gantt .k-task-wrap:hover .k-task-dot,
+    /* drag overlay */
+    .k-gantt .k-gantt-marquee,
+    /* drag tooltip */
+    .k-gantt .k-gantt-resize-hint {
+        visibility: hidden;
+    }
+</style>

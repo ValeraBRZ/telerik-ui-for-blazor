@@ -1,0 +1,30 @@
+@page "/treelist/column-reordering"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Reorderable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="ID" Width="60px"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Title="First Name (non-reorderable)" Reorderable="false" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

@@ -1,0 +1,82 @@
+@page "/chart/horizontal-waterfall-chart"
+
+<TelerikChart>
+    <ChartTitle Text="Request latency breakdown"></ChartTitle>
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.HorizontalWaterfall"
+                     Data="@ChartData"
+                     ColorField="@nameof(RequestDetail.Color)"
+                     Field="@nameof(RequestDetail.Elapsed)"
+                     CategoryField="@nameof(RequestDetail.Caption)"
+                     SummaryField="@nameof(RequestDetail.Summary)">
+        </ChartSeries>
+    </ChartSeriesItems>
+    <ChartLegend Visible="false"></ChartLegend>
+    <ChartValueAxes>
+        <ChartValueAxis Type="ChartValueAxisType.Numeric">
+            <ChartValueAxisLabels Format="{0} ms" />
+        </ChartValueAxis>
+    </ChartValueAxes>
+</TelerikChart>
+
+@code {
+    private List<RequestDetail> ChartData { get; set; }
+
+    private List<RequestDetail> GetWaterfallData()
+    {
+        return new List<RequestDetail> ()
+        {
+            new RequestDetail
+            {
+                Caption = "DNS Lookup",
+                Elapsed = 20,
+                Color="#95c3cd"
+            },
+            new RequestDetail
+            {
+                Caption = "Connecting",
+                Elapsed = 122,
+                Color="#abc75b"
+            },
+            new RequestDetail
+            {
+                Caption = "Sending",
+                Elapsed = 30,
+                Color="#c6816f"
+            },
+            new RequestDetail
+            {
+                Caption = "Waiting",
+                Elapsed = 421,
+                Color="#968cb2"
+            },
+            new RequestDetail
+            {
+                Caption = "Receiving",
+                Elapsed = 357,
+                Color="#c0c0c0"
+            },
+            new RequestDetail
+            {
+                Caption = "Total",
+                Summary = "total",
+                Color="#2ba6ff"
+            }
+        };
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        ChartData = GetWaterfallData();
+
+        return base.OnInitializedAsync();
+    }
+
+    public class RequestDetail
+    {
+        public string Caption { get; set; }
+        public int? Elapsed { get; set; }
+        public string Summary { get; set; }
+        public string Color { get; set; }
+    }
+}

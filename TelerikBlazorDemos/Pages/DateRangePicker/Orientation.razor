@@ -1,0 +1,29 @@
+@page "/daterangepicker/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <TelerikDropDownList Data="@Orientations" @bind-Value="@CalendarOrientation" Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikDateRangePicker @bind-StartValue="@StartValue"
+                        @bind-EndValue="@EndValue"
+                        Orientation="@CalendarOrientation">
+</TelerikDateRangePicker>
+
+@code {
+    public CalendarOrientation CalendarOrientation { get; set; }
+
+    public List<CalendarOrientation> Orientations => new List<CalendarOrientation>
+    {
+        CalendarOrientation.Horizontal,
+        CalendarOrientation.Vertical,
+    };
+
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 10, 7);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 10, 14);
+}

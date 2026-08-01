@@ -1,0 +1,59 @@
+@page "/upload/initial-files"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsInterop
+
+
+<div class="demo-section k-form k-form-md k-form-horizontal">
+    <div class="k-form-field-wrap">
+        <TelerikUpload Files="@InitialFiles"
+                       SaveUrl="@SaveUrl"
+                       RemoveUrl="@RemoveUrl"
+                       AllowedExtensions="@AllowedExtensions"
+                       AutoUpload="false"
+                       MinFileSize="@MinFileSize"
+                       MaxFileSize="@MaxFileSize">
+        </TelerikUpload>
+        <div class="k-form-hint">Accepted files: <strong>DOCX, PDF, JPG and PNG</strong></div>
+    </div>
+</div>
+
+
+@code {
+    public string SaveUrl => ToAbsoluteUrl("api/upload/save");
+    public string RemoveUrl => ToAbsoluteUrl("api/upload/remove");
+    public List<string> AllowedExtensions { get; set; } = new List<string>() { ".docx", ".pdf", ".jpg", ".png" };
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+
+    private List<UploadFileInfo> InitialFiles { get; set; } = new List<UploadFileInfo>()
+    {
+        new UploadFileInfo()
+        {
+            Id="1",
+            Name="Report",
+            Extension=".pdf",
+            Size = 1024 * 1024 * 2 // 2 MB
+        },
+        new UploadFileInfo()
+        {
+            Id="2",
+            Name="Portrait",
+            Extension=".jpg",
+            Size = 1024 * 1024 * 2 // 2 MB
+        },
+        new UploadFileInfo()
+        {
+            Id="3",
+            Name="Logo",
+            Extension=".png",
+            Size = 1024 * 1024 * 3 // 3 MB
+        },
+    };
+
+    public string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+}
+

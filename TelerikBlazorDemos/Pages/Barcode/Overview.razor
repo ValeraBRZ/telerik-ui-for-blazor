@@ -1,0 +1,100 @@
+@page "/barcode/overview"
+@page "/barcode/index"
+
+@using Telerik.Blazor.Components
+
+<div class="ticket">
+    <div class="ticket-title">Boarding Pass</div>
+
+    <div class="ticket-info">
+        <div class="ticket-content">
+            <div class="ticket-section">
+                <div class="ticket-section-title">Flight number</div>
+                <div class="ticket-section-text">KB76</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="ticket-section-title">Date</div>
+                <div class="ticket-section-text">May 22</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="ticket-section-title">Boarding time</div>
+                <div class="ticket-section-text">8:35</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="ticket-section-title">Gate</div>
+                <div class="ticket-section-text">B2</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="ticket-section-title">Seat</div>
+                <div class="ticket-section-text">19A</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="ticket-section-title">Class</div>
+                <div class="ticket-section-text">Economy</div>
+            </div>
+        </div>
+
+        <div class="ticket-barcode">
+            <TelerikBarcode Width="300px"
+                            Height="130px"
+                            Checksum="true"
+                            Type="BarcodeType.Code39"
+                            Value="127451638">
+            </TelerikBarcode>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ticket {
+        margin-top: 20px;
+        margin-left: 20px;
+        max-width: 800px;
+    }
+
+    .ticket-title {
+        font-size: 28px;
+    }
+
+    .ticket-info {
+        display: flex;
+    }
+
+    .ticket-content {
+        display: flex;
+        flex-wrap: wrap;
+        width: 450px;
+    }
+
+        .ticket-content > * {
+            padding-top: 16px;
+        }
+
+    .ticket-section {
+        flex-basis: 130px;
+        padding-right: 30px;
+    }
+
+    .ticket-section-title {
+        font-size: 12px;
+        line-height: 20px;
+        color: #848484;
+    }
+
+    .ticket-section-text {
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .ticket-barcode {
+        flex-basis: 300px;
+        margin-left: -100px;
+        margin-top: 20px;
+    }
+</style>
+

@@ -1,0 +1,32 @@
+@page "/tabstrip/overview"
+@page "/tabstrip/index"
+
+<div class="demo-section">
+    <TelerikTabStrip @bind-ActiveTabIndex="@ActiveTabIndex">
+        <TabStripTab Title="Sofia">
+            <WeatherCard City="Sofia"
+                         TempC="23"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="London">
+            <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Paris">
+            <WeatherCard City="Paris"
+                         TempC="17"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+    </TelerikTabStrip>
+    <h2>Active Tab Index: @ActiveTabIndex </h2>
+</div>
+
+
+
+@code {
+    public int ActiveTabIndex { get; set; } = 1;
+}

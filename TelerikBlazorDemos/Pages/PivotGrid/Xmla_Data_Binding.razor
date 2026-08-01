@@ -1,0 +1,26 @@
+@page "/pivotgrid/xmla-data-binding"
+
+<TelerikPivotGrid Height="600px"
+                  TItem="object"
+                  DataProviderType="@PivotGridDataProviderType.Xmla">
+    <PivotGridSettings>
+        <PivotGridXmlaDataProviderSettings ServerUrl="https://demos.telerik.com/service/v2/olap/msmdpump.dll"
+                                           Catalog="Adventure Works DW 2008R2"
+                                           Cube="Adventure Works">
+        </PivotGridXmlaDataProviderSettings>
+    </PivotGridSettings>
+
+    <PivotGridRows>
+        <PivotGridRow Name="[Geography].[Country]"></PivotGridRow>
+        <PivotGridRow Name="[Geography].[City]"></PivotGridRow>
+    </PivotGridRows>
+
+    <PivotGridColumns>
+        <PivotGridColumn Name="[Product].[Category]"></PivotGridColumn>
+        <PivotGridColumn Name="[Product].[Model Name]"></PivotGridColumn>
+    </PivotGridColumns>
+
+    <PivotGridMeasures>
+        <PivotGridMeasure Name="[Measures].[Reseller Freight Cost]"></PivotGridMeasure>
+    </PivotGridMeasures>
+</TelerikPivotGrid>

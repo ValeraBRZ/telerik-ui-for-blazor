@@ -1,0 +1,86 @@
+@page "/chiplist/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Remove Icon">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@RemoveIcons" @bind-Value="@RemoveIcon" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikChipList Data="@ChipListData"
+                     FillMode="@FillMode"
+                     DisabledField="Disabled"
+                     IconField="Icon"
+                     RemovableField="Removable"
+                     RemoveIcon="@RemoveIcon"
+                     Rounded="@Rounded"
+                     Size="@Size"
+                     TextField="Text" />
+</div>
+
+@code {
+    private string FillMode { get; set; } = ThemeConstants.Chip.FillMode.Solid;
+    private ISvgIcon RemoveIcon { get; set; } = SvgIcon.XCircle;
+    private string Rounded { get; set; } = ThemeConstants.Chip.Rounded.Medium;
+    private string Size { get; set; } = ThemeConstants.Chip.Size.Medium;
+
+    private List<ChipModel> ChipListData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChipListData = new List<ChipModel>()
+        {
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileAudio, Removable = false, Text = "Audio" },
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileVideo, Removable = true, Text = "Video" },
+            new ChipModel { Disabled = true, Icon = SvgIcon.FileImage, Removable = false, Text = "Image" },
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileData, Removable = true, Text = "Data" }
+        };
+
+        base.OnInitialized();
+    }
+
+    private Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.Chip.FillMode.Solid },
+        { "Outline", ThemeConstants.Chip.FillMode.Outline }
+    };
+
+    private Dictionary<string, ISvgIcon> RemoveIcons { get; set; } = new Dictionary<string, ISvgIcon>
+    {
+        { "X", SvgIcon.X },
+        { "Outline", SvgIcon.XOutline },
+        { "Circle", SvgIcon.XCircle }
+    };
+
+    private Dictionary<string, string> Roundesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Chip.Rounded.Small },
+        { "Medium", ThemeConstants.Chip.Rounded.Medium },
+        { "Large", ThemeConstants.Chip.Rounded.Large },
+        { "Full", ThemeConstants.Chip.Rounded.Full }
+    };
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Chip.Size.Small },
+        { "Medium", ThemeConstants.Chip.Size.Medium },
+        { "Large", ThemeConstants.Chip.Size.Large }
+    };
+
+    public class ChipModel
+    {
+        public bool Disabled { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool Removable { get; set; }
+        public string Text { get; set; }
+    }
+}

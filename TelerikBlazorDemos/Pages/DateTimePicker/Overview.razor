@@ -1,0 +1,14 @@
+@page "/datetimepicker/overview"
+@page "/datetimepicker/index"
+
+<ScheduleVisitTemplate Title="Schedule Your Visit" Description="Date and Time">
+    <TelerikDateTimePicker @bind-Value="@SelectedTime"
+                           Format="MM/dd/yyyy hh:mm tt"
+                           ShowWeekNumbers="true"
+                           Id="selected-date">
+    </TelerikDateTimePicker>
+</ScheduleVisitTemplate>
+
+@code {
+    private DateTime? SelectedTime = DateTime.Now;
+}

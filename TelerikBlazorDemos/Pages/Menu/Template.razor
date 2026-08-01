@@ -1,0 +1,72 @@
+@page "/menu/template"
+
+<h2 class="mb-md">Last item clicked: @SelectedItem.Text </h2>
+
+<div style="height: 60px;">
+<TelerikMenu Data="@MenuItems" OnClick="@((MenuItem item) => OnClick(item))">
+    <ItemTemplate Context="item">
+        @{
+            var inlineStyle = SelectedItem.Text != item.Text ? "font-weight: normal;" : "font-weight: bold;";
+        }
+            <TelerikSvgIcon Icon="@item.Icon" />
+        <span class="k-menu-link" style="@inlineStyle">@item.Text</span>
+    </ItemTemplate>
+</TelerikMenu>
+</div>
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+    public MenuItem SelectedItem { get; set; } = new MenuItem()
+    {
+        Text = "Map Location",
+        Icon = SvgIcon.MapMarker
+    };
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public List<MenuItem> Items { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+{
+            new MenuItem()
+            {
+                Text = "Share",
+                Icon = SvgIcon.Share,
+                Items = new List<MenuItem>()
+        {
+                    new MenuItem()
+                    {
+                        Text = "FaceBook",
+                        Icon = SvgIcon.Facebook
+                    },
+                    new MenuItem()
+                    {
+                        Text = "LinkedIn",
+                        Icon = SvgIcon.Linkedin
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Twitter",
+                        Icon = SvgIcon.Twitter
+                    },
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Map Location",
+                Icon = SvgIcon.MapMarker
+            }
+        };
+
+        base.OnInitialized();
+    }
+
+    protected void OnClick(MenuItem item)
+    {
+        SelectedItem = item;
+    }
+}

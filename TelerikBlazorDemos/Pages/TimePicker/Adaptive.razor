@@ -1,0 +1,21 @@
+@page "/timepicker/adaptive"
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <p>
+        Resize the browser to see how the TimePicker adapts to different resolutions.
+    </p>
+</div>
+
+<div class="demo-section">
+    <label for="picker" class="k-label k-form-label">Set time</label>
+    <TelerikTimePicker @bind-Value="@Value"
+                       AdaptiveMode="@AdaptiveMode.Auto"
+                       Id="picker"
+                       Size="@ThemeConstants.TimePicker.Size.Large"
+                       Title="Set time">
+    </TelerikTimePicker>
+</div>
+
+@code {
+    public DateTime? Value { get; set; } = new DateTime(2025, 11, 27, 9, 48, 53);
+}

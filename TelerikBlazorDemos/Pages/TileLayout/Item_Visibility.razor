@@ -1,0 +1,72 @@
+@page "/tilelayout/item-visibility"
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleItemBarcelona">Show / Hide Item Barcelona</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleItemRome">Show / Hide Item Rome</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div style="display: inline-block;">
+    <TelerikTileLayout Columns="3"
+                       ColumnWidth="285px"
+                       RowHeight="285px">
+        <TileLayoutItems>
+            <TileLayoutItem Visible="ItemBarcelonaVisible"
+                            HeaderText="Barcelona">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/barcelona.jpg" alt="Barcelona" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Sofia">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sofia.jpg" alt="Sofia" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem Visible="ItemRomeVisible"
+                            HeaderText="Rome">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/rome.jpg" alt="Rome" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="South Africa">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/south-africa.jpg" alt="South Africa" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="San Francisco">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sanfran.jpg" alt="San Francisco" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Sea View Apartments">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/seaview-appartments.png" alt="Sea view Apartments" />
+                </Content>
+            </TileLayoutItem>
+        </TileLayoutItems>
+    </TelerikTileLayout>
+</div>
+
+<style>
+    .k-card-image {
+        width: 285px;
+        height: 189px;
+    }
+</style>
+
+@code {
+    bool ItemBarcelonaVisible = true;
+    bool ItemRomeVisible = false;
+
+    void ToggleItemBarcelona()
+    {
+        ItemBarcelonaVisible = !ItemBarcelonaVisible;
+    }
+
+    void ToggleItemRome()
+    {
+        ItemRomeVisible = !ItemRomeVisible;
+    }
+}

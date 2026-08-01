@@ -1,0 +1,50 @@
+@page "/tabstrip/tab-positions"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tabs Position">
+        <select @bind=@TabPosition class="k-dropdownlist k-picker k-picker-md">
+            <option value=@TabPosition.Top>Top</option>
+            <option value=@TabPosition.Left>Left</option>
+            <option value=@TabPosition.Right>Right</option>
+            <option value=@TabPosition.Bottom>Bottom</option>
+        </select>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Tabs Alignment">
+        <select @bind=@TabAlignment class="k-dropdownlist k-picker k-picker-md">
+            <option value=@TabStripTabAlignment.Start>Start</option>
+            <option value=@TabStripTabAlignment.End>End</option>
+            <option value=@TabStripTabAlignment.Center>Center</option>
+            <option value=@TabStripTabAlignment.Justify>Justify</option>
+            <option value=@TabStripTabAlignment.Stretched>Stretched</option>
+        </select>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikTabStrip TabPosition="@TabPosition"
+                     TabAlignment="@TabAlignment">
+        <TabStripTab Title="Sofia">
+            <WeatherCard City="Sofia"
+                         TempC="23"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="London">
+            <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Paris">
+            <WeatherCard City="Paris"
+                         TempC="17"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+    </TelerikTabStrip>
+</div>
+
+@code {
+    private TabPosition TabPosition { get; set; } = TabPosition.Top;
+    private TabStripTabAlignment TabAlignment { get; set; } = TabStripTabAlignment.Start;
+}

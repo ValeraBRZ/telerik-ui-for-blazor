@@ -1,0 +1,32 @@
+@page "/breadcrumb/keyboard-navigation"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items" Class="k-justify-content-center"></TelerikBreadcrumb>
+</div>
+
+@code {
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    protected override void OnInitialized()
+    {
+        Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Item1" },
+            new BreadcrumbItem { Text = "Item2" },
+            new BreadcrumbItem { Text = "Item3" },
+            new BreadcrumbItem { Text = "Item4" },
+            new BreadcrumbItem { Text = "Item5" },
+        };
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(375px + 6em) !important;
+    }
+</style>

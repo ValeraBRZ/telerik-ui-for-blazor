@@ -1,0 +1,33 @@
+<nav class="kd-breadcrumb-nav">
+    <ol class="kd-list">
+        <li>
+            <NavLink class="kd-link" href="/blazor-ui">Components</NavLink>
+            <span class="delimiter">/ </span>
+        </li>
+        <li>
+            <NavLink class="kd-link" href="@BasePath">@Demo.ComponentPath</NavLink>
+            <span class="delimiter">/ </span>
+        </li>
+        <li class="active">
+            <NavLink class="kd-link" href="@Demo.Path" aria-disabled="true">@Demo.Text</NavLink>
+        </li>
+    </ol>
+</nav>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    public string BasePath
+    {
+        get
+        {
+            return string.IsNullOrEmpty(Demo.BasePath) ? Demo.ComponentPath.Replace(" ", "").ToLower() + "/overview" : Demo.BasePath;
+        }
+    }
+
+    bool IsOverviewDemo(string demoPath)
+    {
+        return string.IsNullOrWhiteSpace(demoPath) || demoPath.ToLower().Contains("/overview");
+    }
+}

@@ -1,0 +1,161 @@
+@page "/floatingactionbutton/overview"
+
+@inject ProductService ProductService
+
+<div class="demo-section k-pos-relative">
+    <TelerikFloatingActionButton HorizontalAlign="@FloatingActionButtonHorizontalAlign.End"
+                                 VerticalAlign="@FloatingActionButtonVerticalAlign.Bottom"
+                                 PositionMode="@FloatingActionButtonPositionMode.Absolute"
+                                 OnClick="@OnClick"
+                                 Icon="@(popupVisible ? SvgIcon.X : SvgIcon.Menu)"
+                                 Id="floating-action-button"
+                                 VerticalOffset="4em"
+                                 HorizontalOffset="5em" />
+
+    <TelerikPopup @ref="@PopupRef"
+                  AnchorSelector="#floating-action-button"
+                  AnimationType="@AnimationType.SlideUp"
+                  AnimationDuration="100"
+                  HorizontalAlign="@PopupHorizontalAlign.Right"
+                  VerticalAlign="@PopupVerticalAlign.Bottom"
+                  AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Right"
+                  AnchorVerticalAlign="@PopupAnchorVerticalAlign.Top"
+                  VerticalOffset="4">
+        <div class="k-d-flex k-flex-col k-gap-1.5 k-p-1.5">
+            <TelerikButton Icon="@SvgIcon.Trash"
+                           Rounded="@ThemeConstants.Button.Rounded.Full"
+                           FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           Size="@ThemeConstants.Button.Size.Large"
+                           Enabled="@SelectedItems.Any()"
+                           Title="Delete"
+                           OnClick="@OnDeleteAction" />
+            <TelerikButton Icon="@SvgIcon.Plus"
+                           Rounded="@ThemeConstants.Button.Rounded.Full"
+                           FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           Size="@ThemeConstants.Button.Size.Large"
+                           Title="Add"
+                           OnClick="@OnAddAction" />
+        </div>
+    </TelerikPopup>
+
+    <TelerikGrid @ref="@GridRef"
+                 Data=@GridData
+                 EditMode="@GridEditMode.Inline"
+                 SelectionMode="@GridSelectionMode.Single"
+                 SelectedItems="@SelectedItems"
+                 SelectedItemsChanged="@((IEnumerable<ProductDto> items) => HandleSelection(items))"
+                 Height="330px"
+                 OnDelete=@DeleteItem
+                 OnCreate=@CreateItem>
+        <GridColumns>
+            <GridColumn Field=@nameof(ProductDto.ProductName) Title="Product" />
+            <GridColumn Field=@nameof(ProductDto.UnitsInStock) Title="In Stock" />
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+@code {
+    private IEnumerable<ProductDto> SelectedItems { get; set; } = new List<ProductDto>();
+    public List<ProductDto> GridData { get; set; }
+    private TelerikPopup PopupRef { get; set; }
+    private TelerikGrid<ProductDto> GridRef { get; set; }
+    private bool popupVisible = false;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+
+    private void CreateItem(GridCommandEventArgs args)
+    {
+        ProductService.CreateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(GridCommandEventArgs args)
+    {
+        ProductService.DeleteProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void OnClick()
+    {
+        if (popupVisible)
+        {
+            HidePopup();
+        }
+        else
+        {
+            ShowPopup();
+        }
+    }
+
+    private void HidePopup()
+    {
+        PopupRef.Hide();
+        popupVisible = false;
+    }
+
+    private void ShowPopup()
+    {
+        PopupRef.Show();
+        popupVisible = true;
+    }
+
+    private async Task OnAddAction()
+    {
+        var gridState = GridRef.GetState();
+
+        gridState.InsertedItem = new ProductDto();
+        gridState.OriginalEditItem = null;
+        gridState.EditItem = null;
+
+        await GridRef.SetStateAsync(gridState);
+
+        HidePopup();
+    }
+
+    private async Task OnDeleteAction()
+    {
+        if (GridData.Any() && SelectedItems.Any())
+        {
+            var itemToDelete = GridData.FirstOrDefault(x => x.ProductId == SelectedItems.First().ProductId);
+
+            if (itemToDelete != null)
+            {
+                ProductService.DeleteProduct(itemToDelete);
+                SelectedItems = new List<ProductDto>();
+
+                LoadData();
+            }
+        }
+
+        HidePopup();
+        await Task.CompletedTask;
+    }
+
+    private void HandleSelection(IEnumerable<ProductDto> items)
+    {
+        SelectedItems = items;
+
+        if (popupVisible)
+        {
+            HidePopup();
+        }
+    }
+}
+
+<style>
+    .k-popup {
+        border-radius: 9999px;
+    }
+
+    #floating-action-button {
+        z-index: 9999;
+    }
+</style>

@@ -1,0 +1,60 @@
+@page "/carousel/mediaquery-integration"
+
+<TelerikCarousel Data="@CarouselData"
+                 Width="@(CarouselWidth + "vw")" Height="@("calc(" + CarouselWidth + "vw * .75)")">
+    <Template>
+        <img src="images/photos/@(context.ImageID).jpg" alt="Photograph" />
+    </Template>
+</TelerikCarousel>
+
+<TelerikMediaQuery Media="(max-width: 900px)" OnChange="((changed) => Small = changed)"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(max-width: 1240px)" OnChange="((changed) => Medium = changed)"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 1241px)" OnChange="((changed) => Large = changed)"></TelerikMediaQuery>
+
+<style>
+    /* center the Carousel horizontally */
+    /* k-scrollview is the default component class */
+    .k-scrollview {
+        margin: 0 auto;
+    }
+
+    /* resize images to fit Carousel */
+    .k-scrollview img {
+        width: 100%;
+    }
+</style>
+
+@code {
+    public List<CarouselModel> CarouselData { get; set; }
+
+    public bool XSmall;
+    public bool Small;
+    public bool Medium;
+    public bool Large;
+
+    public int CarouselWidth
+    {
+        get
+        {
+            if (Small) { return 80; }
+            if (Medium) { return 60; }
+            if (Large) { return 40; }
+            return 40;
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        CarouselData = Enumerable.Range(1, 7).Select(x => new CarouselModel
+        {
+            ImageID = x
+        }).ToList();
+
+        return base.OnInitializedAsync();
+    }
+
+    public class CarouselModel
+    {
+        public int ImageID { get; set; }
+    }
+}

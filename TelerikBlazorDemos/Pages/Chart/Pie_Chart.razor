@@ -1,0 +1,61 @@
+@page "/chart/pie-chart"
+
+@using Telerik.Blazor
+
+<TelerikChart>
+    <ChartTitle Text="Break-up of Spain Electricity Production for 2008"></ChartTitle>
+    <ChartLegend Position="ChartLegendPosition.Bottom"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries
+            Type="ChartSeriesType.Pie"
+            Data="@Data"
+            Field="@nameof(ModelData.Percentage)"
+            CategoryField="@nameof(ModelData.Source)"
+            ExplodeField="@nameof(ModelData.Explode)">
+            <ChartSeriesTooltip Visible="true" Context="item">
+                <Template>
+                    @item.Percentage.ToString("P")
+                </Template>
+            </ChartSeriesTooltip>
+            <ChartSeriesLabels Visible="true"></ChartSeriesLabels>
+        </ChartSeries>
+    </ChartSeriesItems>
+</TelerikChart>
+
+@code {
+    public class ModelData
+    {
+        public string Source { get; set; }
+        public int Percentage { get; set; }
+        public bool Explode { get; set; }
+    }
+
+    public List<ModelData> Data = new List<ModelData>()
+    {
+        new ModelData()
+        {
+            Source = "Hydro",
+            Percentage = 22,
+            Explode = true
+        },
+        new ModelData()
+        {
+            Source = "Solar",
+            Percentage = 2,
+            Explode = false
+        },
+        new ModelData()
+        {
+            Source = "Nuclear",
+            Percentage = 49,
+            Explode = false
+        },
+        new ModelData()
+        {
+            Source = "Wind",
+            Percentage = 27,
+            Explode = false
+        }
+    };
+}

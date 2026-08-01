@@ -1,0 +1,51 @@
+@page "/stepper/validation"
+
+<TelerikStepper Linear="true" Value="@StepperValue" ValueChanged="@HandleValueChanged">
+    <StepperSteps>
+        <StepperStep Label="Account Details" Valid="@ValidStep"></StepperStep>
+        <StepperStep Label="Personal Details" Valid="@InvalidStep"></StepperStep>
+        <StepperStep Label="Delivery Details" Valid="@ValidStep2"></StepperStep>
+        <StepperStep Label="Payment Details"></StepperStep>
+    </StepperSteps>
+</TelerikStepper>
+
+<TelerikStepper Linear="true" Value="@StepperValue" ValueChanged="@HandleValueChanged" StepType="@StepperStepType.Labels">
+    <StepperSteps>
+        <StepperStep Label="Account Details" Valid="@ValidStep"></StepperStep>
+        <StepperStep Label="Personal Details" Valid="@InvalidStep"></StepperStep>
+        <StepperStep Label="Delivery Details" Valid="@ValidStep2"></StepperStep>
+        <StepperStep Label="Payment Details"></StepperStep>
+    </StepperSteps>
+</TelerikStepper>
+
+@code {
+    public bool? ValidStep { get; set; }
+    public bool? ValidStep2 { get; set; }
+    public bool? InvalidStep { get; set; }
+
+    public int StepperValue { get; set; }
+
+    public void HandleValueChanged(int index)
+    {
+        StepperValue = index;
+
+        if (index == 1)
+        {
+            ValidStep = true;
+        }
+        if (index == 2)
+        {
+            InvalidStep = false;
+        }
+        if (index == 3)
+        {
+            ValidStep2 = true;
+        }
+    }
+}
+
+<style>
+    .k-stepper {
+        margin-bottom: 60px;
+    }
+</style>

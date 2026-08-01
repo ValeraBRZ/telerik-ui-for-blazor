@@ -1,0 +1,55 @@
+@page "/stepper/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Linear">
+        <TelerikCheckBox @bind-Value="@Linear"></TelerikCheckBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Orientations">
+        <TelerikRadioGroup Data="@Orientations" @bind-Value="@Orientation" Layout="RadioGroupLayout.Horizontal"></TelerikRadioGroup>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Step Type">
+        <TelerikRadioGroup Data="@StepTypes" @bind-Value="@StepType" Layout="RadioGroupLayout.Horizontal"></TelerikRadioGroup>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikStepper Linear="@Linear" Orientation="@Orientation" StepType="@StepType">
+    <StepperSteps>
+        <StepperStep Icon="@SvgIcon.Cart" Label="Cart"></StepperStep>
+        <StepperStep Icon="@SvgIcon.MapMarkerTarget" Label="Delivery Address"></StepperStep>
+        <StepperStep Icon="@SvgIcon.Dollar" Label="Payment Method"></StepperStep>
+        <StepperStep Icon="@SvgIcon.Eye" Label="Preview" Optional="true"></StepperStep>
+        <StepperStep Icon="@SvgIcon.TrackChangesAccept" Label="Finish Order"></StepperStep>
+    </StepperSteps>
+</TelerikStepper>
+
+@code {
+    public bool Linear { get; set; }
+    public StepperOrientation Orientation { get; set; }
+    public StepperStepType StepType { get; set; }
+
+    public List<StepperOrientation> Orientations { get; set; } = new List<StepperOrientation>
+    {
+        StepperOrientation.Vertical,
+        StepperOrientation.Horizontal
+    };
+
+    public List<StepperStepType> StepTypes { get; set; } = new List<StepperStepType>
+    {
+        StepperStepType.Steps,
+        StepperStepType.Labels
+    };
+}
+
+<style>
+    .kd-example-runner .configurator .box-col {
+        padding-left: 30px;
+    }
+
+    .k-list-horizontal .k-radio-item {
+        margin-right: 8px;
+    }
+
+    .k-step-list-vertical {
+        height: 400px;
+    }
+</style>

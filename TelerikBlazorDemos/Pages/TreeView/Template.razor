@@ -1,0 +1,151 @@
+@page "/treeview/template"
+
+<TelerikTreeView Data="@TreeData" @bind-ExpandedItems="@ExpandedItems">
+    <TreeViewBindings>
+        <TreeViewBinding TextField="Category" ItemsField="Favorites">
+            <ItemTemplate>
+                @{
+                    Patron currPerson = context as Patron;
+                    <div class="kd-border kd-rounded p-sm">
+                        <img src="images/contacts/@(currPerson.Name.Replace(" ", "-") + "-round-40x40").png" alt="@(currPerson.Name)" />
+                        @(currPerson.Name + "'s Favorites")
+                    </div>
+                }
+            </ItemTemplate>
+        </TreeViewBinding>
+        <TreeViewBinding Level="1" ItemsField="Products">
+            <ItemTemplate>
+                <span class="mr-sm">Category:</span><strong>@((context as ProductCategoryItem).Category)</strong>
+            </ItemTemplate>
+        </TreeViewBinding>
+        <TreeViewBinding Level="2" TextField="ProductName">
+            <ItemTemplate>
+                @{
+                    ProductItem currProduct = context as ProductItem;
+                    <img src="images@(currProduct.ImagePath)/@( currProduct.ProductId ).jpg" alt="@(currProduct.ProductName)" /> @(currProduct.ProductName)
+                }
+            </ItemTemplate>
+        </TreeViewBinding>
+    </TreeViewBindings>
+</TelerikTreeView>
+
+
+@code {
+    public IEnumerable<Patron> TreeData { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+
+    public class Patron
+    {
+        public string Name { get; set; }
+        public List<ProductCategoryItem> Favorites { get; set; }
+    }
+
+    public class ProductCategoryItem
+    {
+        public string Category { get; set; }
+        public List<ProductItem> Products { get; set; }
+    }
+
+    public class ProductItem
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string ImagePath { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadHierarchical();
+    }
+
+    private void LoadHierarchical()
+    {
+        List<Patron> Patrons = new List<Patron>
+        {
+            new Patron {  Name = "Amaya Coffey" },
+            new Patron {  Name = "Dawson Humphrey" },
+            new Patron {  Name = "Giulia Haworth" }
+        };
+
+        Patrons[0].Favorites = new List<ProductCategoryItem>
+        {
+            new ProductCategoryItem
+            {
+                Category = "Beverages",
+                Products = new List<ProductItem>
+                {
+                    new ProductItem { ProductId = 1, ProductName = "Chai" },
+                    new ProductItem { ProductId = 2, ProductName = "Chang" },
+
+                }
+            },
+            new ProductCategoryItem
+            {
+                Category = "Food",
+                Products = new List<ProductItem>
+                {
+                     new ProductItem { ProductName= "Chef Anton's Cajun Seasoning", ProductId = 4 },
+                    new ProductItem { ProductName= "Chef Anton's Gumbo Mix", ProductId = 5 },
+                    new ProductItem { ProductName= "Grandma's Boysenberry Spread", ProductId = 6 },
+                    new ProductItem { ProductName= "Roquefort", ProductId = 11, ImagePath = "/foods" }
+                }
+            }
+        };
+
+        Patrons[1].Favorites = new List<ProductCategoryItem>
+        {
+            new ProductCategoryItem
+            {
+                Category = "Food",
+                Products = new List<ProductItem>
+                {
+                    new ProductItem { ProductName= "Grandma's Boysenberry Spread", ProductId = 6 }
+                }
+            },
+            new ProductCategoryItem
+            {
+                Category = "Beverages",
+                Products = new List<ProductItem>
+                {
+                    new ProductItem { ProductName= "Aniseed Syrup", ProductId = 3 },
+                }
+            }
+        };
+
+        Patrons[2].Favorites = new List<ProductCategoryItem>
+        {
+            new ProductCategoryItem
+            {
+                Category = "Food",
+                Products = new List<ProductItem>
+                {
+                    new ProductItem { ProductName= "Grandma's Boysenberry Spread", ProductId = 6 },
+                    new ProductItem { ProductName= "Mozzarella", ProductId = 72, ImagePath = "/foods" },
+                    new ProductItem { ProductName= "Cheesecake", ProductId = 59, ImagePath = "/foods" },
+                }
+            },
+            new ProductCategoryItem
+            {
+                Category = "Beverages",
+                Products = new List<ProductItem>
+                {
+                    new ProductItem { ProductName= "Chang", ProductId = 2 },
+                    new ProductItem { ProductName= "Aniseed Syrup", ProductId = 3 }
+                }
+            }
+        };
+
+        TreeData = Patrons;
+        ExpandedItems = new List<object> { Patrons.First(), Patrons.First().Favorites.Last() };
+    }
+}
+
+<style>
+    img {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+</style>

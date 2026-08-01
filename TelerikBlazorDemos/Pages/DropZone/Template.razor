@@ -1,0 +1,135 @@
+@page "/dropzone/template"
+
+@inject IJSRuntime js
+
+@inject NavigationManager NavigationManager
+
+<TelerikDropZone Id="dropzone-id"
+                 Class="template-dropzone"
+                 Height="auto">
+    <Template>
+        <div class="dropzone-content">
+            <TelerikSvgIcon Icon="@SvgIcon.Cloud" Flip="@IconFlip.Horizontal" Size="@ThemeConstants.SvgIcon.Size.ExtraExtraExtraLarge" />
+            <span class="line">Drag and drop files here</span>
+            <span class="line">or</span>
+            <TelerikButton Id="@ButtonId"
+                           ButtonType="@ButtonType.Button"
+                           ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">
+                Click to select
+            </TelerikButton>
+            @* See JavaScript and OnAfterRenderAsync below. *@
+            @*OnClick="@( () => UploadRef.OpenSelectFilesDialog() )"*@
+            @if (SuccessfulUploads.Any())
+            {
+                <p>@( $"Successfully uploaded: {string.Join(", ", SuccessfulUploads)}" )</p>
+            }
+        </div>
+    </Template>
+</TelerikDropZone>
+
+<TelerikUpload @ref="@UploadRef"
+               Id="@UploadId"
+               DropZoneId="dropzone-id"
+               SaveUrl="@UploadSaveUrl"
+               RemoveUrl="@UploadRemoveUrl"
+               MaxFileSize="@( 16 * 1024 * 1024 )"
+               Class="k-hidden"
+               OnSelect="@OnUploadSelect"
+               OnSuccess="@OnUploadSuccess">
+</TelerikUpload>
+
+<style>
+    /* Reset default DropZone theme styles that can affect template content. */
+    /* This code may not be necessary in future versions. */
+    div.template-dropzone,
+    .template-dropzone .k-dropzone-inner {
+        /* remove flexbox layout */
+        display: block;
+    }
+
+        .template-dropzone .k-dropzone-inner .k-icon {
+            /* remove default DropZone icon margin */
+            margin-bottom: 0;
+            /* enlarge DropZone icon from default size 48px */
+            font-size: 64px;
+        }
+
+    /* Custom styling */
+    .template-dropzone .dropzone-content {
+        margin: 3em;
+        text-align: center;
+    }
+
+    .dropzone-content .line {
+        display: block;
+        margin-bottom: .4em;
+    }
+
+    .dropzone-content p {
+        margin-top: 1em;
+        font-size: .9em;
+    }
+</style>
+
+@* Move JavaScript to separate JS file in production apps *@
+<script suppress-error="BL9992">
+    // This JavaScript code works around a Safari security restriction:
+    // Programmatic file input clicks can occur only as a result of user action.
+    // JSInterop calls originate from C# code and do not represent user actions.
+    // If you don't have to support Safari,
+    // then just use the OnClick event of the Button and UploadRef.OpenSelectFilesDialog().
+
+    function attachClickHandler(buttonId, uploadId) {
+        var dropZoneButton = document.getElementById(buttonId);
+        var fileInput = document.getElementById(uploadId);
+        if (dropZoneButton && fileInput) {
+            dropZoneButton.addEventListener("click", function() {
+                fileInput.click();
+            });
+        }
+    }
+</script>
+
+@code {
+    private TelerikUpload UploadRef { get; set; }
+
+    private string UploadId { get; set; } = "upload-id";
+
+    private string ButtonId { get; set; } = "file-dialog-button";
+
+    private string UploadSaveUrl => ToAbsoluteUrl("api/upload/save");
+
+    private string UploadRemoveUrl => ToAbsoluteUrl("api/upload/remove");
+
+    private string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+
+    private List<string> SuccessfulUploads { get; set; } = new List<string>();
+
+    private void OnUploadSelect(UploadSelectEventArgs args)
+    {
+        SuccessfulUploads.Clear();
+    }
+
+    private void OnUploadSuccess(UploadSuccessEventArgs args)
+    {
+        if (args.Operation == UploadOperationType.Upload)
+        {
+            SuccessfulUploads.Add(args.Files.First().Name);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Use JavaScript instead of Button OnClick
+            // to work around Safari security restriction.
+            await js.InvokeVoidAsync("attachClickHandler", ButtonId, UploadId);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

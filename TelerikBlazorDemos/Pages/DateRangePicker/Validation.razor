@@ -1,0 +1,100 @@
+@page "/daterangepicker/validation"
+
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-alert demo-alert-info">Try typing a date in the End input that is earlier than the Start date, and press Submit</div>
+
+<div class="demo-section">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@dateRange" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div>
+                <TelerikDateRangePicker @bind-StartValue="@dateRange.StartDate"
+                                        @bind-EndValue="@dateRange.EndDate">
+                </TelerikDateRangePicker>
+            </div>
+
+            <div class="mt-md">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    DateRange dateRange { get; set; }
+    string SuccessMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        dateRange = new DateRange()
+        {
+            StartDate = DateTime.Today,
+            EndDate = DateTime.Today.AddDays(5)
+        };
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+
+    // A custom validation attribute is used to show an error message to the user
+    // if they type an end date that is before the start date in the input
+    public class CompareDateAttribute : ValidationAttribute
+    {
+        public string compareToDateTimeProperty;
+
+        public CompareDateAttribute(string compareToPropertyName)
+        {
+            this.compareToDateTimeProperty = compareToPropertyName;
+        }
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var validationObject = validationContext.ObjectInstance;
+            PropertyInfo propertyInfo = validationObject.GetType().GetProperty(compareToDateTimeProperty);
+
+            var currentValue = (DateTime?)value;
+            var compareToValue = (DateTime?)propertyInfo?.GetValue(validationObject);
+
+            return currentValue < compareToValue ? ValidationResult.Success : new ValidationResult(ErrorMessage, new[] { validationContext.MemberName });
+        }
+    }
+
+    public class DateRange
+    {
+        [Required]
+        [CompareDate(nameof(EndDate), ErrorMessage = "The Start date must be before the End date.")]
+        public DateTime? StartDate { get; set; }
+
+        [Required]
+        public DateTime? EndDate { get; set; }
+
+        public DateRange()
+        {
+
+        }
+    }
+}

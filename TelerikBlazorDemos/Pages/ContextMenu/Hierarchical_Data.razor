@@ -1,0 +1,115 @@
+@page "/contextmenu/hierarchical-data"
+
+<TelerikContextMenu @ref="@ContextMenu"
+                    Data="@MenuItems"
+                    Selector=".target">
+</TelerikContextMenu>
+
+<div style="width: 100%" class="target-wrapper @CssClass">
+    <div class="target">
+        <p class="placeholder">Right-click to open Context menu</p>
+    </div>
+</div>
+
+@code {
+    public TelerikContextMenu<MenuItem> ContextMenu { get; set; }
+
+    public List<MenuItem> MenuItems { get; set; }
+
+    public string CssClass { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public bool Separator { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public IEnumerable<MenuItem> Items { get; set; }
+        public Action Action { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem {
+                Text = "Reply",
+                Icon = SvgIcon.Envelope,
+                Items = new List<MenuItem>
+                {
+                    new MenuItem { Text = "Reply to Sender", Icon = SvgIcon.User },
+                    new MenuItem { Text = "Reply to All", Icon = SvgIcon.Share }
+                }
+            },
+
+            new MenuItem { Separator = true },
+
+            new MenuItem { Text = "Forward", Icon = SvgIcon.Forward },
+
+            new MenuItem { Separator = true },
+
+            new MenuItem
+            {
+                Text = "Label",
+                Icon = SvgIcon.Book,
+                Items = new List<MenuItem>
+                {
+                    new MenuItem { Text = "None", Icon= SvgIcon.Cancel },
+                    new MenuItem { Separator = true },
+                    new MenuItem { Text = "Important", Icon = SvgIcon.ExclamationCircle },
+                    new MenuItem { Text = "Work", Icon = SvgIcon.ChartLine },
+                    new MenuItem { Text = "Personal", Icon = SvgIcon.User }
+                }
+            }
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .target {
+        border-radius: 5px;
+        height: 100px;
+        width: 400px;
+        background-color: #f6f6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    .placeholder {
+        font-size: 20px;
+        color: #656565;
+        margin: 0;
+    }
+
+    .target-wrapper {
+        display: flex;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .underline {
+        text-decoration: underline;
+    }
+
+    .align-left {
+        justify-content: flex-start;
+    }
+
+    .align-center {
+        justify-content: center;
+    }
+
+    .align-right {
+        justify-content: flex-end;
+    }
+</style>

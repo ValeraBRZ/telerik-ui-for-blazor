@@ -1,0 +1,35 @@
+@page "/textbox/adornments"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+
+    <TelerikTextBox @bind-Value="@TextBoxValue"
+                    Placeholder="Enter email"
+                    ShowPrefixSeparator="@ShowPrefixSeparator"
+                    ShowSuffixSeparator="@ShowSuffixSeparator">
+        <TextBoxPrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.Envelop"></TelerikSvgIcon>
+        </TextBoxPrefixTemplate>
+        <TextBoxSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat">Send</TelerikButton>
+        </TextBoxSuffixTemplate>
+    </TelerikTextBox>
+</div>
+
+@code {
+    private string TextBoxValue { get; set; }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

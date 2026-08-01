@@ -1,0 +1,56 @@
+﻿@page "/fileselect/events"
+
+<div class="row">
+    <div class="col-4">
+        <TelerikFileSelect OnSelect="@OnSelect"
+                           OnRemove="@OnRemove">
+        </TelerikFileSelect>
+    </div>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string EventLog { get; set; } = "";
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnSelect(FileSelectEventArgs args)
+    {
+        var log = "<div><strong>Select event</strong>. The following files have been selected:<ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li><strong>{file.Name}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnRemove(FileSelectEventArgs args)
+    {
+        var log = "<div><strong>Remove event</strong>. The following files will be removed:<ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li><strong>{file.Name}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+}
+
+
+<style>
+    .k-upload-files {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>

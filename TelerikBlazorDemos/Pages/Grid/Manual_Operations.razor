@@ -1,0 +1,62 @@
+@page "/grid/manual-operations"
+
+@using Telerik.DataSource.Extensions;
+
+@inject UrbanAreaService UrbanAreaService
+
+@if (SourceData != null)
+{
+<TelerikGrid TItem="UrbanAreaDto"
+             Height=@Height
+             FilterMode="@GridFilterMode.FilterRow"
+             Sortable=true
+             Pageable=true
+             OnRead=@ReadItems>
+    <GridColumns>
+        <GridColumn Field=@nameof(UrbanAreaDto.Id) />
+        <GridColumn Field=@nameof(UrbanAreaDto.City) />
+        <GridColumn Field=@nameof(UrbanAreaDto.Country) />
+    </GridColumns>
+</TelerikGrid> }
+else
+{
+    <div class="loader-container">
+        <span class="loader-size-title">Fetching data</span>
+        <TelerikLoader Class="loader-indicator" Type="@LoaderType.ConvergingSpinner" Size="@(ThemeConstants.Loader.Size.Large)"></TelerikLoader>
+    </div>
+}
+
+
+@code {
+    public List<UrbanAreaDto> SourceData { get; set; }
+    string Height = "400px";
+
+    protected override void OnInitialized()
+    {
+        SourceData = UrbanAreaService.GetUrbanAreas().ToList();
+    }
+
+    private void ReadItems(GridReadEventArgs args)
+    {
+        var datasourceResult = SourceData.ToDataSourceResult(args.Request);
+
+        args.Data = datasourceResult.Data;
+        args.Total = datasourceResult.Total;
+    }
+}
+
+<style>
+    .loader-size-title {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .loader-container {
+        text-align: center;
+        width: 150px;
+        display: inline-table;
+        padding-top: 10px;
+        position: absolute;
+        left: 50%;
+    }
+</style>

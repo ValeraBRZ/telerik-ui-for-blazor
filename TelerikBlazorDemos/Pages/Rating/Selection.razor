@@ -1,0 +1,21 @@
+@page "/rating/selection"
+
+<h4>Continuous Selection</h4>
+<TelerikRating @bind-Value="@ContinuousSelectionValue"
+               SelectionMode="RatingSelectionMode.Continuous"
+               Label="@ContinuousSelectionLabel">
+</TelerikRating>
+
+<h4>Single Selection</h4>
+<TelerikRating @bind-Value="@SingleSelectionValue"
+               SelectionMode="RatingSelectionMode.Single"
+               Label="@SingleSelectionLabel">
+</TelerikRating>
+
+@code {
+    private double ContinuousSelectionValue { get; set; } = 4;
+    private double SingleSelectionValue { get; set; } = 2;
+
+    private string ContinuousSelectionLabel => $"{ContinuousSelectionValue} / 5";
+    private string SingleSelectionLabel => $"{SingleSelectionValue} / 5";
+}

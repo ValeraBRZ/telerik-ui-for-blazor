@@ -1,0 +1,23 @@
+@page "/combobox/keyboard-navigation"
+
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="theCombo" class="k-label k-form-label">Value: @SelectedValue</label>
+        <div class="k-form-field-wrap">
+            <TelerikComboBox Data="@ComboData" @bind-Value="@SelectedValue"
+                             Filterable="true" AllowCustom="true" ShowClearButton="true"
+                             Placeholder="Select or write something" Id="theCombo" Width="100%">
+                <ComboBoxSettings>
+                    <ComboBoxPopupSettings Height="auto"></ComboBoxPopupSettings>
+                </ComboBoxSettings>
+            </TelerikComboBox>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected List<string> ComboData = new List<string>() { "first", "second", "third", "fourth", "fifth" };
+
+    protected string SelectedValue { get; set; } = "second";
+}

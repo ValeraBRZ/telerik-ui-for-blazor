@@ -1,0 +1,91 @@
+@page "/scheduler/grouping"
+
+@inject AppointmentService appointmentService
+@inject RoomService roomService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Grouping Orientation">
+        <TelerikDropDownList @bind-Value="@GroupingOrientation" Data="@GroupingOrientationOptions" Enabled="@IsDropDownListEnabled">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" Height="600px" View="@CurrView"
+                  OnUpdate="@UpdateAppointment" OnCreate="@AddAppointment" OnDelete="@DeleteAppointment"
+                  AllowCreate="true" AllowDelete="true" AllowUpdate="true" ViewChanged="@HandleViewChanged">
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" />
+        <SchedulerWeekView StartTime="@DayStart" />
+        <SchedulerMultiDayView StartTime="@DayStart" />
+        <SchedulerMonthView></SchedulerMonthView>
+        <SchedulerTimelineView StartTime="@DayStart" />
+        <SchedulerAgendaView></SchedulerAgendaView>
+    </SchedulerViews>
+    <SchedulerResources>
+        <SchedulerResource Field="RoomId" TextField="Name" ValueField="Id" Data="@Rooms"></SchedulerResource>
+    </SchedulerResources>
+    <SchedulerSettings>
+        <SchedulerGroupSettings Resources="@GroupingResources" Orientation="@GroupingOrientation"></SchedulerGroupSettings>
+    </SchedulerSettings>
+</TelerikScheduler>
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+    IEnumerable<RoomDto> Rooms = new List<RoomDto>();
+
+    List<string> GroupingResources = new List<string> { "RoomId" };
+    SchedulerGroupOrientation GroupingOrientation = SchedulerGroupOrientation.Horizontal;
+    List<SchedulerGroupOrientation> GroupingOrientationOptions = new List<SchedulerGroupOrientation> { SchedulerGroupOrientation.Horizontal, SchedulerGroupOrientation.Vertical };
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+    public bool IsDropDownListEnabled { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        Rooms = roomService.GetRooms();
+
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+
+    void UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        appointmentService.UpdateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void AddAppointment(SchedulerCreateEventArgs args)
+    {
+        appointmentService.CreateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        appointmentService.DeleteAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    private void HandleViewChanged(SchedulerView nextView)
+    {
+        if (nextView == SchedulerView.Agenda)
+        {
+            GroupingOrientation = SchedulerGroupOrientation.Vertical;
+            IsDropDownListEnabled = !IsDropDownListEnabled;
+        }
+        else
+        {
+            IsDropDownListEnabled = true;
+        }
+        CurrView = nextView;
+    }
+}

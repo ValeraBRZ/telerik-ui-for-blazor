@@ -1,0 +1,34 @@
+@page "/toolbar/tools"
+
+<TelerikToolBar Class="toolbar-size" OverflowMode="@ToolBarOverflowMode.None">
+    <ToolBarButton Icon="@SvgIcon.Undo">Undo</ToolBarButton>
+    <ToolBarButton Icon="@SvgIcon.Redo">Redo</ToolBarButton>
+    <ToolBarSeparator></ToolBarSeparator>
+    <ToolBarToggleButton Icon="@SvgIcon.ApplyFormat"></ToolBarToggleButton>
+    <ToolBarSeparator></ToolBarSeparator>
+    <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+        <ToolBarToggleButton @bind-Selected="@BoldSelected" Icon="@SvgIcon.Bold"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.Italic"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.Underline"></ToolBarToggleButton>
+    </ToolBarButtonGroup>
+    <ToolBarSeparator></ToolBarSeparator>
+    <ToolBarSpacer></ToolBarSpacer>
+    <ToolBarTemplateItem>
+        <span class="k-textbox k-input k-input-solid k-rounded-md k-input-md">
+            <input type="text" class="k-input-inner" placeholder="Search...">
+            <span class="k-input-suffix">
+                <TelerikSvgIcon Icon="@SvgIcon.Search"/>
+            </span>
+        </span>
+    </ToolBarTemplateItem>
+</TelerikToolBar>
+
+@code {
+    public bool BoldSelected { get; set; } = true;
+}
+
+<style>
+    .toolbar-size {
+        max-width: 830px;
+    }
+</style>

@@ -1,0 +1,97 @@
+@page "/form/orientation"
+
+@using User = TelerikBlazorDemos.Models.Form.User
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Label Orientation">
+        <TelerikDropDownList @bind-Value="@FormOrientation"
+                             Data="@OrientationTypes"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@TestUser"
+                     Orientation="@FormOrientation"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                <FormItem Field="@nameof(User.FirstName)"></FormItem>
+                <FormItem Field="@nameof(User.LastName)"></FormItem>
+                <FormItem Field="@nameof(User.Email)">
+                    <Template>
+                        <label for="mail" class="k-label k-form-label">Email*:</label>
+                        <div class="k-form-field-wrap">
+                            <TelerikTextBox Id="mail" @bind-Value="@TestUser.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                            <TelerikValidationMessage For="@(() => TestUser.Email)"></TelerikValidationMessage>
+                        </div>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(User.Password)">
+                    <Template>
+                        <label for="pass" class="k-label k-form-label">Password*:</label>
+                        <div class="k-form-field-wrap">
+                            <TelerikTextBox Id="pass" @bind-Value="@TestUser.Password" Password="true"></TelerikTextBox>
+                            <TelerikValidationMessage For="@(() => TestUser.Password)"></TelerikValidationMessage>
+                        </div>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(User.BirthDate)" />
+                <FormItem Field="@nameof(User.AcceptTerms)" />
+            </FormItems>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    public FormOrientation FormOrientation { get; set; }
+    public List<FormOrientation> OrientationTypes { get; set; } = new List<FormOrientation>()
+    {
+        FormOrientation.Horizontal,
+        FormOrientation.Vertical,
+    };
+    public User TestUser { get; set; } = new User()
+        {
+        FirstName = "Johny",
+        LastName = "Doe",
+        Email = "johny.doe@email.com",
+        Password = "testpassword",
+        BirthDate = new DateTime(2000, 12, 10),
+        City = "Sofia",
+        Country = "Bulgaria",
+        AddressLine = "City Center"
+    };
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}
+<style>
+    .k-form-label {
+        width: 30% !important;
+    }
+</style>

@@ -1,0 +1,121 @@
+@page "/stacklayout/overview"
+
+<div class="example-container k-d-flex-col">
+    <div class="header k-d-flex">
+        <h1 class="k-flex-grow">Popular Creators</h1>
+
+        <div class="k-d-flex k-align-items-center">
+            <TelerikButtonGroup>
+                <ButtonGroupToggleButton Selected="@IsHorizontalAlign" OnClick="@(() => Orientation = StackLayoutOrientation.Horizontal)">Horizontal</ButtonGroupToggleButton>
+                <ButtonGroupToggleButton Selected="@(!IsHorizontalAlign)" OnClick="@(() => Orientation = StackLayoutOrientation.Vertical)">Vertical</ButtonGroupToggleButton>
+            </TelerikButtonGroup>
+        </div>
+    </div>
+
+    <TelerikStackLayout Orientation="@Orientation" Spacing="15px">
+        <TelerikCard Class="k-flex-30">
+            <CardHeader Class="k-hbox">
+                <div class="k-rounded-full k-avatar k-avatar-lg avatar-size">
+                    <div class="k-avatar-image ng-star-inserted" style="background-image: url(images/stack-layout/avatar1.jpg);"></div>
+                </div>
+                @if (ShowTitle)
+                {
+                    <div>
+                        <CardTitle>Lindsey Mango</CardTitle>
+                        <CardSubTitle>34k followers</CardSubTitle>
+                    </div>
+                }
+            </CardHeader>
+            <CardImage Class="k-card-cover" Src="images/stack-layout/dog1.jpg"></CardImage>
+            <CardBody>
+                <CardSubTitle Class="photo-text">Photos by Rikonavt and by Ivana La on Unsplash</CardSubTitle>
+            </CardBody>
+            <CardActions>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)"
+                               ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">See more from Lindsey</TelerikButton>
+            </CardActions>
+        </TelerikCard>
+
+        <TelerikCard Class="k-flex-40">
+            <CardHeader Class="k-hbox">
+                <div class="k-rounded-full k-avatar k-avatar-lg avatar-size">
+                    <div class="k-avatar-image ng-star-inserted" style="background-image: url(images/stack-layout/avatar2.jpg);"></div>
+                </div>
+                @if (ShowTitle)
+                {
+                    <div>
+                        <CardTitle>Vincenzo Mays</CardTitle>
+                        <CardSubTitle>32k followers</CardSubTitle>
+                    </div>
+                }
+            </CardHeader>
+            <CardImage Class="k-card-cover" Src="images/stack-layout/summer.jpg"></CardImage>
+            <CardBody>
+                <CardSubTitle Class="photo-text">Photos by Irene Strong and by the BlackRabbit on Unsplash</CardSubTitle>
+            </CardBody>
+            <CardActions>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)"
+                               ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">See more from Vincenzo</TelerikButton>
+            </CardActions>
+        </TelerikCard>
+
+        <TelerikCard Class="k-flex-30">
+            <CardHeader Class="k-hbox">
+                <div class="k-rounded-full k-avatar k-avatar-lg avatar-size">
+                    <div class="k-avatar-image ng-star-inserted" style="background-image: url(images/stack-layout/avatar3.jpg);"></div>
+                </div>
+                @if (ShowTitle)
+                {
+                    <div>
+                        <CardTitle>Marissa Webb</CardTitle>
+                        <CardSubTitle>36k followers</CardSubTitle>
+                    </div>
+                }
+            </CardHeader>
+            <CardImage Class="k-card-cover" Src="images/stack-layout/dog2.jpg"></CardImage>
+            <CardBody>
+                <CardSubTitle Class="photo-text">Photos by JJ Jordan and by Silvana Carlos on Unsplash</CardSubTitle>
+            </CardBody>
+            <CardActions>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)"
+                               ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">See more from Marissa
+                </TelerikButton>
+            </CardActions>
+        </TelerikCard>
+    </TelerikStackLayout>
+
+    <TelerikMediaQuery Media="(min-width: 720px)" OnChange="((changed) => ShowTitle = changed)"></TelerikMediaQuery>
+</div>
+
+@code {
+    public StackLayoutOrientation Orientation { get; set; }
+    public bool IsHorizontalAlign => Orientation == StackLayoutOrientation.Horizontal;
+    public bool ShowTitle { get; set; } = true;
+}
+
+<style>
+    .example-container {
+        margin: 0 auto;
+        max-width: 900px;
+    }
+
+    .k-flex-30 { flex: 1 1 30%; }
+
+    .k-flex-40 { flex: 1 1 40%; }
+
+    .k-card-cover {
+        object-fit: cover;
+        width: 100%;
+        height: 375px;
+    }
+
+    .k-card-body {
+        padding: 0px 8px !important;
+    }
+
+    .photo-text {
+        text-align: right;
+        font-size: 10px;
+        font-style: italic;
+    }
+</style>

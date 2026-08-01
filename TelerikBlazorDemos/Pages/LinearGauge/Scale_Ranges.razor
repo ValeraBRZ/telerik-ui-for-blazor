@@ -1,0 +1,29 @@
+@page "/lineargauge/scale-ranges"
+
+<div class="demo-section">
+    <TelerikLinearGauge>
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="180">
+                <LinearGaugeScaleRanges>
+                    <LinearGaugeScaleRange From="90"
+                                           To="120"
+                                           Color="#FFE162">
+                    </LinearGaugeScaleRange>
+
+                    <LinearGaugeScaleRange From="120"
+                                           To="150"
+                                           Color="#FF8400">
+                    </LinearGaugeScaleRange>
+
+                    <LinearGaugeScaleRange From="150"
+                                           To="180"
+                                           Color="#C20000">
+                    </LinearGaugeScaleRange>
+                </LinearGaugeScaleRanges>
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="50"></LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>

@@ -1,0 +1,26 @@
+@page "/lineargauge/rtl"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Change pointer value">
+        <TelerikNumericTextBox @bind-Value="@Value"
+                               Min="0"
+                               Max="50"
+                               Step="10"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikLinearGauge>
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="50" Vertical="false">
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="@Value"></LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>
+
+@code {
+    public int Value { get; set; } = 20;
+}

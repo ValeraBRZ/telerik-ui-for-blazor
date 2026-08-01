@@ -1,0 +1,21 @@
+@page "/stepper/localization"
+
+@using TelerikBlazorDemos.Resources
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikStepper>
+    <StepperSteps>
+        <StepperStep Label="@Localizaer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label1))"></StepperStep>
+        <StepperStep Optional="true" Label="@Localizaer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label2))"></StepperStep>
+        <StepperStep Label="@Localizaer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label3))"></StepperStep>
+    </StepperSteps>
+</TelerikStepper>
+
+@code {
+    public CustomStringLocalizer Localizaer { get; set; } = new CustomStringLocalizer();
+}

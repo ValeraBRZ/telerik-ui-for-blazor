@@ -1,0 +1,232 @@
+@page "/chart/trendline-chart"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Pick the Trendline's Type">
+        <TelerikDropDownList Data="@TrendlineTypes"
+                             @bind-Value="@SelectedTrendlineType">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" Width="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikChart>
+    <ChartPannable Enabled="true" Lock="@ChartAxisLock.Y" />
+    <ChartZoomable Enabled="true" />
+    <ChartLegend Visible="true" Position="@ChartLegendPosition.Bottom" />
+    <ChartTooltip Visible="true" Shared="false" />
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.ScatterLine"
+                     Name="@SeriesName"
+                     Data="@ChartData"
+                     XField="@nameof(StockPriceTrend.NumericPeriod)"
+                     YField="@nameof(StockPriceTrend.Price)">
+        </ChartSeries>
+
+        @foreach (var trend in TrendlinesData)
+        {
+            if (trend.Name.Contains(SelectedTrendlineType.Split(' ')[0], StringComparison.OrdinalIgnoreCase) ||
+            trend.Name.Contains(SelectedTrendlineType.Split(' ')[3], StringComparison.OrdinalIgnoreCase))
+            {
+                <ChartSeries Type="@trend.Type"
+                             Name="@trend.Name"
+                             For="@trend.For"
+                             Color="@trend.Color">
+                    <ChartSeriesTrendline Period="4">
+                        <ChartSeriesTrendlineForecast Before="0" After="3" />
+                    </ChartSeriesTrendline>
+                </ChartSeries>
+            }
+        }
+
+    </ChartSeriesItems>
+
+    <ChartYAxes>
+        <ChartYAxis>
+            <ChartYAxisTitle Text="Price" />
+            <ChartYAxisLabels Format="C0" />
+        </ChartYAxis>
+    </ChartYAxes>
+
+</TelerikChart>
+
+@code {
+    private List<StockPriceTrend> ChartData { get; set; }
+    private const string SeriesName = "Stock Price Trend";
+
+    private string SelectedTrendlineType { get; set; } = "Linear Trendline & Moving Average Trendline";
+
+    private List<string> TrendlineTypes { get; set; } = new List<string>
+    {
+        "Linear Trendline & Moving Average Trendline",
+        "Polynomial Trendline & Exponential Trendline",
+        "Power Trendline & Logarithmic Trendline"
+    };
+
+    private List<SeriesModel> TrendlinesData { get; set; } = new List<SeriesModel> 
+    {
+        new SeriesModel { Type = ChartSeriesType.LinearTrendline, Name = "Stock Price (LINEAR TRENDLINE)", For = SeriesName, Color = "blue" },
+        new SeriesModel { Type = ChartSeriesType.MovingAverageTrendline, Name = "Stock Price (MOVING AVERAGE TRENDLINE)", For = SeriesName, Color = "teal" },
+        new SeriesModel { Type = ChartSeriesType.PolynomialTrendline, Name = "Stock Price (POLYNOMIAL)", For = SeriesName, Color = "brown" },
+        new SeriesModel { Type = ChartSeriesType.ExponentialTrendline, Name = "Stock Price (EXPONENTIAL)", For = SeriesName, Color = "darkblue" },
+        new SeriesModel { Type = ChartSeriesType.PowerTrendline, Name = "Stock Price (POWER)", For = SeriesName, Color = "darkmagenta" },
+        new SeriesModel { Type = ChartSeriesType.LogarithmicTrendline, Name = "Stock Price (LOGARITHMIC)", For = SeriesName, Color = "darkgreen" },
+    };
+
+    protected override Task OnInitializedAsync()
+    {
+        ChartData = GetTrendlineData();
+
+        return base.OnInitializedAsync();
+    }
+
+    private List<StockPriceTrend> GetTrendlineData()
+    {
+        return new List<StockPriceTrend>()
+        {
+            new StockPriceTrend()
+            {
+                Period = "Q1 2025",
+                NumericPeriod = 10,
+                Date = new DateTime(2022, 1, 1),
+                Price = 10.28m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q2 2022",
+                NumericPeriod = 20,
+                Date = new DateTime(2022, 4, 1),
+                Price = 20.54m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q3 2022",
+                NumericPeriod = 30,
+                Date = new DateTime(2022, 7, 1),
+                Price = 29.33m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q4 2022",
+                NumericPeriod = 40,
+                Date = new DateTime(2022, 10, 1),
+                Price = 69.81m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q1 2023",
+                NumericPeriod = 50,
+                Date = new DateTime(2023, 1, 1),
+                Price = 45.5m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q2 2023",
+                NumericPeriod = 60,
+                Date = new DateTime(2023, 4, 1),
+                Price = 57.54m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q3 2023",
+                NumericPeriod = 70,
+                Date = new DateTime(2023, 7, 1),
+                Price = 68.3m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q4 2023",
+                NumericPeriod = 80,
+                Date = new DateTime(2023, 10, 1),
+                Price = 70.73m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q1 2024",
+                NumericPeriod = 90,
+                Date = new DateTime(2024, 1, 1),
+                Price = 68.15m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q2 2024",
+                NumericPeriod = 100,
+                Date = new DateTime(2024, 4, 1),
+                Price = 76.24m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q3 2024",
+                NumericPeriod = 110,
+                Date = new DateTime(2024, 7, 1),
+                Price = 52.3m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q4 2024",
+                NumericPeriod = 120,
+                Date = new DateTime(2024, 10, 1),
+                Price = 75.73m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q1 2025",
+                NumericPeriod = 130,
+                Date = new DateTime(2025, 1, 1),
+                Price = 84.25m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q2 2025",
+                NumericPeriod = 140,
+                Date = new DateTime(2025, 4, 1),
+                Price = 85.4m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q3 2025",
+                NumericPeriod = 150,
+                Date = new DateTime(2025, 7, 1),
+                Price = 79.93m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q4 2025",
+                NumericPeriod = 160,
+                Date = new DateTime(2025, 10, 1),
+                Price = 80.76m
+            },
+            new StockPriceTrend()
+            {
+                Period = "Q1 2026",
+                NumericPeriod = 170,
+                Date = new DateTime(2026, 1, 1),
+                Price = 128.36m
+            },
+        };
+    }
+
+    private class StockPriceTrend
+    {
+        public string Period { get; set; }
+        public int NumericPeriod { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    private class SeriesModel
+    {
+        public ChartSeriesType Type { get; set; }
+        public string Name { get; set; }
+        public string For { get; set; }
+        public string Color { get; set; }
+    }
+}
+
+<style>
+    /*dropdownlist width*/
+    .kd-example-runner .configurator .box-col .telerik-blazor {
+        max-width: 330px;
+    }
+</style>

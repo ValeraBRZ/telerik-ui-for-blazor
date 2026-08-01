@@ -1,0 +1,43 @@
+@page "/treelist/rtl"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList @ref="@TreeListRef"
+                 Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 FilterMode="@TreeListFilterMode.FilterRow">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId"
+                        Title="Id"
+                        Width="150px">
+        </TreeListColumn>
+        <TreeListColumn Field="FirstName"
+                        Title="First Name"
+                        Width="350px"
+                        Expandable="true">
+        </TreeListColumn>
+        <TreeListColumn Field="LastName"
+                        Title="Last Name">
+        </TreeListColumn>
+        <TreeListColumn Field="HireDate"
+                        Title="Hire Date">
+        </TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    TelerikTreeList<EmployeeDirectoryDto> TreeListRef { get; set; }
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

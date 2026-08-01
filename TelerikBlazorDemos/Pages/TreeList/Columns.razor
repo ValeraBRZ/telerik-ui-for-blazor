@@ -1,0 +1,60 @@
+@page "/treelist/columns"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleIdColumn">Show / Hide Id Column</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton Enabled="@(!HireDateColumn)" OnClick="@ShowHireDateColumn">Add HireDate Column</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton Enabled="@HireDateColumn" OnClick="@HideHireDateColumn">Delete HireDate Column</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Resizable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="ID" Width="60px" Visible="@IdVisible"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px" Visible="@HireDateColumn"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    bool IdVisible = true;
+    bool HireDateColumn = false;
+
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    void ToggleIdColumn()
+    {
+        IdVisible = !IdVisible;
+    }
+
+    void ShowHireDateColumn()
+    {
+        HireDateColumn = true;
+    }
+
+    void HideHireDateColumn()
+    {
+        HireDateColumn = false;
+    }
+}

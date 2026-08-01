@@ -1,0 +1,84 @@
+@page "/chiplist/selection"
+
+@inject ProductService ProductService
+@inject CategoryService CategoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ChipList Selection Mode">
+        <TelerikRadioGroup Data="@ChipSelectionModes" Value="@ChipSelectionMode" ValueChanged="@( (ChipListSelectionMode newMode) => ChipSelectionModeChanged(newMode) )" Layout="@RadioGroupLayout.Horizontal" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<h3>Product Categories:</h3>
+
+<TelerikChipList Data="@Categories"
+                 TextField="@nameof(CategoryDto.CategoryName)"
+                 Removable="false"
+                 SelectionMode="@ChipSelectionMode"
+                 SelectedItems="@ChipListSelectedItems"
+                 SelectedItemsChanged="@( (IEnumerable<CategoryDto> newSelected) => OnChipListSelectedItemsChanged(newSelected) )" />
+
+<h3>Products from the Selected Categories:</h3>
+
+<TelerikGrid Data="@ProductsToDisplay"
+             Pageable="true"
+             Sortable="true">
+    <GridColumns>
+        <GridColumn Field="@nameof(ProductDto.ProductName)" Title="Product" />
+        <GridColumn Field="@nameof(ProductDto.CategoryName)" Title="Category" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    private ChipListSelectionMode ChipSelectionMode { get; set; } = ChipListSelectionMode.Multiple;
+
+    private List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+
+    private List<ProductDto> Products { get; set; } = new List<ProductDto>();
+    private List<ProductDto> ProductsToDisplay { get; set; }
+
+    private IEnumerable<CategoryDto> ChipListSelectedItems { get; set; } = new List<CategoryDto>();
+
+    private void OnChipListSelectedItemsChanged(IEnumerable<CategoryDto> newSelected)
+    {
+        ChipListSelectedItems = newSelected;
+
+        if (ChipListSelectedItems.Any())
+        {
+            ProductsToDisplay = Products.Where(x => ((List<CategoryDto>)ChipListSelectedItems).Any(y => y.CategoryName == x.CategoryName)).ToList();
+        }
+        else
+        {
+            ProductsToDisplay = Products;
+        }
+    }
+
+    private List<ChipListSelectionMode> ChipSelectionModes { get; set; } = new List<ChipListSelectionMode>()
+    {
+        ChipListSelectionMode.Single,
+        ChipListSelectionMode.Multiple
+    };
+
+    private void ChipSelectionModeChanged(ChipListSelectionMode newMode)
+    {
+        ChipSelectionMode = newMode;
+
+        if (ChipSelectionMode == ChipListSelectionMode.Single)
+        {
+            OnChipListSelectedItemsChanged(new List<CategoryDto>());
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+
+        base.OnInitialized();
+    }
+
+    private void LoadData()
+    {
+        ProductsToDisplay = Products = ProductService.GetProducts().ToList();
+        Categories = CategoryService.GetCategories().ToList();
+    }
+}

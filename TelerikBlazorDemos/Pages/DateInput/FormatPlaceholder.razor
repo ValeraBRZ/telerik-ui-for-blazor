@@ -1,0 +1,11 @@
+@page "/dateinput/formatplaceholder"
+
+<div class="demo-section">
+    <TelerikDateInput @bind-Value="@Value" Width="400px" Format="d">
+        <DateInputFormatPlaceholder Year="year" Month="month" Day="day"></DateInputFormatPlaceholder>
+    </TelerikDateInput>
+</div>
+
+@code {
+    public DateTime? Value { get; set; }
+}

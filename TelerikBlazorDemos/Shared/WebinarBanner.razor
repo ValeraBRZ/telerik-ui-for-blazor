@@ -1,0 +1,61 @@
+@inject LocalStorage LocalStorage
+
+<div id="webinar-banner" class="kd-banner" style="@InlineStyle">
+    <span class="heading">Latest News</span>
+    <span class="content">
+        <p>@Content</p>
+    </span>
+    <a class="kd-link" href="@LinkUrl">
+        @LinkText
+        <span class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10.061" height="9.061" viewBox="0 0 10.061 9.061">
+                <g transform="translate(-170 -630.47)">
+                    <path class="a" d="M0,.571H8" transform="translate(170 634.429)"></path>
+                    <path class="a" d="M0,0,4,4,0,8" transform="translate(175 631)"></path>
+                </g>
+            </svg>
+        </span>
+    </a>
+    <span @onclick="@CloseBanner" class="close"></span>
+</div>
+
+@code{
+    [Parameter]
+    public string Content { get; set; }
+
+    [Parameter]
+    public string LinkText { get; set; }
+
+    [Parameter]
+    public string LinkUrl { get; set; }
+
+    public string PersistenceKey { get; set; } = "TelerikDemos_Banner";
+
+    public string InlineStyle => BannerVisible ? "display: flex;" : string.Empty;
+
+    public bool HubPageLoaded { get; set; }
+
+    public bool BannerVisible { get; set; }
+
+    async Task CloseBanner()
+    {
+        BannerVisible = false;
+
+        StateHasChanged();
+
+        await LocalStorage.SetItem(PersistenceKey, true);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var userDismissedBanner = await LocalStorage.GetItem<bool?>(PersistenceKey);
+            if (userDismissedBanner.HasValue == false || userDismissedBanner.Value == false)
+            {
+                BannerVisible = true;
+                StateHasChanged();
+            }
+        }
+    }
+}

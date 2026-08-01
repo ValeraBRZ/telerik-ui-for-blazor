@@ -1,0 +1,49 @@
+@page "/treelist/column-resizing"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Auto Fit Columns">
+        <TelerikButton OnClick="@AutoFitAllColumns">AutoFit All Columns</TelerikButton>
+        <TelerikButton OnClick="@AutoFitColumn">AutoFit Last Name Column</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList @ref="@TreeList"
+                 Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Resizable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="ID" Width="60px" MinResizableWidth="45"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Title="First Name (non-resizable)" Resizable="false" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Id="lastName" Title="Last Name" MinResizableWidth="120" MaxResizableWidth="800"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public TelerikTreeList<EmployeeDirectoryDto> TreeList { get; set; }
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void AutoFitAllColumns()
+    {
+        TreeList.AutoFitAllColumns();
+    }
+
+    private void AutoFitColumn()
+    {
+        TreeList.AutoFitColumn("lastName");
+    }
+}

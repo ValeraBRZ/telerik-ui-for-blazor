@@ -1,0 +1,60 @@
+@page "/window/actions"
+
+<TelerikWindow Class="demo-window"
+               @bind-State="@DemoWindowState"
+               Size="@(ThemeConstants.Window.Size.Small)"
+               @bind-Top="@Top"
+               @bind-Left="@Left"
+               Visible="true"
+               Width="400px">
+    <WindowTitle>
+        <strong>Status</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+        @if (actionVisible)
+        {
+            <WindowAction Name="Cancel" Icon="@SvgIcon.X" OnClick="@CustomAction"></WindowAction>
+        }
+        <WindowAction Name="Custom" Icon="@CustomIcon" OnClick="CustomAction"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">User Details</legend>
+
+                <label class="k-form-field">
+                    <span>First Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Name" />
+                </label>
+                <label class="k-form-field">
+                    <span>Last Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Last Name" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+<h4> Window State is: @DemoWindowState.ToString() </h4>
+
+@code {
+    public string Top { get; set; } = "48%";
+    public string Left { get; set; } = "38%";
+    bool actionVisible { get; set; } = false;
+    public WindowState DemoWindowState { get; set; } = WindowState.Default;
+    public ISvgIcon CustomIcon { get; set; } = SvgIcon.Pencil;
+
+    public void CustomAction()
+    {
+        CustomIcon = CustomIcon.Equals(SvgIcon.Pencil) ? SvgIcon.Save : SvgIcon.Pencil;
+
+        actionVisible = !actionVisible;
+
+        // in a real case, there may be separate handlers that execute actual logic
+        // this showcases how to handle, add, remove actions
+        // StateHasChanged() is called internally by the framework because this is an EventCallback
+    }
+}

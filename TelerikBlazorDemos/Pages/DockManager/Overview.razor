@@ -1,0 +1,183 @@
+@page "/dockmanager/overview"
+
+@inject CustomerService CustomerService
+
+<TelerikDockManager Height="640px">
+    <DockManagerPanes>
+        <DockManagerSplitPane>
+            <Panes>
+                <DockManagerContentPane Id="members" Maximizable="false" HeaderText="Members" @bind-Size="@MembersPaneSize">
+                    <Content>
+                        <TelerikListBox Data="@ListBoxData"
+                                        TextField="@nameof(CustomerDto.ContactName)"
+                                        SelectionMode="@ListBoxSelectionMode.Single"
+                                        SelectedItems="@ListBoxSelectedContacts"
+                                        SelectedItemsChanged="@( (IEnumerable<CustomerDto> newSelectedCustomers) => OnListBoxSelectedItemsChanged(newSelectedCustomers) )">
+                            <ListBoxToolBarSettings>
+                                <ListBoxToolBar Visible="false"></ListBoxToolBar>
+                            </ListBoxToolBarSettings>
+                        </TelerikListBox>
+                    </Content>
+                </DockManagerContentPane>
+                <DockManagerSplitPane Id="details" Orientation="@DockManagerPaneOrientation.Vertical">
+                    <Panes>
+                        <DockManagerContentPane Id="bio" Maximizable="false" HeaderText="Biography" @bind-Size="@BioPaneSize">
+                            <Content>
+                                <div class="content">
+                                    <div class="div-2">
+                                        <header class="header">
+                                            @if(ListBoxSelectedContacts.FirstOrDefault() != default)
+                                            {
+                                                <img class="member-photo" src="images/customers/@(ListBoxSelectedContacts.FirstOrDefault()?.CustomerId).jpg" />
+                                            }
+                                            <div class="title">
+                                                <div class="name">@(ListBoxSelectedContacts.FirstOrDefault()?.ContactName)</div>
+                                                <div class="position">@(ListBoxSelectedContacts.FirstOrDefault()?.ContactTitle)</div>
+                                            </div>
+                                        </header>
+                                        <p class="bio">
+                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Content>
+                        </DockManagerContentPane>
+                        <DockManagerContentPane Maximizable="false" HeaderText="Sales">
+                            <Content>
+                                <TelerikChart Height="300px">
+                                    <ChartSeriesItems>
+                                        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+                                        </ChartSeries>
+                                        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+                                        </ChartSeries>
+                                    </ChartSeriesItems>
+
+                                    <ChartCategoryAxes>
+                                        <ChartCategoryAxis Categories="@xAxisItems"></ChartCategoryAxis>
+                                    </ChartCategoryAxes>
+
+                                    <ChartTitle Text="Quarterly revenue"></ChartTitle>
+
+                                    <ChartLegend Position="ChartLegendPosition.Right">
+                                    </ChartLegend>
+                                </TelerikChart>
+                            </Content>
+                        </DockManagerContentPane>
+                    </Panes>
+                </DockManagerSplitPane>
+            </Panes>
+        </DockManagerSplitPane>
+    </DockManagerPanes>
+</TelerikDockManager>
+
+@code {
+    private List<CustomerDto> ListBoxData { get; set; }
+    private IEnumerable<CustomerDto> ListBoxSelectedContacts { get; set; } = new List<CustomerDto>();
+
+    private string MembersPaneSize { get; set; } = "20%";
+    private string BioPaneSize { get; set; } = "36%";
+
+    private List<object> series1Data = new List<object>() { 10, 2, 5, 6 };
+    private List<object> series2Data = new List<object>() { 5, 8, 2, 7 };
+    private string[] xAxisItems = new string[] { "Q1", "Q2", "Q3", "Q4" };
+
+    private void OnListBoxSelectedItemsChanged(IEnumerable<CustomerDto> newSelectedCustomers)
+    {
+        ListBoxSelectedContacts = newSelectedCustomers;
+
+        GenerateChartData();
+    }
+
+    private void GenerateChartData()
+    {
+        series1Data = Enumerable.Range(1, 4).Select(x => Random.Shared.Next(1, 10)).Cast<object>().ToList();
+        series2Data = Enumerable.Range(1, 4).Select(x => Random.Shared.Next(1, 10)).Cast<object>().ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        GenerateChartData();
+
+        ListBoxData = CustomerService.GetCustomers().Take(9).ToList();
+        ListBoxSelectedContacts = new List<CustomerDto>() { ListBoxData.FirstOrDefault() };
+    }
+}
+
+<style>
+    .k-listbox {
+        width: 100%;
+        height: 100%;
+    }
+
+        .k-listbox .k-list-scroller {
+            border-color: transparent;
+        }
+
+    .content {
+        display: flex;
+        align-items: flex-start;
+        padding: 4px;
+        flex: 1;
+        align-self: stretch;
+        width: 100%;
+        flex-grow: 1;
+    }
+
+    .div-2 {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        position: relative;
+        margin-bottom: -3px;
+    }
+
+    .header {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        position: relative;
+        align-self: stretch;
+        width: 100%;
+        flex: 0 0 auto;
+        background-color: transparent;
+    }
+
+    .member-photo {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .title, .average {
+        font-size: large;
+        font-weight: 600;
+    }
+
+    .name {
+        position: relative;
+        flex: 1;
+        align-self: stretch;
+        margin-top: -1px;
+        white-space: nowrap;
+    }
+
+    .position {
+        position: relative;
+        flex: 1;
+        align-self: stretch;
+        font-family: "Roboto", Helvetica;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+    }
+
+    .bio {
+        position: relative;
+        flex: 1;
+        align-self: stretch;
+    }
+</style>

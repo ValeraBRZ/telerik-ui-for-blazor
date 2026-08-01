@@ -1,0 +1,57 @@
+@page "/pager/integration"
+
+@inject WeatherService weatherService
+
+@using Telerik.DataSource.Extensions
+
+<h2>Weather Data</h2>
+
+<TelerikGrid OnRead="@OnGridRead" TItem="@WeatherDto"
+             Pageable="true" PageSize="@PageSize" @bind-Page="@CurrentPage"
+             FilterMode="@GridFilterMode.FilterRow">
+    <GridToolBarTemplate>
+        <TelerikPager Total="@CurrentDataCount" @bind-Page="@CurrentPage" PageSize="@PageSize" />
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field="@nameof(WeatherDto.Date)" DisplayFormat="{0:MM/dd/yyyy}" />
+        <GridColumn Field="@nameof(WeatherDto.Tmin)" DisplayFormat="{0:n1}" Title="Low &deg;C" />
+        <GridColumn Field="@nameof(WeatherDto.Tmax)" DisplayFormat="{0:n1}" Title="High &deg;C" />
+    </GridColumns>
+</TelerikGrid>
+
+<style>
+    .k-grid-toolbar {
+        padding: 0;
+    }
+
+        .k-grid-toolbar .k-pager {
+            border: 0;
+            flex-grow: 1;
+        }
+</style>
+
+@code {
+    private IEnumerable<WeatherDto> AllWeatherData { get; set; } = new List<WeatherDto>();
+
+    private int PageSize { get; set; } = 5;
+    private int CurrentPage { get; set; } = 1;
+    private int CurrentDataCount { get; set; }
+
+    private void OnGridRead(GridReadEventArgs args)
+    {
+        var result = AllWeatherData.ToDataSourceResult(args.Request);
+
+        args.Data = result.Data;
+        args.Total = CurrentDataCount = result.Total;
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        AllWeatherData = weatherService.GetWeathers();
+    }
+}

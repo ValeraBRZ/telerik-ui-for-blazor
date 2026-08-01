@@ -1,0 +1,19 @@
+@page "/slider/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikSlider @bind-Value="@Value"
+                   Min="0.0m"
+                   Max="1.0m"
+                   SmallStep="0.1m"
+                   LargeStep="0.2m"
+                   Decimals="1">
+    </TelerikSlider>
+</div>
+
+@code { public decimal Value { get; set; } = 0.5m; }

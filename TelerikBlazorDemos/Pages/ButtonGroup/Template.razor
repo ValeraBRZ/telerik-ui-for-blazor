@@ -1,0 +1,117 @@
+@page "/buttongroup/template"
+
+<div class="teamMate">
+    <img src="images/contacts/Amaya-Coffey-squared-100x100.png" alt="Amaya Coffey" />
+    <TelerikSvgIcon Icon="@SvgIcon.Circle" Class="@($"status {StatusClass}")"></TelerikSvgIcon>
+    <div class="mate-info">
+        <h2>Amaya Coffey</h2>
+        <p>Team Lead</p>
+    </div>
+</div>
+
+<TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+    @foreach (var button in Buttons)
+    {
+        <ButtonGroupToggleButton @bind-Selected="@button.Selected"
+                                 OnClick="@(() => OnButtonClick(button))">
+            <span>
+                <TelerikSvgIcon Icon="@button.Icon"/>
+                @button.Text
+            </span>
+        </ButtonGroupToggleButton>
+    }
+</TelerikButtonGroup>
+
+@code {
+    public string StatusClass { get; set; }
+    public List<StatusButton> Buttons { get; set; } = new List<StatusButton>();
+
+    protected override Task OnInitializedAsync()
+    {
+        Buttons.Add(new StatusButton(SvgIcon.Clock, "Away", "status-away"));
+        Buttons.Add(new StatusButton(SvgIcon.CheckCircle, "Available", "status-available", true));
+        Buttons.Add(new StatusButton(SvgIcon.CancelCircle, "Offline", "status-offline"));
+        Buttons.Add(new StatusButton(SvgIcon.MinusCircle, "Do not disturb", "status-dnd"));
+
+        StatusClass = "status-available";
+
+        return base.OnInitializedAsync();
+    }
+
+    public void OnButtonClick(StatusButton button)
+    {
+        StatusClass = button.StatusClass;
+    }
+
+    public class StatusButton
+    {
+        public ISvgIcon Icon { get; set; }
+        public string Text { get; set; }
+        public string StatusClass { get; set; }
+        public bool Selected { get; set; }
+
+        public StatusButton(ISvgIcon icon, string text, string statusClass)
+        {
+            Icon = icon;
+            Text = text;
+            StatusClass = statusClass;
+        }
+
+        public StatusButton(ISvgIcon icon, string text, string statusClass, bool selected)
+            :this(icon, text, statusClass)
+        {
+            Selected = selected;
+        }
+    }
+}
+
+<style>
+    .status {
+        margin-left: -22px;
+        padding-top: 1px;
+        font-size: 25px;
+    }
+
+    .status-away {
+        color: #f0c505;
+    }
+
+    .status-available {
+        color: #10b507;
+    }
+
+    .status-offline {
+        color: #707070;
+    }
+
+    .status-dnd {
+        color: #e30000;
+    }
+
+    .teamMate h2 {
+        font-size: 1.3em;
+        font-weight: normal;
+        padding-top: 17px;
+        margin: 0;
+    }
+
+    .teamMate p {
+        margin: 0;
+        font-size: 0.8em;
+    }
+
+    .teamMate img {
+        display: inline-block;
+        vertical-align: top;
+        width: 50px;
+        height: 50px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+    }
+
+    .mate-info {
+        display: inline-block;
+        vertical-align: top;
+    }
+</style>

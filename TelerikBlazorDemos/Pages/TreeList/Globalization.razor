@@ -1,0 +1,75 @@
+@page "/treelist/globalization"
+
+@using Telerik.Blazor.Services
+@using TelerikBlazorDemos.Resources
+
+@inject EmployeeDirectoryService employeeDirectoryService
+@inject ITelerikStringLocalizer Localizer
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 FilterMode="@TreeListFilterMode.FilterMenu"
+                 EditMode="TreeListEditMode.Inline"
+                 OnCreate="@CreateItem"
+                 OnUpdate="@UpdateItem"
+                 OnDelete="@DeleteItem">
+    <TreeListToolBarTemplate>
+        <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus">@Localizer[nameof(TelerikMessages.TreeList_Create)]</TreeListCommandButton>
+    </TreeListToolBarTemplate>
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="300px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name" Width="300px"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" DisplayFormat="{0:M/d/yyyy}"></TreeListColumn>
+        <TreeListCommandColumn Width="350px">
+            <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus">@Localizer[nameof(TelerikMessages.TreeList_Create)]</TreeListCommandButton>
+            <TreeListCommandButton Command="Edit" Icon="@SvgIcon.Pencil">@Localizer[nameof(TelerikMessages.TreeList_Edit)]</TreeListCommandButton>
+            <TreeListCommandButton Command="Delete" Icon="@SvgIcon.Trash">@Localizer[nameof(TelerikMessages.TreeList_Delete)]</TreeListCommandButton>
+            <TreeListCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">@Localizer[nameof(TelerikMessages.TreeList_Update)]</TreeListCommandButton>
+            <TreeListCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">@Localizer[nameof(TelerikMessages.TreeList_Cancel)]</TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void CreateItem(TreeListCommandEventArgs args)
+    {
+        var item = (EmployeeDirectoryDto)args.Item;
+
+        item.ReportsTo = ((EmployeeDirectoryDto)args.ParentItem)?.EmployeeId;
+
+        employeeDirectoryService.CreateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void UpdateItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.UpdateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.DeleteEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+}

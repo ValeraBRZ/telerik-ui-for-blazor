@@ -1,0 +1,50 @@
+@page "/combobox/overview"
+@page "/combobox/index"
+
+<HobbiesTemplate>
+    <TelerikComboBox @bind-Value="@SelectedHobbyId"
+                     Data="@Hobbies"
+                     Placeholder="Select your favourite sport..."
+                     TextField="@nameof(HobbiesDto.HobbyName)"
+                     ValueField="@nameof(HobbiesDto.HobbyId)"
+                     Filterable="true"
+                     Width="100%">
+    </TelerikComboBox>
+</HobbiesTemplate>
+
+@code {
+    public int SelectedHobbyId { get; set; }
+
+    public IEnumerable<HobbiesDto> Hobbies { get; set; } = new List<HobbiesDto>()
+    {
+        new HobbiesDto(1, "Basketball"),
+        new HobbiesDto(2, "Golf"),
+        new HobbiesDto(3, "Baseball"),
+        new HobbiesDto(4, "Table Tennis"),
+        new HobbiesDto(5, "Volleyball"),
+        new HobbiesDto(6, "Football"),
+        new HobbiesDto(7, "Boxing"),
+        new HobbiesDto(8, "Badminton"),
+        new HobbiesDto(9, "Cycling"),
+        new HobbiesDto(10, "Gymnastics"),
+        new HobbiesDto(11, "Swimming"),
+        new HobbiesDto(12, "Wrestling"),
+        new HobbiesDto(13, "Snooker"),
+        new HobbiesDto(14, "Skiing"),
+        new HobbiesDto(15, "Handball"),
+    };
+
+    public class HobbiesDto
+    {
+        public int HobbyId { get; set; }
+        public string HobbyName { get; set; }
+
+        public HobbiesDto() { }
+
+        public HobbiesDto(int id, string name)
+        {
+            HobbyId = id;
+            HobbyName = name;
+        }
+    }
+}

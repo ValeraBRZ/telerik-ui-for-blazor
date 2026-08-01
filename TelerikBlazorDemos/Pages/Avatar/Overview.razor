@@ -1,0 +1,121 @@
+@page "/avatar/overview"
+
+<div class="contact-list-wrapper">
+    <div class="contact-list">Contacts</div>
+    @foreach (var contact in Contacts)
+    {
+        <div class="contact">
+            <div class="k-hstack">
+                <TelerikAvatar Type="@contact.AvatarType">
+                    @if (contact.AvatarType == AvatarType.Image)
+                    {
+                        <img src="images/customers/@contact.Avatar" alt="A profile picture of a random person.">
+                    }
+                    else
+                    {
+                        @contact.Avatar
+                    }
+                </TelerikAvatar>
+                <div>
+                    <h2>@contact.Name</h2>
+                    <p>@contact.Position</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="contact">
+        <div class="k-hstack">
+            <TelerikAvatar Type="AvatarType.Icon">
+                <TelerikSvgIcon Icon="@SvgIcon.User"></TelerikSvgIcon>
+            </TelerikAvatar>
+            <div>
+                <h2>Unknown</h2>
+                <p>Not specified</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Person> Contacts = new List<Person>()
+    {
+        new Person()
+        {
+            Avatar = "JS",
+            Name = "Jason Smith",
+            Position = "UX Designer",
+            AvatarType = AvatarType.Text
+        },
+        new Person()
+        {
+            Avatar = "GP",
+            Name = "George Porter",
+            Position = "Software Engineer",
+            AvatarType = AvatarType.Text
+        },
+        new Person()
+        {
+            Avatar = "RICSU.jpg",
+            Name = "Michael Holz",
+            Position = "Manager",
+            AvatarType = AvatarType.Image
+        },
+        new Person()
+        {
+            Avatar = "GOURL.jpg",
+            Name = "André Stewart",
+            Position = "Product Manager",
+            AvatarType = AvatarType.Image
+        },
+    };
+
+    internal class Person
+    {
+        public string Avatar { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+        public AvatarType AvatarType { get; set; }
+    }
+}
+
+<style>
+    .contact {
+        padding: 8px 14px;
+        margin-bottom: 4px;
+        box-shadow: 0 1px 2px #ccc;
+    }
+
+        .contact h2 {
+            font-size: 1.3em;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .contact p {
+            margin: 0;
+            font-size: 0.8em;
+        }
+
+    .k-hstack div {
+        margin-left: 1em;
+    }
+
+    .mate-info {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .contact-list {
+        text-align: center;
+        padding: 4px;
+        font-size: 20px;
+    }
+
+    .contact-list-wrapper {
+        width: 280px;
+        margin: auto;
+        padding: 4px 10px;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.08);
+    }
+</style>

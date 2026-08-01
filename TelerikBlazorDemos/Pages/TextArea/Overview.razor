@@ -1,0 +1,12 @@
+@page "/textarea/overview"
+@page "/textarea/index"
+
+<MyProfileTemplate Title="About me">
+    <TelerikTextArea @bind-Value="@PersonalDescription"
+                     Placeholder="Tell us a little bit about yourself...">
+    </TelerikTextArea>
+</MyProfileTemplate>
+
+@code {
+    public string PersonalDescription { get; set; }
+}

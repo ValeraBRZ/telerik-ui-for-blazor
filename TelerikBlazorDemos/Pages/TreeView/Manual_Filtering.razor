@@ -1,0 +1,57 @@
+@page "/treeview/manual-filtering"
+
+@inject CategoryService categoryService
+
+<div class="k-card ">
+    <div class="k-card-header">
+        <label for="filter-value">Filter the TreeView</label>
+        <br />
+        <TelerikTextBox Value="@FilteredValue" ValueChanged="@((string input) => ChangeValues(input))" Id="filter-value" />
+    </div>
+    <div class="k-card-body">
+        <TelerikTreeView Data="@Data">
+            <TreeViewBindings>
+                <TreeViewBinding Level="0"
+                                 TextField="@(nameof(CategoryDto.CategoryName))"
+                                 ItemsField="@(nameof(CategoryDto.Products))">
+                </TreeViewBinding>
+                <TreeViewBinding Level="1"
+                                 TextField="@(nameof(ProductDto.ProductName))">
+                </TreeViewBinding>
+            </TreeViewBindings>
+        </TelerikTreeView>
+    </div>
+</div>
+
+@code {
+    public string FilteredValue { get; set; }
+
+    private void ChangeValues(string input)
+    {
+        FilteredValue = input;
+        Data = LoadFilteredData(FilteredValue);
+
+        //update the UI
+        StateHasChanged();
+    }
+
+    public IEnumerable<CategoryDto> AllData { get; set; }
+    public IEnumerable<CategoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AllData = categoryService.GetProductCategories();
+        Data = AllData;        
+    }
+
+    public IEnumerable<CategoryDto> LoadFilteredData(string filter)
+    {
+        return AllData
+            .Select(c => new CategoryDto()
+            {
+                CategoryName = c.CategoryName,
+                Products = c.Products.Where(x => x.ProductName.ToLower().Contains(filter.ToLower())).ToList()
+            })
+            .Where(c => c.CategoryName.ToLower().Contains(filter.ToLower()) || c.Products.Any());
+    }
+}

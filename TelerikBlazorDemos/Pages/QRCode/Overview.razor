@@ -1,0 +1,61 @@
+@page "/qrcode/overview"
+@page "/qrcode/index"
+
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+
+<div id="example" class="k-content">
+    <div class="qr-wrapper">
+        <div class="demo-section">
+            <h3>E-mail</h3>
+
+            <TelerikQRCode Width="@Size"
+                           Height="@Size"
+                           Value="mailto:clientservice@telerik.com"
+                           Color="#e15613"
+                           Background="transparent">
+            </TelerikQRCode>
+        </div>
+
+        <div class="demo-section">
+            <h3>URL</h3>
+
+            <TelerikQRCode Size="@Size"
+                           Value="https://demos.telerik.com/blazor-ui"
+                           ErrorCorrection="@QRCodeErrorCorrectionLevel.M">
+                <QRCodeBorder Color="#000" Width="5"></QRCodeBorder>
+            </TelerikQRCode>
+        </div>
+
+        <div class="demo-section">
+            <h3>Telephone</h3>
+
+            <TelerikQRCode Size="@Size"
+                           Value="tel:+1-888-365-2779"
+                           ErrorCorrection="@QRCodeErrorCorrectionLevel.Q"
+                           Color="#67a814">
+                <QRCodeBorder Color="#67a814" Width="5"></QRCodeBorder>
+            </TelerikQRCode>
+        </div>
+
+        <div class="demo-section">
+            <h3>Geo Location</h3>
+
+            <TelerikQRCode Size="@Size"
+                           Value="geo:42.65049,23.37925,100"
+                           ErrorCorrection="@QRCodeErrorCorrectionLevel.H"
+                           Color="#166a83">
+            </TelerikQRCode>
+        </div>
+    </div>
+</div>
+
+<style>
+    .demo-section {
+        display: inline-block;
+    }
+</style>
+
+@code {
+    public string Size { get; set; } = "120px";
+}

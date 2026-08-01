@@ -1,0 +1,64 @@
+@page "/maskedtextbox/adornments"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikMaskedTextBox @bind-Value="@MaskedTextBoxValue"
+                          Mask="0000-0000-0000-0000"
+                          ShowPrefixSeparator="@ShowPrefixSeparator"
+                          ShowSuffixSeparator="@ShowSuffixSeparator">
+        <MaskedTextBoxPrefixTemplate>
+            <TelerikDropDownList Data="@CardTypes"
+                                 @bind-Value="@SelectedCardType"
+                                 TextField="@nameof(Card.TypeName)"
+                                 ValueField="@nameof(Card.TypeName)"
+                                 FillMode="@ThemeConstants.DropDownList.FillMode.Flat">
+                <DropDownListSettings>
+                    <DropDownListPopupSettings Height="auto" />
+                </DropDownListSettings>
+                <ValueTemplate>
+                    <img src="@context.Image" height="30px" />
+                </ValueTemplate>
+                <ItemTemplate>
+                    <img src="@context.Image" height="30px" />
+                </ItemTemplate>
+            </TelerikDropDownList>
+        </MaskedTextBoxPrefixTemplate>
+        <MaskedTextBoxSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           Icon="@SvgIcon.X"
+                           OnClick="@(()=> MaskedTextBoxValue = null)"></TelerikButton>
+        </MaskedTextBoxSuffixTemplate>
+    </TelerikMaskedTextBox>
+</div>
+
+@code {
+    private string MaskedTextBoxValue { get; set; }
+
+    private List<Card> CardTypes { get; set; } = new List<Card>()
+    {
+        new Card(){ TypeName = "Visa", Image = "https://cdn-icons-png.flaticon.com/128/196/196578.png"},
+        new Card(){ TypeName = "MasterCard", Image = "https://cdn-icons-png.flaticon.com/128/196/196561.png"}
+    };
+
+    private string SelectedCardType { get; set; } = "Visa";
+
+    public class Card
+    {
+        public string TypeName { get; set; }
+        public string Image { get; set; }
+    }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

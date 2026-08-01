@@ -1,0 +1,88 @@
+@page "/multicolumncombobox/templates"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <TelerikMultiColumnComboBox Data="@Data"
+                                ValueField="@nameof(ProductDto.ProductName)"
+                                TextField="@nameof(ProductDto.ProductName)"
+                                @bind-Value="@Value"
+                                Filterable="true"
+                                Placeholder="Choose a product..."
+                                ListHeight="220px">
+        <HeaderTemplate>
+            <div class="header">Products list</div>
+        </HeaderTemplate>
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductName)" Title="Name" Width="300px" />
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.UnitPrice)" Width="100px">
+                <HeaderTemplate>
+                    <span>
+                        <TelerikSvgIcon Icon="@SvgIcon.Dollar" />&nbsp;Price
+                    </span>
+                </HeaderTemplate>
+            </MultiColumnComboBoxColumn>
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.Discontinued)" Width="100px" />
+        </MultiColumnComboBoxColumns>
+        <RowTemplate Context="product">
+            <span class="k-table-td" style="width: 300px;">
+                <span class="product-name">@product.ProductName</span>
+            </span>
+            <span class="k-table-td" style="width: 100px;">
+                @(product.UnitPrice.Value.ToString("C"))
+            </span>
+            <span class="k-table-td discontinued-cell" style="width: 100px; text-align: center;">
+                @if (product.Discontinued.HasValue && product.Discontinued.Value)
+                {
+                    <TelerikSvgIcon Class="multicolumncombo-red-icon" Icon="@SvgIcon.XCircle" />
+                }
+                else
+                {
+                    <TelerikSvgIcon Class="multicolumncombo-green-icon" Icon="@SvgIcon.XCircle" />
+                }
+            </span>
+        </RowTemplate>
+        <FooterTemplate>
+            <span class="combobox-footer k-display-flex k-align-items-center k-justify-content-center">
+                Total: @Data.Count() products
+            </span>
+        </FooterTemplate>
+        <NoDataTemplate>
+            <div>
+                <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Large" />
+                <br />
+                <br />
+                No items to display...
+            </div>
+        </NoDataTemplate>
+    </TelerikMultiColumnComboBox>
+</div>
+
+@code {
+    private string Value { get; set; }
+    private List<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts().ToList();
+    }
+}
+
+<style>
+    .header {
+        padding: 8px 12px;
+        font-weight: bold;
+    }
+
+    .header, .discontinued-cell {
+        text-align: center;
+    }
+
+    .multicolumncombo-red-icon {
+        color: red;
+    }
+
+    .multicolumncombo-green-icon {
+        color: green;
+    }
+</style>

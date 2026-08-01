@@ -1,0 +1,111 @@
+@page "/sankey/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Disable Auto Layout">
+        <TelerikCheckBox @bind-Value="@DisableAutoLayout" Id="autolayout"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="autolayout">Auto Layout Disabled</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Enable Legend">
+        <TelerikCheckBox @bind-Value="@LegendVisible" Id="legendvisible"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="legendvisible">Legend Visible</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Links color type">
+        <TelerikDropDownList @bind-Value="@LinksColorType"
+                             Data="@LinksColorTypes"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Labels position">
+        <TelerikDropDownList @bind-Value="@LabelsPosition"
+                             Data="@LabelsPositions"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Nodes Width">
+        <TelerikNumericTextBox @bind-Value="@NodesWidth" Min="10" Max="100" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikSankey Data="@Data" DisableAutoLayout="@DisableAutoLayout">
+    <SankeyLinks ColorType="@LinksColorType" />
+    <SankeyLabels Position="@LabelsPosition" />
+    <SankeyNodes Width="@NodesWidth"></SankeyNodes>
+    <SankeyLegend Visible="@LegendVisible" />
+</TelerikSankey>
+
+@code {
+    private SankeyData Data { get; set; }
+
+    #region Data generation
+
+    protected override void OnInitialized()
+    {
+        Data = new SankeyData()
+            {
+                Nodes = new SankeyDataNodes(),
+                Links = new SankeyDataLinks()
+            };
+
+        Data.Nodes.Add(new SankeyDataNode() { Id = 0, Label = new SankeyDataNodeLabel() { Text = "Female (58%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 1, Label = new SankeyDataNodeLabel() { Text = "Male (42%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 2, Label = new SankeyDataNodeLabel() { Text = "Tablet (12%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 3, Label = new SankeyDataNodeLabel() { Text = "Mobile (40%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 4, Label = new SankeyDataNodeLabel() { Text = "Desktop (48%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 5, Label = new SankeyDataNodeLabel() { Text = "< 18 years (8%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 6, Label = new SankeyDataNodeLabel() { Text = "18-26 years (35%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 7, Label = new SankeyDataNodeLabel() { Text = "27-40 years (38%)" } });
+        Data.Nodes.Add(new SankeyDataNode() { Id = 8, Label = new SankeyDataNodeLabel() { Text = "> 40 years (19%)" } });
+
+        Data.Links.Add(new SankeyDataLink() { SourceId = 0, TargetId = 2, Value = 12 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 0, TargetId = 3, Value = 14 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 0, TargetId = 4, Value = 32 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 1, TargetId = 3, Value = 26 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 1, TargetId = 4, Value = 16 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 2, TargetId = 5, Value = 4 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 2, TargetId = 8, Value = 8 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 3, TargetId = 5, Value = 4 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 3, TargetId = 6, Value = 24 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 3, TargetId = 7, Value = 10 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 3, TargetId = 8, Value = 2 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 4, TargetId = 6, Value = 11 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 4, TargetId = 7, Value = 28 });
+        Data.Links.Add(new SankeyDataLink() { SourceId = 4, TargetId = 8, Value = 9 });
+    }
+
+    #endregion Data generation
+
+    #region Demo configurator options
+
+    private bool DisableAutoLayout { get; set; } = true;
+
+    private bool LegendVisible { get; set; } = true;
+
+    private SankeyLinksColorType LinksColorType { get; set; } = SankeyLinksColorType.Source;
+
+    private List<SankeyLinksColorType> LinksColorTypes { get; set; } = new List<SankeyLinksColorType>()
+    {
+        SankeyLinksColorType.Static,
+        SankeyLinksColorType.Source,
+        SankeyLinksColorType.Target,
+    };
+
+    private SankeyLabelsPosition LabelsPosition { get; set; }
+
+    private List<SankeyLabelsPosition> LabelsPositions { get; set; } = new List<SankeyLabelsPosition>()
+    {
+        SankeyLabelsPosition.Inside,
+        SankeyLabelsPosition.Before,
+        SankeyLabelsPosition.After,
+    };
+
+    public double? NodesWidth { get; set; } = 20;
+
+    #endregion Demo configurator options
+}
+

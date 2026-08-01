@@ -1,0 +1,76 @@
+@page "/combobox/templates"
+
+@inject ProductService ProductService
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="product" class="k-label k-form-label">Product</label>
+        <div class="k-form-field-wrap">
+            <TelerikComboBox @bind-Value=@SelectedValue
+                             Data="@ComboBoxData"
+                             ValueField="@nameof(ProductDto.ProductId)"
+                             TextField="@nameof(ProductDto.ProductName)"
+                             Filterable="true"
+                             Id="product"
+                             Width="100%">
+                <HeaderTemplate>
+                    <div class="combobox-header"><strong>Header: Beverages list</strong></div>
+                </HeaderTemplate>
+                <FooterTemplate>
+                    <div class="combobox-footer"><strong>Footer: @ComboBoxData.Count() products</strong></div>
+                </FooterTemplate>
+                <ItemTemplate>
+                    @((context as ProductDto).ProductName) - @(String.Format("{0:C2}", (context as ProductDto).UnitPrice))
+                </ItemTemplate>
+                <NoDataTemplate>
+                    <div>
+                        <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Large" />
+                        <br />
+                        <br />
+                        No items to display...
+                    </div>
+                </NoDataTemplate>
+            </TelerikComboBox>
+        </div>
+    </div>
+    <div class="pt-sm">
+        @if (SelectedValue != null)
+        {
+            var selectedProduct = ComboBoxData.Where(p => p.ProductId == SelectedValue).FirstOrDefault();
+            <span>
+                Units in stock for beverage: @selectedProduct.ProductName : @selectedProduct.UnitsInStock.
+            </span>
+        }
+        else
+        {
+            <span>
+                No selected item.
+            </span>
+        }
+    </div>
+</div>
+
+<style>
+    .combobox-header{
+        padding-left:5px;
+        padding-bottom: 5px;
+    }
+
+    .combobox-footer {
+        padding-left: 5px;
+        padding-top: 5px;
+    }
+</style>
+
+@code {
+    public IEnumerable<ProductDto> AllData { get; set; }
+    public IEnumerable<ProductDto> ComboBoxData { get; set; }
+    public int? SelectedValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AllData = ProductService.GetProducts();
+        ComboBoxData = AllData.Where(x => x.CategoryName.Equals("Beverages"));
+        SelectedValue = ComboBoxData.FirstOrDefault()?.ProductId;
+    }
+}

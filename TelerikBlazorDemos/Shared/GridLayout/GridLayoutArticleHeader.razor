@@ -1,0 +1,24 @@
+@using TelerikBlazorDemos.Models
+
+<div class="article k-d-flex">
+    <div class="article-position k-d-inline-flex">@FormattedPosition</div>
+    <div class="article-description k-d-flex-col">
+        <div class="author k-text-inverse">@Article.Author</div>
+        <div class="title k-text-inverse">@Article.Title</div>
+        <div class="date k-d-flex">
+            <div class="k-text-inverse">@Article.FormattedDate</div>
+            <div class="separator">|</div>
+            <div class="k-text-inverse">@Article.MinsLength min read</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Position { get; set; }
+
+    [Parameter]
+    public GridLayoutArticle Article { get; set; }
+
+    public string FormattedPosition => "0" + Position;
+}

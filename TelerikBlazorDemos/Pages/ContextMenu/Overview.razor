@@ -1,0 +1,121 @@
+@page "/contextmenu/overview"
+
+<TelerikContextMenu @ref="@ContextMenu" Data="@MenuItems" Selector=".target" OnClick="@((MenuItem item) => OnItemClick(item))">
+</TelerikContextMenu>
+
+<div style="width: 100%" class="target-wrapper @CssClass">
+    <div class="target">
+        <p class="placeholder">Right-click to open Context menu</p>
+    </div>
+</div>
+
+@code {
+    public TelerikContextMenu<MenuItem> ContextMenu { get; set; }
+    public List<MenuItem> MenuItems { get; set; }
+    public string CssClass { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public bool Separator { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public IEnumerable<MenuItem> Items { get; set; }
+        public Action Action { get; set; }
+    }
+
+    void OnItemClick(MenuItem item)
+    {
+        switch (item.Text)
+        {
+            case "Bold" : CssClass = "bold"; break;
+            case "Italic" : CssClass = "italic"; break;
+            case "Underline" : CssClass = "underline"; break;
+            case "Align Left" : CssClass = "align-left"; break;
+            case "Align Center" : CssClass = "align-center"; break;
+            case "Align Right" : CssClass = "align-right"; break;
+        };
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem { Text = "Cut", Icon = SvgIcon.Cut },
+            new MenuItem { Text = "Copy", Icon = SvgIcon.Copy },
+            new MenuItem { Text = "Paste", Icon = SvgIcon.Clipboard },
+            new MenuItem { Separator = true },
+            new MenuItem
+            {
+                Text = "Alignment",
+                Icon = SvgIcon.AlignLeft,
+                Items = new List<MenuItem>
+                {
+                    new MenuItem { Text = "Align Left", Icon = SvgIcon.AlignLeft },
+                    new MenuItem { Text = "Align Center", Icon = SvgIcon.AlignCenter },
+                    new MenuItem { Text = "Align Right", Icon = SvgIcon.AlignRight }
+                }
+            },
+            new MenuItem
+            {
+                Text = "Style",
+                Icon = SvgIcon.EditTools,
+                Items = new List<MenuItem>
+                {
+                    new MenuItem { Text = "Bold", Icon = SvgIcon.Bold },
+                    new MenuItem { Text = "Italic", Icon = SvgIcon.Italic },
+                    new MenuItem { Text = "Underline", Icon = SvgIcon.Underline }
+                }
+            },
+            new MenuItem { Text = "Miscellaneous", Icon = SvgIcon.Cloud, Disabled = true },
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .target {
+        border-radius: 5px;
+        height: 100px;
+        width: 400px;
+        background-color: #f6f6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    .placeholder {
+        font-size: 20px;
+        color: #656565;
+        margin: 0;
+    }
+    .target-wrapper {
+        display: flex;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .underline{
+        text-decoration: underline;
+    }
+
+    .align-left {
+        justify-content: flex-start;
+    }
+
+    .align-center {
+        justify-content: center;
+    }
+
+    .align-right {
+        justify-content: flex-end;
+    }
+</style>

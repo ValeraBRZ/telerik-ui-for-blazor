@@ -1,0 +1,35 @@
+@page "/rangeslider/overview"
+
+<div class="demo-section auto">
+    <label class="title ml-sm">Years of service</label>
+    <div class="mt-md ml-sm">
+        <TelerikRangeSlider @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            Min="@TenYearsAgo"
+                            Max="@CurrentYear"
+                            SmallStep="1"
+                            LargeStep="1"
+                            Width="550px">
+        </TelerikRangeSlider>
+    </div>
+</div>
+
+<TelerikTooltip TargetSelector=".k-draghandle">
+    <Template>
+        @StartValue - @EndValue
+    </Template>
+</TelerikTooltip>
+
+@code {
+    public int StartValue { get; set; } = DateTime.Now.AddYears(-7).Year;
+    public int EndValue { get; set; } = DateTime.Now.AddYears(-3).Year;
+    public int CurrentYear { get; set; } = DateTime.Now.Year;
+    public int TenYearsAgo { get; set; } = DateTime.Now.AddYears(-10).Year;
+}
+<style>
+    .title {
+        text-align: center;
+        font-size: 18px;
+        color: #656565;
+    }
+</style>

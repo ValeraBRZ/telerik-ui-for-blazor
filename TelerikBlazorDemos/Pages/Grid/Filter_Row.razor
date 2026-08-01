@@ -1,0 +1,103 @@
+@page "/grid/filter-row"
+
+@using Telerik.DataSource
+
+@inject ProductService productService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Filter Cell Buttons">
+        <TelerikCheckBox @bind-Value="@showFilterButtons" Id="filterableCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="filterableCheckBox">Show Filter Buttons</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Filter Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@filterDebounceDelay" Min="0" Max="1000" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Default filter operator for the `Name` column">
+        <TelerikDropDownList @bind-Value="@filterOperator"
+                             Data="@filterOperators"
+                             OnChange="@OnFilterOperatorChanged"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info">
+    The <strong>Unit Price</strong> column uses customized list of <strong>FilterOperators</strong>.
+</div>
+
+<TelerikGrid @ref="@GridRef"
+             Data=@GridData
+             Height=@Height
+             FilterMode="@GridFilterMode.FilterRow"
+             FilterRowDebounceDelay="filterDebounceDelay"
+             Pageable=true PageSize=@PageSize>
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductId)
+                    Title="Product Id" Width="210px"
+                    DefaultFilterOperator="@FilterOperator.IsGreaterThan"
+                    ShowFilterCellButtons="@showFilterButtons" />
+        <GridColumn Field=@nameof(ProductDto.ProductName)
+                    Title="Name"
+                    ShowFilterCellButtons="@showFilterButtons"
+                    DefaultFilterOperator="@filterOperator" />
+        <GridColumn Field=@nameof(ProductDto.QuantityPerUnit)
+                    Title="Quantity"
+                    DefaultFilterOperator="@FilterOperator.StartsWith"
+                    ShowFilterCellButtons="@showFilterButtons" />
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Title="Unit Price"
+                    ShowFilterCellButtons="@showFilterButtons"
+                    FilterOperators="@NumericOperators" />
+        <GridColumn Field=@nameof(ProductDto.Discontinued) Title="Discontinued"
+                    ShowFilterCellButtons="@showFilterButtons" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    TelerikGrid<ProductDto> GridRef { get; set; }
+    IEnumerable<ProductDto> GridData { get; set; }
+    int PageSize = 10;
+    string Height = "400px";
+    int filterDebounceDelay { get; set; } = 200;
+    bool showFilterButtons { get; set; } = true;
+    FilterOperator filterOperator { get; set; } = FilterOperator.StartsWith;
+
+    public List<FilterOperator> filterOperators { get; set; } = new List<FilterOperator>()
+    {
+        FilterOperator.IsEqualTo,
+        FilterOperator.IsNotEqualTo,
+        FilterOperator.StartsWith,
+        FilterOperator.Contains,
+        FilterOperator.DoesNotContain
+    };
+
+    public List<FilterListOperator> NumericOperators { get; set; } = new List<FilterListOperator>()
+    {
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "Equals" },
+        new FilterListOperator { Operator = FilterOperator.IsLessThan, Text = "Smaller than" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThan, Text = "Larger than" },
+        new FilterListOperator { Operator = FilterOperator.IsLessThanOrEqualTo, Text = "Smaller than or equals" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThanOrEqualTo, Text = "Larger than or equals" }
+    };
+
+    protected override void OnInitialized()
+    {
+        GridData = productService.GetProducts();
+    }
+
+    private void OnFilterOperatorChanged()
+    {
+        var state = GridRef?.GetState();
+
+        var productNameFilter = state.FilterDescriptors.FirstOrDefault(f => (f as FilterDescriptor).Member == nameof(ProductDto.ProductName));
+
+        if (productNameFilter != null)
+        {
+            state.FilterDescriptors.Remove(productNameFilter);
+
+            GridRef?.SetStateAsync(state);
+        }
+    }
+}

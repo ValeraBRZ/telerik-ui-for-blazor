@@ -1,0 +1,366 @@
+@page "/gantt/events"
+
+
+<TelerikGantt Data="@Data"
+              Width="100%"
+              @bind-TreeListWidth="@TreeListWidth"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              OnUpdate="@UpdateItem"
+              OnDelete="@DeleteItem"
+              OnCreate="@CreateItem"
+              OnExpand="@OnExpand"
+              OnCollapse="@OnCollapse"
+              OnEdit="@OnEdit"
+              Sortable="true"
+              SortMode="@SortMode.Multiple"
+              FilterMode="@GanttFilterMode.FilterMenu"
+              FilterMenuType="@FilterMenuType.Menu">
+    <GanttToolBarTemplate>
+        <GanttCommandButton AriaLabel="Add item" Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+    </GanttToolBarTemplate>
+    <GanttViews>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+        <GanttYearView></GanttYearView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type"
+                           OnCreate="@CreateDependency"
+                           OnDelete="@DeleteDependency">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+    <GanttColumns>
+        <GanttColumn Field="Id"
+                     Editable="false"
+                     Visible="false">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="160px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Width="100px">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     TextAlign="@ColumnTextAlign.Right">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     DisplayFormat="End: {0:d}"
+                     Width="100px">
+        </GanttColumn>
+        <GanttCommandColumn>
+            <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+        </GanttCommandColumn>
+    </GanttColumns>
+</TelerikGantt>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string EventLog { get; set; } = "";
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    class FlatModel
+    {
+        public int Id { get; set; }
+        public int? ParentId { get; set; }
+        public string Title { get; set; }
+        public double PercentComplete { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+    }
+
+    class DependencyModel
+    {
+        public int Id { get; set; }
+        public int PredecessorId { get; set; }
+        public int SuccessorId { get; set; }
+        public GanttDependencyType Type { get; set; }
+    }
+
+    public int LastId { get; set; } = 1;
+    public int LastDependencyId { get; set; } = 1;
+    List<FlatModel> Data { get; set; }
+    List<DependencyModel> Dependencies { get; set; } = new List<DependencyModel>();
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnExpand(GanttExpandEventArgs args)
+    {
+        var item = args.Item as FlatModel;
+        string log = $"<div><strong>Expand event fired - Item: {item.Title}</strong></div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnCollapse(GanttCollapseEventArgs args)
+    {
+        var item = args.Item as FlatModel;
+        string log = $"<div><strong>Collapse event fired - Item: {item.Title}.</strong></div>";
+        EventLog = EventLog.Insert(0, log);;
+    }
+
+    public void OnEdit(GanttEditEventArgs args)
+    {
+        string log = $"<div><strong>Edit event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    protected override void OnInitialized()
+    {
+        Data = new List<FlatModel>();
+
+        for (int i = 1; i < 6; i++)
+        {
+            var newItem = new FlatModel()
+            {
+                Id = LastId,
+                Title = "Employee  " + i.ToString(),
+                Start = new DateTime(2025, 12, 6 + i),
+                End = new DateTime(2025, 12, 11 + i),
+                PercentComplete = i * 0.125
+            };
+
+            Data.Add(newItem);
+            var parentId = LastId;
+            LastId++;
+
+            for (int j = 0; j < 5; j++)
+            {
+                Data.Add(new FlatModel()
+                {
+                    Id = LastId,
+                    ParentId = parentId,
+                    Title = "    Employee " + i + " : " + j.ToString(),
+                    Start = new DateTime(2025, 12, 6 + i + j),
+                    End = new DateTime(2025, 12, 7 + i + j),
+                    PercentComplete = j * 0.225
+                });
+
+                LastId++;
+            }
+        }
+
+        Dependencies.Add(new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = 3,
+            SuccessorId = 4,
+            Type = 0
+        });
+
+        Dependencies.Add(new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = 2,
+            SuccessorId = 5,
+            Type = GanttDependencyType.StartStart
+        });
+
+        base.OnInitialized();
+    }
+
+    private void CreateDependency(GanttDependencyCreateEventArgs args)
+    {
+        var dependency = new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = (int)args.PredecessorId,
+            SuccessorId = (int)args.SuccessorId,
+            Type = args.Type
+        };
+
+        Dependencies.Add(dependency);
+    }
+
+    private void DeleteDependency(GanttDependencyDeleteEventArgs args)
+    {
+        Dependencies.RemoveAll(d => d.Id.Equals((args.Item as DependencyModel).Id));
+    }
+
+    private void CreateItem(GanttCreateEventArgs args)
+    {
+        var argsItem = args.Item as FlatModel;
+
+        argsItem.Id = LastId++;
+
+        if (args.ParentItem != null)
+        {
+            var parent = (FlatModel)args.ParentItem;
+
+            argsItem.ParentId = parent.Id;
+        }
+
+        Data.Insert(0, argsItem);
+
+        CalculateParentPercentRecursive(argsItem);
+        CalculateParentRangeRecursive(argsItem);
+
+        string log = $"<div style='background-color: #fff; color: #000;'><strong>Create event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void UpdateItem(GanttUpdateEventArgs args)
+    {
+        var item = args.Item as FlatModel;
+        var parentItem = args.ParentItem as FlatModel;
+
+        var foundItem = Data.FirstOrDefault(i => i.Id.Equals(item.Id));
+        var foundParent = Data.FirstOrDefault(i => i.Id.Equals(parentItem?.Id));
+
+        if (foundItem != null)
+        {
+            var startOffset = item.Start - foundItem.Start;
+            if (startOffset != TimeSpan.Zero)
+            {
+                MoveChildrenRecursive(foundItem, startOffset);
+            }
+
+            foundItem.ParentId = foundParent?.Id;
+            foundItem.Title = item.Title;
+            foundItem.Start = item.Start;
+            foundItem.End = item.End;
+            foundItem.PercentComplete = item.PercentComplete;
+        }
+
+        UpdateDependencies(args);
+
+        CalculateParentPercentRecursive(foundItem);
+        CalculateParentRangeRecursive(foundItem);
+
+        string log = $"<div style='background-color: #fff; color: #000;'><strong>Update event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void DeleteItem(GanttDeleteEventArgs args)
+    {
+        var item = Data.FirstOrDefault(i => i.Id.Equals((args.Item as FlatModel).Id));
+
+        RemoveChildRecursive(item);
+
+        CalculateParentPercentRecursive(item);
+        CalculateParentRangeRecursive(item);
+
+        string log = $"<div style='background-color: #fff; color: #000;'><strong>Delete event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void UpdateDependencies(GanttUpdateEventArgs args)
+    {
+        args?.CreatedDependencies?.ForEach(x =>
+        {
+            var dependency = new DependencyModel()
+            {
+                Id = LastDependencyId++,
+                PredecessorId = (int)x.PredecessorId,
+                SuccessorId = (int)x.SuccessorId,
+                Type = x.Type
+            };
+
+            Dependencies.Add(dependency);
+        });
+
+        args?.UpdatedDependencies?.ForEach(x =>
+        {
+            var dependency = GetDependencyDataItemByDescriptor(x);
+
+            dependency.SuccessorId = (int)x.SuccessorId;
+            dependency.PredecessorId = (int)x.PredecessorId;
+            dependency.Type = x.Type;
+
+        });
+
+        args?.DeletedDependencies?.ForEach(x =>
+        {
+            var dependency = GetDependencyDataItemByDescriptor(x);
+
+            Dependencies.Remove(dependency);
+        });
+
+        DependencyModel GetDependencyDataItemByDescriptor(GanttDependencyDescriptor descriptor)
+        {
+            return Dependencies.FirstOrDefault(dep => dep.Id == (descriptor.DataItem as DependencyModel).Id);
+        }
+    }
+
+    private void RemoveChildRecursive(FlatModel item)
+    {
+        var children = GetChildren(item).ToList();
+
+        foreach (var child in children)
+        {
+            RemoveChildRecursive(child);
+        }
+
+        Data.Remove(item);
+    }
+
+    private void CalculateParentPercentRecursive(FlatModel item)
+    {
+        if (item.ParentId != null)
+        {
+            var parent = GetParent(item);
+
+            var children = GetChildren(parent);
+
+            if (children.Any())
+            {
+                parent.PercentComplete = children.Average(i => i.PercentComplete);
+
+                CalculateParentPercentRecursive(parent);
+            }
+        }
+    }
+
+    private void CalculateParentRangeRecursive(FlatModel item)
+    {
+        if (item.ParentId != null)
+        {
+            var parent = GetParent(item);
+
+            var children = GetChildren(parent);
+
+            if (children.Any())
+            {
+                parent.Start = children.Min(i => i.Start);
+                parent.End = children.Max(i => i.End);
+
+                CalculateParentRangeRecursive(parent);
+            }
+        }
+    }
+
+    private void MoveChildrenRecursive(FlatModel item, TimeSpan offset)
+    {
+        var children = GetChildren(item);
+
+        foreach (var child in children)
+        {
+            child.Start = child.Start.Add(offset);
+            child.End = child.End.Add(offset);
+
+            MoveChildrenRecursive(child, offset);
+        }
+    }
+
+    private FlatModel GetParent(FlatModel item)
+    {
+        return Data.FirstOrDefault(i => i.Id.Equals(item.ParentId));
+    }
+
+    private IEnumerable<FlatModel> GetChildren(FlatModel item)
+    {
+        return Data.Where(i => item.Id.Equals(i.ParentId));
+    }
+}

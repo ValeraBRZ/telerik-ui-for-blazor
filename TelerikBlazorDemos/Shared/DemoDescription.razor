@@ -1,0 +1,21 @@
+@{
+    var descr = new MarkupString(Demo.Description);
+
+    <section class="kd-demo-description">
+        <h2 class="kd-title">Description</h2>
+        <div class="kd-text kd-text-secondary">
+            @descr
+        </div>
+    </section>
+    <div class="kd-text kd-text-secondary">
+        This Blazor @(Demo.Component == "Grid" ? "Data Grid" :
+    Demo.Component == "Chart" ? "Charts and Graphs" : Demo.Component) @Demo.Text example is part of a unique collection of hundreds of <a href="https://demos.telerik.com/blazor-ui">Blazor demos</a>, with which you can see all <a href="https://www.telerik.com/blazor-ui">Telerik UI for Blazor components</a> and their features in action. View the source code of the demos from the library or directly adapt, and edit them and their theme appearance in <a href="@ReplLink">Telerik REPL for Blazor</a> or <a href="https://themebuilderapp.telerik.com">ThemeBuilder</a>.
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    private string ReplLink => $"https://blazorrepl.telerik.com/{Demo.SnippetId}";
+}

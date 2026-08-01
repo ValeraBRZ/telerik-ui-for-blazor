@@ -1,0 +1,97 @@
+@page "/grid/templates"
+
+@inject ArticleService articleService
+
+<div class="row">
+    <div class="col-6">
+        <h2> Column and Header Templates </h2>
+
+        <TelerikGrid Data=@GridData Height="@Height">
+            <GridColumns>
+                <GridColumn Field=@nameof(ArticleDto.ImageUrl) Width="120px">
+                    <HeaderTemplate>
+                        <span class="k-display-flex k-align-items-center">
+                            <TelerikSvgIcon Icon="@SvgIcon.Image" />&nbsp;
+                            Image
+                        </span>
+                    </HeaderTemplate>
+                    <Template>
+                        @{
+                        var article = context as ArticleDto;
+                        <img src="images/articles/@(article.ImageUrl)" alt="@article.Subtitle" width="55" height="35" />
+                        }
+                    </Template>
+                </GridColumn>
+                <GridColumn Field=@nameof(ArticleDto.Title)>
+                    <HeaderTemplate>
+                        Article Title
+                    </HeaderTemplate>
+                    <Template>
+                        @((context as ArticleDto).Title)
+                    </Template>
+                </GridColumn>
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+    <div class="col-6">
+        <h2> Row and Pager Template </h2>
+
+        <TelerikGrid Data=@GridData
+                     Pageable="true"
+                     @bind-Page="CurrentPage"
+                     Height="@Height">
+            <RowTemplate Context="article">
+                <td>
+                    @{
+                        <img src="images/articles/@(article.ImageUrl)" alt="@article.Subtitle" width="55" height="35" />
+                    }
+                </td>
+                <td>
+                    @article.Title
+                </td>
+            </RowTemplate>
+            <GridColumns>
+                <GridColumn Field=@nameof(ArticleDto.ImageUrl) Title="Image" Width="120px" />
+                <GridColumn Field=@nameof(ArticleDto.Title) Title="Article Title" />
+            </GridColumns>
+            <GridPagerTemplate>
+                @{
+                    var pages = (int)Math.Ceiling((decimal)Total / (decimal)PageSize);
+                    if (pages == 0) pages = CurrentPage;
+                }
+                <div class="pager-wrapper">
+                    <TelerikSlider @bind-Value="@CurrentPage"
+                                   TickPosition="@SliderTickPosition.Both"
+                                   Min="1"
+                                   Max="@pages"
+                                   Width="66%">
+                    </TelerikSlider>
+                </div>
+            </GridPagerTemplate>
+        </TelerikGrid>
+    </div>
+</div>
+
+<style>
+    .pager-wrapper {
+        padding: 8px;
+        display: flex;
+        justify-content: space-around;
+        background-color: rgba(204, 204, 204, .1);
+        border-top: 1px solid rgba(128, 128, 128, .3);
+    }
+</style>
+
+@code {
+    public IEnumerable<ArticleDto> GridData { get; set; }
+    public int CurrentPage { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+    public int Total { get; set; }
+    string Height = "500px";
+
+    protected override void OnInitialized()
+    {
+        GridData = articleService.GetArticles();
+        Total = GridData.Count();
+    }
+}

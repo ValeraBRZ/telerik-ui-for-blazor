@@ -1,0 +1,225 @@
+@page "/contextmenu/templates"
+
+<TelerikContextMenu @ref="@ItemTemplateContextMenu" Data="@ItemTemplateMenuItems" OnClick="@((MenuItem item) => OnItemClick(item))">
+    <ItemTemplate>
+        <div class="menu-item-wrapper">
+            <span>@context.Text</span>
+            <small><span class="shortcut">@context.ShortCut</span></small>
+        </div>
+    </ItemTemplate>
+</TelerikContextMenu>
+
+<TelerikContextMenu @ref="@TemplateContextMenu" Data="@TemplateMenuItems">
+    <Template>
+        <div class="contextmenu-template">
+            @foreach (var item in context)
+            {
+                <div class="template-item k-menu-link @(item.Disabled ? "k-disabled": string.Empty)" @onclick="@(() => OnItemClick(item))"> @item.Text</div>
+            }
+        </div>
+    </Template>
+</TelerikContextMenu>
+
+<div class="header-wrapper">
+    <h2>Item Template</h2>
+    <h2>Template</h2>
+</div>
+
+<div class="templates-wrapper">
+    <div class="chat-box item-template">
+        <h2>Messages</h2>
+        <div class="chats">
+            @foreach (var contact in Contacts)
+            {
+                <div class="k-card k-card-horizontal @(ItemTemplateBlockedContacts.Contains(contact) ? "k-disabled" : string.Empty)"
+                     @oncontextmenu="@((e) => OnItemTemplateContextMenu(e, contact))"
+                     @oncontextmenu:preventDefault>
+                    <div class="avatar-wrapper">
+                        <img src="images/contacts/@contact.AvatarPath" alt="@contact.Name" />
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-recipient">@contact.Name</div>
+                        <div class="last-message-container"><span class="last-message">@contact.LastMessage</span> <span class="last-message-time">@contact.LastMessageTime</span></div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="chat-box template">
+        <h2>Messages</h2>
+        <div class="chats">
+            @foreach (var contact in Contacts)
+            {
+                <div class="k-card k-card-horizontal @(TemplateBlockedContacts.Contains(contact) ? "k-disabled" : string.Empty)"
+                     @oncontextmenu="@((e) => OnTemplateContextMenu(e, contact))"
+                     @oncontextmenu:preventDefault>
+                    <div class="avatar-wrapper">
+                        <img src="images/contacts/@contact.AvatarPath" alt="@contact.Name" />
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-recipient">@contact.Name</div>
+                        <div class="last-message-container"><span class="last-message">@contact.LastMessage</span> <span class="last-message-time">@contact.LastMessageTime</span></div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Contact> Contacts { get; set; }
+    public Contact SelectedContact { get; set; }
+
+    public TelerikContextMenu<MenuItem> ItemTemplateContextMenu { get; set; }
+    public List<MenuItem> ItemTemplateMenuItems { get; set; }
+    public List<Contact> ItemTemplateBlockedContacts { get; set; } = new List<Contact>();
+
+    public TelerikContextMenu<MenuItem> TemplateContextMenu { get; set; }
+    public List<MenuItem> TemplateMenuItems { get; set; }
+    public List<Contact> TemplateBlockedContacts { get; set; } = new List<Contact>();
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public Action Action { get; set; }
+        public string ShortCut { get; set; }
+    }
+
+    public class Contact
+    {
+        public string Name { get; set; }
+        public string LastMessage { get; set; }
+        public string LastMessageTime { get; set; }
+        public string AvatarPath { get; set; }
+    }
+
+    void OnItemTemplateContextMenu(MouseEventArgs args, Contact contact)
+    {
+        SelectedContact = contact;
+        _ = ItemTemplateContextMenu.ShowAsync(args.ClientX, args.ClientY);
+    }
+
+    void OnTemplateContextMenu(MouseEventArgs args, Contact contact)
+    {
+        SelectedContact = contact;
+        _ = TemplateContextMenu.ShowAsync(args.ClientX, args.ClientY);
+    }
+
+    void ItemTemplateBlock()
+    {
+        ItemTemplateBlockedContacts.Add(SelectedContact);
+    }
+
+    void TemplateBlock()
+    {
+        TemplateBlockedContacts.Add(SelectedContact);
+    }
+
+    void OnItemClick(MenuItem item)
+    {
+        item.Action?.Invoke();
+    }
+
+    protected override void OnInitialized()
+    {
+        ItemTemplateMenuItems = new List<MenuItem>()
+        {
+            new MenuItem(){ Text = "Answer", ShortCut= "Ctrl + A" },
+            new MenuItem(){ Text = "Mark as Read", Disabled = true, ShortCut= "Ctrl + R"  },
+            new MenuItem(){ Text = "Block", Action = ItemTemplateBlock, ShortCut= "Ctrl + B"  }
+        };
+
+        TemplateMenuItems = new List<MenuItem>()
+        {
+            new MenuItem(){ Text = "Answer" },
+            new MenuItem(){ Text = "Mark as Read", Disabled = true },
+            new MenuItem(){ Text = "Block", Action = TemplateBlock }
+        };
+
+        Contacts = new List<Contact>
+        {
+            new Contact { Name = "Amaya Coffey", AvatarPath = "Amaya-Coffey-round-40x40.png", LastMessage = "Sent an attachment", LastMessageTime = "12:11"},
+            new Contact { Name = "Dawson Humphrey", AvatarPath = "Dawson-Humphrey-round-40x40.png", LastMessage = "Okey, bye for now!", LastMessageTime = "09:42"},
+            new Contact { Name = "Habib Joyce", AvatarPath = "Habib-Joyce-round-40x40.png", LastMessage = "Thanks!", LastMessageTime = "08:11"},
+            new Contact { Name = "Reilly Mccullough", AvatarPath = "Reilly-Mccullough-round-40x40.png", LastMessage = "I will let her know", LastMessageTime = "Yesterday"},
+            new Contact { Name = "Lilly Ann Roche", AvatarPath = "Lilly-Ann-Roche-round-40x40.png", LastMessage = "Are you here?", LastMessageTime = "Yesterday"},
+            new Contact { Name = "Jenson Delaney", AvatarPath = "Jenson-Delaney-round-40x40.png", LastMessage = "See you there.", LastMessageTime = "Yesterday"},
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .templates-wrapper, .header-wrapper {
+        justify-content: space-around;
+        display: flex;
+    }
+
+    .chat-box {
+        width: 300px;
+        height: 430px;
+        display: flex;
+        flex-direction: column;
+        justify-self: center;
+        padding: 20px;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    .chat-box .chats {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .chat-box .chats .k-card {
+            box-shadow: none;
+            line-height: normal;
+            display: flex;
+            width: 100%;
+            margin-bottom: 5px;
+            padding: 3px;
+            border: none;
+        }
+
+    .chat-box .chats .k-card .avatar-wrapper {
+        margin-right: 10px;
+    }
+
+    .chat-box .chats .k-card .chat-details {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .chat-box .chats .k-card .chat-details .last-message-container {
+        font-size: 0.9em;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .chat-box .chats .k-card .chat-recipient {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .menu-item-wrapper {
+        display: flex;
+        justify-content: space-between;
+        width: 140px;
+    }
+
+    .contextmenu-template {
+        display: flex;
+        width: 250px;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+
+    .contextmenu-template .template-item {
+        border: 1px solid #aaa;
+        padding: 7px;
+        justify-content: center;
+    }
+</style>

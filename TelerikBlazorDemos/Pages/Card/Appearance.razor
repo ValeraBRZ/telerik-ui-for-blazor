@@ -1,0 +1,32 @@
+@page "/card/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Theme Colors">
+        <TelerikDropDownList @bind-Value="@ThemeColor"
+                             Data="@ThemeColorNames"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="flex-center">
+    <TelerikCard ThemeColor="@ThemeColor" Width="340px">
+        <CardHeader>
+            <CardTitle>Support for filtering in DropDownList</CardTitle>
+            <CardSubTitle>Feature Request, Completed</CardSubTitle>
+        </CardHeader>
+        <CardBody>
+            The filtering feature in the DropDownList will improve the user experience with large data.
+            <div class="mb-sm mt-sm">
+                FeedBack portal item: <a href="https://feedback.telerik.com/blazor/1427877">#1427877</a>
+            </div>
+        </CardBody>
+        <CardSeparator></CardSeparator>
+        <CardActions Layout="CardActionsLayout.Center">
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Vote</TelerikButton>
+        </CardActions>
+    </TelerikCard>
+</div>
+@code {
+    public string ThemeColor { get; set; } = "success";
+    public List<string> ThemeColorNames { get; set; } = typeof(ThemeConstants.Card.ThemeColor).GetFields().Select(field => field.GetValue(null).ToString()).ToList();
+}

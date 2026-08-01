@@ -1,0 +1,125 @@
+@page "/panelbar/bindings"
+
+<h2> Bindings applied to Hierarchical Data</h2>
+
+<TelerikPanelBar Data="@HierarchicalData">
+	<PanelBarBindings>
+		<PanelBarBinding Level="0" TextField="@nameof(ProductCategoryItem.Category)" ItemsField="@nameof(ProductCategoryItem.Products)"></PanelBarBinding>
+		<PanelBarBinding Level="1" TextField="@nameof(ProductItem.ProductName)" ItemsField="@nameof(ProductItem.Descriptions)"></PanelBarBinding>
+		<PanelBarBinding Level="2" TextField="@nameof(ProductDescription.Description)"></PanelBarBinding>
+	</PanelBarBindings>
+</TelerikPanelBar>
+
+<h2> Bindings applied to Flat Data</h2>
+
+<TelerikPanelBar Data="@FlatData">
+	<PanelBarBindings>
+		<PanelBarBinding ParentIdField="@nameof(PanelBarItem.Parent)" TextField="@nameof(PanelBarItem.Title)"></PanelBarBinding>
+	</PanelBarBindings>
+</TelerikPanelBar>
+
+
+@code {
+    public IEnumerable<ProductCategoryItem> HierarchicalData { get; set; }
+    public IEnumerable<PanelBarItem> FlatData { get; set; }
+
+    public class PanelBarItem
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public int? Parent { get; set; }
+        public bool HasChildren { get; set; }
+    }
+
+    public class ProductCategoryItem
+    {
+        public string Category { get; set; }
+        public List<ProductItem> Products { get; set; }
+    }
+
+    public class ProductItem
+    {
+        public string ProductName { get; set; }
+        public IEnumerable<ProductDescription> Descriptions { get; set; }
+    }
+
+    public class ProductDescription
+    {
+        public string Description { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadHierarchical();
+        LoadFlat();
+    }
+
+    private void LoadHierarchical()
+    {
+        List<ProductItem> beverages = new List<ProductItem>()
+        {
+            new ProductItem
+            {
+                ProductName= "Chai",
+                Descriptions = new List<ProductDescription>()
+                {
+                    new ProductDescription { Description= "History" },
+                    new ProductDescription { Description= "How to make at home" },
+                }
+            },
+            new ProductItem { ProductName= "Chang" },
+            new ProductItem { ProductName= "Guaraná Fantástica" }
+        };
+
+        List<ProductItem> condiments = new List<ProductItem>()
+        {
+            new ProductItem { ProductName = "Aniseed Syrup" },
+            new ProductItem
+            {
+                ProductName = "Chef Anton's Cajun Seasoning",
+                Descriptions = new List<ProductDescription>()
+                {
+                    new ProductDescription { Description= "Recipe" },
+                    new ProductDescription { Description= "Ingredients" },
+                }
+            },
+            new ProductItem { ProductName= "Chef Anton's Gumbo Mix" }
+        };
+
+
+        List<ProductCategoryItem> roots = new List<ProductCategoryItem>();
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Beverages",
+            Products = beverages
+        });
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Condiments",
+            Products = condiments
+        });
+
+        HierarchicalData = roots;
+    }
+
+    private void LoadFlat()
+    {
+        List<PanelBarItem> items = new List<PanelBarItem>();
+
+        items.Add(new PanelBarItem() { Id = 1, Title = "Headphones types", Parent = null, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 2, Title = "Sports", Parent = null, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 3, Title = "Vehicles", Parent = null, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 4, Title = "In-ear", Parent = 1, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 5, Title = "Over-ear", Parent = 1, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 6, Title = "On-ear", Parent = 1, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 7, Title = "Cycling", Parent = 2, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 8, Title = "Road racing", Parent = 7, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 9, Title = "Mountain bike racing", Parent = 7, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 10, Title = "Wireless", Parent = 4, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 11, Title = "USB", Parent = 4, HasChildren = false });
+
+        FlatData = items;
+    }
+}

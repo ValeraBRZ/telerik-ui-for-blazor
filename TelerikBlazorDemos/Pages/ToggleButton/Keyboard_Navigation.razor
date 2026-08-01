@@ -1,0 +1,14 @@
+@page "/togglebutton/keyboard-navigation"
+
+<TelerikToggleButton OnClick="@ClickHandler">Click me!</TelerikToggleButton>
+<br />
+@clickResult
+
+@code{
+    string clickResult { get; set; }
+
+    void ClickHandler()
+    {
+        clickResult = string.Format("Last clicked at {0:HH:mm:ss.fff} on {0:dd MMM yy}. Now you can press Enter or Space to click me again.", DateTime.Now);
+    }
+}

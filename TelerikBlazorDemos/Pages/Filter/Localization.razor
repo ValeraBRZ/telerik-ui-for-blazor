@@ -1,0 +1,24 @@
+@page "/filter/localization"
+
+@using Telerik.DataSource
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikFilter Value="@Value">
+    <FilterFields>
+        <FilterField Name="Mass" Type="@(typeof(decimal))"></FilterField>
+        <FilterField Name="Inclination" Type="@(typeof(decimal))" Label="Orbital Inclination"></FilterField>
+        <FilterField Name="MThrust" Type="@(typeof(string))" Label="Maximum Thrust"></FilterField>
+        <FilterField Name="Propellant" Type="@(typeof(string))"></FilterField>
+        <FilterField Name="FirstFlight" Type="@(typeof(DateTime))" Label="First Flight"></FilterField>
+        <FilterField Name="LastFlight" Type="@(typeof(DateTime))" Label="Last Flight"></FilterField>
+    </FilterFields>
+</TelerikFilter>
+
+@code {
+    CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
+}

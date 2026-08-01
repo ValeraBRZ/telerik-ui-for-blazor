@@ -1,0 +1,115 @@
+@page "/validation/validation-tooltip/position"
+
+@using System.ComponentModel.DataAnnotations;
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Position">
+        <TelerikDropDownList Data="@Positions"
+                             TItem="@TooltipPosition"
+                             TValue="TooltipPosition"
+                             @bind-Value="@TooltipPosition"
+                             Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            You successfully registered!
+        </div>
+    }
+    else
+    {
+    <h3 style="text-align: center;">Registration Form</h3>
+    <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+        <DataAnnotationsValidator />
+
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <label for="name" class="k-label k-form-label">Username</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="@Model.UserName" Id="name" />
+                </div>
+            </div>
+            <TelerikValidationTooltip For="@(() => Model.UserName)" TargetSelector="#name" Position="@TooltipPosition"/>
+        </div>
+
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <label for="email" class="k-label k-form-label">Email</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="@Model.Email" Id="email" />
+                </div>
+            </div>
+            <TelerikValidationTooltip For="@(() => Model.Email)" TargetSelector="#email" Position="@TooltipPosition"/>
+        </div>
+
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <label for="repeat-email" class="k-label k-form-label">Repeat Email</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="@Model.RepeatEmail" Id="repeat-email" />
+                </div>
+            </div>
+            <TelerikValidationTooltip For="@(() => Model.RepeatEmail)" TargetSelector="#repeat-email" Position="@TooltipPosition"/>
+        </div>
+
+        <div class="k-form-field">
+            <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Register</TelerikButton>
+        </div>
+    </EditForm>
+    }
+</div>
+
+@code {
+    public RegistrationModel Model { get; set; } = new RegistrationModel();
+    public TooltipPosition TooltipPosition { get; set; }
+
+
+    List<TooltipPosition> Positions { get; set; } = new List<TooltipPosition>
+    {
+       TooltipPosition.Top,
+       TooltipPosition.Bottom,
+       TooltipPosition.Left,
+       TooltipPosition.Right
+    };
+
+    public class RegistrationModel
+    {
+        [Required]
+        [MinLength(3)]
+        public string UserName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Compare(nameof(Email))]
+        public string RepeatEmail { get; set; }
+    }
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

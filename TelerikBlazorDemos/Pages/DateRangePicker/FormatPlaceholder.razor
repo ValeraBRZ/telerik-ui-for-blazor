@@ -1,0 +1,12 @@
+@page "/daterangepicker/formatplaceholder"
+
+<div class="demo-section">
+    <TelerikDateRangePicker @bind-StartValue="@Value" @bind-EndValue="@EndValue" Format="d">
+        <DateRangePickerFormatPlaceholder Year="year" Month="month" Day="day" Hour="hour" Minute="min" Second="sec"></DateRangePickerFormatPlaceholder>
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    public DateTime? Value { get; set; }
+    public DateTime? EndValue { get; set; }
+}

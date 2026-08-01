@@ -1,0 +1,34 @@
+@page "/dropdownlist/adaptive"
+
+@inject ProductService ProductService
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <p>
+        Resize the browser to see how the DropDownList adapts to different resolutions.
+    </p>
+</div>
+
+<div class="demo-section">
+    <label for="product" class="k-label k-form-label">Product</label>
+    <TelerikDropDownList Data="@Data"
+                         @bind-Value="@Value"
+                         AdaptiveMode="@AdaptiveMode.Auto"
+                         Title="Choose a product"
+                         Filterable="true"
+                         ValueField="@nameof(ProductDto.ProductId)"
+                         TextField="@nameof(ProductDto.ProductName)"
+                         Size="@ThemeConstants.DropDownList.Size.Large"
+                         Id="product">
+    </TelerikDropDownList>
+</div>
+
+@code {
+    public int? Value { get; set; }
+
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

@@ -1,0 +1,264 @@
+@page "/inlineaiprompt/overview"
+
+@using System.Threading
+
+<div class="demo-section custom-skeleton-layout">
+    <h1 class="demo-title">Transcript</h1>
+
+    <div class="skeleton-container">
+        <TelerikSkeleton Width="40%" Height="35px" ShapeType="@SkeletonShapeType.Text" AnimationType="@SkeletonAnimationType.None" />
+        <TelerikSkeleton Width="100%" Height="35px" ShapeType="@SkeletonShapeType.Text" AnimationType="@SkeletonAnimationType.None" />
+    </div>
+
+    <TelerikButton OnClick="@((MouseEventArgs e) => OnClick(e))"
+                   Icon="@SvgIcon.Sparkles"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                   Class="ai-button">
+        AI Assistance
+    </TelerikButton>
+
+    <p>Meeting Transcript:</p>
+
+    <div class="transcript-container">
+        @for (int i = 0; i < Paragraphs.Count; i++)
+        {
+            var idx = i;
+            <div class="paragraph-container"
+                 @onmouseenter="@(() => OnParagraphHover(idx))"
+                 @onmouseleave="@(() => OnParagraphLeave(idx))">
+                <TelerikButton OnClick="@((MouseEventArgs e) => OnClick(e, idx))"
+                               Icon="@SvgIcon.Sparkles"
+                               ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                               FillMode="@ThemeConstants.Button.FillMode.Flat"
+                               Class="@($"ai-hover-button {(VisibleButtons[idx] ? "ai-visible" : "")}")">
+                </TelerikButton>
+                <p id="@idx">@Paragraphs[idx]</p>
+            </div>
+        }
+    </div>
+
+    <TelerikInlineAIPrompt @ref="@InlinePromptRef"
+                           @bind-Prompt="@UserPrompt"
+                           OnPromptRequest="@OnPromptRequest"
+                           PromptContext="@PromptContext"
+                           Commands="@Commands"
+                           OnCommandExecute="@OnCommandExecute"
+                           EnableSpeechToText="true"
+                           Placeholder="Ask AI to Assist with transcript">
+        <InlineAIPromptSettings>
+            <InlineAIPromptPopupSettings MaxHeight="200px"
+                                         Width="550px"
+                                         AnimationType="@AnimationType.SlideDown"
+                                         HorizontalCollision="@PopupCollision.Fit"
+                                         VerticalCollision="@PopupCollision.Fit" />
+            <AIPromptSpeechToTextButtonSettings Lang="en-US" />
+        </InlineAIPromptSettings>
+    </TelerikInlineAIPrompt>
+</div>
+
+@code {
+    private TelerikInlineAIPrompt InlinePromptRef { get; set; }
+    private string UserPrompt { get; set; }
+    private string PromptContext { get; set; }
+    private bool[] VisibleButtons;
+    private Dictionary<int, CancellationTokenSource> HideTimers = new();
+    private int? SelectedParagraphIndex = null;
+
+    private void OnParagraphHover(int index)
+    {
+        for (int i = 0; i < VisibleButtons.Length; i++)
+        {
+            if (i != index && VisibleButtons[i])
+            {
+                VisibleButtons[i] = false;
+                if (HideTimers.ContainsKey(i))
+                {
+                    HideTimers[i].Cancel();
+                    HideTimers.Remove(i);
+                }
+            }
+        }
+
+        if (HideTimers.ContainsKey(index))
+        {
+            HideTimers[index].Cancel();
+            HideTimers.Remove(index);
+        }
+
+        VisibleButtons[index] = true;
+        StateHasChanged();
+    }
+
+    private async Task OnParagraphLeave(int index)
+    {
+        var cts = new CancellationTokenSource();
+        HideTimers[index] = cts;
+        try
+        {
+            await Task.Delay(1200, cts.Token);
+            VisibleButtons[index] = false;
+            HideTimers.Remove(index);
+            StateHasChanged();
+        }
+        catch (TaskCanceledException) { }
+    }
+
+    private async Task OnCommandExecute(InlineAIPromptCommandExecuteEventArgs args)
+    {
+        await Task.Delay(500);
+
+        string contextText = SelectedParagraphIndex.HasValue
+            ? Paragraphs[SelectedParagraphIndex.Value]
+            : string.Join(" ", Paragraphs);
+
+        args.Output = GetOutputForCommand(args.Command.Id, contextText, SelectedParagraphIndex);
+    }
+
+    private string GetOutputForCommand(string commandId, string text, int? paragraphIndex)
+    {
+        if (commandId == "german")
+            return GermanTranslations[paragraphIndex ?? -1];
+        if (commandId == "spanish")
+            return SpanishTranslations[paragraphIndex ?? -1];
+
+        return commandId switch
+        {
+            "summarize" => "Die Gruppe diskutierte über KI-Chatbots, einschließlich ihrer Stärken wie 24/7-Verfügbarkeit und verbesserte Sprachverarbeitung, sowie Schwächen wie mangelndes Kontextverständnis und Integrationsprobleme. Außerdem wurde die Bedeutung ethischer Nutzung, klarer Offenlegung und strenger Datenschutzrichtlinien betont.",
+            "explain" => "Das Gespräch drehte sich um den aktuellen Stand der KI-Chat-Technologien. Der Moderator fragte nach Stärken und Schwächen; Alex nannte Verfügbarkeit als Stärke und mangelndes Kontextbewusstsein als Schwäche. Priya sprach Integrationsprobleme an, lobte aber die verbesserte Sprachverarbeitung. Auch ethische Fragen, Transparenz und Datenschutz wurden diskutiert.",
+            _ => "Sorry, no output defined for this command."
+        };
+    }
+
+    private List<InlineAIPromptCommandDescriptor> Commands { get; set; } = new()
+    {
+        new InlineAIPromptCommandDescriptor()
+        {
+            Id = "summarize",
+            Title = "Summarize",
+            Prompt = "Summarize the meeting transcript."
+        },
+        new InlineAIPromptCommandDescriptor()
+        {
+            Id = "explain",
+            Title = "Explain",
+            Prompt = "Explain the main points of the conversation."
+        },
+        new InlineAIPromptCommandDescriptor()
+        {
+            Id = "translate",
+            Title = "Translate",
+            Prompt = "Translate into German or Spanish.",
+            Children = new List<InlineAIPromptCommandDescriptor>
+            {
+                new InlineAIPromptCommandDescriptor()
+                {
+                    Id = "german",
+                    Title = "German",
+                    Prompt = "Translate into German."
+                },
+                new InlineAIPromptCommandDescriptor()
+                {
+                    Id = "spanish",
+                    Title = "Spanish",
+                    Prompt = "Translate into Spanish."
+                }
+            },
+        }
+    };
+
+    private List<string> Paragraphs = new()
+    {
+        "Moderator: Good afternoon, everyone. Let's get started. Today's agenda focuses on AI chat technologies and how they're changing the way we interact with users. To kick things off, I'd like to hear your thoughts on the current strengths and weaknesses of AI chatbots. Who'd like to start?",
+        "Alex: I can begin. One major strength is availability—AI chatbots can provide instant responses 24/7. This is especially valuable for customer service. However, I think one weakness is context awareness. Bots sometimes struggle to maintain coherent conversations over multiple turns, especially when users switch topics or ask ambiguous questions.",
+        "Priya: That's a great point, Alex. I'd add that integration is another challenge. Many organizations want their chatbots to connect with internal databases or CRM systems, but getting those integrations right takes time. On the positive side, I've seen impressive advances in natural language understanding. Some bots now recognize nuances and intent better than ever."
+    };
+
+    private Dictionary<int, string> GermanTranslations = new()
+    {
+        { 0, "Moderator: Guten Nachmittag, alle zusammen. Lassen Sie uns beginnen. Die heutige Agenda konzentriert sich auf KI-Chat-Technologien und darauf, wie sie unsere Interaktion mit Nutzern verändern. Um den Anfang zu machen, möchte ich Ihre Meinung zu den aktuellen Stärken und Schwächen von KI-Chatbots hören. Wer möchte beginnen?" },
+        { 1, "Alex: Ich kann anfangen. Eine große Stärke ist die Verfügbarkeit – KI-Chatbots können rund um die Uhr sofortige Antworten geben. Das ist besonders wertvoll für den Kundendienst. Eine Schwäche ist jedoch das Kontextbewusstsein. Bots haben manchmal Schwierigkeiten, über mehrere Gesprächsrunden hinweg kohärent zu bleiben, insbesondere wenn Benutzer das Thema wechseln oder mehrdeutige Fragen stellen." },
+        { 2, "Priya: Das ist ein großartiger Punkt, Alex. Ich möchte hinzufügen, dass Integration eine weitere Herausforderung ist. Viele Organisationen möchten, dass ihre Chatbots sich mit internen Datenbanken oder CRM-Systemen verbinden, aber diese Integrationen richtig umzusetzen, kostet Zeit. Positiv ist, dass ich beeindruckende Fortschritte im Verständnis natürlicher Sprache gesehen habe. Manche Bots erkennen inzwischen Nuancen und Absichten besser als je zuvor." },
+        { -1, "Moderator: Guten Nachmittag, alle zusammen. Lassen Sie uns beginnen. Die heutige Agenda konzentriert sich auf KI-Chat-Technologien und darauf, wie sie unsere Interaktion mit Nutzern verändern. Um den Anfang zu machen, möchte ich Ihre Meinung zu den aktuellen Stärken und Schwächen von KI-Chatbots hören. Wer möchte beginnen? Alex: Ich kann anfangen. Eine große Stärke ist die Verfügbarkeit – KI-Chatbots können rund um die Uhr sofortige Antworten geben. Das ist besonders wertvoll für den Kundendienst. Eine Schwäche ist jedoch das Kontextbewusstsein. Bots haben manchmal Schwierigkeiten, über mehrere Gesprächsrunden hinweg kohärent zu bleiben, insbesondere wenn Benutzer das Thema wechseln oder mehrdeutige Fragen stellen. Priya: Das ist ein großartiger Punkt, Alex. Ich möchte hinzufügen, dass Integration eine weitere Herausforderung ist. Viele Organisationen möchten, dass ihre Chatbots sich mit internen Datenbanken oder CRM-Systemen verbinden, aber diese Integrationen richtig umzusetzen, kostet Zeit. Positiv ist, dass ich beeindruckende Fortschritte im Verständnis natürlicher Sprache gesehen habe. Manche Bots erkennen inzwischen Nuancen und Absichten besser als je zuvor." }
+    };
+
+    private Dictionary<int, string> SpanishTranslations = new()
+    {
+        { 0, "Moderador: Buenas tardes a todos. Vamos a empezar. La agenda de hoy se centra en las tecnologías de chat con IA y cómo están cambiando la manera en que interactuamos con los usuarios. Para comenzar, me gustaría escuchar sus opiniones sobre las fortalezas y debilidades actuales de los chatbots con IA. ¿Quién quiere empezar?" },
+        { 1, "Alex: Puedo empezar. Una gran fortaleza es la disponibilidad: los chatbots con IA pueden proporcionar respuestas instantáneas las 24 horas del día. Esto es especialmente valioso para la atención al cliente. Sin embargo, creo que una debilidad es la conciencia de contexto. A veces, los bots tienen dificultades para mantener conversaciones coherentes a lo largo de varios turnos, especialmente cuando los usuarios cambian de tema o hacen preguntas ambiguas." },
+        { 2, "Priya: Ese es un gran punto, Alex. Añadiría que la integración es otro desafío. Muchas organizaciones quieren que sus chatbots se conecten con bases de datos internas o sistemas CRM, pero lograr esas integraciones correctamente lleva tiempo. En el lado positivo, he visto avances impresionantes en la comprensión del lenguaje natural. Algunos bots ahora reconocen matices e intenciones mejor que nunca." },
+        { -1, "Moderador: Buenas tardes a todos. Vamos a empezar. La agenda de hoy se centra en las tecnologías de chat con IA y cómo están cambiando la manera en que interactuamos con los usuarios. Para comenzar, me gustaría escuchar sus opiniones sobre las fortalezas y debilidades actuales de los chatbots con IA. ¿Quién quiere empezar? Alex: Puedo empezar. Una gran fortaleza es la disponibilidad: los chatbots con IA pueden proporcionar respuestas instantáneas las 24 horas del día. Esto es especialmente valioso para la atención al cliente. Sin embargo, creo que una debilidad es la conciencia de contexto. A veces, los bots tienen dificultades para mantener conversaciones coherentes a lo largo de varios turnos, especialmente cuando los usuarios cambian de tema o hacen preguntas ambiguas. Priya: Ese es un gran punto, Alex. Añadiría que la integración es otro desafío. Muchas organizaciones quieren que sus chatbots se conecten con bases de datos internas o sistemas CRM, pero lograr esas integraciones correctamente lleva tiempo. En el lado positivo, he visto avances impresionantes en la comprensión del lenguaje natural. Algunos bots ahora reconocen matices e intenciones mejor que nunca." }
+    };
+
+    private void OnPromptRequest(InlineAIPromptPromptRequestEventArgs args)
+    {
+        args.Output = "Result from output";
+    }
+
+    private async Task OnClick(MouseEventArgs e, int? paragraphIndex = null)
+    {
+        SelectedParagraphIndex = paragraphIndex;
+        await InlinePromptRef.ShowAsync(e.ClientX, e.ClientY);
+    }
+
+    protected override void OnInitialized()
+    {
+        VisibleButtons = new bool[Paragraphs.Count];
+    }
+}
+
+<style>
+    .demo-title {
+        color: #d3d3d3;
+        margin: 0 0 14px 0;
+    }
+
+    .custom-skeleton-layout {
+        display: flex;
+        flex-direction: column;
+        max-width: 400px;
+    }
+
+    .ai-button {
+        align-self: flex-start;
+        margin-bottom: 24px;
+    }
+
+    .skeleton-container {
+        margin-bottom: 10px;
+    }
+
+    .transcript-container {
+        padding: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        color: #424242;
+        background-color: #ffffff;
+        border-radius: 4px;
+    }
+
+    .paragraph-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        position: relative;
+    }
+
+        .paragraph-container button {
+            position: absolute;
+            left: -12%;
+        }
+
+        .paragraph-container p {
+            margin: 0;
+        }
+
+    .ai-hover-button {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .ai-visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+</style>

@@ -1,0 +1,128 @@
+@page "/treeview/checkboxes"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="CheckBox Mode">
+        <TelerikDropDownList @bind-Value="@CheckBoxMode"
+                             Data="@CheckBoxModeOptions"
+                             OnChange="@UpdateSeletedItemsPerCheckBoxMode"
+                             Width="">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Check node on click">
+        <TelerikCheckBox @bind-Value="@CheckOnClick" Enabled="@(CheckBoxMode != TreeViewCheckBoxMode.None)" Id="checkOnClick" />
+        <label class="k-checkbox-label" for="checkOnClick">Check On Click</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Check all children">
+        <TelerikCheckBox @bind-Value="@CheckChildren" Enabled="@IsMultipleCheckBoxMode" Id="checkChildren" />
+        <label class="k-checkbox-label" for="checkChildren">Check Children</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Check (indeterminate) state of parent based on children">
+        <TelerikCheckBox @bind-Value="@CheckParents" Enabled="@IsMultipleCheckBoxMode" Id="checkParents" />
+        <label class="k-checkbox-label" for="checkParents">Check Parents</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeView Data="@Data"
+                 @bind-ExpandedItems="@ExpandedItems"
+                 @bind-CheckedItems="@CheckedItems"
+                 CheckBoxMode="@CheckBoxMode"
+                 CheckParents="@CheckParents"
+                 CheckChildren="@CheckChildren"
+                 CheckOnClick="@CheckOnClick">
+    <TreeViewBindings>
+        <TreeViewBinding ParentIdField="Parent"></TreeViewBinding>
+    </TreeViewBindings>
+</TelerikTreeView>
+
+@code {
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public int? Parent { get; set; }
+        public string Text { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool HasChildren { get; set; }
+
+        public TreeItem(int id, int? parent, string text, ISvgIcon icon, bool hasChildren)
+        {
+            Id = id;
+            Parent = parent;
+            Text = text;
+            Icon = icon;
+            HasChildren = hasChildren;
+        }
+    }
+
+    public List<TreeItem> Data { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+    public IEnumerable<object> CheckedItems { get; set; }
+
+    public TreeViewCheckBoxMode CheckBoxMode { get; set; } = TreeViewCheckBoxMode.Multiple;
+    public IEnumerable<TreeViewCheckBoxMode> CheckBoxModeOptions { get; set; }
+
+    public bool CheckParents { get; set; } = true;
+    public bool CheckChildren { get; set; } = true;
+    public bool CheckOnClick { get; set; } = true;
+
+    public bool IsMultipleCheckBoxMode => CheckBoxMode == TreeViewCheckBoxMode.Multiple;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+
+        CheckedItems = Data.Skip(1).Take(2).ToList();
+        CheckBoxModeOptions = new List<TreeViewCheckBoxMode>
+        {
+            TreeViewCheckBoxMode.None,
+            TreeViewCheckBoxMode.Single,
+            TreeViewCheckBoxMode.Multiple
+        };
+    }
+
+    void UpdateSeletedItemsPerCheckBoxMode()
+    {
+        // we use this in the demo to clean up the cards rendered from the view-model
+        switch (CheckBoxMode)
+        {
+            case TreeViewCheckBoxMode.None:
+                CheckedItems = new List<object>();
+                break;
+            case TreeViewCheckBoxMode.Single:
+                if (CheckedItems.Count() > 0)
+                {
+                    CheckedItems = new List<object> { CheckedItems.Last() };
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void LoadData()
+    {
+        Data = new List<TreeItem>()
+        {
+            new TreeItem(1, null, "Documents", SvgIcon.Folder, true),
+                new TreeItem(2, 1, "annualreport.xlsx", SvgIcon.FileExcel, false),
+                new TreeItem(3, 1, "statusupdate.docx", SvgIcon.FileWord, false),
+                new TreeItem(4, 1, "conferences.xlsx", SvgIcon.FileExcel, false),
+                new TreeItem(5, 1, "performance.pdf", SvgIcon.FilePdf, false),
+            new TreeItem(6, null, "Pictures", SvgIcon.Folder, true),
+                new TreeItem(7, 6, "Camera Roll", SvgIcon.Folder, true),
+                    new TreeItem(8, 7, "team.png", SvgIcon.FileImage, false),
+                    new TreeItem(9, 7, "team-building.png", SvgIcon.FileImage, false),
+                    new TreeItem(10, 7, "friends.png", SvgIcon.FileImage, false),
+                new TreeItem(11, 6, "Screenshots", SvgIcon.Folder, true),
+                    new TreeItem(12, 11, "screen-error.png", SvgIcon.FileImage, false),
+                    new TreeItem(13, 11, "feedback.png", SvgIcon.FileImage, false),
+            new TreeItem(14, null, "Videos", SvgIcon.Folder, true),
+                new TreeItem(15, 14, "demo.gif", SvgIcon.MediaManager, false),
+                new TreeItem(16, 14, "ux-components.avi", SvgIcon.MediaManager, false),
+                new TreeItem(17, 14, "presentation-intro.avi", SvgIcon.MediaManager, false)
+        };
+        ExpandedItems = Data.ToList();
+    }
+}

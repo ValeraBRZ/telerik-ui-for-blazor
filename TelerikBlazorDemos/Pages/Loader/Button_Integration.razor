@@ -1,0 +1,37 @@
+@page "/loader/button-integration"
+
+<div class="report-button-wrapper demo-section k-form k-form-md">
+    <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@GenerateReport" Enabled="@(!Visible)">
+        Generate Report
+        <TelerikLoader Class="loader-indicator" ThemeColor="light" Visible="@Visible"></TelerikLoader>
+    </TelerikButton>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <p>@Message</p>
+    }
+</div>
+
+@code {
+   bool Visible { get; set; }
+   string Message { get; set; }
+
+   async Task GenerateReport()
+    {
+        Message = "Report Generation in progress...";
+        Visible = true;
+        await Task.Delay(2000);
+        Visible = false;
+        Message = "Your report is generated";
+    }
+}
+
+<style>
+    .report-button-wrapper {
+        width: 100%;
+        text-align: center;
+    }
+
+    .loader-indicator {
+        margin-left: 5px;
+    }
+</style>

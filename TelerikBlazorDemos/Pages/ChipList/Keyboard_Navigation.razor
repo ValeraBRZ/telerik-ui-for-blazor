@@ -1,0 +1,31 @@
+@page "/chiplist/keyboard-navigation"
+
+<div class="demo-section auto">
+    <TelerikChipList Data="@ChipListData" />
+</div>
+
+@code {
+    private List<ChipModel> ChipListData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChipListData = new List<ChipModel>()
+        {
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileAudio, Removable = false, Text = "Audio" },
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileVideo, Removable = true, Text = "Video" },
+            new ChipModel { Disabled = true, Icon = SvgIcon.FileImage, Removable = false, Text = "Image" },
+            new ChipModel { Disabled = false, Icon = SvgIcon.FileData, Removable = true, Text = "Data" }
+        };
+
+        base.OnInitialized();
+    }
+
+    public class ChipModel
+    {
+        public bool Disabled { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool Removable { get; set; }
+        public string Text { get; set; }
+
+    }
+}

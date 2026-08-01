@@ -1,0 +1,114 @@
+@page "/grid/row-selection"
+
+@inject CustomerService customerService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Choose the Grid Selection Mode:">
+        <TelerikDropDownList Data="@SelectionModes" @bind-Value="@SelectionMode" OnChange="@OnSelectionChange">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@IsCheckBoxColumnVisible"
+                         Id="toggle-checkbox-col">
+        </TelerikCheckBox>
+        <label for="toggle-checkbox-col">Toggle <strong>CheckBox</strong> column</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@ShowSelectAll"
+                         Id="select-all-checkbox"
+                         Enabled="@(IsCheckBoxColumnVisible && SelectionMode == GridSelectionMode.Multiple)">
+        </TelerikCheckBox>
+        <label for="select-all-checkbox">Enable <strong>Select All</strong></label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikCheckBox @bind-Value="@CheckBoxOnlySelection"
+                         Id="checkbox-only-checkbox"
+                         Enabled="@(IsCheckBoxColumnVisible)">
+        </TelerikCheckBox>
+        <label for="checkbox-only-checkbox">CheckBox Only Selection</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData
+             SelectionMode="@SelectionMode"
+             @bind-SelectedItems="@SelectedItems"
+             Pageable="true"
+             PageSize="@PageSize">
+    <GridColumns>
+        <GridCheckboxColumn Visible="@IsCheckBoxColumnVisible"
+                            CheckBoxOnlySelection="@CheckBoxOnlySelection"
+                            SelectAll="@ShowSelectAll">
+        </GridCheckboxColumn>
+        <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+        <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+        <GridColumn Field=@nameof(CustomerDto.Address) />
+        <GridColumn Field=@nameof(CustomerDto.Phone) />
+    </GridColumns>
+</TelerikGrid>
+
+<h2>Selected Items:</h2>
+<ul>
+    @foreach (CustomerDto customer in SelectedItems)
+    {
+        <li>
+            @customer?.ContactName (@customer?.Phone)
+        </li>
+    }
+</ul>
+
+@code {
+    private List<GridSelectionMode> SelectionModes => new List<GridSelectionMode>
+    {
+        GridSelectionMode.Single,
+        GridSelectionMode.Multiple,
+        GridSelectionMode.None
+    };
+
+    private GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Multiple;
+    private IEnumerable<CustomerDto> GridData { get; set; } = new List<CustomerDto>();
+    private IEnumerable<CustomerDto> SelectedItems { get; set; } = new List<CustomerDto>();
+    private int PageSize = 10;
+    private bool IsCheckBoxColumnVisible { get; set; }
+    private bool CheckBoxOnlySelection { get; set; }
+    private bool ShowSelectAll { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = customerService.GetCustomers().ToList();
+
+        SelectedItems = GridData.Skip(3).Take(2).ToList();
+    }
+
+    private void OnSelectionChange(object selection)
+    {
+        GridSelectionMode selectionMode = (GridSelectionMode)selection;
+        SelectionMode = selectionMode;
+
+        //cater for choosing different selection modes
+        //this is used only for the demo to update the rendering, you are not likely to need it in a real app
+        if (selectionMode == GridSelectionMode.Single)
+        {
+            CustomerDto selectedItem = null;
+            var TempItems = new List<CustomerDto>();
+
+            if (SelectedItems.Count() > 0)
+            {
+                selectedItem = SelectedItems.Last();
+            }
+
+            if (selectedItem != null)
+            {
+                TempItems.Add(selectedItem);
+            }
+            SelectedItems = TempItems.AsEnumerable<CustomerDto>();
+        }
+        else if (selectionMode == GridSelectionMode.None)
+        {
+            SelectedItems = new List<CustomerDto>();
+        }
+    }
+}
+

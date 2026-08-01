@@ -1,0 +1,68 @@
+﻿@page "/wizard/events"
+
+<div style="width: 700px; margin: 0 auto;">
+    <TelerikWizard ValueChanged="@ValueChangeHandler" OnFinish="@FinishHandler">
+        <WizardSteps>
+            <WizardStep Label="First Step" OnChange="@OnFirstStepChange">
+                <Content>
+                    <h1>First step content</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Second Step" OnChange="@OnSecondStepChange">
+                <Content>
+                    <h1>Second step content</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Third Step" OnChange="@OnThirdStepChange">
+                <Content>
+                    <h1>Third step content</h1>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+    </TelerikWizard>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string EventLog { get; set; } = string.Empty;
+
+    public void ValueChangeHandler(int index)
+    {
+        var log = $"<div><strong>Value changed event</strong>: New value: <strong>{index}</strong></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void FinishHandler()
+    {
+        var log = $"<div><strong>Finish event</strong> is triggered</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnFirstStepChange(WizardStepChangeEventArgs args)
+    {
+        var log = $"<div><strong>First Step Change event</strong>: Target index: <strong>{args.TargetIndex}</strong></div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnSecondStepChange(WizardStepChangeEventArgs args)
+    {
+        var log = $"<div><strong>Second Step Change event</strong>: Target index: <strong>{args.TargetIndex}</strong></div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnThirdStepChange(WizardStepChangeEventArgs args)
+    {
+        var log = $"<div><strong>Third Step Change event</strong>: Target index: <strong>{args.TargetIndex}</strong> Changing step is cancelled.</div>";
+        args.IsCancelled = true;
+        EventLog = EventLog.Insert(0, log);
+    }
+}
+

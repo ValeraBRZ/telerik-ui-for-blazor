@@ -1,0 +1,166 @@
+@page "/editor/paste-cleanup"
+
+@using Telerik.Blazor.Components.Editor
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Paste CleanUp Options">
+        <ul style="columns: 2">
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@ConvertMsLists"></TelerikCheckBox>
+                    ConvertMsLists
+                </label>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@RemoveHtmlComments"></TelerikCheckBox>
+                    RemoveHtmlComments
+                </label>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@RemoveAllAttributes"></TelerikCheckBox>
+                    RemoveAllAttributes
+                </label>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@RemoveMsClasses"></TelerikCheckBox>
+                    RemoveMsClasses
+                </label>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@RemoveMsStyles"></TelerikCheckBox>
+                    RemoveMsStyles
+                </label>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Strip tags">
+        <TelerikMultiSelect @bind-Value="@StripTags"
+                            Data="@TagsToStrip">
+            <MultiSelectSettings>
+                <MultiSelectPopupSettings Height="auto"></MultiSelectPopupSettings>
+            </MultiSelectSettings>
+        </TelerikMultiSelect>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Remove Attributes">
+        <TelerikMultiSelect @bind-Value="@RemoveAttributes"
+                            Placeholder="Attributes to strip"
+                            Data="@AttributesToStrip">
+            <MultiSelectSettings>
+                <MultiSelectPopupSettings Height="auto"></MultiSelectPopupSettings>
+            </MultiSelectSettings>
+        </TelerikMultiSelect>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikEditor Height="300px" @bind-Value="@Value" Tools="@EditorTools">
+    <EditorSettings>
+        <EditorPasteSettings ConvertMsLists="@ConvertMsLists"
+                             RemoveHtmlComments="@RemoveHtmlComments"
+                             RemoveAllAttributes="@RemoveAllAttributes"
+                             RemoveMsClasses="@RemoveMsClasses"
+                             RemoveMsStyles="@RemoveMsStyles"
+                             StripTags="@StripTags"
+                             RemoveAttributes="@RemoveAttributes">
+        </EditorPasteSettings>
+    </EditorSettings>
+</TelerikEditor>
+
+@code {
+    private List<string> _stripTags = new List<string>() { "span" };
+    private List<string> _stripAttributes = new List<string>() { "lang" };
+
+    public bool ConvertMsLists { get; set; } = true;
+    public bool RemoveHtmlComments { get; set; }
+    public bool RemoveAllAttributes { get; set; }
+    public bool RemoveMsClasses { get; set; } = true;
+    public bool RemoveMsStyles { get; set; } = true;
+
+    public List<string> StripTags
+    {
+        get => _stripTags;
+        set
+        {
+            // update editor setting with new list because of demo purposes.
+            _stripTags = new List<string>(value);
+        }
+    }
+    public List<string> RemoveAttributes
+    {
+        get => _stripAttributes;
+        set
+        {
+            // update editor setting with new list because of demo purposes.
+            _stripAttributes = new List<string>(value);
+        }
+    }
+
+    public List<string> TagsToStrip { get; set; } = new List<string>() { "span", "h1", "h2", "br", "div" };
+
+    public List<string> AttributesToStrip { get; set; } = new List<string>() { "lang", "dir", "style", "class", "href", "alt" };
+
+    List<IEditorTool> EditorTools { get; set; }
+
+    protected override void OnInitialized()
+    {
+        EditorTools = new List<IEditorTool>(EditorToolSets.Default);
+        EditorTools.Insert(0, new ViewHtml());
+
+        base.OnInitialized();
+    }
+
+    public string Value { get; set; } =
+@"
+<h1 style=""text-align:center;; font-size: large"">
+    <span style=""font-family:Verdana, Geneva, sans-serif;"">
+        <strong> One of the Most Beautiful Islands on Earth - Tenerife</strong>
+    </span>
+</h1>
+<p>
+    <span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" ><strong> Overview </strong>
+    </span>
+</p>
+<p>
+    <strong>Tenerife</strong> is the largest and most populated island of the eight <a href=""https://en.wikipedia.org/wiki/Canary_Islands"" target=""_blank"">Canary Islands</a>. It is also the most populated island of <strong>Spain</strong>, with a land area of 2,034.38 square kilometers (785 sq mi) and 904,713 inhabitants, 43% of the total population of the <strong>Canary Islands</strong>.
+    The archipelago's beaches, climate and important natural attractions, make it a major tourist destination with over 12 million visitors per year.
+</p>
+<p><span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" >
+    <strong> Trip Highlights in Tenerife</strong></span></p><span style = ""white-space:pre;"" ></span>
+        <ul>
+            <li>
+                <strong>
+                    <span  style=""color: #3E579A"">
+                        Trip to Loro Parque
+                    </span>
+                </strong>
+            <br />
+            Out top tip is to visit the famous <em>Loro Parque</em> or 'Loro Park. It is a 13.5-hectare zoo on the outskirts of Puerto de la Cruz on Tenerife, Spain where it houses an extensive and diverse reserve of animal and plant species.
+            <br />
+        </li>
+        <li>
+            <strong>
+                <span  style=""color: #3E579A"">
+                    Whale and Dolphin Watching Tour
+                </span>
+            </strong>
+            <br />
+            Another great option is to take boat excursion with almost guaranteed sightings of whales and dolphins.This is a day-long trip that includes lunch, island visits, fishing, and amazing views of ocean sceneries.
+            <br />
+        </li>
+        <li>
+            <strong>
+                <span  style=""color: #3E579A"">
+                    Teide National Park Stargazing
+                </span>
+            </strong>
+            <br />
+            Last, but not least you can take a stargaze trip to Teide National Park, the 3rd best place in the world to view stars and described by NASA as a window to the universe.
+            <br />
+        </li>
+    </ul>
+</p>
+";
+}

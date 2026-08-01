@@ -1,0 +1,81 @@
+@page "/editor/prosemirror-schema"
+
+<script suppress-error="BL9992">
+    var tagMark = (tag) => ({
+        [tag]: {
+            name: tag,
+            inclusive: true,
+            parseDOM: [{ tag }],
+            toDOM: () => [tag, 0],
+        },
+    });
+
+    var button = {
+        attrs: {
+            class: { default: null },
+            type: { default: null },
+        },
+        group: "inline",
+        content: "text*",
+        inline: true,
+        parseDOM: [
+            {
+                tag: "button",
+                getAttrs: (dom) => ({
+                    class: dom.getAttribute("class"),
+                    type: dom.getAttribute("type"),
+                }),
+            },
+        ],
+        toDOM: (node) => {
+            return ["button", { class: node.attrs.class, type: node.attrs.type }, 0];
+        },
+    };
+
+    window.schemaProvider = (args) => {
+        const schema = args.getSchema();
+        const Schema = args.ProseMirror.Schema
+
+        const paragraph = { ...schema.spec.nodes.get("paragraph") };
+        paragraph.attrs["dir"] = { default: null };
+        paragraph.attrs["title"] = { default: null };
+        let nodes = schema.spec.nodes.update("paragraph", paragraph);       
+
+        nodes = nodes.addToEnd("button", button);
+
+        const markShortQuote = tagMark("q");
+        const marks = schema.spec.marks.append(markShortQuote);
+
+        const newSchema = new Schema({ nodes, marks });
+        return newSchema;
+    }
+</script>
+
+<TelerikEditor @bind-Value="@TheEditorValue"
+               Schema="schemaProvider">
+</TelerikEditor>
+
+@code {
+    private string TheEditorValue { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        TheEditorValue = @"
+        <p dir='rtl'>
+            A paragraph with <code>dir='rtl'</code> attribute
+        </p>
+        <hr />
+        <p title='This is a title'>
+            A paragraph with title. Hover to see the browser tooltip.
+        </p>
+        <hr />
+        <q>
+            Short quotation.
+        </q>
+        <hr />
+            A button element.
+        <button class='my-button' type='button'>Click me</button>";
+
+        return base.OnInitializedAsync();
+    }
+}

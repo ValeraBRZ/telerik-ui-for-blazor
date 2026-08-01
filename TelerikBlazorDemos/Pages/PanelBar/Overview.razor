@@ -1,0 +1,141 @@
+@page "/panelbar/overview"
+
+<div style="width: 30%; margin: 0 auto;">
+    <TelerikPanelBar Data="@Data" @bind-ExpandedItems="@ExpandedItems">
+        <PanelBarBindings>
+            <PanelBarBinding Level="0">
+                <ContentTemplate>
+                    <div>
+                        <div class="teamMate">
+                            <img src="images/panelbar/andrew.jpg" alt="Andrew Fuller">
+                            <div class="mate-info">
+                                <h2>Andrew Fuller</h2>
+                                <p>Team Lead</p>
+                            </div>
+                        </div>
+                        <div class="teamMate">
+                            <img src="images/panelbar/nancy.jpg" alt="Nancy Leverling">
+                            <div class="mate-info">
+                                <h2>Nancy Leverling</h2>
+                                <p>Sales Associate</p>
+                            </div>
+                        </div>
+                        <div class="teamMate">
+                            <img src="images/panelbar/robert.jpg" alt="Robert King">
+                            <div class="mate-info">
+                                <h2>Robert King</h2>
+                                <p>Business System Analyst</p>
+                            </div>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </PanelBarBinding>
+        </PanelBarBindings>
+    </TelerikPanelBar>
+</div>
+
+@code {
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public IEnumerable<TreeItem> Items { get; set; }
+    }
+
+    public IEnumerable<TreeItem> Data { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadFlatData();
+    }
+
+    private void LoadFlatData()
+    {
+        // TODO: Move to hierarchical data
+        List<TreeItem> items = new List<TreeItem>();
+        items.Add(new TreeItem() { Id = 0, Text = "My Teammates"});
+        items.Add(new TreeItem()
+        {
+            Id = 1,
+            Text = "Projects",
+            Items = new List<TreeItem>()
+            {
+                new TreeItem() { Id = 2, Text = "New Business Plan" },
+                new TreeItem()
+                {
+                    Id = 3,
+                    Text = "Sales Forecasts",  Items = new List<TreeItem>()
+                    {
+                        new TreeItem() { Id = 4, Text = "Q1 Forecast" },
+                        new TreeItem() { Id = 5, Text = "Q2 Forecast" },
+                        new TreeItem() { Id = 6, Text = "Q3 Forecast" },
+                        new TreeItem() { Id = 7, Text = "Q4 Forecast" }
+                    }
+                }
+            }
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 8,
+            Text = "Programs",
+            Items = new List<TreeItem>()
+            {
+                new TreeItem() { Id = 9, Text = "Monday"},
+                new TreeItem() { Id = 10, Text = "Tuesday" },
+                new TreeItem() { Id = 11, Text = "Wednesday" },
+                new TreeItem() { Id = 12, Text = "Thursday" },
+                new TreeItem() { Id = 13, Text = "Friday" }
+            }
+        });
+        items.Add(new TreeItem() { Id = 14, Text = "Communication", Disabled = true });
+
+        Data = items;
+
+        ExpandedItems = new List<object> { items.First() };
+    }
+}
+
+<style>
+    .teamMate:after {
+        content: ".";
+        display: block;
+        height: 0;
+        line-height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+
+    .teamMate h2 {
+        font-size: 1.2em;
+        font-weight: normal;
+        padding-top: 19px;
+        margin: 0;
+    }
+
+    .teamMate p {
+        margin: 0;
+        font-size: .8em;
+    }
+
+    .teamMate img {
+        display: inline-block;
+        vertical-align: top;
+        width: 50px;
+        height: 50px;
+        margin: 10px;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+    }
+
+    .mate-info {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .panelbar-wrapper {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+</style>

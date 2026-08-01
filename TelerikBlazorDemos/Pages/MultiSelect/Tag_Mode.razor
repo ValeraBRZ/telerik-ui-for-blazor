@@ -1,0 +1,56 @@
+@page "/multiselect/tag-mode"
+
+@inject ProductService productService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tag Mode">
+        <TelerikRadioGroup Data="@TagModes"
+                           @bind-Value="@TagMode"
+                           Layout="RadioGroupLayout.Horizontal">
+        </TelerikRadioGroup>
+    </DemoConfiguratorColumn>   
+    <DemoConfiguratorColumn Description="Maximum Allowed Tags">
+        <TelerikNumericTextBox @bind-Value="@MaxAllowedTags"
+                               Enabled="@(TagMode == MultiSelectTagMode.Multiple)"
+                               Min="1">
+
+        </TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <label for="selectId">Select a product:</label>
+    <br />
+    <TelerikMultiSelect Data="@Products"
+                        @bind-Value="@SelectedProductIds"
+                        ValueField="@nameof(ProductDto.ProductId)"
+                        TextField="@nameof(ProductDto.ProductName)"
+                        TagMode="@TagMode"
+                        MaxAllowedTags="@MaxAllowedTags"
+                        Placeholder="Select Products"
+                        AutoClose="false"
+                        Width="400px">
+    </TelerikMultiSelect>
+</div>
+
+@code {
+    private IEnumerable<ProductDto> Products = new List<ProductDto>();
+    private List<string> SelectedProductNames = new List<string>();
+    private List<int> SelectedProductIds = new List<int>();
+
+    private MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Single;
+    private int? MaxAllowedTags { get; set; }
+
+    private List<MultiSelectTagMode> TagModes { get; set; } = new List<MultiSelectTagMode>()
+    {
+        MultiSelectTagMode.Single,
+        MultiSelectTagMode.Multiple
+    };
+
+    protected override void OnInitialized()
+    {
+        Products = productService.GetProducts();
+
+        base.OnInitialized();
+    }
+}

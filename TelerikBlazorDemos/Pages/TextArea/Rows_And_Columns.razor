@@ -1,0 +1,22 @@
+@page "/textarea/rows-and-columns"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Rows">
+        <TelerikNumericTextBox @bind-Value="@Rows" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Columns">
+        <TelerikNumericTextBox @bind-Value="@Cols" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikTextArea Rows="@Rows"
+                     Cols="@Cols"
+                     Placeholder="Input...">
+    </TelerikTextArea>
+</div>
+
+@code {
+    public int? Rows { get; set; } = 10;
+    public int? Cols { get; set; } = 40;
+}

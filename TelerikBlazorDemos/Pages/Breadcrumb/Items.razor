@@ -1,0 +1,35 @@
+@page "/breadcrumb/items"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Data" Class="k-justify-content-center"></TelerikBreadcrumb>
+</div>
+
+@code {
+    public IEnumerable<BreadcrumbItem> Data = new List<BreadcrumbItem>();
+
+    protected override void OnInitialized()
+    {
+        Data = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Title = "Home", Icon = SvgIcon.Home },
+            new BreadcrumbItem { Text = "General", Icon = SvgIcon.Globe, Disabled = true },
+            new BreadcrumbItem { Text = "Activities" },
+            new BreadcrumbItem { Text = "Drawing", Icon = SvgIcon.Palette },
+            new BreadcrumbItem { Icon = SvgIcon.Photos },
+        };
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public string Title { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool Disabled { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(520px + 6em) !important;
+    }
+</style>

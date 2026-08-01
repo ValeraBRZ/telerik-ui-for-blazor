@@ -1,0 +1,26 @@
+@page "/radialgauge/overview"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Change pointer value">
+        <TelerikNumericTextBox @bind-Value="@Value"
+                               Min="0"
+                               Max="50"
+                               Step="10"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikRadialGauge>
+        <RadialGaugeScales>
+            <RadialGaugeScale Min="0" Max="50">
+            </RadialGaugeScale>
+        </RadialGaugeScales>
+        <RadialGaugePointers>
+            <RadialGaugePointer Value="@Value"></RadialGaugePointer>
+        </RadialGaugePointers>
+    </TelerikRadialGauge>
+</div>
+
+@code {
+    public int Value { get; set; } = 20;
+}

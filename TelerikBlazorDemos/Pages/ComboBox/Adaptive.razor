@@ -1,0 +1,35 @@
+@page "/combobox/adaptive"
+
+@inject ProductService ProductService
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <p>
+        Resize the browser to see how the ComboBox adapts to different resolutions.
+    </p>
+</div>
+
+<div class="demo-section">
+    <label for="product" class="k-label k-form-label">Product</label>
+    <TelerikComboBox Data="@Data"
+                     @bind-Value="@Value"
+                     AdaptiveMode="@AdaptiveMode.Auto"
+                     Title="Choose a product"
+                     Filterable="true"
+                     ValueField="@nameof(ProductDto.ProductId)"
+                     TextField="@nameof(ProductDto.ProductName)"
+                     Placeholder="Enter a product, e.g., Tofu"
+                     Size="@ThemeConstants.ComboBox.Size.Large"
+                     Id="product">
+    </TelerikComboBox>
+</div>
+
+@code {
+    public int? Value { get; set; }
+
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

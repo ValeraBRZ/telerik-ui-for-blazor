@@ -1,0 +1,152 @@
+@page "/wizard/form"
+
+@using System.ComponentModel.DataAnnotations
+
+<div style="width: 70%; margin: 0 auto;">
+    <TelerikWizard @bind-Value="@Value">
+        <WizardSteps>
+            <WizardStep Label="Registration" OnChange="@OnRegistrationStepChange">
+                <Content>
+                    <TelerikForm Model="@RegistrationModel"
+                                 @ref="@RegisterForm">
+                        <FormValidation>
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                        </FormValidation>
+                        <FormItems>
+                            <FormItem LabelText="Username*" Field="@nameof(UserDetails.Username)"></FormItem>
+                            <FormItem LabelText="Email*" Field="@nameof(UserDetails.Email)">
+                                <Template>
+                                    <label for="mail" class="k-label k-form-label">Email*:</label>
+                                    <TelerikTextBox Id="mail" @bind-Value="@RegistrationModel.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                                    <TelerikValidationMessage For="@(() => RegistrationModel.Email)"></TelerikValidationMessage>
+                                </Template>
+                            </FormItem>
+                            <FormItem LabelText="Password*" Field="@nameof(UserDetails.Password)">
+                                <Template>
+                                    <label for="pass" class="k-label k-form-label">Password*:</label>
+                                    <TelerikTextBox Id="pass" @bind-Value="@RegistrationModel.Password" Password="true"></TelerikTextBox>
+                                    <TelerikValidationMessage For="@(() => RegistrationModel.Password)"></TelerikValidationMessage>
+                                    <div class="k-form-hint" id="a44cdd4c-bd6d-40f3-a6df-58260f065414">Hint: enter alphanumeric characters only.</div>
+                                </Template>
+                            </FormItem>
+                            <FormItem LabelText="Birth Date" Field="@nameof(UserDetails.DateOfBirth)" />
+                        </FormItems>
+                        <FormButtons></FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Personal Details" OnChange="@OnPersonalDetailsStepChange">
+                <Content>
+                    <TelerikForm Model="@PersonalDetailsModel"
+                                 @ref="@PersonalDetailsForm"
+                                 Columns="2"
+                                 ColumnSpacing="20px">
+                        <FormValidation>
+                            <DataAnnotationsValidator></DataAnnotationsValidator>
+                        </FormValidation>
+                        <FormItems>
+                            <FormGroup LabelText="Personal Details">
+                                <FormItem LabelText="First Name*" Field="@nameof(PersonalDetails.FirstName)" />
+                                <FormItem LabelText="Last Name*" Field="@nameof(PersonalDetails.LastName)"  />
+                            </FormGroup>
+                            <FormGroup LabelText="Address" Columns="2" ColumnSpacing="10px">
+                                <FormItem Field="@nameof(PersonalDetails.Country)" ColSpan="1">
+                                    <Template>
+                                        <label for="country" class="k-label k-form-label">Country*:</label>
+                                        <TelerikDropDownList Data="@Countries" @bind-Value="PersonalDetailsModel.Country" Id="country" Width="100%"></TelerikDropDownList>
+                                    </Template>
+                                </FormItem>
+                                <FormItem LabelText="City*" Field="@nameof(PersonalDetails.City)" ColSpan="1" />
+                                <FormItem LabelText="Address" Field="@nameof(PersonalDetails.AddressLine)" ColSpan="2" />
+                            </FormGroup>
+                        </FormItems>
+                        <FormButtons></FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Confirmation">
+                <Content>
+                    <h2>Registration completed.</h2>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+    </TelerikWizard>
+</div>
+
+@code {
+    public int Value { get; set; }
+
+    public TelerikForm RegisterForm { get; set; }
+    public UserDetails RegistrationModel { get; set; } = new UserDetails();
+
+    public TelerikForm PersonalDetailsForm { get; set; }
+    public PersonalDetails PersonalDetailsModel { get; set; } = new PersonalDetails();
+
+    public void OnRegistrationStepChange(WizardStepChangeEventArgs args)
+    {
+        var isFormValid = RegisterForm.IsValid();
+        if (!isFormValid)
+        {
+            args.IsCancelled = true;
+        }
+    }
+
+    public void OnPersonalDetailsStepChange(WizardStepChangeEventArgs args)
+    {
+        var isPrevious = Value < args.TargetIndex;
+        if (Value < args.TargetIndex)
+        {
+            var isFormValid = PersonalDetailsForm.IsValid();
+            if (!isFormValid)
+            {
+                args.IsCancelled = true;
+            }
+        }
+    }
+
+    public List<string> Countries => new List<string>
+    {
+        "Germany",
+        "France",
+        "Italy",
+        "United States",
+        "Canada"
+    };
+
+    public class UserDetails
+    {
+        [Required]
+        public string Username { get; set; } = "HappyGuy";
+
+        [Required]
+        public string Email { get; set; } = "email@domain.com";
+
+        [MinLength(8)]
+        [Required]
+        public string Password { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+    }
+
+    public class PersonalDetails
+    {
+        [Display(Name = "First Name*")]
+        [Required]
+        public string FirstName { get; set; } = "John";
+
+        [Display(Name = "Last Name*")]
+        [Required]
+        public string LastName { get; set; } = "Smith";
+
+        [Display(Name = "Country*")]
+        [Required]
+        public string Country { get; set; } = "Germany";
+
+        [Display(Name = "City*")]
+        [Required]
+        public string City { get; set; } = "Berlin";
+
+        public string AddressLine { get; set; }
+    }
+}
+

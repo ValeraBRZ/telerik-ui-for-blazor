@@ -1,0 +1,157 @@
+@page "/listbox/appearance"
+
+@inject ProductService productService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikListBox Id="@ListBoxId"
+                    ConnectedListBoxId="@ConnectedListBoxId"
+                    Data="@AllProducts"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    @bind-SelectedItems="@SelectedProducts"
+                    Size="@Size"
+                    OnReorder="@((ListBoxReorderEventArgs<ProductDto> args) => OnReorder(args))"
+                    OnTransfer="@((ListBoxTransferEventArgs<ProductDto> args) => OnTransfer(args))"
+                    OnRemove="@((ListBoxRemoveEventArgs<ProductDto> args) => OnRemove(args))">
+    </TelerikListBox>
+
+    <TelerikListBox Id="@ConnectedListBoxId"
+                    Data="@ProductsToPurchase"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    @bind-SelectedItems="@SelectedProductsToPurchase"
+                    Size="@Size">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+</div>
+
+
+@code {
+    private string ListBoxId = "first-listbox";
+    private string ConnectedListBoxId = "connected-listbox";
+
+    private IEnumerable<ProductDto> AllProducts { get; set; } = new List<ProductDto>();
+    private IEnumerable<ProductDto> SelectedProducts { get; set; } = new List<ProductDto>();
+
+    private IEnumerable<ProductDto> ProductsToPurchase { get; set; } = new List<ProductDto>();
+    private IEnumerable<ProductDto> SelectedProductsToPurchase { get; set; } = new List<ProductDto>();
+
+    #region Tools Handlers
+
+    private void OnRemove(ListBoxRemoveEventArgs<ProductDto> args)
+    {
+        var itemsToRemove = AllProducts.Where(x => args.Items.Select(y => y.ProductId).Contains(x.ProductId));
+
+        var data = AllProducts.Where(x => !itemsToRemove.Contains(x)).ToList();
+
+        AllProducts = data;
+    }
+
+    private void OnReorder(ListBoxReorderEventArgs<ProductDto> args)
+    {
+        if (args.ToIndex >= AllProducts.Count() || args.ToIndex < 0)
+        {
+            return;
+        }
+
+        var data = AllProducts.ToList();
+        var itemsToShift = data.Skip(args.FromIndex).Take(args.Items.Count).ToList();
+
+        data.RemoveAll(x => itemsToShift.Contains(x));
+        data.InsertRange(args.ToIndex, itemsToShift);
+
+        AllProducts = data;
+    }
+
+    private void OnTransfer(ListBoxTransferEventArgs<ProductDto> args)
+    {
+        (IEnumerable<ProductDto> origin, IEnumerable<ProductDto> destination) output;
+
+        if (args.DestinationListBoxId == ConnectedListBoxId)
+        {
+            output = Transfer(AllProducts, ProductsToPurchase, args.Items);
+            AllProducts = output.origin.ToList();
+            ProductsToPurchase = output.destination.ToList();
+            SelectedProducts = Enumerable.Empty<ProductDto>();
+        }
+        else
+        {
+            output = Transfer(ProductsToPurchase, AllProducts, args.Items);
+            ProductsToPurchase = output.origin.ToList();
+            AllProducts = output.destination.ToList();
+            SelectedProductsToPurchase = Enumerable.Empty<ProductDto>();
+        }
+    }
+
+    private (IEnumerable<ProductDto> origin, IEnumerable<ProductDto> destination) Transfer(
+        IEnumerable<ProductDto> origin,
+        IEnumerable<ProductDto> destination,
+        IEnumerable<ProductDto> payload)
+    {
+        var originData = origin.ToList();
+        var destinationData = destination.ToList();
+
+        _ = originData.RemoveAll(x => payload.Select(x => x.ProductId).Contains(x.ProductId));
+
+        destinationData.AddRange(payload);
+
+        return (originData, destinationData);
+    }
+
+    #endregion Tools Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        var allData = productService.GetProducts().Take(20).ToList();
+
+        AllProducts = allData.Take(15).ToList();
+        ProductsToPurchase = allData.Skip(15).Take(5).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    #endregion Data
+
+    #region Configurator
+
+    private string Size { get; set; } = ThemeConstants.ListBox.Size.Medium;
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.ListBox.Size.Small },
+        { "Medium", ThemeConstants.ListBox.Size.Medium },
+        { "Large", ThemeConstants.ListBox.Size.Large }
+    };
+
+    #endregion Configurator
+}
+
+<style>
+    .k-listbox {
+        height: 400px;
+    }
+
+    .k-listbox.k-listbox-sm {
+        height: 360px;
+    }
+
+    #first-listbox {
+        width: 270px;
+    }
+
+    #connected-listbox {
+        margin-left: 0.6em;
+        width: 232px;
+    }
+</style>

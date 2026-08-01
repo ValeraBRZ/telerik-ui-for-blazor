@@ -1,0 +1,53 @@
+@page "/drawer/keyboard-navigation"
+
+<TelerikDrawer @ref="@Drawer" Data="Data" MiniMode="true" Mode="@DrawerMode.Push">
+    <DrawerContent>
+        <TelerikButton OnClick="@ToggleDrawer" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Toggle Drawer state</TelerikButton>
+    </DrawerContent>
+</TelerikDrawer>
+
+@code {
+    public TelerikDrawer<DrawerItem> Drawer { get; set; }
+    public IEnumerable<DrawerItem> Data { get; set; } =
+    new List<DrawerItem>
+        {
+            new DrawerItem { Text = "Inbox", Icon = SvgIcon.Inbox },
+            new DrawerItem { Separator = true },
+            new DrawerItem { Text = "Notifications", Icon = SvgIcon.Bell },
+            new DrawerItem { Text = "Calendar", Icon = SvgIcon.Calendar },
+            new DrawerItem { Separator = true },
+            new DrawerItem { Text = "Attachments", Icon = SvgIcon.EnvelopeLink },
+            new DrawerItem { Text = "Favourites", Icon = SvgIcon.StarOutline }
+        };
+
+    public async Task ToggleDrawer() => await Drawer.ToggleAsync();
+
+    public class DrawerItem
+    {
+        public string Text { get; set; }
+
+        public ISvgIcon Icon { get; set; }
+
+        public bool Separator { get; set; }
+    }
+}
+
+<style>
+    #demo-runner {
+        height: 800px;
+    }
+
+    .k-drawer-container {
+        position: relative;
+        width: 100%;
+        height: 50%;
+    }
+
+    .k-drawer-content {
+        padding: 10px;
+    }
+
+    .k-drawer-content h6 {
+        margin-top: 15px;
+    }
+</style>

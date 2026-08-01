@@ -1,0 +1,61 @@
+@page "/window/constrain-movement"
+
+<div style="display: flex; flex-wrap: wrap; gap: 1em;">
+    <div class="parent-container k-border-success k-border-solid k-border"
+         id="window-box-1">
+        <strong>div#window-box-1</strong>
+        <TelerikWindow ContainmentSelector="#window-box-1"
+                       @bind-Width="@FirstWindowWidth"
+                       @bind-Height="@FirstWindowHeight"
+                       Visible="true">
+            <WindowTitle>
+                First Window
+            </WindowTitle>
+            <WindowActions>
+                <WindowAction Name="Minimize"></WindowAction>
+                <WindowAction Name="Maximize"></WindowAction>
+            </WindowActions>
+            <WindowContent>
+                Drag, resize or maximize this Window within the boundaries of its container <strong>div#window-box-1</strong> with a <code>position:relative</code> style.
+            </WindowContent>
+        </TelerikWindow>
+    </div>
+
+    <div class="parent-container k-border-error k-border-solid k-border"
+         id="window-box-2">
+        <strong>div#window-box-2</strong>
+        <TelerikWindow ContainmentSelector="#window-box-2"
+                       @bind-Width="@SecondWindowWidth"
+                       @bind-Height="@SecondWindowHeight"
+                       Visible="true">
+            <WindowTitle>
+                Second Window
+            </WindowTitle>
+            <WindowActions>
+                <WindowAction Name="Minimize"></WindowAction>
+                <WindowAction Name="Maximize"></WindowAction>
+            </WindowActions>
+            <WindowContent>
+                Drag, resize or maximize this Window within the boundaries of its container <strong>div#window-box-2</strong> with a <code>position:relative</code> style.
+            </WindowContent>
+        </TelerikWindow>
+    </div>
+</div>
+
+<style>
+    .parent-container {
+        position: relative;
+        min-width: 300px;
+        height: 30vh;
+        flex: 1 1 33vw;
+        padding: 1em;
+    }
+</style>
+
+@code {
+    private string FirstWindowWidth { get; set; } = "15vw";
+    private string FirstWindowHeight { get; set; } = "15vh";
+
+    private string SecondWindowWidth { get; set; } = "15vw";
+    private string SecondWindowHeight { get; set; } = "15vh";
+}

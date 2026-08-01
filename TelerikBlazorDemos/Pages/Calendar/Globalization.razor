@@ -1,0 +1,24 @@
+@page "/calendar/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<div class="container-fluid mt-md">
+    <TelerikCalendar Date="@startDate"
+                     Min="@min"
+                     Max="@max"
+                     View="CalendarView.Month"
+                     SelectionMode="@CalendarSelectionMode.Multiple">
+    </TelerikCalendar>
+</div>
+
+@code {
+
+    DateTime startDate = new DateTime(2025, 5, 2);
+    DateTime min = new DateTime(2024, 1, 1);
+    DateTime max = new DateTime(2035, 12, 31);
+}

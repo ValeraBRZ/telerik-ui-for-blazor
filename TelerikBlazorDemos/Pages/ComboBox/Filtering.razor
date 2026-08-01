@@ -1,0 +1,88 @@
+@page "/combobox/filtering"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enable filtering for the ComboBox">
+        <TelerikCheckBox @bind-Value="@Filterable" Id="filterableCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="filterableCheckBox">Enable Filtering</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description=" Select the filter operator">
+        <TelerikDropDownList @bind-Value="@filterOperator"
+                             Data="@filterOperators"
+                             Enabled="@Filterable"
+                             Width="100%" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@DebounceDelay" Min="0" Max="1000"/>
+    </DemoConfiguratorColumn>    
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="car" class="k-label k-form-label">Car Make</label>
+        <div class="k-form-field-wrap">
+            <TelerikComboBox Data="@Data"
+                             Filterable="@Filterable" FilterOperator="@filterOperator"
+                             Placeholder="Find a car by typing part of its make" Id="car" Width="100%"
+                             @bind-Value="@SelectedValue" TextField="Make" ValueField="Id"
+                             AllowCustom="false" DebounceDelay="@DebounceDelay">
+                <NoDataTemplate>
+                    <div>
+                        <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Large" />
+                        <br />
+                        <br />
+                        No items to display...
+                    </div>
+                </NoDataTemplate>
+            </TelerikComboBox>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    public int DebounceDelay { get; set; } = 200;
+    public bool Filterable { get; set; } = true;
+    public int? SelectedValue { get; set; } = 2;
+    StringFilterOperator filterOperator { get; set; } = StringFilterOperator.Contains;
+
+    public List<StringFilterOperator> filterOperators { get; set; } = new List<StringFilterOperator>()
+{
+        StringFilterOperator.Contains,
+        StringFilterOperator.DoesNotContain,
+        StringFilterOperator.EndsWith,
+        StringFilterOperator.IsContainedIn,
+        StringFilterOperator.StartsWith
+    };
+
+    List<Car> Data { get; set; } = new List<Car>
+{
+        new Car { Id = 1, Make = "Honda" },
+        new Car { Id = 2, Make = "Opel" },
+        new Car { Id = 3, Make = "Audi" },
+        new Car { Id = 4, Make = "Lancia" },
+        new Car { Id = 5, Make = "BMW" },
+        new Car { Id = 6, Make = "Mercedes" },
+        new Car { Id = 7, Make = "Tesla" },
+        new Car { Id = 8, Make = "Vw" },
+        new Car { Id = 9, Make = "Alpha Romeo" },
+        new Car { Id = 10, Make = "Chevrolet" },
+        new Car { Id = 11, Make = "Ford" },
+        new Car { Id = 12, Make = "Cadillac" },
+        new Car { Id = 13, Make = "Dodge" },
+        new Car { Id = 14, Make = "Jeep" },
+        new Car { Id = 15, Make = "Chrysler" },
+        new Car { Id = 16, Make = "Lincoln" }
+    };
+
+    public class Car
+    {
+        public int Id { get; set; }
+        public string Make { get; set; }
+    }
+}
+
+<style type="text/css">
+    .example-wrapper {
+        min-height: 250px;
+    }
+</style>

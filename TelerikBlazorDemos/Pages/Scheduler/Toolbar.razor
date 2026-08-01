@@ -1,0 +1,52 @@
+@page "/scheduler/toolbar"
+
+@inject MeetingService meetingService
+
+<TelerikScheduler Data="@Meetings"
+                  @bind-Date="@StartDate">
+    <SchedulerToolBar>
+        <SchedulerToolBarViewsTool></SchedulerToolBarViewsTool>
+        <SchedulerToolBarSpacerTool></SchedulerToolBarSpacerTool>
+        <SchedulerToolBarNavigationTool></SchedulerToolBarNavigationTool>
+        <SchedulerToolBarSpacerTool></SchedulerToolBarSpacerTool>
+        <SchedulerToolBarCustomTool>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Warning"
+                           OnClick="@OnCustomToolClick">
+                Show Empty Slot
+            </TelerikButton>
+        </SchedulerToolBarCustomTool>
+        <SchedulerToolBarSpacerTool></SchedulerToolBarSpacerTool>
+        <SchedulerToolBarCalendarTool></SchedulerToolBarCalendarTool>
+    </SchedulerToolBar>
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" EndTime="@DayEnd" />
+        <SchedulerWeekView StartTime="@DayStart" EndTime="@DayEnd" />
+        <SchedulerMonthView />
+    </SchedulerViews>
+</TelerikScheduler>
+
+@code {
+    private IEnumerable<MeetingDto> Meetings = new List<MeetingDto>();
+    private DateTime StartDate { get; set; } = new DateTime(2025, 10, 5);
+    private DateTime DayStart { get; set; } = new DateTime(2025, 10, 5, 8, 0, 0);
+    private DateTime DayEnd { get; set; } = new DateTime(2025, 10, 5, 20, 0, 0);
+
+    private void OnCustomToolClick()
+    {
+        StartDate = Meetings
+            .Zip(Meetings.Skip(1), (current, next) => new { current.End, next.Start })
+            .Where(x => (x.Start - x.End) >= TimeSpan.FromHours(1))
+            .Select(x => x.End)
+            .FirstOrDefault();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Meetings = meetingService.GetMeetings();
+    }
+}

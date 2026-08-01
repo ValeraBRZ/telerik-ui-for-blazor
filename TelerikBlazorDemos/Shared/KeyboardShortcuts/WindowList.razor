@@ -1,0 +1,55 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+<ul class="keyboard-legend" style="list-style: none;">
+    <li>
+        <span class="button-preview">
+            <span class="key-button leftAlign wider">Alt</span>
+            +
+            <span class="key-button">Up Arrow</span>
+        </span>
+        <span class="button-descr">
+            maximizes and restores the window
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button leftAlign wider">Alt</span>
+            +
+            <span class="key-button">Down Arrow</span>
+        </span>
+        <span class="button-descr">
+            minimizes and restores the window.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            closes the window.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            when the window is focused, lets you traverse its action buttons. Also lets you move the focus to the content.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            invokes a focused action button on the title bar.
+        </span>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public bool IsNested { get; set; }
+}
+

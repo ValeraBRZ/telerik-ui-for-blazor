@@ -1,0 +1,85 @@
+@page "/panelbar/hierarchical-data"
+
+<TelerikPanelBar Data="@HierarchicalData">
+    <PanelBarBindings>
+        <PanelBarBinding TextField="Category" ItemsField="Products"></PanelBarBinding>
+        <PanelBarBinding Level="1" TextField="ProductName" ItemsField="Descriptions"></PanelBarBinding>
+        <PanelBarBinding Level="2" TextField="Description"></PanelBarBinding>
+    </PanelBarBindings>
+</TelerikPanelBar>
+
+@code {
+    public IEnumerable<ProductCategoryItem> HierarchicalData { get; set; }
+
+    public class ProductCategoryItem
+    {
+        public string Category { get; set; }
+        public List<ProductItem> Products { get; set; }
+    }
+
+    public class ProductItem
+    {
+        public string ProductName { get; set; }
+        public IEnumerable<ProductDescription> Descriptions { get; set; }
+    }
+
+    public class ProductDescription
+    {
+        public string Description { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadHierarchical();
+    }
+
+    private void LoadHierarchical()
+    {
+        List<ProductItem> beverages = new List<ProductItem>()
+        {
+            new ProductItem
+            {
+                ProductName= "Chai",
+                Descriptions = new List<ProductDescription>()
+                {
+                    new ProductDescription { Description= "History" },
+                    new ProductDescription { Description= "How to make at home" },
+                }
+            },
+            new ProductItem { ProductName= "Chang" },
+            new ProductItem { ProductName= "Guaraná Fantástica" }
+        };
+
+        List<ProductItem> condiments = new List<ProductItem>()
+        {
+            new ProductItem { ProductName = "Aniseed Syrup" },
+            new ProductItem
+            {
+                ProductName = "Chef Anton's Cajun Seasoning",
+                Descriptions = new List<ProductDescription>()
+                {
+                    new ProductDescription { Description= "Recipe" },
+                    new ProductDescription { Description= "Ingredients" },
+                }
+            },
+            new ProductItem { ProductName= "Chef Anton's Gumbo Mix" }
+        };
+
+
+        List<ProductCategoryItem> roots = new List<ProductCategoryItem>();
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Beverages",
+            Products = beverages
+        });
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Condiments",
+            Products = condiments
+        });
+
+        HierarchicalData = roots;
+    }
+}

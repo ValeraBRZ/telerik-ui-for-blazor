@@ -1,0 +1,39 @@
+@page "/multiselect/virtualization"
+
+@inject UrbanAreaService urbanAreaService
+
+<div class="k-form k-form-md demo-section k-form-vertical">
+    <div class="k-form-field">
+        <label for="city-select" class="k-label k-form-label">Select a city:</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiSelect @bind-Value="@Value"
+                                Id="city-select"
+                                ScrollMode="@DropDownScrollMode.Virtual"
+                                Data="@UrbanAreas"
+                                ValueField="@(nameof(UrbanAreaDto.Id))"
+                                TextField="@(nameof(UrbanAreaDto.City))"
+                                Width="100%"
+                                PageSize="10"
+                                ItemHeight="28"
+                                Filterable="true"
+                                FilterOperator="@StringFilterOperator.Contains">
+                <MultiSelectSettings>
+                    <MultiSelectPopupSettings Height="200px"></MultiSelectPopupSettings>
+                </MultiSelectSettings>
+                <ItemTemplate>
+                    <span>@($"{context.City} ({context.Country})")</span>
+                </ItemTemplate>
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    public IEnumerable<UrbanAreaDto> UrbanAreas { get; set; }
+    public List<int> Value { get; set; } = new List<int>();
+
+    protected override void OnInitialized()
+    {
+        UrbanAreas = urbanAreaService.GetUrbanAreas();
+    }
+}

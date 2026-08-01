@@ -1,0 +1,69 @@
+@page "/window/dimensions"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Predefined Size">
+        <TelerikDropDownList OnChange="@OnChangeHandler" TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Width">        
+        <TelerikNumericTextBox @bind-Value="@Width" Step="10" Min="100" Max="1000" Format="# px"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>    
+    <DemoConfiguratorColumn Description="Height">        
+        <TelerikNumericTextBox @bind-Value="@Height" Step="10" Min="100" Max="1000" Format="# px"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikWindow Class="demo-window"
+               Width="@WidthStyle"
+               Height="@HeightStyle"
+               Size="@Size"
+               @bind-Top="@Top"
+               @bind-Left="@Left"
+               Visible="true">
+    <WindowTitle>
+        Submit your data
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">User Details</legend>
+
+                <label class="k-form-field">
+                    <span>First Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Name" />
+                </label>
+                <label class="k-form-field">
+                    <span>Last Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Last Name" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    public string Size { get; set; }
+    public int? Width { get; set; } = 400;
+    public int? Height { get; set; } = 350;
+    public string Top { get; set; } = "60%";
+    public string Left { get; set; } = "45%";
+    public string WidthStyle { get { return Width.ToString() + "px"; } }
+    public string HeightStyle { get { return Height.ToString() + "px"; } }
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Window.Size.Small },
+        { "Medium", ThemeConstants.Window.Size.Medium },
+        { "Large", ThemeConstants.Window.Size.Large }
+    };
+
+    public void OnChangeHandler()
+    {
+        Width = null;
+        StateHasChanged();
+    }
+}

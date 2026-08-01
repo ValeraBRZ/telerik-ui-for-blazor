@@ -1,0 +1,63 @@
+@page "/scheduler/resources"
+
+@inject AppointmentService appointmentService
+@inject RoomService roomService
+@inject ManagerService managerService
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" Height="600px" @bind-View="@CurrView"
+                  OnUpdate="@UpdateAppointment" OnCreate="@AddAppointment" OnDelete="@DeleteAppointment"
+                  AllowCreate="true" AllowDelete="true" AllowUpdate="true">
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" />
+        <SchedulerWeekView StartTime="@DayStart" />
+        <SchedulerMultiDayView StartTime="@DayStart" />
+        <SchedulerMonthView></SchedulerMonthView>
+        <SchedulerTimelineView StartTime="@DayStart" />
+        <SchedulerAgendaView />
+    </SchedulerViews>
+    <SchedulerResources>
+        <SchedulerResource Field="ManagerId" TextField="Name" ValueField="Id" Data="@Managers"></SchedulerResource>
+        <SchedulerResource Field="RoomId" TextField="Name" ValueField="Id" Data="@Rooms"></SchedulerResource>
+    </SchedulerResources>
+</TelerikScheduler>
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+    IEnumerable<RoomDto> Rooms = new List<RoomDto>();
+    IEnumerable<ManagerDto> Managers = new List<ManagerDto>();
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        Rooms = roomService.GetRooms();
+        Managers = managerService.GetManagers();
+
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+
+    void UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        appointmentService.UpdateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void AddAppointment(SchedulerCreateEventArgs args)
+    {
+        appointmentService.CreateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        appointmentService.DeleteAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+}

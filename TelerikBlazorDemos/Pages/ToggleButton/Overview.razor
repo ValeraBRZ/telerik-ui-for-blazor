@@ -1,0 +1,38 @@
+@page "/togglebutton/overview"
+
+
+<h2>Basic ToggleButton</h2>
+
+<TelerikToggleButton @bind-Selected="@IsSelected">
+    Selected: @IsSelected
+</TelerikToggleButton>
+
+@code {
+    bool IsSelected { get; set; }
+}
+
+
+<h2>Icon ToggleButton</h2>
+
+<TelerikToggleButton @bind-Selected="@SoundOn"
+                     Title="Toggle Mute"
+                     Icon="@( SoundOn ? @SvgIcon.VolumeMute : @SvgIcon.VolumeUp )"
+                     OnClick="@MuteClickHandler">
+</TelerikToggleButton>
+
+@AudioString
+
+@code {
+    string AudioString { get; set; }
+    bool SoundOn { get; set; }
+
+    protected void MuteClickHandler()
+    {
+        AudioString = "Audio: " + (SoundOn ? "100%" : "Muted");
+    }
+}
+
+
+<h2>Disabled ToggleButton</h2>
+
+<TelerikToggleButton Enabled="false">Disabled Button</TelerikToggleButton>

@@ -1,0 +1,53 @@
+@using TelerikBlazorDemos.Shared
+
+<div class="weather">
+    <TelerikLoaderContainer Visible="@isLoading"
+                            Text="@loaderContainerText"
+                            LoaderPosition="LoaderPosition.End"
+                            OverlayThemeColor="null" />
+    @if (!isLoading)
+    {
+        <img src="images/tabstrip/@(Forecast).png" alt="Forecast" />
+        <h2>@TempC<span>ºC</span></h2>
+        <p>@Forecast weather in @City.</p>
+    }
+</div>
+
+@code {
+    [Parameter] public int TempC { get; set; }
+    [Parameter] public string City { get; set; }
+    [Parameter] public ForecastType Forecast { get; set; }
+    [Parameter] public bool DeliberateDelay { get; set; } = false;
+
+    private bool isLoading = false;
+    private string loaderContainerText = "Forecast is loading";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (DeliberateDelay)
+        {
+            isLoading = true;
+            await Task.Delay(2000);
+            isLoading = false;
+        }
+
+        await base.OnInitializedAsync();
+    }
+}
+
+<style>
+    .weather {
+        width: 100%;
+        height: 255px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .weather img {
+        width: 120px;
+        height: 120px;
+        margin-top: 15px;
+    }
+</style>

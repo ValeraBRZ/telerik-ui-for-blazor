@@ -1,0 +1,22 @@
+@page "/flatcolorpicker/views"
+
+<div class="demo-section">
+    <h4>FlatColorPicker with single palette view</h4>
+    <TelerikFlatColorPicker @bind-Value="@PaletteValue">
+        <FlatColorPickerViews>
+            <FlatColorPickerPaletteView Colors="@ColorPalettePresets.Austin" TileWidth="30px" TileHeight="30px" Columns="8"></FlatColorPickerPaletteView>
+        </FlatColorPickerViews>
+    </TelerikFlatColorPicker>
+    <h4>FlatColorPicker with single gradient view</h4>
+    <TelerikFlatColorPicker @bind-Value="@GradientValue">
+        <FlatColorPickerViews>
+            <FlatColorPickerGradientView ShowOpacityEditor="false"></FlatColorPickerGradientView>
+        </FlatColorPickerViews>
+    </TelerikFlatColorPicker>
+</div>
+
+
+@code {
+    public string PaletteValue { get; set; } = "#282f89";
+    public string GradientValue { get; set; } = "#282f89";
+}

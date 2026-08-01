@@ -1,0 +1,41 @@
+@page "/panelbar/flat-data"
+
+<TelerikPanelBar Data="@FlatData">
+    <PanelBarBindings>
+        <PanelBarBinding ParentIdField="Parent" />
+    </PanelBarBindings>
+</TelerikPanelBar>
+
+@code {
+    public IEnumerable<PanelBarItem> FlatData { get; set; }
+
+    public class PanelBarItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? Parent { get; set; }
+        public bool HasChildren { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        FlatData = LoadFlat();
+    }
+
+    private List<PanelBarItem> LoadFlat()
+    {
+        List<PanelBarItem> items = new List<PanelBarItem>();
+
+        items.Add(new PanelBarItem() { Id = 1, Text = "Headphones types", Parent = null, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 2, Text = "Sports", Parent = null, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 3, Text = "Vehicles", Parent = null, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 4, Text = "In-ear", Parent = 1, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 5, Text = "Over-ear", Parent = 1, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 6, Text = "On-ear", Parent = 1, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 7, Text = "Cycling", Parent = 2, HasChildren = true });
+        items.Add(new PanelBarItem() { Id = 8, Text = "Road racing", Parent = 7, HasChildren = false });
+        items.Add(new PanelBarItem() { Id = 9, Text = "Mountain bike racing", Parent = 7, HasChildren = false });
+
+        return items;
+    }
+}

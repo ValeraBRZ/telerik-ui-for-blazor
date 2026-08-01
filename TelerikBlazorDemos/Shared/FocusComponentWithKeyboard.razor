@@ -1,0 +1,33 @@
+@implements IDisposable
+@inject IJSRuntime JsInterop
+
+<h3>Focus</h3>
+<ul class="keyboard-legend" style="margin-bottom: 1em;">
+    <li>
+        <span class="button-preview">
+            <span class="key-button leftAlign">Alt</span>
+            +
+            <span class="key-button">W</span>
+        </span>
+        <span class="button-descr">
+            focuses the first component in the example
+        </span>
+    </li>
+</ul>
+
+@code {
+    [Parameter] public DemoItem Demo { get; set; }
+
+    private string Selector => Demo.KeyboardNavigationDemoSettings?.Selector == null ? "[tabindex=\"0\"]" : Demo.KeyboardNavigationDemoSettings.Selector;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsInterop.InvokeVoidAsync("focusFirstComponent.setSelector", new[] { Selector });
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        JsInterop.InvokeVoidAsync("focusFirstComponent.setSelector", new[] { "" });
+    }
+}

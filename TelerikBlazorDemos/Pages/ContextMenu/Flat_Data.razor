@@ -1,0 +1,98 @@
+@page "/contextmenu/flat-data"
+
+<TelerikContextMenu @ref="@ContextMenu"
+                    Data="@MenuItems"
+                    ParentIdField="@nameof(MenuItem.Parent)"
+                    Selector=".target">
+</TelerikContextMenu>
+
+<div style="width: 100%" class="target-wrapper @CssClass">
+    <div class="target">
+        <p class="placeholder">Right-click to open Context menu</p>
+    </div>
+</div>
+
+@code {
+    public TelerikContextMenu<MenuItem> ContextMenu { get; set; }
+
+    public List<MenuItem> MenuItems { get; set; }
+
+    public string CssClass { get; set; }
+
+    public class MenuItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? Parent { get; set; }
+        public bool Disabled { get; set; }
+        public bool Separator { get; set; }
+        public ISvgIcon Icon { get; set; }        
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem { Id = 1, Text = "Copy", Icon = SvgIcon.Copy},
+
+            new MenuItem { Separator = true },
+
+            new MenuItem {  Id = 2, Text = "Paste", Icon = SvgIcon.Clipboard },
+
+            new MenuItem {  Id = 3, Text = "Paste Text", Parent = 2, Icon = SvgIcon.ClipboardText },
+
+            new MenuItem {  Id = 4, Text = "Paste as HTML", Parent = 2, Icon = SvgIcon.ClipboardCode },
+
+            new MenuItem {  Id = 5, Text = "Paste Markdown", Parent = 2, Icon = SvgIcon.ClipboardMarkdown },
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .target {
+        border-radius: 5px;
+        height: 100px;
+        width: 400px;
+        background-color: #f6f6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    .placeholder {
+        font-size: 20px;
+        color: #656565;
+        margin: 0;
+    }
+
+    .target-wrapper {
+        display: flex;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .underline {
+        text-decoration: underline;
+    }
+
+    .align-left {
+        justify-content: flex-start;
+    }
+
+    .align-center {
+        justify-content: center;
+    }
+
+    .align-right {
+        justify-content: flex-end;
+    }
+</style>

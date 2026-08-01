@@ -1,0 +1,54 @@
+@page "/card/layouts"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Layout">
+        <TelerikDropDownList @bind-Value="@ContainerClass"
+                             Data="@ContainerClasses"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="@ContainerClass flex-center">
+    <TelerikCard Width="300px">
+        <CardHeader>
+            <div class="k-hbox">
+                <div>
+                    <CardTitle>Rome</CardTitle>
+                    <CardSubTitle>Capital of Italy</CardSubTitle>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </CardHeader>
+        <CardImage Src="images/cards/places/rome.jpg"></CardImage>
+        <CardBody>
+            <p>Rome is a sprawling, cosmopolitan city with nearly 3,000 years of globally influential art, architecture and culture on display.</p>
+            <p>Ancient ruins such as the Forum and the Colosseum evoke the power of the former Roman Empire. </p>
+        </CardBody>
+        <CardActions>
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Map</TelerikButton>
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Weather</TelerikButton>
+        </CardActions>
+    </TelerikCard>
+    <TelerikCard Width="300px">
+        <CardHeader>
+            <CardTitle>Barcelona</CardTitle>
+            <CardSubTitle>Capital of Spain</CardSubTitle>
+        </CardHeader>
+        <CardImage Src="images/cards/places/barcelona.jpg"></CardImage>
+        <CardBody>
+            <p>Rome is a sprawling, cosmopolitan city with nearly 3,000 years of globally influential art, architecture and culture on display.</p>
+            <p>Ancient ruins such as the Forum and the Colosseum evoke the power of the former Roman Empire. </p>
+        </CardBody>
+        <CardActions>
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Map</TelerikButton>
+            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Weather</TelerikButton>
+        </CardActions>
+    </TelerikCard>
+</div>
+
+@code {
+    public string ContainerClass { get; set; } = "k-card-deck";
+    public List<string> ContainerClasses { get; set; } = new List<string>() { "k-card-deck", "k-card-list", "k-card-group" };
+}

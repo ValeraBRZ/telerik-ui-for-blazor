@@ -1,0 +1,79 @@
+@page "/chip/events"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Chip Removal">
+        <label><TelerikCheckBox @bind-Value="@CancelChipRemoval" /> Cancel OnRemove Event</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikChip Text="Chip"
+                 Removable="true"
+                 OnClick="@OnChipClick"
+                 OnRemove="@OnChipRemove"
+                 Selected="@Chip1Selected"
+                 SelectedChanged="@OnChip1SelectedChanged" />
+    <TelerikChip Text="Dale"
+                 Removable="true"
+                 OnClick="@OnChipClick"
+                 OnRemove="@OnChipRemove"
+                 Selected="@Chip2Selected"
+                 SelectedChanged="@OnChip2SelectedChanged" />
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private bool Chip1Selected { get; set; }
+    private bool Chip2Selected { get; set; }
+
+    private bool CancelChipRemoval { get; set; }
+
+    private void OnChipClick(ChipClickEventArgs args)
+    {
+        string log = $"<div><strong>OnClick</strong> event fired for '<strong>{args.Text}</strong>'.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnChipRemove(ChipRemoveEventArgs args)
+    {
+        string log;
+
+        if (CancelChipRemoval)
+        {
+            args.IsCancelled = true;
+            log = $"<div><strong>OnRemove</strong> event cancelled for '<strong>{args.Text}</strong>'.</div>";
+        }
+        else
+        {
+            log = $"<div><strong>OnRemove</strong> event fired for '<strong>{args.Text}</strong>'.</div>";
+        }
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnChip1SelectedChanged(bool newSelected)
+    {
+        Chip1Selected = newSelected;
+        LogSelectedChanged(newSelected, "Chip");
+    }
+
+    private void OnChip2SelectedChanged(bool newSelected)
+    {
+        Chip2Selected = newSelected;
+        LogSelectedChanged(newSelected, "Dale");
+    }
+
+    private void LogSelectedChanged(bool newSelected, string chipText)
+    {
+        string log = $"<div><strong>SelectedChanged</strong> event fired for chip '<strong>{chipText}</strong>'. The new selection state is <strong>{newSelected}</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private string EventLog { get; set; } = string.Empty;
+
+    private void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+}

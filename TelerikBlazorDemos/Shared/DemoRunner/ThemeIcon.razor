@@ -1,0 +1,18 @@
+@using TelerikBlazorDemos.Shared.SVG
+
+@namespace TelerikBlazorDemos.Shared
+
+@switch (Icon)
+{
+    case "moon":
+        <ThemeMoonIcon></ThemeMoonIcon>
+        break;
+    case "a11y":
+        <ThemeAccessibilityIcon></ThemeAccessibilityIcon>
+        break;
+}
+
+@code {
+    [Parameter]
+    public string Icon { get; set; }
+}

@@ -1,0 +1,34 @@
+@page "/dropdownlist/keyboard-navigation"
+
+@inject CategoryService CategoryService
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="ddl" class="k-label k-form-label">Select a category</label>
+        <div class="k-form-field-wrap">
+            <TelerikDropDownList Data="@Categories"
+                                 @bind-Value="SelectedCategoryId"
+                                 ValueField="CategoryId"
+                                 TextField="CategoryName"
+                                 Id="ddl"
+                                 Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+            </TelerikDropDownList>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected List<CategoryDto> Categories = new List<CategoryDto>();
+
+    protected int SelectedCategoryId { get; set; } = 2;
+
+    protected override void OnInitialized()
+    {
+        Categories = CategoryService.GetCategories().ToList();
+        base.OnInitialized();
+    }
+
+}

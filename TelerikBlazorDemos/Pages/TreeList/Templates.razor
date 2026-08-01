@@ -1,0 +1,87 @@
+@page "/treelist/templates"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<h2> Header, Column and Pager Templates </h2>
+
+<TelerikTreeList Data="@Data"
+                 @bind-Page="@CurrentPage"
+                 PageSize="@PageSize"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="Id" Width="60px"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Expandable="true">
+            <HeaderTemplate>
+                <strong>Full Name</strong>
+            </HeaderTemplate>
+            <Template>
+                @{
+                    var item = context as EmployeeDirectoryDto;
+                    if (Data.Any(e => e.ReportsTo != null && e.ReportsTo == item.EmployeeId))
+                    {
+                        <strong>@item.FirstName @item.LastName</strong>
+                    }
+                    else
+                    {
+                        @item.FirstName @item.LastName
+                    }
+                }
+            </Template>
+        </TreeListColumn>
+        <TreeListColumn Field="HireDate">
+            <Template>
+                @{
+                    var item = context as EmployeeDirectoryDto;
+                    if (!Data.Any(e => e.ReportsTo != null && e.ReportsTo == item.EmployeeId))
+                    {
+                        @item.HireDate
+                    }
+                }
+            </Template>
+        </TreeListColumn>
+    </TreeListColumns>
+    <TreeListPagerTemplate>
+        @{
+            var pages = (int)Math.Ceiling((decimal)Total / (decimal)PageSize);
+            if (pages == 0) pages = CurrentPage;
+        }
+        <div class="pager-wrapper">
+            <TelerikSlider @bind-Value="@CurrentPage"
+                           TickPosition="SliderTickPosition.Both"
+                           Min="1"
+                           Max="@pages"
+                           Width="66%">
+            </TelerikSlider>
+        </div>
+    </TreeListPagerTemplate>
+</TelerikTreeList>
+
+<style>
+    .pager-wrapper {
+        padding: 8px;
+        display: flex;
+        justify-content: space-around;
+        background-color: rgba(204, 204, 204, .1);
+        border-top: 1px solid rgba(128, 128, 128, .3);
+    }
+</style>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    int CurrentPage { get; set; } = 1;
+    int PageSize = 10;
+    int Total;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+        Total = Data.Count();
+    }
+}

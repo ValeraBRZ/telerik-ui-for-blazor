@@ -1,0 +1,212 @@
+@page "/wizard/overview"
+
+@using System.ComponentModel.DataAnnotations
+
+@if (ShowWizard)
+{
+
+    <div style="width: 700px; margin: 0 auto;">
+        <TelerikWizard @bind-Value="@Value" OnFinish="@OnWizardFinish">
+            <WizardSteps>
+                <WizardStep Label="Registration" Icon="@SvgIcon.User" OnChange="@OnRegistrationStepChange">
+                    <Content>
+                        <TelerikForm Model="@UserModel"
+                                     @ref="@RegisterForm">
+                            <FormValidation>
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                            </FormValidation>
+                            <FormItems>
+                                <FormItem LabelText="First Name*:" Field="@nameof(User.FirstName)"></FormItem>
+                                <FormItem LabelText="Last Name*:" Field="@nameof(User.LastName)"></FormItem>
+                                <FormItem Field="@nameof(User.Email)">
+                                    <Template>
+                                        <label for="mail" class="k-label k-form-label">Email*:</label>
+                                        <TelerikTextBox Id="mail" @bind-Value="@UserModel.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                                        <TelerikValidationMessage For="@(() => UserModel.Email)"></TelerikValidationMessage>
+                                    </Template>
+                                </FormItem>
+                                <FormItem Field="@nameof(User.Password)">
+                                    <Template>
+                                        <label for="pass" class="k-label k-form-label">Password*:</label>
+                                        <TelerikTextBox Id="pass" @bind-Value="@UserModel.Password" Password="true"></TelerikTextBox>
+                                        <TelerikValidationMessage For="@(() => UserModel.Password)"></TelerikValidationMessage>
+                                    </Template>
+                                </FormItem>
+                                <FormItem LabelText="Birth Date:" Field="@nameof(User.BirthDate)" />
+                                <FormItem Field="@nameof(User.AcceptTerms)" />
+                            </FormItems>
+                            <FormButtons></FormButtons>
+                        </TelerikForm>
+                    </Content>
+                </WizardStep>
+                <WizardStep Label="Shipping" Icon="@SvgIcon.MapMarkerTarget" OnChange="@OnShippingStepChange">
+                    <Content>                       
+                        <TelerikForm Model="@ShippingModel"
+                                     @ref="ShippingForm">
+                            <FormValidation>
+                                <DataAnnotationsValidator></DataAnnotationsValidator>
+                            </FormValidation>
+                            <FormItems>
+                                <FormItem LabelText="Country*: " Field="@nameof(ShippingDetails.Country)" ColSpan="1" />
+                                <FormItem LabelText="City*: " Field="@nameof(ShippingDetails.City)" ColSpan="1" />
+                                <FormItem LabelText="Address Line*: " Field="@nameof(ShippingDetails.AddressLine)" ColSpan="2" />
+                                <FormItem LabelText="Second Address Line: " Field="@nameof(ShippingDetails.AddressLine2)" ColSpan="2" />
+                            </FormItems>
+                            <FormButtons></FormButtons>
+                        </TelerikForm>
+                    </Content>
+                </WizardStep>
+                <WizardStep Label="Additional Details" Icon="@SvgIcon.DetailSection" Optional="true">
+                    <Content>
+                        <div class="rating-wrapper">
+                            <label class="title">How likely are you to recommend the product to a friend or colleague?</label>
+                            <div class="mt-md">
+                                <TelerikRadioGroup Data="@RatingValues"
+                                                   Class="rating-radio"
+                                                   Layout="@RadioGroupLayout.Horizontal"
+                                                   @bind-Value="@RatingValue"></TelerikRadioGroup>
+                            </div>
+                        </div>
+                    </Content>
+                </WizardStep>
+                <WizardStep Label="Confirmation" Icon="@SvgIcon.TrackChangesAccept">
+                    <Content>
+                        <h2>Please review and confirm your details.</h2>
+                        <h4>Press "Done" button to make the order.</h4>
+
+                        <div>
+                            <label class="lbl-text">FirstName:</label>
+                            <span class="text-bold">@UserModel.FirstName</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">LastName:</label>
+                            <span class="text-bold">@UserModel.LastName</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">Email:</label>
+                            <span class="text-bold">@UserModel.Email</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">BirthDate:</label>
+                            <span class="text-bold">@UserModel.BirthDate</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">Country:</label>
+                            <span class="text-bold">@ShippingModel.Country</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">City:</label>
+                            <span class="text-bold">@ShippingModel.City</span>
+                        </div>
+                        <div>
+                            <label class="lbl-text">AddressLine:</label>
+                            <span class="text-bold">@ShippingModel.AddressLine</span>
+                        </div>
+                    </Content>
+                </WizardStep>
+            </WizardSteps>
+        </TelerikWizard>
+    </div>
+}
+else
+{
+    <div class="demo-alert demo-alert-success" role="alert">
+        The order was submitted successfully.
+    </div>
+}
+
+@code {
+
+    public int RatingValue { get; set; } = 10;
+    public int Value { get; set; }
+
+    public bool ShowWizard { get; set; } = true;
+
+    public TelerikForm RegisterForm { get; set; }
+    public User UserModel { get; set; } = new User();
+
+    public TelerikForm ShippingForm { get; set; }
+    public ShippingDetails ShippingModel { get; set; } = new ShippingDetails();
+
+    public IEnumerable<int> RatingValues = Enumerable.Range(1, 10);
+
+    private void OnWizardFinish()
+    {
+        ShowWizard = false;
+    }
+
+    public void OnRegistrationStepChange(WizardStepChangeEventArgs args)
+    {
+        var isFormValid = RegisterForm.IsValid();
+        if (!isFormValid)
+        {
+            args.IsCancelled = true;
+        }
+    }
+
+    public void OnShippingStepChange(WizardStepChangeEventArgs args)
+    {
+        var isPrevious = Value < args.TargetIndex;
+        if (Value < args.TargetIndex)
+        {
+            var isFormValid = ShippingForm.IsValid();
+            if (!isFormValid)
+            {
+                args.IsCancelled = true;
+            }
+        }
+    }
+
+    public class User
+    {
+        [Required]
+        public string FirstName { get; set; } = "John";
+
+        [Required]
+        public string LastName { get; set; } = "Smith";
+
+        [Required]
+        public string Email { get; set; } = "email@domain.com";
+
+        [MinLength(3, ErrorMessage = "The password should be at least 3 characters.")]
+        [Required]
+        public string Password { get; set; }
+
+        public DateTime? BirthDate { get; set; }
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree with the terms.")]
+        [Display(Name = "Accept Terms and Conditions")]
+        public bool AcceptTerms { get; set; } = true;
+    }
+
+    public class ShippingDetails
+    {
+        [Required]
+        public string Country { get; set; } = "Italy";
+
+        [Required]
+        public string City { get; set; } = "Torino";
+
+        [Required]
+        public string AddressLine { get; set; } = "Via Garibaldi 374";
+
+        public string AddressLine2 { get; set; }
+    }
+}
+
+<style>
+    .rating-radio input{
+        display: block;
+    }
+
+    .rating-radio{
+        display: flex;
+        justify-content: space-between
+    }
+
+    .rating-wrapper {
+        padding: 20px;
+        border: 1px solid #DDD;
+    }
+</style>
+

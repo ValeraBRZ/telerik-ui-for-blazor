@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Form_AcceptTerms" xml:space="preserve">
+    <value>Stimmen Sie den Bedingungen zu*:</value>
+  </data>
+  <data name="Form_AcceptTerms_Error" xml:space="preserve">
+    <value>Sie müssen den Bedingungen zustimmen.</value>
+  </data>
+  <data name="Form_BirthDate" xml:space="preserve">
+    <value>Geburtstag*:</value>
+  </data>
+  <data name="Form_BirthDate_Error" xml:space="preserve">
+    <value>Sie müssen das Geburtsdatum angeben.</value>
+  </data>
+  <data name="Form_Clear" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="Form_Email" xml:space="preserve">
+    <value>Email*:</value>
+  </data>
+  <data name="Form_Email_Error" xml:space="preserve">
+    <value>Sie müssen eine E-Mail-Adresse angeben.</value>
+  </data>
+  <data name="Form_FirstName" xml:space="preserve">
+    <value>Vorname*:</value>
+  </data>
+  <data name="Form_FirstName_Error" xml:space="preserve">
+    <value>Sie müssen Ihren Vornamen angeben.</value>
+  </data>
+  <data name="Form_LastName" xml:space="preserve">
+    <value>Nachname*:</value>
+  </data>
+  <data name="Form_LastName_Error" xml:space="preserve">
+    <value>Sie müssen Ihren Nachnamen angeben.</value>
+  </data>
+  <data name="Form_MiddleName" xml:space="preserve">
+    <value>Segundo nombre:</value>
+  </data>
+  <data name="Form_Password" xml:space="preserve">
+    <value>Passwort*:</value>
+  </data>
+  <data name="Form_Password_Error" xml:space="preserve">
+    <value>Ihr Passwort sollte mindestens 8 Zeichen lang sein.</value>
+  </data>
+  <data name="ProductBindingModel_Name_RequiredError" xml:space="preserve">
+    <value>Geben Sie einen Produktnamen ein</value>
+  </data>
+  <data name="ProductBindingModel_StandardCost_RangeError" xml:space="preserve">
+    <value>Die Kosten sollten in Reichweite liegen {1} - {2}</value>
+  </data>
+  <data name="ProductCategory_Name_LengthError" xml:space="preserve">
+    <value>Der {0} ist zu lang.</value>
+  </data>
+  <data name="ProductCategory_Name_RequiredError" xml:space="preserve">
+    <value>Dieses {0} ist erforderlich.</value>
+  </data>
+  <data name="Stepper_Label1" xml:space="preserve">
+    <value>Erster Schritt</value>
+  </data>
+  <data name="Stepper_Label2" xml:space="preserve">
+    <value>Zweiter Schritt</value>
+  </data>
+  <data name="Stepper_Label3" xml:space="preserve">
+    <value>Dritter Schritt</value>
+  </data>
+  <data name="Validation_CompareError" xml:space="preserve">
+    <value>Der {0} stimmt nicht überein.</value>
+  </data>
+  <data name="Validation_EmailError" xml:space="preserve">
+    <value>Die {0}  ist ungültig.</value>
+  </data>
+  <data name="Validation_MinLengthError" xml:space="preserve">
+    <value>Der {0} ist zu kurz.</value>
+  </data>
+  <data name="Validation_RequiredError" xml:space="preserve">
+    <value>Dieses {0} ist erforderlich.</value>
+  </data>
+  <data name="Wizard_StepContent1" xml:space="preserve">
+    <value>Inhalt des ersten Schrittes</value>
+  </data>
+  <data name="Wizard_StepContent2" xml:space="preserve">
+    <value>Inhalt des zweiten Schritts</value>
+  </data>
+  <data name="Wizard_StepContent3" xml:space="preserve">
+    <value>Inhalt des dritten Schritts</value>
+  </data>
+  <data name="Chart_NoData" xml:space="preserve">
+    <value>Keine Daten</value>
+  </data>
+  <data name="Group_Clear_All" xml:space="preserve">
+    <value>Gruppen löschen</value>
+  </data>
+  <data name="Editor_AI_Prompt_PromptView_SelectionButton" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Editor_AI_Prompt_PromptView_ContentButton" xml:space="preserve">
+    <value />
+  </data>
+</root>

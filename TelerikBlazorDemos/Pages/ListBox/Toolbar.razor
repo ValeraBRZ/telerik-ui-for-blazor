@@ -1,0 +1,124 @@
+@page "/listbox/toolbar"
+
+@inject ProductService productService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Toolbar position">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Positions"
+        @bind-Value="@Position" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikListBox Data="@AllProducts"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    ToolBarPosition="@Position"
+                    OnReorder="@((ListBoxReorderEventArgs<ProductDto> args) => OnReorder(args))"
+                    OnRemove="@((ListBoxRemoveEventArgs<ProductDto> args) => OnRemove(args))">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar>
+                <ListBoxToolBarMoveUpTool />
+                <ListBoxToolBarMoveDownTool />
+                <ListBoxToolBarRemoveTool />
+                <ListBoxToolBarCustomTool>
+                    <TelerikButton Icon="@SvgIcon.Save" OnClick="@SaveChanges"></TelerikButton>
+                </ListBoxToolBarCustomTool>
+            </ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+</div>
+
+@code {
+    private IEnumerable<ProductDto> AllProducts { get; set; } = new List<ProductDto>();
+
+    private IEnumerable<ProductDto> ProductsToPurchase { get; set; } = new List<ProductDto>();
+
+    #region Tools Handlers
+
+    private void SaveChanges()
+    {
+        //your save command logic here
+        Console.WriteLine("Save changes fired");
+    }
+
+    private void OnRemove(ListBoxRemoveEventArgs<ProductDto> args)
+    {
+        var itemsToRemove = AllProducts.Where(x => args.Items.Select(y => y.ProductId).Contains(x.ProductId));
+
+        var data = AllProducts.Where(x => !itemsToRemove.Contains(x)).ToList();
+
+        AllProducts = data;
+    }
+
+    private void OnReorder(ListBoxReorderEventArgs<ProductDto> args)
+    {
+        if (args.ToIndex >= AllProducts.Count() || args.ToIndex < 0)
+        {
+            return;
+        }
+
+        var data = AllProducts.ToList();
+        var itemsToShift = data.Skip(args.FromIndex).Take(args.Items.Count).ToList();
+
+        data.RemoveAll(x => itemsToShift.Contains(x));
+        data.InsertRange(args.ToIndex, itemsToShift);
+
+        AllProducts = data;
+    }
+
+    #endregion Tools Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        var allData = productService.GetProducts().Take(20).ToList();
+
+        AllProducts = allData.Take(15).ToList();
+        ProductsToPurchase = allData.Skip(15).Take(5).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    #endregion Data
+
+    #region Configurator
+
+    private ListBoxToolBarPosition Position { get; set; } = ListBoxToolBarPosition.Right;
+
+    private Dictionary<string, ListBoxToolBarPosition> Positions { get; set; } = new Dictionary<string, ListBoxToolBarPosition>
+    {
+        { "Top", ListBoxToolBarPosition.Top },
+        { "Bottom", ListBoxToolBarPosition.Bottom },
+        { "Left", ListBoxToolBarPosition.Left },
+        { "Right", ListBoxToolBarPosition.Right },
+    };
+
+    private bool HorizontalToolbar => Position == ListBoxToolBarPosition.Top || Position == ListBoxToolBarPosition.Bottom ? true : false;
+
+    #endregion Configurator
+}
+
+
+@if (HorizontalToolbar)
+{
+    <style>
+        .k-listbox .k-list-scroller {
+            height: 90% !important;
+        }
+
+        .k-listbox .k-list-scroller .k-list{
+            height: 100% !important;
+        }
+    </style>
+}
+
+<style>
+    .k-listbox {
+        width: 270px;
+        height: 360px;
+    }
+</style>

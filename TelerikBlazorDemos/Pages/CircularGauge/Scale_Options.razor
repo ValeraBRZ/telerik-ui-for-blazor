@@ -1,0 +1,98 @@
+@page "/circulargauge/scale-options"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Ticks">
+        <ul style="columns: 2">
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@MajorTicksVisible"></TelerikCheckBox>
+                    Show Major Ticks
+                </label>
+            </li>
+            <li>
+                <TelerikColorPalette @bind-Value="@TickColor"
+                                     Colors="@Colors"
+                                     Columns="4"></TelerikColorPalette>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@MinorTicksVisible"></TelerikCheckBox>
+                    Show Minor Ticks
+                </label>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Labels">
+        <ul>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@LabelVisible"></TelerikCheckBox>
+                    Show Labels
+                </label>
+            </li>
+            <li>
+                <TelerikColorPalette @bind-Value="@LabelColor"
+                                     Colors="@Colors"
+                                     Columns="4"></TelerikColorPalette>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Start Angle">
+        <TelerikNumericTextBox @bind-Value="@StartAngle"
+                               Min="0"
+                               Max="90"
+                               Step="10"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Reverse">
+        <label>
+            <TelerikCheckBox @bind-Value="@Reversed"></TelerikCheckBox>
+            Reverse
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikCircularGauge>
+        <CircularGaugeScales>
+            <CircularGaugeScale Reverse="@Reversed"
+                                Min="0"
+                                Max="100"
+                                StartAngle="@StartAngle">
+                <CircularGaugeScaleMajorTicks Visible="@MajorTicksVisible" Color="@TickColor"></CircularGaugeScaleMajorTicks>
+                <CircularGaugeScaleMinorTicks Visible="@MinorTicksVisible" Color="@TickColor"></CircularGaugeScaleMinorTicks>
+                <CircularGaugeScaleLabels Color="@LabelColor" Visible="@LabelVisible"></CircularGaugeScaleLabels>
+            </CircularGaugeScale>
+        </CircularGaugeScales>
+        <CircularGaugePointers>
+            <CircularGaugePointer Value="20">
+            </CircularGaugePointer>
+        </CircularGaugePointers>
+    </TelerikCircularGauge>
+</div>
+@code {
+    public bool Reversed { get; set; }
+
+    public double StartAngle { get; set; } = 0;
+
+    public bool MajorTicksVisible { get; set; }
+    public bool MinorTicksVisible { get; set; }
+    public string TickColor { get; set; }
+
+    public int LineWidth { get; set; } = 1;
+    public string LineColor { get; set; }
+
+    public bool LabelVisible { get; set; }
+    public string LabelColor { get; set; }
+
+    public List<string> Colors { get; set; } = new List<string>()
+    {
+        "#FF6358",
+        "#FFE162",
+        "#4CD180",
+        "#707070",
+        "#017CFF",
+        "#8888E5",
+        "#FF8400",
+        "#BABABA"
+    };
+}

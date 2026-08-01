@@ -1,0 +1,95 @@
+@page "/colorpalette/overview"
+
+<div class="example">
+    <div class="img" style="background-color: @SelectedColor"></div>
+    <div class="description">
+        <h1>Comfy T-shirt with a cut-away neckline</h1>
+        <p class="price">$19.99</p>
+        <span>incl. VAT</span>
+
+        <p class="selected-color">@ColorNames[SelectedColor]</p>
+        <TelerikColorPalette @bind-Value="@SelectedColor"
+                             Colors="@ColorNames.Keys.ToList()"
+                             TileWidth="40px"
+                             TileHeight="40px">
+        </TelerikColorPalette>
+        <TelerikButton>Add to cart</TelerikButton>
+    </div>
+</div>
+
+@code {
+    private string SelectedColor { get; set; } = "#37399b";
+    private Dictionary<string, string> ColorNames { get; set; } = new Dictionary<string, string>()
+    {
+        ["#37399b"] = "Navy Blue",
+        ["#a81c85"] = "Violet",
+        ["#0ab3cc"] = "Light Blue",
+        ["#2f7d20"] = "Forest Green",
+        ["#a21616"] = "Dark Red"
+    };
+}
+
+<style>
+    .example {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-items: center;
+        margin: 0 auto;
+        max-width: 700px;
+        color: #44403f;
+    }
+
+    .description {
+        width: 340px;
+        margin-top: 35px;
+        align-self: flex-start;
+    }
+
+    h1 {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 20px;
+        letter-spacing: .025em;
+        margin-bottom: 0;
+    }
+
+    .description span {
+        color: #8e8682;
+        display: block;
+        font-size: 13px;
+    }
+
+    .selected-color {
+        margin: 40px 0 10px 0;
+    }
+
+    .img {
+        width: 350px;
+        height: 480px;
+        margin-right: 10px;
+        background-size: cover;
+        background-image: url("images/colorpalette/demo-img.png");
+    }
+
+    button {
+        display: block;
+        background: transparent;
+        color: #44403f;
+        border-color: currentColor;
+        width: 200px;
+        margin-top: 40px;
+        padding: 8px;
+        font-size: 20px;
+    }
+
+        button:hover {
+            background: #0083FF;
+            color: #fff;
+            border-color: currentColor;
+        }
+</style>

@@ -1,0 +1,138 @@
+@page "/splitter/overview"
+
+<TelerikSplitter Width="740px"
+                 Height="600px"
+                 OnResize="@OnResize"
+                 Orientation="@SplitterOrientation.Vertical">
+    <SplitterPanes>
+        <SplitterPane Size="22%" Min="20%" Max="35%" Collapsible="false">
+            <TelerikSplitter Height="100%">
+                <SplitterPanes>
+                    <SplitterPane Size="33%" Min="25%" Max="38%" Collapsible="true">
+                        <div class="pane">
+                            <div class="pane-title">Total Bikes Sold</div>
+                            <div class="pane-subtitle">January 2020 - February 2020</div>
+                            <div class="pane-content">531</div>
+                        </div>
+                    </SplitterPane>
+
+                    <SplitterPane Size="33%" Min="25%" Max="38%">
+                        <div class="pane">
+                            <div class="pane-title">Shop Revenue</div>
+                            <div class="pane-subtitle">January 2020 - February 2020</div>
+                            <div class="pane-content">$105,669</div>
+                        </div>
+                    </SplitterPane>
+
+                    <SplitterPane Min="25%" Collapsible="true">
+                        <div class="pane">
+                            <div class="pane-title">Monthly Target</div>
+                            <div class="pane-subtitle">January 2020 - February 2020</div>
+                            <div class="pane-content">
+                                <TelerikProgressBar Value="@Progress">
+                                    <ProgressBarLabel Visible="true">
+                                        <Template>
+                                            @(context.Value)%
+                                        </Template>
+                                    </ProgressBarLabel>
+                                </TelerikProgressBar>
+                            </div>
+                        </div>
+                    </SplitterPane>
+                </SplitterPanes>
+            </TelerikSplitter>
+        </SplitterPane>
+
+        <SplitterPane Min="60%">
+            <TelerikChart @ref="Chart" Height="100%">
+                <ChartTitle Text="Bikes sold by sales representative"></ChartTitle>
+                <ChartTooltip Visible="true"></ChartTooltip>
+                <ChartLegend Position="ChartLegendPosition.Bottom"></ChartLegend>
+
+                <ChartSeriesItems>
+                    <ChartSeries Type="ChartSeriesType.Line"
+                                 Name="James Magneot"
+                                 Color="#4B5FFA"
+                                 Data="@BikeSales1"
+                                 CategoryField="@nameof(BikeData.Date)"
+                                 Field="@nameof(BikeData.Count)">
+                    </ChartSeries>
+
+                    <ChartSeries Type="ChartSeriesType.Line"
+                                 Name="Steve Jones"
+                                 Color="#FF6358"
+                                 Data="@BikeSales2"
+                                 CategoryField="@nameof(BikeData.Date)"
+                                 Field="@nameof(BikeData.Count)">
+                    </ChartSeries>
+                </ChartSeriesItems>
+
+                <ChartCategoryAxes>
+                    <ChartCategoryAxis BaseUnit="@ChartCategoryAxisBaseUnit.Days">
+                        <ChartCategoryAxisLabels Format="ddd"></ChartCategoryAxisLabels>
+                    </ChartCategoryAxis>
+                </ChartCategoryAxes>
+            </TelerikChart>
+        </SplitterPane>
+    </SplitterPanes>
+</TelerikSplitter>
+
+@code {
+    public TelerikChart Chart { get; set; }
+    public int Progress = 32;
+
+    public List<BikeData> BikeSales1 = new List<BikeData>()
+    {
+        new BikeData() { Date = new DateTime(2025, 1, 1), Count = 2 },
+        new BikeData() { Date = new DateTime(2025, 1, 2), Count = 6 },
+        new BikeData() { Date = new DateTime(2025, 1, 3), Count = 9 },
+        new BikeData() { Date = new DateTime(2025, 1, 4), Count = 10 },
+        new BikeData() { Date = new DateTime(2025, 1, 5), Count = 12 },
+    };
+
+    public List<BikeData> BikeSales2 = new List<BikeData>()
+    {
+        new BikeData() { Date = new DateTime(2025, 1, 1), Count = 22 },
+        new BikeData() { Date = new DateTime(2025, 1, 2), Count = 20 },
+        new BikeData() { Date = new DateTime(2025, 1, 3), Count = 27 },
+        new BikeData() { Date = new DateTime(2025, 1, 4), Count = 21 },
+        new BikeData() { Date = new DateTime(2025, 1, 5), Count = 14 },
+    };
+
+    public class BikeData
+    {
+        public DateTime Date { get; set; }
+        public int Count { get; set; }
+    }
+
+    public void OnResize(SplitterResizeEventArgs args)
+    {
+        Chart.Refresh();
+    }
+}
+
+<style>
+    .pane {
+        padding: 10px 8px;
+    }
+
+    .pane-title {
+        font-size: 18px;
+    }
+
+    .pane-subtitle {
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    .pane-content {
+        margin-top: 12px;
+        font-size: 20px;
+    }
+
+    .k-progressbar {
+        width: 100%;
+    }
+</style>
+
+

@@ -1,0 +1,76 @@
+@page "/progressbar/overview"
+
+@using Telerik.Blazor.Components
+@using System.Timers
+
+@implements IDisposable
+
+<div class="example-box-wrapper">
+    <div class="example">
+        <div class="progress-info-title">Installing latest update</div>
+        <div class="progress-info-version">v10.1</div>
+
+        <TelerikProgressBar Value="@ProgressValue" Max="100" AriaLabel="Progress Bar"></TelerikProgressBar>
+    </div>
+</div>
+
+@code {
+    public const int TimerInterval = 1500;
+    public const int TotalTime = 10 * TimerInterval;
+    public double ProgressValue = 0;
+    public int ProgressStep = 100 / (TotalTime / TimerInterval);
+    public Timer Timer { get; set; } = new Timer();
+
+    public void Dispose()
+    {
+        StopProgress();
+        Timer?.Close();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (Timer.Enabled == false)
+        {
+            Timer.Interval = TimerInterval;
+            Timer.Elapsed -= OnTimerElapsed;
+            Timer.Elapsed += OnTimerElapsed;
+            Timer.AutoReset = true;
+            Timer.Start();
+        }
+    }
+
+    public void OnTimerElapsed(Object source, ElapsedEventArgs e)
+    {
+        if (ProgressValue < 100)
+        {
+            UpdateProgress();
+        }
+        else
+        {
+            StopProgress();
+        }
+    }
+
+    public void UpdateProgress()
+    {
+        ProgressValue += ProgressStep;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void StopProgress()
+    {
+        Timer?.Stop();
+    }
+}
+
+<style>
+    .progress-info-title {
+        font-weight: bold;
+        font-size: 1.4em;
+    }
+
+    .progress-info-version {
+        margin-bottom: 1em;
+    }
+</style>

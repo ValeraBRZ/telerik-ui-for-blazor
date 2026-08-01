@@ -1,0 +1,11 @@
+@page "/timepicker/formatplaceholder"
+
+<div class="demo-section">
+    <TelerikTimePicker @bind-Value="@Value" Width="400px" Format="t">
+        <TimePickerFormatPlaceholder Hour="hour" Minute="min" Second="sec"></TimePickerFormatPlaceholder>
+    </TelerikTimePicker>
+</div>
+
+@code {
+    public DateTime? Value { get; set; }
+}

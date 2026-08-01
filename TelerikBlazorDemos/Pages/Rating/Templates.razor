@@ -1,0 +1,53 @@
+@page "/rating/templates"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Max">
+        <TelerikNumericTextBox Value="@MaxRating" ValueChanged="@( (double newMax) => MaxRatingChanged(newMax) )" Min="1" Max="10" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Read Only">
+        <TelerikSwitch @bind-Value="@ReadOnlyRating" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Enabled">
+        <TelerikSwitch @bind-Value="@EnabledRating" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<h4>Rating With Template</h4>
+<TelerikRating @bind-Value="@Value"
+               Label="@Label"
+               Max="@MaxRating"
+               ReadOnly="ReadOnlyRating"
+               Enabled="EnabledRating">
+    <ItemTemplate>
+        @{
+            if (context.Selected || context.Highlighted)
+            {
+                <TelerikSvgIcon Icon="@SvgIcon.Heart" Size="@ThemeConstants.SvgIcon.Size.ExtraLarge"></TelerikSvgIcon>
+            }
+            else
+            {
+                <TelerikSvgIcon Icon="@SvgIcon.HeartOutline" Size="@ThemeConstants.SvgIcon.Size.ExtraLarge"></TelerikSvgIcon>
+            }
+        }
+    </ItemTemplate>
+</TelerikRating>
+
+@code {
+    private double Value { get; set; } = 2;
+    private string Label => $"{Value} / {MaxRating}";
+
+    private double MaxRating { get; set; } = 5;
+
+    private bool ReadOnlyRating { get; set; }
+    private bool EnabledRating { get; set; } = true;
+
+    private void MaxRatingChanged(double newMax)
+    {
+        MaxRating = newMax;
+
+        if (Value > MaxRating)
+        {
+            Value = MaxRating;
+        }
+    }
+}

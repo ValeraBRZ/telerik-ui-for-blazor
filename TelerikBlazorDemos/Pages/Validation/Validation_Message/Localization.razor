@@ -1,0 +1,100 @@
+@page "/validation/validation-message/localization"
+
+@using System.ComponentModel.DataAnnotations;
+@using TelerikBlazorDemos.Resources;  
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            You successfully registered!
+        </div>
+    }
+    else
+    {
+        <h3 style="text-align: center;">Registration Form</h3>
+        <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="name" class="k-label k-form-label">Username</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.UserName" Id="name" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.UserName)" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="email" class="k-label k-form-label">Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.Email" Id="email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.Email)"/>
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="repeat-email" class="k-label k-form-label">Repeat Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.RepeatEmail" Id="repeat-email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.RepeatEmail)"/>
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Register</TelerikButton>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    public RegistrationModel Model { get; set; } = new RegistrationModel();
+
+    public class RegistrationModel
+    {
+        [Display(Name = "Username")]
+        [Required(ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_RequiredError")]
+        [MinLength(3, ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_MinLengthError")]
+        public string UserName { get; set; }
+
+        [Required(ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_RequiredError")]
+        [EmailAddress(ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_EmailError")]
+        public string Email { get; set; }
+
+        [Display(Name = "Repeat Email")]
+        [Required(ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_RequiredError")]
+        [EmailAddress(ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_EmailError")]
+        [Compare(nameof(Email), ErrorMessageResourceType = typeof(TelerikDemoMessages), ErrorMessageResourceName = "Validation_CompareError")]
+        public string RepeatEmail { get; set; }
+    }
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

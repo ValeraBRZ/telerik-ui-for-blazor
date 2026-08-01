@@ -1,0 +1,102 @@
+@page "/chip/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Selectable">
+        <label><TelerikCheckBox @bind-Value="@Selectable" /> Selectable</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Disabled">
+        <label><TelerikCheckBox @bind-Value="@Disabled" /> Disabled</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="120px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Removable">
+        <label><TelerikCheckBox @bind-Value="@Removable" /> Removable</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Remove Icon">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@RemoveIconNames" Value="@RemoveIconName" ValueChanged="@((string newIconName) => OnRemoveIconChanged(newIconName))" Width="120px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="120px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="120px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="120px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikChip Text="Chip"
+                 Disabled="@Disabled"
+                 Selectable="@Selectable"
+                 FillMode="@FillMode"
+                 Removable="@Removable"
+                 RemoveIcon="@RemoveIcon"
+                 Rounded="@Rounded"
+                 Size="@Size"
+                 ThemeColor="@ThemeColor"
+                 Selected="true" />
+
+    <TelerikChip Text="Dale"
+                 Disabled="@Disabled"
+                 Selectable="@Selectable"
+                 FillMode="@FillMode"
+                 Removable="@Removable"
+                 RemoveIcon="@RemoveIcon"
+                 Rounded="@Rounded"
+                 Size="@Size"
+                 ThemeColor="@ThemeColor"
+                 Selected="false" />
+</div>
+
+@code {
+    private bool Disabled { get; set; }
+    private bool Selectable { get; set; } = true;
+    private string FillMode { get; set; } = ThemeConstants.Chip.FillMode.Solid;
+    private bool Removable { get; set; } = true;
+    private ISvgIcon RemoveIcon { get; set; } = SvgIcon.XCircle;
+    private string RemoveIconName { get; set; } = nameof(SvgIcon.XCircle);
+    private string Rounded { get; set; } = ThemeConstants.Chip.Rounded.Medium;
+    private string Size { get; set; } = ThemeConstants.Chip.Size.Medium;
+    private string ThemeColor { get; set; } = ThemeConstants.Chip.ThemeColor.Base;
+
+    private Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.Chip.FillMode.Solid },
+        { "Outline", ThemeConstants.Chip.FillMode.Outline }
+    };
+
+    private IEnumerable<string> RemoveIconNames { get; set; } = new List<string>() { "X", "XOutline", "XCircle" };
+
+    private void OnRemoveIconChanged(string newIconName)
+    {
+        RemoveIconName = newIconName ?? nameof(SvgIcon.XCircle);
+        RemoveIcon = (ISvgIcon)typeof(SvgIcon).GetProperty(RemoveIconName)?.GetValue(null);
+    }
+
+    private Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Chip.Rounded.Small },
+        { "Medium", ThemeConstants.Chip.Rounded.Medium },
+        { "Large", ThemeConstants.Chip.Rounded.Large },
+        { "Full", ThemeConstants.Chip.Rounded.Full }
+    };
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Chip.Size.Small },
+        { "Medium", ThemeConstants.Chip.Size.Medium },
+        { "Large", ThemeConstants.Chip.Size.Large }
+    };
+
+    private Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.Chip.ThemeColor.Base },
+        { "Info", ThemeConstants.Chip.ThemeColor.Info },
+        { "Success", ThemeConstants.Chip.ThemeColor.Success },
+        { "Warning", ThemeConstants.Chip.ThemeColor.Warning },
+        { "Error", ThemeConstants.Chip.ThemeColor.Error }
+    };
+}

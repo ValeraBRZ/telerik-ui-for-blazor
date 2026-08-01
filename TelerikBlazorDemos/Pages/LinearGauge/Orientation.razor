@@ -1,0 +1,39 @@
+@page "/lineargauge/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <TelerikDropDownList Data="@OrientationItems"
+                             @bind-Value="@Vertical"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikLinearGauge Width="@Width" Height="@Height">
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="50" Vertical="@Vertical">
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="20"></LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>
+
+@code {
+    public string Width => Vertical ? "100px" : "300px";
+    public string Height => Vertical ? "300px" : "100px";
+
+    public bool Vertical { get; set; }
+    public List<OrientationItem> OrientationItems { get; set; } = new List<OrientationItem>()
+    {
+        new OrientationItem() { Text = "Vertical", Value = true },
+        new OrientationItem() { Text = "Horizontal", Value = false }
+    };
+
+    public class OrientationItem
+    {
+        public string Text { get; set; }
+        public bool Value { get; set; }
+    }
+}

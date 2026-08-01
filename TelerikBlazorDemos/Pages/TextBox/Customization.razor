@@ -1,0 +1,45 @@
+@page "/textbox/customization"
+
+<div class="box-content">
+    <h4>Demo form</h4>
+    <div class="demo-alert demo-alert-info">
+        <p>Tab through the textboxes to see they focus in the custom order.</p>
+        <p>Focus them to get autocomplete in case your browser has stored matching input.</p>
+        <p>Open the demo on a mobile device to see how the virtual keyboard matches the type of expected input.</p>
+    </div>
+    <div class="row mb-md">
+        <div class="col-6 mb-sm">
+            <label for="name">Name</label>
+            <br />
+            <TelerikTextBox Name="name" Placeholder="John Smith" TabIndex="1" Id="name" Width="180px"></TelerikTextBox>
+        </div>
+        <div class="col-6">
+            <label for="email">Email</label>
+            <br />
+            <TelerikTextBox Name="email" Placeholder="john@smith.com" TabIndex="3" InputMode="email" Id="email" Width="180px"></TelerikTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mb-sm">
+            <label for="address">Address</label>
+            <br />
+            <TelerikTextBox Name="address" Placeholder="Frederick Nebraska 20620" TabIndex="2" Id="address" Width="180px"></TelerikTextBox>
+        </div>
+        <div class="col-6">
+            <label for="website">Website</label>
+            <br />
+            <TelerikTextBox Name="url" Placeholder="https://example.com" TabIndex="4" InputMode="url" Id="website" Width="180px" AutoComplete="on"></TelerikTextBox>
+        </div>
+    </div>
+</div>
+
+<style>
+    .box-content{
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    label{
+        width: 100%;
+    }
+</style>

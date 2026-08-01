@@ -1,0 +1,17 @@
+@page "/daterangepicker/keyboard-navigation"
+
+<div class="demo-section">
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue"
+                            Min="@Min"
+                            Max="@Max">
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    public DateTime Max = new DateTime(2035, 12, 31);
+    public DateTime Min = new DateTime(2024, 1, 1);
+    
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 4, 3);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 4, 10);
+}

@@ -1,0 +1,37 @@
+@page "/splitter/keyboard-navigation"
+
+<TelerikSplitter Height="200px">
+    <SplitterPanes>
+        <SplitterPane Size="20%" Collapsible="true" Min="50px">
+            <div class="pane-content">
+                <h3>Pane 1</h3>
+                <p>Hold the left or right arrow to resize the splitter bar or press <code>Enter</code> to collapse it.</p>
+            </div>
+        </SplitterPane>
+
+        <SplitterPane Collapsible="true" Min="50px">
+            <div class="pane-content">
+                <h3>Pane 2</h3>
+                <p>Hold the left or right arrow to resize the splitter bar or press <code>Enter</code> to collapse it.</p>
+            </div>
+        </SplitterPane>
+
+        <SplitterPane Collapsible="true">
+            <div class="pane-content">
+                <h3>Pane 3</h3>
+                <p>You can resize this pane too. Since the nearest pane to a split bar is Pane 2, you cannot collapse this pane, but you can resize it to a zero size because it does not have a <code>Min</code> setting.</p>
+            </div>
+        </SplitterPane>
+    </SplitterPanes>
+</TelerikSplitter>
+
+<style>
+    .pane-content {
+        padding: 0 12px;
+    }
+
+    h3 {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+</style>

@@ -1,0 +1,84 @@
+@page "/chart/heatmap-chart"
+
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+
+<TelerikChart Width="100%" Height="400px">
+    <ChartTitle Text="GitHub contributions for the last 12 weeks"></ChartTitle>
+
+    <ChartLegend Position="@ChartLegendPosition.Bottom"></ChartLegend>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Heatmap"
+                     Name="Number of commits per day"
+                     Data="@Data"
+                     XField="@nameof(HeatmapData.Week)"
+                     YField="@nameof(HeatmapData.Day)"
+                     Field="@nameof(HeatmapData.Value)">
+            <ChartSeriesTooltip Visible="true">
+                <Template>
+                    @{ var dataItem = context.DataItem as HeatmapData; }
+
+                    <div>@($"{dataItem.Value} contributions on {dataItem.Day}, week {dataItem.Week}")</div>
+                </Template>
+            </ChartSeriesTooltip>
+
+            <ChartSeriesMarkers Type="@ChartSeriesMarkersType.RoundedRect"
+                                BorderRadius="5">
+            </ChartSeriesMarkers>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartXAxes>
+        <ChartXAxis>
+            <ChartXAxisLabels Template="Week #= value #"></ChartXAxisLabels>
+        </ChartXAxis>
+    </ChartXAxes>
+
+    <ChartYAxes>
+        <ChartYAxis Categories="@YAxisCategories"></ChartYAxis>
+    </ChartYAxes>
+</TelerikChart>
+
+@code {
+    public List<HeatmapData> Data { get; set; } = new List<HeatmapData>();
+    public object[] YAxisCategories { get; set; } = new object[]
+    {
+        "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+    };
+
+    protected override Task OnInitializedAsync()
+    {
+        Data = GetData();
+
+        return base.OnInitializedAsync();
+    }
+
+    public class HeatmapData
+    {
+        public int Week { get; set; }
+        public string Day { get; set; }
+        public int Value { get; set; }
+    }
+
+    private List<HeatmapData> GetData()
+    {
+        var data = new List<HeatmapData>()
+        {
+            new HeatmapData() { Week = 1, Day = "Mon", Value = 8},  new HeatmapData() { Week = 1,  Day = "Tue", Value = 4}, new HeatmapData() { Week = 1,  Day = "Wed", Value = 7}, new HeatmapData() {Week = 1, Day = "Thu", Value = 14}, new HeatmapData() {Week = 1, Day = "Fri", Value = 10}, new HeatmapData() {Week = 1, Day = "Sat", Value = 0}, new HeatmapData() {Week = 1, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 2, Day = "Mon", Value = 6},  new HeatmapData() { Week = 2,  Day = "Tue", Value = 6}, new HeatmapData() { Week = 2,  Day = "Wed", Value = 9}, new HeatmapData() {Week = 2, Day = "Thu", Value = 12}, new HeatmapData() {Week = 2, Day = "Fri", Value = 12}, new HeatmapData() {Week = 2, Day = "Sat", Value = 3}, new HeatmapData() {Week = 2, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 3, Day = "Mon", Value = 5},  new HeatmapData() { Week = 3,  Day = "Tue", Value = 5}, new HeatmapData() { Week = 3,  Day = "Wed", Value = 8}, new HeatmapData() {Week = 3, Day = "Thu", Value = 11}, new HeatmapData() {Week = 3, Day = "Fri", Value = 0}, new HeatmapData() {Week = 3, Day = "Sat", Value = 1}, new HeatmapData() {Week = 3, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 4, Day = "Mon", Value = 0},  new HeatmapData() { Week = 4,  Day = "Tue", Value = 0}, new HeatmapData() { Week = 4,  Day = "Wed", Value = 0}, new HeatmapData() {Week = 4, Day = "Thu", Value = 0}, new HeatmapData() {Week = 4, Day = "Fri", Value = 0}, new HeatmapData() {Week = 4, Day = "Sat", Value = 0}, new HeatmapData() {Week = 4, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 5, Day = "Mon", Value = 9},  new HeatmapData() { Week = 5,  Day = "Tue", Value = 0}, new HeatmapData() { Week = 5,  Day = "Wed", Value = 0}, new HeatmapData() {Week = 5, Day = "Thu", Value = 0}, new HeatmapData() {Week = 5, Day = "Fri", Value = 0}, new HeatmapData() {Week = 5, Day = "Sat", Value = 0}, new HeatmapData() {Week = 5, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 6, Day = "Mon", Value = 6},  new HeatmapData() { Week = 6,  Day = "Tue", Value = 4}, new HeatmapData() { Week = 6,  Day = "Wed", Value = 7}, new HeatmapData() {Week = 6, Day = "Thu", Value = 14}, new HeatmapData() {Week = 6, Day = "Fri", Value = 10}, new HeatmapData() {Week = 6, Day = "Sat", Value = 2}, new HeatmapData() {Week = 6, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 7, Day = "Mon", Value = 4},  new HeatmapData() { Week = 7,  Day = "Tue", Value = 6}, new HeatmapData() { Week = 7,  Day = "Wed", Value = 9}, new HeatmapData() {Week = 7, Day = "Thu", Value = 2}, new HeatmapData() {Week = 7, Day = "Fri", Value = 4}, new HeatmapData() {Week = 7, Day = "Sat", Value = 0}, new HeatmapData() {Week = 7, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 8, Day = "Mon", Value = 11}, new HeatmapData() { Week = 8,  Day = "Tue", Value = 4}, new HeatmapData() { Week = 8,  Day = "Wed", Value = 7}, new HeatmapData() {Week = 8, Day = "Thu", Value = 14}, new HeatmapData() {Week = 8, Day = "Fri", Value = 10}, new HeatmapData() {Week = 8, Day = "Sat", Value = 0}, new HeatmapData() {Week = 8, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 9, Day = "Mon", Value = 5},  new HeatmapData() { Week = 9,  Day = "Tue", Value = 4}, new HeatmapData() { Week = 9,  Day = "Wed", Value = 7}, new HeatmapData() {Week = 9, Day = "Thu", Value = 4}, new HeatmapData() {Week = 9, Day = "Fri", Value = 1}, new HeatmapData() {Week = 9, Day = "Sat", Value = 0}, new HeatmapData() {Week = 9, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 10, Day = "Mon", Value = 3}, new HeatmapData() { Week = 10, Day = "Tue", Value = 6}, new HeatmapData() { Week = 10, Day = "Wed", Value = 9}, new HeatmapData() {Week = 10, Day = "Thu", Value = 12}, new HeatmapData() {Week = 10, Day = "Fri", Value = 12}, new HeatmapData() {Week = 10, Day = "Sat", Value = 4}, new HeatmapData() {Week = 10, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 11, Day = "Mon", Value = 1}, new HeatmapData() { Week = 11, Day = "Tue", Value = 4}, new HeatmapData() { Week = 11, Day = "Wed", Value = 7}, new HeatmapData() {Week = 11, Day = "Thu", Value = 10}, new HeatmapData() {Week = 11, Day = "Fri", Value = 10}, new HeatmapData() {Week = 11, Day = "Sat", Value = 0}, new HeatmapData() {Week = 11, Day = "Sun", Value = 0},
+            new HeatmapData() { Week = 12, Day = "Mon", Value = 0}, new HeatmapData() { Week = 12, Day = "Tue", Value = 4}, new HeatmapData() { Week = 12, Day = "Wed", Value = 7}, new HeatmapData() {Week = 12, Day = "Thu", Value = 8}, new HeatmapData() {Week = 12, Day = "Fri", Value = 10}, new HeatmapData() {Week = 12, Day = "Sat", Value = 0}, new HeatmapData() {Week = 12, Day = "Sun", Value = 0}
+        };
+
+        return data;
+    }
+ }

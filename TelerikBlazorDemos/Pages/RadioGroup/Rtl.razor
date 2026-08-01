@@ -1,0 +1,15 @@
+@page "/radiogroup/rtl"
+
+<div class="k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikRadioGroup Data="@Responses"
+                               @bind-Value="@Response"></TelerikRadioGroup>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<string> Responses { get; set; } = new List<string>() { "Agree", "Disagree", "N/A" };
+    public string Response { get; set; }
+}

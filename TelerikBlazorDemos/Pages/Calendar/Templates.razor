@@ -1,0 +1,65 @@
+@page "/calendar/templates"
+
+<div class="demo-section auto">
+    <TelerikCalendar @bind-Date="@StartDate"
+                     @bind-Value="@Value"
+                     @bind-View="@View"
+                     SelectionMode="@CalendarSelectionMode.Single"
+                     @ref="CalendarRef">
+        <HeaderTemplate>
+            <TelerikButton OnClick="@GoToCenturyView" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Century View</TelerikButton>
+            <span class="k-spacer"></span>
+            <TelerikButton OnClick="@NavigateToCurrentMonth" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" FillMode="@(ThemeConstants.Button.FillMode.Link)">Current Month</TelerikButton>
+        </HeaderTemplate>
+        <MonthCellTemplate>
+            <span class="@GetMeetingClass(context.Date)">
+                @context.Date.Day
+            </span>
+        </MonthCellTemplate>
+    </TelerikCalendar>
+</div>
+
+@code {
+
+    DateTime StartDate = DateTime.Today;
+    DateTime Value = DateTime.Today;
+    CalendarView View = CalendarView.Month;
+    TelerikCalendar CalendarRef { get; set; }
+
+    public string GetMeetingClass(DateTime date)
+    {
+        if (date.Day % 5 == 0)
+        {
+            return "meeting";
+        }
+        else if (date.Day % 9 == 0)
+        {
+            return "cocktail";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    public void NavigateToCurrentMonth()
+    {
+        CalendarRef.NavigateTo(DateTime.Today, CalendarView.Month);
+    }
+
+
+    public void GoToCenturyView()
+    {
+        View = CalendarView.Century;
+    }
+}
+
+<style>
+    .meeting {
+        color: #00a1e8;
+    }
+
+    .cocktail {
+        color: #ff9e00;
+    }
+</style>

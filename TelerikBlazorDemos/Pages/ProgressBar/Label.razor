@@ -1,0 +1,52 @@
+@page "/progressbar/label"
+
+@using Telerik.Blazor.Components
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Label Visibility">
+        <TelerikCheckBox Id="checkboxLabelVisibility" @bind-Value="@IsLabelVisible"></TelerikCheckBox>
+        <label for="checkboxLabelVisibility" class="k-checkbox-label checkbox-label">Toggle the label visibility</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Label Position">
+        <input id="position-start"
+               type="radio"
+               value="@( ProgressBarLabelPosition.Start)"
+               checked="@(LabelPosition == ProgressBarLabelPosition.Start)"
+               @onchange="@(() => LabelPosition = ProgressBarLabelPosition.Start)"
+               name="position"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="position-start">Start</label>
+
+        <input id="position-center"
+               type="radio"
+               value="@( ProgressBarLabelPosition.Center)"
+               checked="@(LabelPosition == ProgressBarLabelPosition.Center)"
+               @onchange="@(() => LabelPosition = ProgressBarLabelPosition.Center)"
+               name="position"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="position-center">Center</label>
+
+        <input id="position-end"
+               type="radio"
+               value="@( ProgressBarLabelPosition.End)"
+               checked="@(LabelPosition == ProgressBarLabelPosition.End)"
+               @onchange="@(() => LabelPosition = ProgressBarLabelPosition.End)"
+               name="position"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="position-end">End</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikProgressBar Value="50" AriaLabel="Progress Bar">
+    <ProgressBarLabel Visible="@IsLabelVisible" Position="@LabelPosition">
+        <Template>
+            The progress is @(context.Value)%
+        </Template>
+    </ProgressBarLabel>
+</TelerikProgressBar>
+
+@code {
+    public bool IsLabelVisible { get; set; } = true;
+    public ProgressBarLabelPosition LabelPosition { get; set; } = ProgressBarLabelPosition.End;
+}
+

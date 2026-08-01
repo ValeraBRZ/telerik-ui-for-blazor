@@ -1,0 +1,11 @@
+@page "/datetimepicker/formatplaceholder"
+
+<div class="demo-section">
+    <TelerikDateTimePicker @bind-Value="@Value" Width="400px" Format="F">
+        <DateTimePickerFormatPlaceholder Weekday="weekday" Year="year" Month="month" Day="day" Hour="hour" Minute="min" Second="sec"></DateTimePickerFormatPlaceholder>
+    </TelerikDateTimePicker>
+</div>
+
+@code {
+    public DateTime? Value { get; set; }
+}

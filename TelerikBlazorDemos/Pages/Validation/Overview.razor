@@ -1,0 +1,127 @@
+@page "/validation/overview"
+
+@using System.ComponentModel.DataAnnotations;
+
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            You successfully applied for this job!
+        </div>
+    }
+    else
+    {
+        <h3 style="text-align: center;">Job Application Form</h3>
+        <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <TelerikValidationSummary></TelerikValidationSummary>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="name" class="k-label k-form-label">Name</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.Name" Id="name" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.Name)" />
+                <TelerikValidationTooltip For="@(() => Model.Name)" TargetSelector="#name" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="email" class="k-label k-form-label">Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.Email" Id="email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.Email)" />
+                <TelerikValidationTooltip For="@(() => Model.Email)" TargetSelector="#email" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="repeat-email" class="k-label k-form-label">Repeat Email</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@Model.RepeatEmail" Id="repeat-email" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.RepeatEmail)" />
+                <TelerikValidationTooltip For="@(() => Model.RepeatEmail)" TargetSelector="#repeat-email" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="age" class="k-label k-form-label">Age</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikNumericTextBox @bind-Value="@Model.Age" Id="age" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.Age)" />
+                <TelerikValidationTooltip For="@(() => Model.Age)" TargetSelector="#age" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="overview" class="k-label k-form-label">Short Overview</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextArea @bind-Value="@Model.ShortOverview" Id="overview" />
+                    </div>
+                </div>
+                <TelerikValidationMessage For="@(() => Model.ShortOverview)" />
+                <TelerikValidationTooltip For="@(() => Model.ShortOverview)" TargetSelector="#overview" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Apply</TelerikButton>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    public JobApplication Model { get; set; } = new JobApplication();
+
+    public class JobApplication
+    {
+        [Required]
+        [MinLength(2)]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Display(Name = "Repeat Email")]
+        [Required]
+        [EmailAddress]
+        [Compare(nameof(Email))]
+        public string RepeatEmail { get; set; }
+
+        [Range(18, 100)]
+        public int Age { get; set; }
+
+        [StringLength(100, MinimumLength = 10)]
+        public string ShortOverview { get; set; }
+    }
+
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

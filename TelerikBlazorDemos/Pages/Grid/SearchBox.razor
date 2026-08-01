@@ -1,0 +1,100 @@
+@page "/grid/searchbox"
+
+@using Telerik.DataSource
+
+@inject CategoryService CategoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Clear SearchBox">
+        <TelerikButton OnClick="@ClearSearchBox" Icon="@SvgIcon.Trash">Clear SearchBox</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Search by `Con`">
+        <TelerikButton OnClick="@Search" Icon="@SvgIcon.Search">Search `Con`</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Placeholder">
+        <TelerikTextBox @bind-Value="@Placeholder"></TelerikTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Width">
+        <TelerikNumericTextBox @bind-Value="@SearchBoxWidth" Min="100" Max="500"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@DebounceDelay" Min="0" Max="1000"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid @ref="@GridRef"
+             Data=@GridData
+             Height=@Height
+             Pageable=true>
+    <GridToolBarTemplate>
+        <span>Write in the textbox on the right-hand side to filter all string columns, or use the configurator for programatic control.</span>
+        <span class="k-toolbar-spacer"></span>
+        <GridSearchBox Placeholder="@Placeholder"
+                       Width="@(SearchBoxWidth >= 100 ? SearchBoxWidth +"px" : "100px")"
+                       DebounceDelay="@DebounceDelay">
+        </GridSearchBox>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field=@nameof(CategoryDto.CategoryId) />
+        <GridColumn Field=@nameof(CategoryDto.CategoryName) />
+        <GridColumn Field=@nameof(CategoryDto.Description) />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public TelerikGrid<CategoryDto> GridRef { get; set; }
+
+    public IEnumerable<CategoryDto> GridData { get; set; }
+
+    string Height = "400px";
+
+    string Placeholder { get; set; } = "Search...";
+
+    int? SearchBoxWidth { get; set; } = 200;
+
+    int DebounceDelay { get; set; } = 200;
+
+    protected override void OnInitialized()
+    {
+        GridData = CategoryService.GetCategories();
+    }
+
+    private async Task ClearSearchBox()
+    {
+        await SetSearchBoxState(null);
+    }
+
+    private async Task Search()
+    {
+        var descriptor = CreateSearchFilter("Con", new List<string> { "CategoryName" });
+
+        await SetSearchBoxState(descriptor);
+    }
+
+    private async Task SetSearchBoxState(IFilterDescriptor descriptor)
+    {
+        GridState<CategoryDto> state = new GridState<CategoryDto>()
+            {
+                SearchFilter = descriptor
+            };
+
+        await GridRef?.SetStateAsync(state);
+    }
+
+    private IFilterDescriptor CreateSearchFilter(string searchValue, List<string> fields)
+    {
+        var descriptor = new CompositeFilterDescriptor();
+        descriptor.LogicalOperator = FilterCompositionLogicalOperator.Or;
+
+        foreach (var field in fields)
+        {
+            var filter = new FilterDescriptor(field, FilterOperator.Contains, searchValue);
+
+            filter.MemberType = typeof(string);
+
+            descriptor.FilterDescriptors.Add(filter);
+        }
+
+        return descriptor;
+    }
+}

@@ -1,0 +1,33 @@
+@page "/treelist/virtual-scrolling"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="@nameof(EmployeeDirectoryDto.EmployeeId)"
+                 ParentIdField="@nameof(EmployeeDirectoryDto.ReportsTo)"
+                 ScrollMode="@TreeListScrollMode.Virtual"
+                 PageSize="10"
+                 Height="480px"
+                 RowHeight="60"
+                 Sortable="true"
+                 FilterMode="@TreeListFilterMode.FilterMenu">
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="45%" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name" Width="20%"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="35%"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    private IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

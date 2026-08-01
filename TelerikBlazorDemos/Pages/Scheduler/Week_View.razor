@@ -1,0 +1,75 @@
+@page "/scheduler/week-view"
+
+@inject AppointmentService appointmentService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="All Day Row">
+        <TelerikCheckBox @bind-Value="@HideAllDayRow" Id="hidealldayrow-checkbox"></TelerikCheckBox>
+        <label for="hidealldayrow-checkbox" class="k-checkbox-label checkbox-label">Hide</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Day start">
+        <TelerikTimePicker @bind-Value="@DayStart" Width="140px" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="WorkDay start">
+        <TelerikTimePicker @bind-Value="@WorkDayStart" Width="140px" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Slot duration (min)">
+        <TelerikDropDownList @bind-Value="@SlotDuration" Data="@SlotDurationOptions" Width="140px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Day end">
+        <TelerikTimePicker @bind-Value="@DayEnd" Width="140px" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="WorkDay end">
+        <TelerikTimePicker @bind-Value="@WorkDayEnd" Width="140px" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Slot divisions">
+        <TelerikDropDownList @bind-Value="@SlotDivisions" Data="@SlotDivisionsOptions" Width="140px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" Height="600px">
+    <SchedulerViews>
+        <SchedulerWeekView StartTime="@DayStart"
+                           EndTime="@DayEnd"
+                           WorkDayStart="@WorkDayStart"
+                           WorkDayEnd="@WorkDayEnd"
+                           SlotDuration="@SlotDuration"
+                           SlotDivisions="@SlotDivisions"
+                           HideAllDayRow="@HideAllDayRow" />
+    </SchedulerViews>
+</TelerikScheduler>
+
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public int SlotDuration { get; set; } = 120;
+    public int SlotDivisions { get; set; } = 4;
+    public List<int> SlotDurationOptions { get; set; } = new List<int> { 30, 60, 90, 120, 240 };
+    public List<int> SlotDivisionsOptions { get; set; } = new List<int> { 1, 2, 4, 6, 10 };
+    public bool HideAllDayRow { get; set; }
+    //the time portions are important
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 8, 0, 0);
+    public DateTime DayEnd { get; set; } = new DateTime(2000, 1, 1, 20, 0, 0);
+    public DateTime WorkDayStart { get; set; } = new DateTime(2000, 1, 1, 9, 0, 0);
+    public DateTime WorkDayEnd { get; set; } = new DateTime(2000, 1, 1, 17, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+}

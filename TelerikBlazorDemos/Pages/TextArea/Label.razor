@@ -1,0 +1,32 @@
+@page "/textarea/label"
+
+<div class="demo-section auto k-form k-form-md k-form-vertical">
+    <div class="form-wrapper k-form">
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <h4>Label</h4>
+                <label for="productDescription" class="k-label k-form-label">Enter product description:</label>
+                <TelerikTextArea Id="productDescription"></TelerikTextArea>
+            </div>
+        </div>
+
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <h4>Placeholder</h4>
+                <TelerikTextArea Placeholder="Enter product description:"></TelerikTextArea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-wrapper {
+        width: 250px;
+    }
+
+    .form-wrapper .k-textarea > textarea {
+        height: 120px;
+        max-height: 550px;
+    }
+</style>
+

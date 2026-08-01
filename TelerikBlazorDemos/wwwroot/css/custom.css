@@ -1,0 +1,139 @@
+/* custom styles necessary for the correct appearance of various demos */
+.k-actionsheet-container {
+    z-index: 50001 !important;
+}
+
+.k-animation-container:has(.k-calendar) {
+    z-index: 50001 !important;
+}
+
+.demo-window {
+    z-index: 50001 !important;
+}
+
+.section-container {
+    max-width: 1452px;
+    margin: 0 auto;
+    padding-right: 30px;
+    padding-left: 30px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.section-container > h1 {
+    font: 600 60px/54px Metric,Consolas,Helvetica,Arial,sans-serif;
+}
+
+.section-container > h3 {
+    font: 500 35px/34px Metric,Consolas,Helvetica,Arial,sans-serif;
+}
+
+.kd-components-list .kd-link-group > .kd-text,
+.kd-text-list-desc{
+    margin-bottom: 10px;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 26px;
+}
+
+/* custom styles necessary for the correct appearance of various demos */
+
+/* Home page icons */
+
+.kd-link > img {
+    margin-right: 4px;
+}
+
+/* ThemeBuilder banner below demo */
+
+div.kd-example-runner {
+    background: none transparent;
+}
+
+.themebuilder-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 8px 14px;
+    background: rgba(239, 239, 239, 0.2);
+    font-size: 12px;
+}
+
+    .themebuilder-banner > .themebuilder-banner-label {
+        margin: 0;
+        font-weight: normal;
+        color: rgba(0, 0, 0, .5);
+        font-size: 1em;
+    }
+
+        .themebuilder-banner > .themebuilder-banner-label > strong {
+            padding-left: .4em;
+            font-size: 1.2em;
+            color: #000;
+        }
+
+    .themebuilder-banner > ul {
+        display: inline-flex;
+        gap: 2.8em;
+        margin: 0;
+        padding: 0;
+        color: rgba(7, 7, 7, .5);
+        white-space: nowrap;
+    }
+
+    @media screen and (max-width:800px) {
+        .themebuilder-banner > ul > li:last-child {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width:670px) {
+        .themebuilder-banner > ul > li + li {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width:510px) {
+        .themebuilder-banner > ul {
+            display: none;
+        }
+    }
+
+    .themebuilder-banner > a {
+        border: 1px solid #245BFF;
+        border-radius: 14px;
+        padding: 1px 14px;
+        text-decoration: none;
+        background: #fff;
+        font-size: 14px;
+        color: #384054;
+    }
+
+[data-is-dark="true"] .themebuilder-banner {
+    border-color: #1285de;
+    background: rgba(6, 22, 62, 0.2);
+}
+
+    [data-is-dark="true"] .themebuilder-banner > .themebuilder-banner-label {
+        color: rgba(255, 255, 255, .5);
+    }
+
+        [data-is-dark="true"] .themebuilder-banner > .themebuilder-banner-label > strong {
+            color: #fff;
+        }
+
+    [data-is-dark="true"] .themebuilder-banner > ul {
+        color: rgba(255, 255, 255, .5);
+    }
+
+    [data-is-dark="true"] .themebuilder-banner > a {
+        border-color: #1285de;
+        background: transparent;
+        color: #fff;
+    }
+
+.kd-marketing-campaign-page {
+    font-size: var(--kendo-font-size, 14px);
+    font-family: var(--kendo-font-family, Arial, Helvetica, sans-serif);
+}

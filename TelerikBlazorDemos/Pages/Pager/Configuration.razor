@@ -1,0 +1,52 @@
+@page "/pager/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Page Sizes">
+        <TelerikCheckBox @bind-Value="@ShowPageSizeDropdown" Id="show-page-size-dropdown"></TelerikCheckBox>
+        <label for="show-page-size-dropdown" class="k-checkbox-label checkbox-label">Show Page Sizes</label>
+    </DemoConfiguratorColumn>
+        <DemoConfiguratorColumn Description="Show Info">
+        <TelerikCheckBox @bind-Value="@ShowInfo" Id="show-info"></TelerikCheckBox>
+        <label for="show-info" class="k-checkbox-label checkbox-label">Show Info</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="InputType">
+        <TelerikDropDownList Data="InputTypes" @bind-Value="@InputType" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Buttons Count">
+        <TelerikNumericTextBox Min="1" @bind-Value="@ButtonsCount"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikPager @bind-PageSize="@PageSize" Total="@Total" ButtonCount="@ButtonsCount" @bind-Page="@Page" PageSizes="@PageSizes" InputType="@InputType" ShowInfo="@ShowInfo"></TelerikPager>
+
+@code{
+    private int _buttonsCount = 7;
+    public int Page { get; set; } = 3;
+    public int PageSize { get; set; } = 10;
+    public int Total { get; set; } = 210;
+    public int ButtonsCount
+    {
+        get
+        {
+            return _buttonsCount;
+        }
+        set
+        {
+            if (value < 1)
+            {
+                _buttonsCount = 1;
+            }
+            else
+            {
+                _buttonsCount = value;
+            }
+        }
+    }
+
+    public PagerInputType InputType { get; set; }
+    public bool ShowPageSizeDropdown { get; set; } = true;
+    public bool ShowInfo { get; set; } = true;
+
+    public List<int?> PageSizes => ShowPageSizeDropdown ? new List<int?> { 5, 10, 25, 50, null } : null;
+    public List<PagerInputType> InputTypes => new List<PagerInputType> { PagerInputType.Buttons, PagerInputType.Input };
+}

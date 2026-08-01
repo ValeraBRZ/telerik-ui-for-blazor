@@ -1,0 +1,66 @@
+@page "/skeleton/integration"
+
+@inject CustomerService customerService
+
+@if (!Loaded)
+{
+    <table class="k-grid">
+        @for (int i = 0; i < 10; i++)
+        {
+            <tr class=skeleton-table-row>
+                <td class="skeleton-table-col"><TelerikSkeleton Width="100%"></TelerikSkeleton></td>
+                <td class="skeleton-table-col"><TelerikSkeleton Width="100%"></TelerikSkeleton></td>
+                <td class="skeleton-table-col"><TelerikSkeleton Width="100%"></TelerikSkeleton></td>
+                <td class="skeleton-table-col"><TelerikSkeleton Width="100%"></TelerikSkeleton></td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <TelerikGrid Data=@GridData
+             RowHeight="60"
+             ScrollMode="GridScrollMode.Virtual"
+             Height="460px">
+        <GridColumns>
+            <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+            <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+            <GridColumn Field=@nameof(CustomerDto.Address) />
+            <GridColumn Field=@nameof(CustomerDto.Phone) />
+        </GridColumns>
+    </TelerikGrid>
+}
+
+@code {
+    public IEnumerable<CustomerDto> GridData { get; set; }
+    public bool Loaded { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            LoadData();
+            Loaded = true;
+            StateHasChanged();
+        }
+    }
+
+    public void LoadData()
+    {
+        GridData = customerService.GetCustomers();
+    }
+}
+
+<style>
+    .skeleton-table-row {
+        height: 60px;
+        display: flex;
+        justify-content: space-evenly;
+    }
+
+    .skeleton-table-col {
+        height: 60px;
+        flex-basis: 25%
+    }
+</style>

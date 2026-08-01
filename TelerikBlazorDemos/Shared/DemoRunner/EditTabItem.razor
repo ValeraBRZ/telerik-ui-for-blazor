@@ -1,0 +1,21 @@
+@namespace TelerikBlazorDemos.Shared
+
+<li class="separator"></li>
+<li class="tabstrip-item">
+    <a class="tabstrip-link tb-edit-button kd-link track--edit-in-repl" target="_blank"
+        href="@ReplLink">
+        <span>
+            EDIT IN TELERIK REPL
+        </span>
+        <span class="icon">
+            <TelerikBlazorDemos.Shared.SVG.HyperlinkOpenSm />
+        </span>
+    </a>
+</li>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    private string ReplLink => $"https://blazorrepl.telerik.com/{Demo.SnippetId}";
+}

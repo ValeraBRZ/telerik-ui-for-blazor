@@ -1,0 +1,70 @@
+@page "/treelist/editing-popup"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 EditMode="@TreeListEditMode.Popup"
+                 ConfirmDelete="true"
+                 OnCreate="@CreateItem"
+                 OnUpdate="@UpdateItem"
+                 OnDelete="@DeleteItem">
+    <TreeListToolBarTemplate>
+        <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</TreeListCommandButton>
+    </TreeListToolBarTemplate>
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+        <TreeListCommandColumn Width="150px">
+            <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus"></TreeListCommandButton>
+            <TreeListCommandButton Command="Edit" Icon="@SvgIcon.Pencil"></TreeListCommandButton>
+
+            @if ((context as EmployeeDirectoryDto).EmployeeId % 2 == 0)
+            {
+                <TreeListCommandButton Command="Delete" Icon="@SvgIcon.Trash"></TreeListCommandButton>
+            }
+
+            <TreeListCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true"></TreeListCommandButton>
+            <TreeListCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true"></TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void CreateItem(TreeListCommandEventArgs args)
+    {
+        var item = (EmployeeDirectoryDto)args.Item;
+
+        item.ReportsTo = ((EmployeeDirectoryDto)args.ParentItem)?.EmployeeId;
+
+        employeeDirectoryService.CreateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void UpdateItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.UpdateEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(TreeListCommandEventArgs args)
+    {
+        employeeDirectoryService.DeleteEmployeeDirectory((EmployeeDirectoryDto)args.Item);
+        LoadData();
+    }
+}

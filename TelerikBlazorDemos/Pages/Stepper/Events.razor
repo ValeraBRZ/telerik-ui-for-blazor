@@ -1,0 +1,48 @@
+﻿@page "/stepper/events"
+
+<TelerikStepper ValueChanged="@ValueChangeHandler">
+    <StepperSteps>
+        <StepperStep Label="Index 0" OnChange="@((args) => OnStepChange(args, 0))"></StepperStep>
+        <StepperStep Label="Index 1" OnChange="@((args) => OnStepChange(args, 1))"></StepperStep>
+        <StepperStep Label="Index 2" OnChange="@((args) => OnCancelledStepChange(args, 2))"></StepperStep>
+        <StepperStep Label="Index 3" Disabled="true"></StepperStep>
+        <StepperStep Label="Index 4" OnChange="@((args) => OnStepChange(args, 4))"></StepperStep>
+    </StepperSteps>
+</TelerikStepper>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public bool ShouldCancel { get; set; } = true;
+
+    public string EventLog { get; set; } = string.Empty;
+
+    public void ValueChangeHandler(int index)
+    {
+        var log = $"<div><strong>Value Change event</strong>: New value: <strong>{index}</strong></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnStepChange(StepperStepChangeEventArgs args, int stepIndex)
+    {
+        var log = $"<div><strong>Step with index {stepIndex} Change event</strong>: Target index: <strong>{args.TargetIndex}</strong></div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnCancelledStepChange(StepperStepChangeEventArgs args, int stepIndex)
+    {
+        args.IsCancelled = ShouldCancel;
+        ShouldCancel = !ShouldCancel;
+
+        var stepCancellationCondition = args.IsCancelled ? "cancelled" : "allowed";
+
+        var log = $"<div><strong>Step with index {stepIndex} Change event</strong>: Target index: <strong>{args.TargetIndex}</strong> Changing step is {stepCancellationCondition}.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+}

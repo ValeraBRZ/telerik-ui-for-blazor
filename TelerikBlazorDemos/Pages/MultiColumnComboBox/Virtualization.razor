@@ -1,0 +1,40 @@
+@page "/multicolumncombobox/virtualization"
+
+@inject UrbanAreaService urbanAreaService
+
+<div class="k-form k-form-md demo-section k-form-vertical">
+    <div class="k-form-field">
+        <label for="city-select" class="k-label k-form-label">Select a city:</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiColumnComboBox @bind-Value="@Value"
+                                        Id="city-select"
+                                        ScrollMode="@DropDownScrollMode.Virtual"
+                                        Data="@UrbanAreas"
+                                        ValueField="@(nameof(UrbanAreaDto.Id))"
+                                        TextField="@(nameof(UrbanAreaDto.City))"
+                                        Width="100%"
+                                        PageSize="10"
+                                        ItemHeight="35"
+                                        Filterable="true"
+                                        FilterOperator="@StringFilterOperator.Contains"
+                                        ListHeight="260px"
+                                        Placeholder="Choose a city from the list">
+                <MultiColumnComboBoxColumns>
+                    <MultiColumnComboBoxColumn Field="@nameof(UrbanAreaDto.Id)" Width="80px" />
+                    <MultiColumnComboBoxColumn Field="@nameof(UrbanAreaDto.City)" />
+                    <MultiColumnComboBoxColumn Field="@nameof(UrbanAreaDto.Country)" />
+                </MultiColumnComboBoxColumns>
+            </TelerikMultiColumnComboBox>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<UrbanAreaDto> UrbanAreas { get; set; }
+    private int Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UrbanAreas = urbanAreaService.GetUrbanAreas().ToList();
+    }
+}

@@ -1,0 +1,181 @@
+@page "/chat/actions-suggestions"
+
+@using TelerikBlazorDemos.Models.Chat
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Suggested Actions">
+        <div>
+            <label>
+                Layout Mode
+                <TelerikDropDownList @bind-Value="@SuggestedActionsLayoutMode" Data="@ChatSuggestedActionsLayoutModes">
+                    <DropDownListSettings>
+                        <DropDownListPopupSettings Height="auto" />
+                    </DropDownListSettings>
+                </TelerikDropDownList>
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Suggestions">
+        <div>
+            <label>
+                Layout Mode
+                <TelerikDropDownList @bind-Value="@SuggestionsLayoutMode" Data="@ChatSuggestionsLayoutModes">
+                    <DropDownListSettings>
+                        <DropDownListPopupSettings Height="auto" />
+                    </DropDownListSettings>
+                </TelerikDropDownList>
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="chat-container">
+    <TelerikChat Data="@ChatData"
+                 AuthorId="@ChatAuthors.First().Value.Id"
+                 InputValue="@ChatInputValue"
+                 OnSendMessage="@OnChatSendMessage"
+                 OnSuggestionClick="@OnChatSuggestionClick"
+                 SuggestedActionsLayoutMode="@SuggestedActionsLayoutMode"
+                 Suggestions="@ChatSuggestions"
+                 SuggestionsLayoutMode="@SuggestionsLayoutMode"
+                 Width="400px"
+                 Height="600px">
+        <ChatSettings>
+            <ChatAuthorMessageSettings>
+                <ChatMessageContextMenuActions>
+                    <ChatMessageContextMenuAction Icon="@SvgIcon.Trash" Name="delete" Text="Author Action" OnClick="@OnContextMenuActionClick" />
+                    <ChatMessageContextMenuAction Text="Second Item" Name="copy" Icon="@SvgIcon.Copy" OnClick="@OnContextMenuActionClick" />
+                </ChatMessageContextMenuActions>
+                <ChatMessageToolbarActions>
+                    <ChatMessageToolbarAction Icon="@SvgIcon.Download" Name="download" Text="Download" OnClick="@OnToolbarActionClick" />
+                    <ChatMessageToolbarAction Icon="@SvgIcon.ArrowRotateCw" Name="retry" Text="Retry" OnClick="@OnToolbarActionClick" />
+                </ChatMessageToolbarActions>
+            </ChatAuthorMessageSettings>
+            <ChatReceiverMessageSettings>
+                <ChatMessageContextMenuActions>
+                    <ChatMessageContextMenuAction Text="Receiver Action" Name="save" Icon="@SvgIcon.Save" OnClick="@OnContextMenuActionClick" />
+                    <ChatMessageContextMenuAction Text="Second Item" Name="unsee" Icon="@SvgIcon.Eye" OnClick="@OnContextMenuActionClick" />
+                </ChatMessageContextMenuActions>
+                <ChatMessageToolbarActions>
+                    <ChatMessageToolbarAction Icon="@SvgIcon.Redo" Name="forward" Text="Forward" OnClick="@OnToolbarActionClick" />
+                    <ChatMessageToolbarAction Icon="@SvgIcon.Share" Name="share" Text="Share" OnClick="@OnToolbarActionClick" />
+                </ChatMessageToolbarActions>
+            </ChatReceiverMessageSettings>
+        </ChatSettings>
+    </TelerikChat>
+</div>
+
+<style>
+    .chat-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+@code {
+    private List<Message> ChatData { get; set; } = new();
+
+    private string ChatInputValue { get; set; } = string.Empty;
+
+    private readonly Dictionary<string, Author> ChatAuthors = new() {
+        { "jane", new Author() { Id = "jane", Name = "Jane", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jane.jpg" } },
+        { "jamie", new Author() { Id = "jamie", Name = "Jamie", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jamie.jpg" } }
+    };
+
+    private ChatSuggestedActionsLayoutMode SuggestedActionsLayoutMode { get; set; } = ChatSuggestedActionsLayoutMode.ScrollButtons;
+
+    private readonly List<ChatSuggestedActionsLayoutMode> ChatSuggestedActionsLayoutModes = new()
+    {
+        ChatSuggestedActionsLayoutMode.Scroll,
+        ChatSuggestedActionsLayoutMode.ScrollButtons,
+        ChatSuggestedActionsLayoutMode.Wrap
+    };
+
+    private ChatSuggestionsLayoutMode SuggestionsLayoutMode { get; set; } = ChatSuggestionsLayoutMode.ScrollButtons;
+
+    private readonly List<ChatSuggestionsLayoutMode> ChatSuggestionsLayoutModes = new()
+    {
+        ChatSuggestionsLayoutMode.Scroll,
+        ChatSuggestionsLayoutMode.ScrollButtons,
+        ChatSuggestionsLayoutMode.Wrap,
+    };
+
+    private readonly List<string> ChatSuggestions = new List<string>() { "Chat Suggestion 1", "These are Always Visible", "Copied to Message TextArea on Click" };
+
+    private string SendMessageButtonThemeColor { get; set; } = ThemeConstants.Button.ThemeColor.Success;
+
+    private readonly List<string> SendMessageButtonThemeColors = new()
+    {
+        ThemeConstants.Button.ThemeColor.Base,
+        ThemeConstants.Button.ThemeColor.Primary,
+        ThemeConstants.Button.ThemeColor.Secondary,
+        ThemeConstants.Button.ThemeColor.Tertiary,
+        ThemeConstants.Button.ThemeColor.Info,
+        ThemeConstants.Button.ThemeColor.Success
+    };
+
+    private void OnToolbarActionClick(ChatMessageActionClickEventArgs args)
+    {
+        ChatInputValue = $"ToolBar action clicked at {DateTime.Now.ToString("HH:mm:ss.fff")} for message ID {args.MessageId}.";
+    }
+
+    private void OnContextMenuActionClick(ChatMessageActionClickEventArgs args)
+    {
+        ChatInputValue = $"Context Menu Action clicked at {DateTime.Now.ToString("HH:mm:ss.fff")} for message ID {args.MessageId}.";
+    }
+
+    private void OnChatSuggestionClick(ChatSuggestionClickEventArgs args)
+    {
+        ChatInputValue = $"Chat Suggestion clicked at {DateTime.Now.ToString("HH:mm:ss.fff")}: {args.Suggestion}.";
+    }
+
+    private void OnChatSendMessage(ChatSendMessageEventArgs args)
+    {
+        Author messageAuthor = ChatAuthors.First().Value;
+
+        ChatData.Add(new Message
+        {
+            AuthorId = messageAuthor.Id,
+            AuthorImageUrl = messageAuthor.ImageUrl,
+            AuthorName = messageAuthor.Name,
+            Text = args.Message
+        });
+    }
+
+    protected override void OnInitialized()
+    {
+        Author userJane = ChatAuthors.First().Value;
+        Author userJamie = ChatAuthors.Last().Value;
+
+        ChatData.Add(new Message
+        {
+            Text = "Toolbar actions and context menu actions that are specific to the other user (receiver).",
+            AuthorId = userJamie.Id,
+            AuthorImageUrl = userJamie.ImageUrl,
+            AuthorName = userJamie.Name,
+            Timestamp = DateTime.Now.AddSeconds(-103)
+        });
+
+        ChatData.Add(new Message
+        {
+            Text = "Toolbar actions and context menu actions that are specific to the current user (author).",
+            AuthorId = userJane.Id,
+            AuthorImageUrl = userJane.ImageUrl,
+            AuthorName = userJane.Name,
+            Timestamp = DateTime.Now.AddSeconds(-57)
+        });
+
+        ChatData.Add(new Message
+        {
+            Text = "The last Chat message can show suggested actions.",
+            AuthorId = userJamie.Id,
+            AuthorImageUrl = userJamie.ImageUrl,
+            AuthorName = userJamie.Name,
+            SuggestedActions = new List<string> { "Suggested Action 1", "Installation", "System Requirements", "Styling", "Component Features" },
+            Timestamp = DateTime.Now.AddSeconds(-49)
+        });
+
+        base.OnInitialized();
+    }
+}

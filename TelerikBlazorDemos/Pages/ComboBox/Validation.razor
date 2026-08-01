@@ -1,0 +1,60 @@
+@page "/combobox/validation"
+
+@inject ProductService ProductService
+
+@if (string.IsNullOrEmpty(SuccessMessage))
+{
+    <TelerikForm Model="@Product"
+                 OnValidSubmit="@OnFormValidSubmit">
+        <FormValidation>
+            <DataAnnotationsValidator />
+            <TelerikValidationSummary />
+        </FormValidation>
+        <FormItems>
+            <FormItem Field="@nameof(Product.ProductName)">
+                <Template>
+                    <label for="destinations" class="k-label k-form-label">Product Name</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikComboBox Data="@DropDownListData"
+                                         @bind-Value="@Product.ProductName"
+                                         Placeholder="Choose Product"
+                                         Id="product"
+                                         TextField="@nameof(Product.ProductName)"
+                                         ValueField="@nameof(Product.ProductName)">
+                        </TelerikComboBox>
+                        <TelerikValidationMessage For="@(() => Product.ProductName)" />
+                    </div>
+                </Template>
+            </FormItem>
+        </FormItems>
+    </TelerikForm>
+}
+else
+{
+    <div class="demo-alert demo-alert-success" role="alert">
+        @SuccessMessage
+    </div>
+}
+
+@code {
+    private ProductDto Product { get; set; } = new ProductDto();
+
+    private IEnumerable<ProductDto> DropDownListData { get; set; }
+
+    private string SuccessMessage = string.Empty;
+
+    private async Task OnFormValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+
+        SuccessMessage = string.Empty;
+        Product = new ProductDto();
+    }
+
+    protected override void OnInitialized()
+    {
+        DropDownListData = ProductService.GetProducts();
+        Product = new ProductDto();
+    }
+}

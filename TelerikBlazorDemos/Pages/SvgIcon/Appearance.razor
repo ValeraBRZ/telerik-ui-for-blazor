@@ -1,0 +1,77 @@
+@page "/svgicon/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key"
+                             ValueField="Value"
+                             Data="@Sizes"
+                             @bind-Value="@Size"
+                             Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key"
+                             ValueField="Value"
+                             Data="@ThemeColors"
+                             @bind-Value="@ThemeColor"
+                             Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Icon">
+        <TelerikComboBox Data="@IconNames"
+                         Value="@SelectedIconName"
+                         Filterable="true"
+                         ValueChanged="@((string newIconName) => OnIconChanged(newIconName))">
+        </TelerikComboBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikSvgIcon ThemeColor="@ThemeColor" Size="@Size" Icon="@Icon"/>
+</div>
+
+@code {
+    public string Size { get; set; } = ThemeConstants.SvgIcon.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.SvgIcon.ThemeColor.Base;
+    public ISvgIcon Icon { get; set; } = SvgIcon.Play;
+    public IEnumerable<string> IconNames { get; set; } = typeof(SvgIcon).GetProperties().Select(x => x.Name);
+    public string SelectedIconName { get; set; } = nameof(SvgIcon.Play);
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "XSmall", ThemeConstants.SvgIcon.Size.ExtraSmall },
+        { "Small", ThemeConstants.SvgIcon.Size.Small },
+        { "Medium", ThemeConstants.SvgIcon.Size.Medium },
+        { "Large", ThemeConstants.SvgIcon.Size.Large },
+        { "XLarge", ThemeConstants.SvgIcon.Size.ExtraLarge },
+        { "XXLarge", ThemeConstants.SvgIcon.Size.ExtraExtraLarge },
+        { "XXXLarge", ThemeConstants.SvgIcon.Size.ExtraExtraExtraLarge }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.SvgIcon.ThemeColor.Base },
+        { "Primary", ThemeConstants.SvgIcon.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.SvgIcon.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.SvgIcon.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.SvgIcon.ThemeColor.Info },
+        { "Success", ThemeConstants.SvgIcon.ThemeColor.Success },
+        { "Warning", ThemeConstants.SvgIcon.ThemeColor.Warning },
+        { "Error", ThemeConstants.SvgIcon.ThemeColor.Error },
+        { "Dark", ThemeConstants.SvgIcon.ThemeColor.Dark },
+        { "Light", ThemeConstants.SvgIcon.ThemeColor.Light },
+        { "Inverse", ThemeConstants.SvgIcon.ThemeColor.Inverse }
+    };
+
+    private void OnIconChanged(string newIconName)
+    {
+        SelectedIconName = newIconName ?? nameof(SvgIcon.Play);
+        Icon = (ISvgIcon)typeof(SvgIcon).GetProperty(SelectedIconName)?.GetValue(null);
+    }
+}

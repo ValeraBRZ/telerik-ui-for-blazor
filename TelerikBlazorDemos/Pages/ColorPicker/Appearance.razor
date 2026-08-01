@@ -1,0 +1,57 @@
+@page "/colorpicker/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Adaptive Mode">
+        <TelerikSwitch @bind-Value="@IsAdaptive"></TelerikSwitch>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikColorPicker @bind-Value="@Value"
+                        Title="Choose a color"
+                        AdaptiveMode="@AdaptiveMode"
+                        FillMode="@FillMode"
+                        Rounded="@Rounded"
+                        Size="@Size">
+    </TelerikColorPicker>
+</div>
+
+@code {
+    private string Value { get; set; } = "#282f89";
+    private string FillMode { get; set; } = ThemeConstants.ColorPicker.FillMode.Solid;
+    private string Rounded { get; set; } = ThemeConstants.ColorPicker.Rounded.Medium;
+    private string Size { get; set; } = ThemeConstants.ColorPicker.Size.Medium;
+    private bool IsAdaptive { get; set; } = true;
+    private AdaptiveMode AdaptiveMode => IsAdaptive ? AdaptiveMode.Auto : AdaptiveMode.None;
+
+    public Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.ColorPicker.Rounded.Small },
+        { "Medium", ThemeConstants.ColorPicker.Rounded.Medium },
+        { "Large", ThemeConstants.ColorPicker.Rounded.Large },
+        { "Full", ThemeConstants.ColorPicker.Rounded.Full }
+    };
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.ColorPicker.FillMode.Solid },
+        { "Flat", ThemeConstants.ColorPicker.FillMode.Flat },
+        { "Outline", ThemeConstants.ColorPicker.FillMode.Outline }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.ColorPicker.Size.Small },
+        { "Medium", ThemeConstants.ColorPicker.Size.Medium },
+        { "Large", ThemeConstants.ColorPicker.Size.Large }
+    };
+}

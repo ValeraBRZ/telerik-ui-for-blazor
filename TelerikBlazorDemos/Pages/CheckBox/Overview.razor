@@ -1,0 +1,110 @@
+@page "/checkbox/overview"
+
+@using System.Linq
+
+<div class="box-content" style="margin: auto;">
+    <h4 class="mt-0">Choose Hike Equipment</h4>
+    <div class="mt-sm">
+        <TelerikCheckBox Id="selectAllCheckbox"
+                        Value="@SelectAllValue"
+                        ValueChanged="@((bool value) => ValueChanged(value))"
+                        Indeterminate="@SelectAllIndeterminate">
+        </TelerikCheckBox>
+        <label for="selectAllCheckbox">Select all available equipment</label>
+    </div>
+    <hr />
+    <div class="mt-md">
+        @foreach (var equipment in EquipmentList)
+        {
+            <div class="mt-sm">
+                <TelerikCheckBox @bind-Value="@equipment.Purchased"
+                                Enabled="@(!equipment.OutOfStock)"
+                                    Id="@GetCbId(equipment)">
+                </TelerikCheckBox>
+                <label class="@(equipment.OutOfStock ? "k-disabled" : string.Empty)"
+                        for="@GetCbId(equipment)">
+                    @equipment.Summary
+                </label>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    public List<Equipment> EquipmentList { get; set; }
+
+    public bool SelectAllValue
+    {
+        get
+        {
+            return EquipmentList.All(eq => eq.Purchased || eq.OutOfStock);
+        }
+    }
+
+    public bool SelectAllIndeterminate
+    {
+        get
+        {
+            return EquipmentList.Any(eq => eq.Purchased && !eq.OutOfStock) && !SelectAllValue;
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        EquipmentList = new List<Equipment>()
+        {
+            new Equipment("Day pack", true),
+            new Equipment("Hiking poles"),
+            new Equipment("Hiking boots"),
+            new Equipment("UV protection sunglass"),
+            new Equipment("Trousers", false, true)
+        };
+        return base.OnInitializedAsync();
+    }
+
+    private void ValueChanged(bool value)
+    {
+        EquipmentList.ForEach(eq => {
+            if (!eq.OutOfStock)
+            {
+                eq.Purchased = value;
+            }
+        });
+    }
+
+    string GetCbId(Equipment equipment)
+    {
+        return equipment.Summary.Replace(" ", "_");
+    }
+
+    public class Equipment
+    {
+        public bool Purchased { get; set; }
+        public bool OutOfStock { get; set; }
+        public string Summary { get; set; }
+
+        public Equipment(string summary)
+        {
+            Summary = summary;
+        }
+
+        public Equipment(string summary, bool purchased)
+        {
+            Summary = summary;
+            Purchased = purchased;
+        }
+
+        public Equipment(string summary, bool purchased, bool outOfStock)
+            : this(summary, purchased)
+        {
+            OutOfStock = outOfStock;
+        }
+    }
+}
+
+<style>
+    hr {
+        border-color: #e8ecef;
+    }
+</style>

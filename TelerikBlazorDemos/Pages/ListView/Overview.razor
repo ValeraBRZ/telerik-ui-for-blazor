@@ -1,0 +1,97 @@
+@page "/listview/overview"
+
+@inject ArticleService ArticleService
+
+<TelerikListView Data=@ListViewData
+                 Pageable="true"
+                 PageSize="5">
+    <HeaderTemplate>
+        Trending articles this week
+    </HeaderTemplate>
+    <Template>
+        <div class="k-card k-card-horizontal">
+            <div class="k-vbox k-flex-grow">
+                <div class="k-card-body">
+                    <h4 class="k-card-title">@context.Title</h4>
+                    <h5 class="k-card-subtitle">@context.Subtitle</h5>
+                    <div class="card-date">@context.Date.ToString("MMM dd yyyy")</div>
+                </div>
+                <div class="k-card-actions k-actions-horizontal k-actions-start">
+                    <ListViewCommandButton OnClick="@SaveForLater" Enabled="@(!SavedArticles.Contains(context))" FillMode="@(ThemeConstants.Button.FillMode.Flat)">Save for later</ListViewCommandButton>
+                    <ListViewCommandButton OnClick="@AddFavorite" Enabled="@(!Favorites.Contains(context))" FillMode="@(ThemeConstants.Button.FillMode.Flat)">Add to favorites</ListViewCommandButton>
+                </div>
+            </div>
+            <img class="k-card-image" src="images/articles/@context.ImageUrl" alt="@context.Subtitle" />
+        </div>
+    </Template>
+</TelerikListView>
+
+@code {
+    public IEnumerable<ArticleDto> ListViewData { get; set; }
+    public List<ArticleDto> Favorites { get; set; } = new List<ArticleDto>();
+    public List<ArticleDto> SavedArticles { get; set; } = new List<ArticleDto>();
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    // sample Read operation
+    private void LoadData()
+    {
+        ListViewData = ArticleService.GetArticles();
+    }
+
+    private void SaveForLater(ListViewCommandEventArgs args)
+    {
+        SavedArticles.Add((ArticleDto)args.Item);
+    }
+
+    private void AddFavorite(ListViewCommandEventArgs args)
+    {
+        Favorites.Add((ArticleDto)args.Item);
+    }
+}
+
+<style>
+    .k-listview-header {
+        padding: 20px 28px;
+        text-transform: uppercase;
+    }
+
+    .k-card {
+        padding: 20px;
+        border-width: 0 0 1px 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+        .k-card .k-card-body,
+        .k-card .k-card-actions {
+            padding: 0 8px;
+        }
+
+        .k-card .k-card-image {
+            max-width: unset;
+        }
+
+    .k-card-horizontal > .k-card-image:last-child {
+        border-radius: 0;
+    }
+
+    .k-card .k-card-title {
+        padding: 0;
+        font-size: 1.285em;
+        font-weight: bold;
+        line-height: normal;
+    }
+
+    .k-card-subtitle {
+        font-size: 1em;
+    }
+
+    .card-date {
+        font-size: 0.85em;
+        color: #bababa;
+    }
+</style>

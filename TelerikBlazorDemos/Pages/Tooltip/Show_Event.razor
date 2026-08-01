@@ -1,0 +1,22 @@
+@page "/tooltip/show-event"
+
+<TelerikTooltip TargetSelector="#hover-tooltip" ShowOn="@TooltipShowEvent.Hover">
+</TelerikTooltip>
+
+<TelerikTooltip TargetSelector="#click-tooltip" ShowOn="@TooltipShowEvent.Click">
+</TelerikTooltip>
+
+<div class="text-center mt-sm">
+    <span id="hover-tooltip" class="k-button button-wide" title="Shown on hover">Hover Me!</span>
+</div>
+
+<div class="text-center mt-sm">
+    <span id="click-tooltip" class="k-button k-button-solid-primary button-wide" title="Shown on click">Click Me!</span>
+</div>
+
+<style>
+    .button-wide {
+        padding: 1em;
+        width: 200px;
+    }
+</style>

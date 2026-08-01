@@ -1,0 +1,14 @@
+@page "/numerictextbox/keyboard-navigation"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="numeric" class="k-label k-form-label">Focus the textbox and press the Up or Down arrows</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Decimals="4" Step="0.5m" @bind-Value=@TheValue Id="numeric" />
+        </div>
+    </div>
+</div>
+
+@code{
+    private decimal TheValue = 4.5678m;
+}

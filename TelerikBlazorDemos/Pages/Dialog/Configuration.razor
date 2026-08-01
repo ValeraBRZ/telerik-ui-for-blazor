@@ -1,0 +1,96 @@
+@page "/dialog/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Visibility">
+        <TelerikButton OnClick="@(() => Visible = true)">Show Dialog</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Close Button">
+        <TelerikCheckBox Id="show-close-button" @bind-Value="@ShowCloseButton"></TelerikCheckBox>
+        <label for="show-close-button">Show Close Button</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Overlay">
+        <TelerikCheckBox Id="close-on-overlay-click" @bind-Value="@CloseOnOverlayClick"></TelerikCheckBox>
+        <label for="close-on-overlay-click">Close On Modal Overlay Click</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Button Layout">
+        <TelerikDropDownList @bind-Value="@DlgActionsLayout"
+                             Data="@ActionsLayouts">
+            <DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikDialog @bind-Visible="@Visible"
+               Width="600px"
+               ShowCloseButton="@ShowCloseButton"
+               CloseOnOverlayClick="@CloseOnOverlayClick"
+               ButtonsLayout="@DlgActionsLayout"
+               ThemeColor="@SelectedThemeColor">
+    <DialogTitle>
+        <TelerikSvgIcon Icon="@SvgIcon.Gears"></TelerikSvgIcon> <span style="margin-left:.5em">Blazor Dialog</span>
+    </DialogTitle>
+    <DialogContent>
+        <p>Select ThemeColor:</p>
+        <TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+            @foreach (var color in WindowThemeColors)
+            {
+                <ButtonGroupToggleButton Selected="@( SelectedThemeColor == color )"
+                                         SelectedChanged="@( (bool newSelected) => OnThemeColorSelect(newSelected, color) )">
+                    @GetThemeColorName(color)
+                </ButtonGroupToggleButton>
+            }
+        </TelerikButtonGroup>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@CloseDialog" Icon="@SvgIcon.Cancel">Cancel</TelerikButton>
+        <TelerikButton OnClick="@CloseDialog" Icon="@SvgIcon.QuestionCircle">Change Other Settings</TelerikButton>
+        <TelerikButton OnClick="@CloseDialog" Icon="@SvgIcon.CheckOutline" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Done</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>
+
+@code {
+    private bool ShowCloseButton { get; set; } = true;
+    private bool CloseOnOverlayClick { get; set; } = true;
+    private bool Visible { get; set; } = true;
+    private string SelectedThemeColor { get; set; } = ThemeConstants.Window.ThemeColor.Primary;
+
+    private DialogButtonsLayout DlgActionsLayout { get; set; } = DialogButtonsLayout.End;
+
+    private List<DialogButtonsLayout> ActionsLayouts { get; set; } = new List<DialogButtonsLayout>()
+    {
+        DialogButtonsLayout.Start,
+        DialogButtonsLayout.Center,
+        DialogButtonsLayout.End,
+        DialogButtonsLayout.Stretch
+    };
+
+    private void CloseDialog()
+    {
+        Visible = false;
+    }
+
+    private void OnThemeColorSelect(bool newSelected, string newThemeColor)
+    {
+        if (newSelected)
+        {
+            SelectedThemeColor = newThemeColor;
+        }
+    }
+
+    private string GetThemeColorName(string themeColor)
+    {
+        if (!string.IsNullOrEmpty(themeColor))
+        {
+            return themeColor;
+        }
+
+        return "none (default)";
+    }
+
+    List<string> WindowThemeColors = new List<string>() {
+        string.Empty,
+        ThemeConstants.Window.ThemeColor.Primary,
+        ThemeConstants.Window.ThemeColor.Dark,
+        ThemeConstants.Window.ThemeColor.Light
+    };
+}

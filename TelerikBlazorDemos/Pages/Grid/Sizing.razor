@@ -1,0 +1,149 @@
+@page "/grid/sizing"
+
+@inject StockService StockService
+
+<div class="demo-grid-container">
+    <div class="demo-dense-grid">
+        <TelerikGrid Data=@GridData
+                     Size="@ThemeConstants.Grid.Size.Small"
+                     PageSize="12"
+                     Pageable="true"
+                     Resizable="true"
+                     Height="437px">
+            <GridToolBarTemplate>
+                <span>High Density Size Grid</span>
+                <span class="k-toolbar-spacer"></span>
+                <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel" Size="@ThemeConstants.Button.Size.Small">Export to Excel</GridCommandButton>
+            </GridToolBarTemplate>
+            <GridExport>
+                <GridExcelExport FileName="telerik-grid-export" AllPages="true" />
+            </GridExport>
+            <GridColumns>
+                <GridColumn Field=@nameof(StockDto.Symbol) Title="Name" Width="59px" />
+                <GridColumn Field=@nameof(StockDto.Date) Title="Date" DisplayFormat="{0:dd MMM}" Width="64px" />
+                <GridColumn Title="Chng" Width="60px">
+                    <Template>
+                        @{
+                            var change = GetChange((StockDto)context);
+                        }
+                        <span class="@(change < 0 ? "red" : "blue")">
+                            @change.ToString("0.00")
+                        </span>
+                    </Template>
+                </GridColumn>
+                <GridColumn Title="%Chng" Width="70px">
+                    <Template>
+                        @{
+                            var changePercentage = GetChangePercentage((StockDto)context);
+                        }
+                        <span class="@(changePercentage < 0 ? "red" : string.Empty)">
+                            @changePercentage.ToString("P2")
+                        </span>
+                    </Template>
+                </GridColumn>
+                <GridColumn Field=@nameof(StockDto.Close) DisplayFormat="{0:C2}" Width="66px" />
+                <GridColumn Field=@nameof(StockDto.Open) DisplayFormat="{0:C2}" Width="66px" />
+                <GridColumn Field=@nameof(StockDto.Low) Title="DLow" DisplayFormat="{0:C2}" Width="66px" />
+                <GridColumn Field=@nameof(StockDto.High) Title="DHigh" DisplayFormat="{0:C2}" Width="66px" />
+                <GridColumn Field=@nameof(StockDto.Volume) Title="Volume" Width="80px" />
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+    <div class="demo-default-grid">
+        <TelerikGrid Data=@GridData
+                     Size="@ThemeConstants.Grid.Size.Medium"
+                     PageSize="12"
+                     Pageable="true"
+                     Resizable="true"
+                     Height="437px">
+            <GridToolBarTemplate>
+                <span>Default Size Grid</span>
+                <span class="k-toolbar-spacer"></span>
+                <GridCommandButton Command="ExcelExport" Icon="@SvgIcon.FileExcel" Size="@ThemeConstants.Button.Size.Medium">Export to Excel</GridCommandButton>
+            </GridToolBarTemplate>
+            <GridExport>
+                <GridExcelExport FileName="telerik-grid-export" AllPages="true" />
+            </GridExport>
+            <GridColumns>
+                <GridColumn Field=@nameof(StockDto.Symbol) Title="Name" Width="87px" />
+                <GridColumn Field=@nameof(StockDto.Date) Title="Date" DisplayFormat="{0:dd MMM}" Width="95px" />
+                <GridColumn Title="Chng" Width="87px">
+                    <Template>
+                        @{
+                            var change = GetChange((StockDto)context);
+                        }
+                        <span class="@(change < 0 ? "red" : "blue")">
+                            @change.ToString("0.00")
+                        </span>
+                    </Template>
+                </GridColumn>
+                <GridColumn Title="%Chng" Width="100px">
+                    <Template>
+                        @{
+                            var changePercentage = GetChangePercentage((StockDto)context);
+                        }
+                        <span class="@(changePercentage < 0 ? "red" : string.Empty)">
+                            @changePercentage.ToString("P2")
+                        </span>
+                    </Template>
+                </GridColumn>
+                <GridColumn Field=@nameof(StockDto.Close) DisplayFormat="{0:C2}" Width="93px" />
+                <GridColumn Field=@nameof(StockDto.Open) DisplayFormat="{0:C2}" Width="93px" />
+                <GridColumn Field=@nameof(StockDto.Low) Title="DLow" DisplayFormat="{0:C2}" Width="93px" />
+                <GridColumn Field=@nameof(StockDto.High) Title="DHigh" DisplayFormat="{0:C2}" Width="93px" />
+                <GridColumn Field=@nameof(StockDto.Volume) Title="Volume" Width="107px" />
+            </GridColumns>
+        </TelerikGrid>
+    </div>
+</div>
+
+<TelerikMediaQuery Media="(max-width: 960px)" OnChange="@(matchesQuery => OnMediaQueryChange(matchesQuery, screenIsSmall: true))" />
+<TelerikMediaQuery Media="(min-width: 961px)" OnChange="@(matchesQuery => OnMediaQueryChange(matchesQuery, screenIsSmall: false))" />
+
+@code {
+    private void OnMediaQueryChange(bool matchesQuery, bool screenIsSmall)
+    {
+        if (matchesQuery && ScreenIsSmall != screenIsSmall)
+        {
+            ScreenIsSmall = screenIsSmall;
+        }
+    }
+
+    public List<StockDto> GridData { get; set; }
+    public bool ScreenIsSmall { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = StockService.GetStocks().Take(100).ToList();
+    }
+
+    public decimal GetChange(StockDto stock) => stock.Close - stock.Open;
+    public decimal GetChangePercentage(StockDto stock) => (GetChange(stock) / stock.Open);
+}
+
+<style>
+    .red {
+        color: red;
+    }
+
+    .blue {
+        color: blue;
+    }
+
+    .demo-grid-container {
+        display: flex;
+        flex-direction: @(ScreenIsSmall ? "column" : "row");
+        flex-wrap: nowrap;
+        gap: 1.5em;
+    }
+
+    .demo-dense-grid,
+    .demo-default-grid {
+        display: contents;
+    }
+
+    .demo-dense-grid .k-grid,
+    .demo-default-grid .k-grid {
+        width: @(ScreenIsSmall ? "100%" : "49%");
+    }
+</style>

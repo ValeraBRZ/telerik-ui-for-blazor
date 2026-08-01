@@ -1,0 +1,129 @@
+@page "/notification/position"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Select Horizontal Position">
+        <TelerikDropDownList @bind-Value="@HorizontalPosition"
+                             Data="@HorizontalPositions"
+                             Width=""
+                             ValueField="Position">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Select Vertical Position">
+        <TelerikDropDownList @bind-Value="@VerticalPosition"
+                             Data="@VerticalPositions"
+                             Width=""
+                             ValueField="Position">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="notification-parent">
+    <TelerikButton Icon="@SvgIcon.Bell"
+                   Enabled="@NotificationButtonEnabled"
+                   OnClick="@ShowUnreadNotifications">
+        Show unread notifications
+        <span class="k-badge k-badge-md k-badge-solid k-badge-solid-primary k-rounded-md">2</span>
+    </TelerikButton>
+
+    <TelerikNotification @ref="@Notification"
+                         Class="demo-notification"
+                         VerticalPosition="@VerticalPosition"
+                         HorizontalPosition="@HorizontalPosition">
+    </TelerikNotification>
+</div>
+
+@code {
+    public TelerikNotification Notification { get; set; }
+
+    public NotificationHorizontalPosition HorizontalPosition { get; set; } = NotificationHorizontalPosition.Right;
+    public NotificationVerticalPosition VerticalPosition { get; set; } = NotificationVerticalPosition.Bottom;
+
+    public List<HorizontalPositionItem> HorizontalPositions { get; set; } = new List<HorizontalPositionItem>();
+    public List<VerticalPositionItem> VerticalPositions { get; set; } = new List<VerticalPositionItem>();
+
+    public bool NotificationButtonEnabled { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        foreach (NotificationHorizontalPosition item in Enum.GetValues(typeof(NotificationHorizontalPosition)))
+        {
+            HorizontalPositions.Add(new HorizontalPositionItem { Text = item.ToString(), Position = item });
+        }
+
+        foreach (NotificationVerticalPosition item in Enum.GetValues(typeof(NotificationVerticalPosition)))
+        {
+            VerticalPositions.Add(new VerticalPositionItem { Text = item.ToString(), Position = item });
+        }
+
+        base.OnInitialized();
+    }
+
+    public async Task ShowUnreadNotifications()
+    {
+        var closeDelay = 3000;
+
+        NotificationButtonEnabled = false;
+
+        Notification.Show(new NotificationModel()
+        {
+            Text = "Checkout! What's new in Telerik UI for Blazor.",
+            ThemeColor = ThemeConstants.Notification.ThemeColor.Info,
+            CloseAfter = closeDelay
+        });
+
+        Notification.Show(new NotificationModel()
+        {
+            Text = "Trial version of Telerik UI for Blazor expires tomorrow.",
+            ThemeColor = ThemeConstants.Notification.ThemeColor.Warning,
+            CloseAfter = closeDelay
+        });
+
+        await Task.Delay(closeDelay);
+
+        NotificationButtonEnabled = true;
+    }
+
+    public class HorizontalPositionItem
+    {
+        public NotificationHorizontalPosition Position { get; set; }
+        public string Text { get; set; }
+    }
+
+    public class VerticalPositionItem
+    {
+        public NotificationVerticalPosition Position { get; set; }
+        public string Text { get; set; }
+    }
+}
+<style>
+    .demo-notification {
+        position: absolute;
+    }
+
+        .demo-notification .k-notification {
+            width: 420px;
+        }
+
+    #demo-runner {
+        height: 400px;
+    }
+
+    .notification-parent {
+        position: relative;
+        height: 250px;
+    }
+
+    .k-badge {
+        margin-left: 5px;
+    }
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+</style>

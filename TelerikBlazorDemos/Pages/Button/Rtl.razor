@@ -1,0 +1,32 @@
+@page "/button/rtl"
+
+<div class="demo-section auto">
+    <h4>Basic Button</h4>
+
+    <TelerikButton>Click me!</TelerikButton>
+
+    <h4>Buttons with icons</h4>
+    <TelerikButton Icon="@SvgIcon.Filter">Icon</TelerikButton>
+    <TelerikButton>
+        <span class="netherlands-flag"></span>Image
+    </TelerikButton>
+    <TelerikButton Class="snowboarding">
+        <img src="https://demos.telerik.com/kendo-ui/content/shared/icons/sports/snowboarding.png" />Image
+    </TelerikButton>
+</div>
+<style>
+    .netherlands-flag {
+        background-image: url("https://demos.telerik.com/kendo-ui/content/shared/styles/flags.png");
+        background-position: 0 -64px;
+        vertical-align: middle;
+        height: 16px;
+        width: 16px;
+        display: inline-block;
+    }
+
+    .snowboarding img {
+        width: 16px;
+        height: 16px;
+        vertical-align: text-bottom;
+    }
+</style>

@@ -1,0 +1,30 @@
+@page "/marketing-campaigns/product-page/pdfviewer"
+
+@layout MainLayout
+
+@using System.IO
+@using Telerik.Blazor.Components
+@using TelerikBlazorDemos.Constants
+
+<div class="kd-marketing-campaign-page">
+    <TelerikPdfViewer @ref="@PdfViewerRef"
+                      Width="100%"
+                      Height="800px"
+                      Zoom="1m"
+                      Data="@FileData">
+    </TelerikPdfViewer>
+</div>
+
+@code {
+    public TelerikPdfViewer PdfViewerRef { get; set; }
+    public byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fileBytes = Convert.FromBase64String(PdfViewerConstants.SampleFileBase64);
+
+        FileData = fileBytes;
+
+        await base.OnInitializedAsync();
+    }
+}

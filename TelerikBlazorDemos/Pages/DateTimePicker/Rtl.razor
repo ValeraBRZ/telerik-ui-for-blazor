@@ -1,0 +1,9 @@
+@page "/datetimepicker/rtl"
+
+<div class="demo-section auto">
+    <TelerikDateTimePicker @bind-Value="@Value"/>
+</div>
+
+@code {
+    public DateTime Value { get; set; } = DateTime.Now;
+}

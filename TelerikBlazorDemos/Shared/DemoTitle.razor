@@ -1,0 +1,45 @@
+<h1 class="kd-title">
+    @Title
+</h1>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    private static readonly Dictionary<string, string> TitleMap = new Dictionary<string, string>
+    {
+        { "grid/overview", "Blazor DataGrid - Overview" },
+        { "scheduler/overview", "Blazor Scheduler (Event Calendar) - Overview" },
+        { "chart/overview", "Blazor Charts and Graphs - Overview"}
+    };
+
+    public string Title
+    {
+        get
+        {
+            if (TitleMap.ContainsKey(Demo.Path))
+            {
+                return TitleMap[Demo.Path];
+            }
+
+            var title = string.Empty;
+
+            if (string.IsNullOrEmpty(Demo.SubComponent))
+            {
+                title = $"{Demo.Component} - {Demo.Text}";
+            }
+            else
+            {
+                title = $"{Demo.SubComponent} - {Demo.Text}";
+            }
+
+            //prepend blazor keyword for overview demos to enhance seo
+            if (Demo.Path != null && Demo.Path.ToLower().Contains("overview"))
+            {
+                title = "Blazor " + title;
+            }
+
+            return title;
+        }
+    }
+}

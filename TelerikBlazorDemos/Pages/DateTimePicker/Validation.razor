@@ -1,0 +1,82 @@
+@page "/datetimepicker/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@validationModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="validate-date" class="k-label k-form-label">Validate Date</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikDateTimePicker ValidateOn="@ValidationEvent" Format="G" @bind-Value="@validationModel.StartTime" Id="validate-date"></TelerikDateTimePicker>
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.StartTime)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    string SuccessMessage = string.Empty;
+    TimePickerValidationModel validationModel { get; set; }
+        
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    class TimePickerValidationModel
+    {
+        [Required(ErrorMessage = "Enter a time")]
+        [Range(typeof(DateTime), "10/10/2019 10:00:00", "10/15/2019 17:00:00", ParseLimitsInInvariantCulture = true, ErrorMessage = "Date should be between 10 Oct 2019 10AM and 15 Oct 2019 5PM")]
+        public DateTime StartTime { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        validationModel = new TimePickerValidationModel()
+        {
+            StartTime = new DateTime(2025, 10, 9, 12, 0, 0)
+        };
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

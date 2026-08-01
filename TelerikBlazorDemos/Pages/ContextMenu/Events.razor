@@ -1,0 +1,62 @@
+﻿@page "/contextmenu/events"
+
+<TelerikContextMenu Selector=".target" Data="@MenuItems" OnClick="@((MenuItem item) => OnItemClick(item))"></TelerikContextMenu>
+
+<div class="target">
+    <p class="placeholder">Right-click to open Context menu</p>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+    public string EventLog { get; set; } = string.Empty;
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnItemClick(MenuItem item)
+    {
+        var log = $"<div><strong>Click Item event</strong> {item.Text} item clicked.</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem(){ Text = "Item 1" },
+            new MenuItem(){ Text = "Item 2" },
+            new MenuItem(){ Text = "Item 3" }
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    .target {
+        border-radius: 5px;
+        height: 150px;
+        width: 400px;
+        background-color: #f6f6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .placeholder {
+        font-size: 16px;
+        color: #656565;
+        margin: 0;
+    }
+</style>

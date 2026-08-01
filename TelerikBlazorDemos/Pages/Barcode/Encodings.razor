@@ -1,0 +1,107 @@
+@page "/barcode/encodings"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Encoding">
+        <TelerikDropDownList Id="barcode-encoding"
+                             Data="@EncodingsData"
+                             Width="180px"
+                             TextField="@(nameof(Encoding.Text))"
+                             ValueField="@(nameof(Encoding.Type))"
+                             Value="@SelectedEncoding"
+                             ValueChanged="@((BarcodeType encoding) => OnEncodingChanged(encoding))">
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Show Text">
+        <TelerikCheckBox Id="barcode-text" @bind-Value="@ShowText"> </TelerikCheckBox>
+        <label for="barcode-text" class="k-checkbox-label checkbox-label">Show Text</label>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Show Checksum">
+        <TelerikCheckBox Id="barcode-checksum" @bind-Value="@ShowChecksum"></TelerikCheckBox>
+        <label for="barcode-checksum" class="k-checkbox-label checkbox-label">Show Checksum</label>
+        (when applicable)
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikBarcode Width="@Width"
+                Height="@Height"
+                Checksum="@ShowChecksum"
+                Type="@SelectedEncoding"
+                Value="@SelectedText">
+    <BarcodeText Visible="@ShowText"></BarcodeText>
+</TelerikBarcode>
+
+@code {
+    public const string Width = "300px";
+    public const string Height = "200px";
+
+    public BarcodeType SelectedEncoding { get; set; } = BarcodeType.Code39;
+    public string SelectedText { get; set; } = "HELLO";
+    public bool ShowChecksum { get; set; } = true;
+    public bool ShowText { get; set; } = true;
+
+    public List<Encoding> EncodingsData { get; set; } = new List<Encoding>()
+    {
+        new Encoding() { Type = BarcodeType.Code11, Text = nameof(BarcodeType.Code11) },
+        new Encoding() { Type = BarcodeType.Code39, Text = nameof(BarcodeType.Code39) },
+        new Encoding() { Type = BarcodeType.Code39Extended, Text = nameof(BarcodeType.Code39Extended) },
+        new Encoding() { Type = BarcodeType.Code93, Text = nameof(BarcodeType.Code93) },
+        new Encoding() { Type = BarcodeType.Code93Extended, Text = nameof(BarcodeType.Code93Extended) },
+        new Encoding() { Type = BarcodeType.Code128, Text = nameof(BarcodeType.Code128) },
+        new Encoding() { Type = BarcodeType.Code128A, Text = nameof(BarcodeType.Code128A) },
+        new Encoding() { Type = BarcodeType.Code128B, Text = nameof(BarcodeType.Code128B) },
+        new Encoding() { Type = BarcodeType.Code128C, Text = nameof(BarcodeType.Code128C) },
+        new Encoding() { Type = BarcodeType.GS1128, Text = nameof(BarcodeType.GS1128) },
+        new Encoding() { Type = BarcodeType.EAN8, Text = nameof(BarcodeType.EAN8) },
+        new Encoding() { Type = BarcodeType.EAN13, Text = nameof(BarcodeType.EAN13) },
+        new Encoding() { Type = BarcodeType.UPCE, Text = nameof(BarcodeType.UPCE) },
+        new Encoding() { Type = BarcodeType.UPCA, Text = nameof(BarcodeType.UPCA) },
+        new Encoding() { Type = BarcodeType.MSImod10, Text = nameof(BarcodeType.MSImod10) },
+        new Encoding() { Type = BarcodeType.MSImod11, Text = nameof(BarcodeType.MSImod11) },
+        new Encoding() { Type = BarcodeType.MSImod1010, Text = nameof(BarcodeType.MSImod1010) },
+        new Encoding() { Type = BarcodeType.MSImod1110, Text = nameof(BarcodeType.MSImod1110) },
+        new Encoding() { Type = BarcodeType.POSTNET, Text = nameof(BarcodeType.POSTNET) },
+    };
+
+    public class Encoding
+    {
+        public string Text { get; set; }
+        public BarcodeType Type { get; set; }
+    }
+
+    public string GetTextForEncoding(BarcodeType encoding)
+    {
+        var data = new Dictionary<BarcodeType, string>()
+        {
+            { BarcodeType.Code11, "1234567" },
+            { BarcodeType.Code39, "HELLO" },
+            { BarcodeType.Code39Extended, "Hi!" },
+            { BarcodeType.Code93, "HELLO" },
+            { BarcodeType.Code93Extended, "Hello" },
+            { BarcodeType.Code128, "Hello World!" },
+            { BarcodeType.Code128A, "HELLO" },
+            { BarcodeType.Code128B, "Hello" },
+            { BarcodeType.Code128C, "123456" },
+            { BarcodeType.GS1128, "12123456" },
+            { BarcodeType.EAN8, "1234567" },
+            { BarcodeType.EAN13, "123456789987" },
+            { BarcodeType.UPCE, "123456" },
+            { BarcodeType.UPCA, "12345678998" },
+            { BarcodeType.MSImod10, "1234567" },
+            { BarcodeType.MSImod11, "1234567" },
+            { BarcodeType.MSImod1010, "1234567" },
+            { BarcodeType.MSImod1110, "1234567" },
+            { BarcodeType.POSTNET, "12345" }
+        };
+
+        return data[encoding];
+    }
+
+    public void OnEncodingChanged(BarcodeType selectedEncoding)
+    {
+        var text = GetTextForEncoding(selectedEncoding);
+        SelectedEncoding = selectedEncoding;
+        SelectedText = text;
+    }
+}

@@ -1,0 +1,33 @@
+@page "/scheduler/month-view"
+
+@inject AppointmentService appointmentService
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" @bind-View="@SelectedView" Height="600px">
+    <SchedulerViews>
+        <SchedulerMonthView ItemsPerSlot="@ItemsPerSlot"></SchedulerMonthView>
+        <SchedulerDayView StartTime="@StartTime"></SchedulerDayView>
+    </SchedulerViews>
+</TelerikScheduler>
+
+@code {
+    private IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+
+    private DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+
+    private DateTime StartTime { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    private SchedulerView SelectedView { get; set; } = SchedulerView.Month;
+
+    private int ItemsPerSlot = 5;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+}
+

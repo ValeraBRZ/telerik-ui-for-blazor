@@ -1,0 +1,68 @@
+@page "/multicolumncombobox/appearance"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikMultiColumnComboBox @bind-Value="@Value"
+                                Data="@Data"
+                                Placeholder="Select a product"
+                                ValueField="ProductId"
+                                TextField="ProductName"
+                                Size="@Size"
+                                Rounded="@Rounded"
+                                FillMode="@FillMode">
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductId)" Title="Id" Width="80px" />
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductName)" Title="Name" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.UnitsInStock)" Title="In Stock" Width="150px" />
+        </MultiColumnComboBoxColumns>
+    </TelerikMultiColumnComboBox>
+</div>
+
+@code {
+    private string FillMode { get; set; } = ThemeConstants.DropDownList.FillMode.Solid;
+    private string Rounded { get; set; } = ThemeConstants.DropDownList.Rounded.Medium;
+    private string Size { get; set; } = ThemeConstants.DropDownList.Size.Medium;
+
+    private Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.DropDownList.FillMode.Solid },
+        { "Flat", ThemeConstants.DropDownList.FillMode.Flat },
+        { "Outline", ThemeConstants.DropDownList.FillMode.Outline }
+    };
+
+    private Dictionary<string, string> Roundesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownList.Rounded.Small },
+        { "Medium", ThemeConstants.DropDownList.Rounded.Medium },
+        { "Large", ThemeConstants.DropDownList.Rounded.Large }
+    };
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownList.Size.Small },
+        { "Medium", ThemeConstants.DropDownList.Size.Medium },
+        { "Large", ThemeConstants.DropDownList.Size.Large }
+    };
+
+    private List<ProductDto> Data { get; set; }
+    
+    private int Value { get; set; } = 1;
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts().ToList();
+    }
+}

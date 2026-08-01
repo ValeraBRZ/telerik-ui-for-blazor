@@ -1,0 +1,26 @@
+@using TelerikBlazorDemos.Models
+
+<div class="card-article k-d-flex">
+    <div class="card-article-description k-d-flex-col">
+        <div class="author k-text-inverse">@Article.Author</div>
+        <div class="title k-text-inverse">@Article.Title</div>
+        <div class="subtitle k-text-inverse">@Article.SubTitle</div>
+        <div class="date k-d-flex">
+            <div class="k-text-inverse">@Article.FormattedDate</div>
+            <div class="separator">|</div>
+            <div class="k-text-inverse">@Article.MinsLength min read</div>
+        </div>
+    </div>
+    <div>
+        <img class="card-article-image" src="@Article.ImageUrl" alt="@Article.Title" />
+        @if (!string.IsNullOrEmpty(Article.ImageRight))
+        {
+            <div class="photo-text">@Article.ImageRight</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public GridLayoutArticle Article { get; set; }
+}

@@ -1,0 +1,111 @@
+@page "/spreadsheet/tools"
+
+@using System.IO
+@using Telerik.Blazor.Components.Spreadsheet
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml.Xlsx
+@using Telerik.Windows.Documents.Spreadsheet.Model
+@using TelerikBlazorDemos.Constants
+
+<TelerikSpreadsheet @ref="@SpreadsheetRef"
+                    Data="@FileData"
+                    Tools="@CustomTools">
+</TelerikSpreadsheet>
+
+<style>
+    .tool-container {
+        display: inline-flex;
+        align-items: center;
+    }
+</style>
+
+@code {
+    private TelerikSpreadsheet SpreadsheetRef { get; set; }
+
+    private byte[] FileData { get; set; }
+
+    private SpreadsheetToolSet CustomTools { get; set; } = new SpreadsheetToolSet();
+
+    private bool FreezePanesSelected { get; set; }
+
+    private bool LoaderVisible { get; set; }
+
+    private void LoadExcelFile(string source)
+    {
+        FileData = Convert.FromBase64String(source);
+    }
+
+    private RenderFragment FreezeTool =>
+        @<span class="tool-container">
+            <TelerikToggleButton Selected="@FreezePanesSelected"
+                                 SelectedChanged="@FreezePanesSelectedChanged"
+                                 Icon="@SvgIcon.PaneFreeze"
+                                 FillMode="@ThemeConstants.Button.FillMode.Flat">
+                Freeze Panes
+            </TelerikToggleButton>
+            <TelerikLoader Visible="@LoaderVisible" />
+        </span>;
+
+    private async Task FreezePanesSelectedChanged(bool newSelected)
+    {
+        FreezePanesSelected = newSelected;
+
+        LoaderVisible = true;
+        await Task.Delay(1);
+
+        var excelFileContent = await SpreadsheetRef.ExportToExcelAsync();
+
+        XlsxFormatProvider formatProvider = new XlsxFormatProvider();
+
+        Workbook workbook = formatProvider.Import(excelFileContent, null);
+
+        // workbook.ActiveWorksheet will always be the first one until this feature is implemented:
+        // https://feedback.telerik.com/blazor/1679392
+        if (FreezePanesSelected)
+        {
+            workbook.ActiveWorksheet.ViewState.FreezePanes(frozenRowsCount: 2, frozenColumnsCount: 1);
+        }
+        else
+        {
+            workbook.ActiveWorksheet.ViewState.FreezePanes(0, 0);
+        }
+
+        byte[] newExcelFileContent;
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            formatProvider.Export(workbook, ms, null);
+            newExcelFileContent = ms.ToArray();
+        }
+
+        FileData = newExcelFileContent;
+        LoaderVisible = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CustomTools.Items = new List<SpreadsheetToolSetItem>()
+        {
+            new SpreadsheetToolSetItem()
+            {
+                Title = "Custom Spreadsheet Tool Set",
+                Tools = new List<SpreadsheetTool>()
+                {
+                    new SpreadsheetOpenFileTool(),
+                    new SpreadsheetDownloadFileTool(),
+                    new SpreadsheetToolSeparator(),
+                    new SpreadsheetBoldTool(),
+                    new SpreadsheetTextColorTool(),
+                    new SpreadsheetBackgroundColorTool(),
+                    new SpreadsheetFontSizeTool(),
+                    new SpreadsheetHorizontalAlignTool(),
+                    new SpreadsheetToolSeparator(),
+                    new SpreadsheetCustomTool() { Template = FreezeTool }
+                }
+            }
+        };
+
+        FileData = Convert.FromBase64String(SpreadsheetConstants.SampleFileBase64);
+
+        await base.OnInitializedAsync();
+    }
+}

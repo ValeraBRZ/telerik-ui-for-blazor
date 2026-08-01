@@ -1,0 +1,23 @@
+@page "/multiselect/rtl"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <TelerikMultiSelect @bind-Value="@Value"
+                        Data="@MultiSelectData"
+                        Placeholder="Select products"
+                        ValueField="ProductId"
+                        TextField="ProductName">
+    </TelerikMultiSelect>
+</div>
+
+@code {
+    private IEnumerable<ProductDto> MultiSelectData { get; set; }
+
+    private List<int> Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        MultiSelectData = ProductService.GetProducts();
+    }
+}

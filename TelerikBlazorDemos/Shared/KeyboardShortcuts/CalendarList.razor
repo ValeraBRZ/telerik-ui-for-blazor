@@ -1,0 +1,212 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+
+@if (!HideNotApplicableForPickers)
+{
+    <h3>Single and multiple selection mode</h3>
+}
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down Arrow</span>
+        </span>
+        <span class="button-descr">
+            Moves focus to down cell, or navigates the view if currently focused date is in the last row of the current view period.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up Arrow</span>
+        </span>
+        <span class="button-descr">
+            Moves focus to upper cell, or navigates the view if currently focused date is at the top row of the current view period.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Left Arrow</span>
+        </span>
+        <span class="button-descr">
+           Moves focus to previous cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Right Arrow</span>
+        </span>
+        <span class="button-descr">
+            Moves focus to next cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            Toggles the current date selection.
+        </span>
+        @if (!HideNotApplicableForPickers)
+        {
+            <span class="button-descr">If</span>
+            <span class="key-button">Shift</span>
+            <span class="button-descr">
+                is pressed and multiple selection is enabled, selects a range of dates. If
+            </span>
+            <span class="key-button">Ctrl</span>
+            <span class="button-descr">
+                is pressed and multiple selection is enabled, toggles the current date selection leaving the other selection intact.
+            </span>
+        }
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Up Arrow</span>
+        </span>
+        <span class="button-descr">
+            Navigates to the upper view (e.g., from current month days, to the year).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Down Arrow</span>
+        </span>
+        <span class="button-descr">
+            Navigates to the lower view (e.g., from the months in the year to the days of the month).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Right Arrow</span>
+        </span>
+        <span class="button-descr">
+            Navigates to the next period.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Left Arrow</span>
+        </span>
+        <span class="button-descr">
+            Navigates to the previous period.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            Moves focus between the different navigation elements - view selection, previous/next buttons, today button, and the grid with dates/months/years.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            Moves backwards through these focusable elements.
+        </span>
+    </li>
+        <li>
+        <span class="button-preview">
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            Focuses the first day of the month.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            Focuses the last day of the month.
+        </span>
+    </li>
+</ul>
+
+@if (!HideNotApplicableForPickers)
+{
+    <h3>Multiple Selection mode only</h3>
+    <ul class="keyboard-legend">
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Ctrl</span>
+                +
+                <span class="key-button">Enter</span>
+            </span>
+            <span class="button-descr">
+                Adds the highlighted day to the current selection. If that day was already selected it is removed from the selection.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Shift</span>
+                +
+                <span class="key-button">Left Arrow</span>
+            </span>
+            <span class="button-descr">
+                Adds the previous date to the selected items.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Shift</span>
+                +
+                <span class="key-button">Right Arrow</span>
+            </span>
+            <span class="button-descr">
+                Adds the next date to the selected items.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Shift</span>
+                +
+                <span class="key-button">Up Arrow</span>
+            </span>
+            <span class="button-descr">
+                Extends selection up one row in month view.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Shift</span>
+                +
+                <span class="key-button">Down Arrow</span>
+            </span>
+            <span class="button-descr">
+                Extends selection down one row in month view.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">Shift</span>
+                +
+                <span class="key-button">Space</span>
+            </span>
+            <span class="button-descr">
+                Performs range selection, selects all dates between the last selected one (with Enter or mouse click) and the one being currently focused.
+            </span>
+        </li>
+    </ul>
+}
+@code{
+    [Parameter]
+    public bool HideNotApplicableForPickers { get; set; }
+
+    [Parameter]
+    public bool IsNested { get; set; }
+}

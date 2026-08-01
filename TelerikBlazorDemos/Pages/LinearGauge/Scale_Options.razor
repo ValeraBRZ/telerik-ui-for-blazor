@@ -1,0 +1,103 @@
+@page "/lineargauge/scale-options"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Ticks">
+        <ul style="columns: 2">
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@MajorTicksVisible"></TelerikCheckBox>
+                    Show Major Ticks
+                </label>
+            </li>
+            <li>
+                <TelerikColorPalette @bind-Value="@TickColor"
+                                     Colors="@Colors"
+                                     Columns="4"></TelerikColorPalette>
+            </li>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@MinorTicksVisible"></TelerikCheckBox>
+                    Show Minor Ticks
+                </label>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Line">
+        <ul>
+            <li>
+                <TelerikNumericTextBox @bind-Value="@LineWidth"
+                                       Min="1"
+                                       Max="5"
+                                       Step="1"></TelerikNumericTextBox>
+            </li>
+            <li>
+                <TelerikColorPalette @bind-Value="@LineColor"
+                                     Colors="@Colors"
+                                     Columns="4"></TelerikColorPalette>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Labels">
+        <ul>
+            <li>
+                <label>
+                    <TelerikCheckBox @bind-Value="@LabelVisible"></TelerikCheckBox>
+                    Show Labels
+                </label>
+            </li>
+            <li>
+                <TelerikColorPalette @bind-Value="@LabelColor"
+                                     Colors="@Colors"
+                                     Columns="4"></TelerikColorPalette>
+            </li>
+        </ul>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Reverse">
+        <label>
+            <TelerikCheckBox @bind-Value="@Reversed"></TelerikCheckBox>
+            Reverse
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikLinearGauge>
+        <LinearGaugeScales>
+            <LinearGaugeScale Min="0" Max="50" Reverse="@Reversed">
+                <LinearGaugeScaleLine Color="@LineColor" Width="@LineWidth"></LinearGaugeScaleLine>
+                <LinearGaugeScaleMajorTicks Visible="@MajorTicksVisible" Color="@TickColor"></LinearGaugeScaleMajorTicks>
+                <LinearGaugeScaleMinorTicks Visible="@MinorTicksVisible" Color="@TickColor"></LinearGaugeScaleMinorTicks>
+                <LinearGaugeScaleLabels Color="@LabelColor" Visible="@LabelVisible"></LinearGaugeScaleLabels>
+            </LinearGaugeScale>
+        </LinearGaugeScales>
+        <LinearGaugePointers>
+            <LinearGaugePointer Value="20"></LinearGaugePointer>
+        </LinearGaugePointers>
+    </TelerikLinearGauge>
+</div>
+
+@code {
+    public bool Reversed { get; set; }
+
+    public bool MajorTicksVisible { get; set; } = true;
+    public bool MinorTicksVisible { get; set; } = true;
+    public string TickColor { get; set; }
+
+    public int LineWidth { get; set; } = 1;
+    public string LineColor { get; set; }
+
+    public bool LabelVisible { get; set; } = true;
+    public string LabelColor { get; set; }
+
+    public List<string> Colors { get; set; } = new List<string>()
+    {
+        "#FF6358",
+        "#FFE162",
+        "#4CD180",
+        "#707070",
+        "#017CFF",
+        "#8888E5",
+        "#FF8400",
+        "#BABABA"
+    };
+}

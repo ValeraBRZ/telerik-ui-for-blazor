@@ -1,0 +1,62 @@
+@page "/combobox/appearance"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikComboBox @bind-Value="@Value"
+                      Data="@DropDownListData"
+                      Placeholder="Select a product"
+                      ValueField="ProductId"
+                      TextField="ProductName"
+                      Size="@Size"
+                      Rounded="@Rounded"
+                      FillMode="@FillMode">
+    </TelerikComboBox>
+</div>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.DropDownList.FillMode.Solid;
+    public string Rounded { get; set; } = ThemeConstants.DropDownList.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.DropDownList.Size.Medium;
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.DropDownList.FillMode.Solid },
+        { "Flat", ThemeConstants.DropDownList.FillMode.Flat },
+        { "Outline", ThemeConstants.DropDownList.FillMode.Outline }
+    };
+
+    public Dictionary<string, string> Roundesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownList.Rounded.Small },
+        { "Medium", ThemeConstants.DropDownList.Rounded.Medium },
+        { "Large", ThemeConstants.DropDownList.Rounded.Large }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownList.Size.Small },
+        { "Medium", ThemeConstants.DropDownList.Size.Medium },
+        { "Large", ThemeConstants.DropDownList.Size.Large }
+    };
+
+    IEnumerable<ProductDto> DropDownListData { get; set; }
+    public int Value { get; set; } = 1;
+
+    protected override void OnInitialized()
+    {
+        DropDownListData = ProductService.GetProducts();
+    }
+}

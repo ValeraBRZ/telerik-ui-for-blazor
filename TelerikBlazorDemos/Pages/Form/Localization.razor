@@ -1,0 +1,77 @@
+@page "/form/localization"
+
+@using TelerikBlazorDemos.Models.Form
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@TestUser"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                <FormItem Field="@nameof(LocalizedUser.FirstName)"></FormItem>
+                <FormItem Field="@nameof(LocalizedUser.LastName)"></FormItem>
+                <FormItem Field="@nameof(LocalizedUser.Email)">
+                    <Template>
+                        <label for="mail" class="k-label k-form-label">Email*:</label>
+                        <TelerikTextBox Id="mail" @bind-Value="@TestUser.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                        <TelerikValidationMessage For="@(() => TestUser.Email)"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(LocalizedUser.Password)">
+                    <Template>
+                        <label for="pass" class="k-label k-form-label">Password*:</label>
+                        <TelerikTextBox Id="pass" @bind-Value="@TestUser.Password" Password="true"></TelerikTextBox>
+                        <TelerikValidationMessage For="@(() => TestUser.Password)"></TelerikValidationMessage>
+                    </Template>
+                </FormItem>
+                <FormItem Field="@nameof(LocalizedUser.BirthDate)" />
+                <FormItem Field="@nameof(LocalizedUser.AcceptTerms)" />
+            </FormItems>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    public LocalizedUser TestUser { get; set; } = new LocalizedUser()
+    {
+        FirstName = "Johny",
+        LastName = "Doe",
+        BirthDate = new DateTime(2000, 12, 10),
+        City = "Sofia",
+        Country = "Bulgaria",
+        AddressLine = "City Center"
+    };
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

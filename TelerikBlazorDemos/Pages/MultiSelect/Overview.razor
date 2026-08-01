@@ -1,0 +1,48 @@
+@page "/multiselect/overview"
+
+<HobbiesTemplate>
+    <TelerikMultiSelect Data="@Hobbies"
+                        @bind-Value="@SelectedHobbyIds"
+                        ValueField="@nameof(HobbiesDto.HobbyId)"
+                        TextField="@nameof(HobbiesDto.HobbyName)"
+                        Placeholder="Select your favourite sport..."
+                        Id="products-multiselect" Width="100%">
+    </TelerikMultiSelect>
+</HobbiesTemplate>
+
+@code {
+    public List<int> SelectedHobbyIds { get; set; }
+
+    public IEnumerable<HobbiesDto> Hobbies { get; set; } = new List<HobbiesDto>()
+    {
+        new HobbiesDto(1, "Basketball"),
+        new HobbiesDto(2, "Golf"),
+        new HobbiesDto(3, "Baseball"),
+        new HobbiesDto(4, "Table Tennis"),
+        new HobbiesDto(5, "Volleyball"),
+        new HobbiesDto(6, "Football"),
+        new HobbiesDto(7, "Boxing"),
+        new HobbiesDto(8, "Badminton"),
+        new HobbiesDto(9, "Cycling"),
+        new HobbiesDto(10, "Gymnastics"),
+        new HobbiesDto(11, "Swimming"),
+        new HobbiesDto(12, "Wrestling"),
+        new HobbiesDto(13, "Snooker"),
+        new HobbiesDto(14, "Skiing"),
+        new HobbiesDto(15, "Handball"),
+    };
+
+    public class HobbiesDto
+    {
+        public int HobbyId { get; set; }
+        public string HobbyName { get; set; }
+
+        public HobbiesDto() { }
+
+        public HobbiesDto(int id, string name)
+        {
+            HobbyId = id;
+            HobbyName = name;
+        }
+    }
+}

@@ -1,0 +1,90 @@
+@page "/treelist/drag-drop"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Resizable="true"
+                 RowDraggable="true"
+                 OnRowDrop="@((TreeListRowDropEventArgs<EmployeeDirectoryDto> args) => OnRowDrop(args))">
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+<TelerikWindow @bind-Visible="@WarningWindowVisible" Modal="true">
+    <WindowActions>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowTitle>
+        Warning
+    </WindowTitle>
+    <WindowContent>
+        Drop over a child node is not supported!
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    public List<EmployeeDirectoryDto> Data { get; set; }
+
+    public bool WarningWindowVisible { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories().ToList();
+
+        await base.OnInitializedAsync();
+    }
+
+    private bool IsChild(EmployeeDirectoryDto item, EmployeeDirectoryDto destinationItem)
+    {
+        if (destinationItem?.ReportsTo == null || item == null)
+        {
+            return false;
+        }
+        else if (destinationItem.ReportsTo?.Equals(item.EmployeeId) == true)
+        {
+            return true;
+        }
+
+        var parentDestinationItem = Data.FirstOrDefault(e => e.EmployeeId.Equals(destinationItem.ReportsTo));
+
+        return IsChild(item, parentDestinationItem);
+    }
+
+    private void OnRowDrop(TreeListRowDropEventArgs<EmployeeDirectoryDto> args)
+    {
+        if (args.DestinationItem != null && IsChild(args.Item, args.DestinationItem))
+        {
+            WarningWindowVisible = true;
+
+            return;
+        }
+
+        Data.Remove(args.Item);
+
+        if (args.DropPosition == TreeListRowDropPosition.Over)
+        {
+            args.Item.ReportsTo = args.DestinationItem.EmployeeId;
+
+            Data.Add(args.Item);
+        }
+        else
+        {
+            var index = Data.IndexOf(args.DestinationItem);
+
+            args.Item.ReportsTo = args.DestinationItem.ReportsTo;
+
+            if (args.DropPosition == TreeListRowDropPosition.After)
+            {
+                index++;
+            }
+
+            Data.Insert(index, args.Item);
+        }
+    }
+}

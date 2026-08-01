@@ -1,0 +1,26 @@
+@page "/grid/column-reordering"
+
+@inject CustomerService customerService
+
+<TelerikGrid Data="@GridData"
+             Pageable="true"
+             PageSize="10"
+             Reorderable="true"
+             Sortable="true">
+    <GridColumns>
+        <GridColumn Field=@nameof(CustomerDto.CustomerId) Title="Id (non-reorderable)" Reorderable="false" />
+        <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+        <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+        <GridColumn Field=@nameof(CustomerDto.Address) />
+        <GridColumn Field=@nameof(CustomerDto.Phone) />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<CustomerDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = customerService.GetCustomers();
+    }
+}

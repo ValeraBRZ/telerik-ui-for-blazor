@@ -1,0 +1,19 @@
+@page "/window/modal"
+
+<TelerikButton Icon="@SvgIcon.Window" OnClick=@(()=> WindowVisible = true)>Open Modal</TelerikButton>
+
+<TelerikWindow Class="demo-window" Width="500px" Height="300px" @bind-Visible=@WindowVisible Modal="true">
+    <WindowTitle>
+        <strong>Modal Window</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Close" />
+    </WindowActions>
+    <WindowContent>
+        <p>Click the close button to dismiss this modal dialog.</p>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    public bool WindowVisible { get; set; }
+}

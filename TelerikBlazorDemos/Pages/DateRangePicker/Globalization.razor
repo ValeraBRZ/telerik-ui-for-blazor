@@ -1,0 +1,18 @@
+@page "/daterangepicker/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikDateRangePicker @bind-StartValue="@StartValue"
+                            @bind-EndValue="@EndValue">
+    </TelerikDateRangePicker>
+</div>
+
+@code {
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 4, 3);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 4, 10);
+}

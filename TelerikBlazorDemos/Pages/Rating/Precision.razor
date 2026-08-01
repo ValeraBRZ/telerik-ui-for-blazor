@@ -1,0 +1,21 @@
+@page "/rating/precision"
+
+<h4>Full Precision</h4>
+<TelerikRating @bind-Value="@FullPrecisionValue"
+               PrecisionMode="RatingPrecisionMode.Full"
+               Label="@FullPrecisionLabel">
+</TelerikRating>
+
+<h4>Half Precision</h4>
+<TelerikRating @bind-Value="@HalfPrecisionValue"
+               PrecisionMode="RatingPrecisionMode.Half"
+               Label="@HalfPrecisionLabel">
+</TelerikRating>
+
+@code {
+    private double FullPrecisionValue { get; set; } = 3;
+    private double HalfPrecisionValue { get; set; } = 3.5;
+
+    private string FullPrecisionLabel => $"{FullPrecisionValue} / 5";
+    private string HalfPrecisionLabel => $"{HalfPrecisionValue} / 5";
+}

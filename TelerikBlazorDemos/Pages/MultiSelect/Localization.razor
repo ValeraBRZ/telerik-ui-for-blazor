@@ -1,0 +1,35 @@
+@page "/multiselect/localization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="sports" class="k-label k-form-label">Favourite Sports</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiSelect Data="@Sports"
+                                @bind-Value="@Values"
+                                Placeholder="Filter so there are no results, hover the [x] button"
+                                Width="100%" Id="sports"
+                                Filterable="true">
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code  {
+    List<string> Sports = new List<string>() {
+        "Baseball",
+        "Basketball",
+        "Cricket",
+        "Field Hockey",
+        "Football",
+        "Table Tennis",
+        "Tennis",
+        "Volleyball"
+    };
+    List<string> Values = new List<string>();
+}

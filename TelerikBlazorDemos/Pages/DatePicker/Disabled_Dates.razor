@@ -1,0 +1,58 @@
+@page "/datepicker/disabled-dates"
+
+<div class="demo-alert demo-alert-info">Try pressing the Up Arrow once or twice on the Date in the input to select a disabled date.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="k-form-field-wrap">
+            <label for="with-validation" class="k-label k-form-label">With input validation</label>
+            <div class="k-form-field-wrap">
+                <TelerikDatePicker @bind-Value="@model.ValueWithValidation" DisabledDates="@disabledDates1" Id="with-validation"></TelerikDatePicker>
+            </div>
+        </div>
+
+        <TelerikButton ButtonType="@ButtonType.Submit">Submit</TelerikButton>
+    </EditForm>
+    <div class="k-form-field-wrap">
+        <p>@SuccessMessage</p>
+    </div>
+    <div class="k-form-field-wrap">
+        <label for="without-validation" class="k-label k-form-label">Without input validation:</label>
+        <div class="k-form-field-wrap">
+            <TelerikDatePicker @bind-Value="@model.ValueWithoutValidation" DisabledDates="@disabledDates2" Id="without-validation"></TelerikDatePicker>
+        </div>
+    </div>
+</div>
+
+@code{
+    private EditFormModel model { get; set; } = new EditFormModel { ValueWithValidation = DateTime.Now, ValueWithoutValidation = DateTime.Now };
+    private string SuccessMessage = string.Empty;
+
+    private List<DateTime> disabledDates1 { get; set; } = new List<DateTime>()
+    {
+        DateTime.Now.Date.AddDays(1),
+        DateTime.Now.Date.AddDays(2)
+    };
+
+    private List<DateTime> disabledDates2 { get; set; } = new List<DateTime>()
+    {
+        DateTime.Now.Date.AddDays(1),
+        DateTime.Now.Date.AddDays(2)
+    };
+
+    private async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    public class EditFormModel
+    {
+        public DateTime ValueWithValidation { get; set; }
+        public DateTime ValueWithoutValidation { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+@page "/switch/localization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikSwitch Width="70px" @bind-Value="@Value"></TelerikSwitch>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool Value { get; set; }
+}

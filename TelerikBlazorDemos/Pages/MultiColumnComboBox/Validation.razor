@@ -1,0 +1,77 @@
+@page "/multicolumncombobox/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+@inject ProductService ProductService
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+<EditForm Model="@validationModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+        <ValidationSummary />
+    </div>
+
+    <div class="k-form-field">
+        <label for="product" class="k-label k-form-label">Product</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiColumnComboBox Data="@Data"
+                                        @bind-Value="@validationModel.ProductName"
+                                        Placeholder="Choose a product"
+                                        Id="product"
+                                        Width="100%"
+                                        AllowCustom="false"
+                                        Filterable="true"
+                                        ValueField="@nameof(ProductDto.ProductName)"
+                                        TextField="@nameof(ProductDto.ProductName)">
+                <MultiColumnComboBoxColumns>
+                    <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductId)" Title="Id" />
+                    <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductName)" Title="Name" />
+                </MultiColumnComboBoxColumns>
+            </TelerikMultiColumnComboBox>
+        </div>
+        <ValidationMessage For="@(() => validationModel.ProductName)" />
+    </div>
+
+    <div class="k-form-field">
+        <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+    </div>
+</EditForm> }
+            else
+            {
+<div class="demo-alert demo-alert-success" role="alert">
+    @SuccessMessage
+</div>}
+</div>
+
+@code {
+    private List<ProductDto> Data { get; set; }
+    private ProductChoice validationModel { get; set; } = new ProductChoice();
+    private string SuccessMessage = string.Empty;
+
+    private class ProductChoice
+    {
+        [Required(ErrorMessage = "Product name is required")]
+        public string ProductName { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts().Take(15).ToList();
+    }
+
+    private async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

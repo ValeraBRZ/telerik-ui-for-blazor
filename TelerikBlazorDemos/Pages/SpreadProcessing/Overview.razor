@@ -1,0 +1,214 @@
+@page "/spreadprocessing/overview"
+
+@using System.IO;
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders;
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml.Xlsx;
+@using Telerik.Windows.Documents.Spreadsheet.Model;
+@using System.Collections
+@using System;
+@using System.Collections.Generic;
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf;
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders.TextBased.Csv;
+@using Telerik.Windows.Documents.Spreadsheet.FormatProviders.TextBased.Txt;
+@using Telerik.Windows.Documents.Spreadsheet.Utilities;
+@using System.Linq;
+@using Telerik.Documents.Common.Model;
+@using TelerikBlazorDemos.DocumentProcessing;
+
+@inject ProductService productService
+@inject IJSRuntime JsRuntime
+
+<div class="demo-container mb-md">
+    <label class="demo-spacing">File extension:</label>
+    <TelerikDropDownList Data="@Formats" @bind-Value="@SelectedFormat" Width="140px">
+        <DropDownListSettings>
+            <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+        </DropDownListSettings>
+    </TelerikDropDownList>
+
+    <TelerikButton Icon="@SvgIcon.Save" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@ExportHandler"
+                    Class="demo-spacing demo-button">Generate</TelerikButton>
+</div>
+
+<TelerikGrid Data="@GridData" Height="400px" Pageable="true">
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductId) Title="ID" />
+        <GridColumn Field=@nameof(ProductDto.ProductName) Title="Product Name" />
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Title="Unit Price" />
+        <GridColumn Field=@nameof(ProductDto.UnitsInStock) Title="Units in Stock" />
+        <GridColumn Field=@nameof(ProductDto.UnitsOnOrder) Title="Units on Order" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    Hashtable table = new Hashtable();
+    string SelectedFormat = "XLSX";
+    string[] Formats = { "XLSX", "CSV", "TXT", "PDF" };
+
+    readonly int IndexColumnProductID = 0;
+    readonly int IndexColumnProductName = 1;
+    readonly int IndexColumnUnitPrice = 2;
+    readonly int IndexColumnUnitsInStock = 3;
+    readonly int IndexColumnUnitsOnOrder = 4;
+    readonly int IndexRowItemStart = 1;
+
+    readonly string EnUSCultureAccountFormatString = "_($ #,##0.00_);_($ (#,##0.00);_(@_)";
+    readonly ThemableColor InvoiceBackground = ThemableColor.FromArgb(255, 44, 62, 80);
+    readonly ThemableColor InvoiceHeaderForeground = ThemableColor.FromArgb(255, 255, 255, 255);
+
+    void ExportHandler()
+    {
+        byte[] fileData = GenerateDocument();
+        DemoFileExporter.Save(JsRuntime, fileData, GetMimeType(), "TelerikSpreadProcessing-Generated" + GetFileExtention());
+    }
+
+    public IEnumerable<ProductDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = productService.GetProducts();
+    }
+
+    string GetFileExtention()
+    {
+        return "." + SelectedFormat.ToLowerInvariant();
+    }
+
+    string GetMimeType()
+    {
+        string mimeType = String.Empty;
+        switch (GetFileExtention())
+        {
+            case ".xlsx": mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; break;
+            case ".pdf": mimeType = "application/pdf"; break;
+            case ".txt": mimeType = "text/plain"; break;
+            case ".csv": mimeType = "text/csv"; break;
+        }
+        return mimeType;
+    }
+
+    IWorkbookFormatProvider GetFormatProvider(string extension)
+    {
+        IWorkbookFormatProvider formatProvider;
+        switch (extension)
+        {
+            case ".xlsx":
+                formatProvider = new XlsxFormatProvider();
+                break;
+            case ".csv":
+                formatProvider = new CsvFormatProvider();
+                ((CsvFormatProvider)formatProvider).Settings.HasHeaderRow = true;
+                break;
+            case ".txt":
+                formatProvider = new TxtFormatProvider();
+                break;
+            case ".pdf":
+                formatProvider = new PdfFormatProvider();
+                break;
+            default:
+                formatProvider = null;
+                break;
+        }
+
+        return formatProvider;
+    }
+
+    Workbook CreateWorkbook()
+    {
+        Workbook workbook = new Workbook();
+        workbook.Sheets.Add(SheetType.Worksheet);
+
+        Worksheet worksheet = workbook.ActiveWorksheet;
+
+        this.PrepareInvoiceDocument(worksheet, GridData.Count());
+
+        int currentRow = IndexRowItemStart + 1;
+        foreach (var product in GridData)
+        {
+            worksheet.Cells[currentRow, 0].SetValue(product.ProductId);
+            worksheet.Cells[currentRow, IndexColumnProductName].SetValue(product.ProductName);
+            worksheet.Cells[currentRow, IndexColumnUnitPrice].SetValue(product.UnitPrice.ToString());
+            worksheet.Cells[currentRow, IndexColumnUnitsInStock].SetValue(product.UnitsInStock.ToString());
+            worksheet.Cells[currentRow, IndexColumnUnitsOnOrder].SetValue(product.UnitsOnOrder.ToString());
+
+            currentRow++;
+        }
+
+        for (int i = 0; i < worksheet.UsedCellRange.ColumnCount; i++)
+        {
+            worksheet.Columns[i].AutoFitWidth();
+        }
+
+        return workbook;
+    }
+
+    void PrepareInvoiceDocument(Worksheet worksheet, int itemsCount)
+    {
+        int lastItemIndexRow = IndexRowItemStart + itemsCount;
+
+        CellIndex firstRowFirstCellIndex = new CellIndex(0, 0);
+        CellIndex firstRowLastCellIndex = new CellIndex(0, 4);
+        CellIndex lastRowFirstCellIndex = new CellIndex(lastItemIndexRow + 1, IndexColumnProductID);
+        CellIndex lastRowLastCellIndex = new CellIndex(lastItemIndexRow + 1, IndexColumnUnitsOnOrder);
+        worksheet.Cells[firstRowFirstCellIndex, firstRowLastCellIndex].MergeAcross();
+        CellBorder border = new CellBorder(CellBorderStyle.DashDot, InvoiceBackground);
+        worksheet.Cells[firstRowFirstCellIndex, lastRowLastCellIndex].SetBorders(new CellBorders(border, border, border, border, null, null, null, null));
+        worksheet.Cells[lastRowFirstCellIndex, lastRowLastCellIndex].SetBorders(new CellBorders(border, border, border, border, null, null, null, null));
+        worksheet.Cells[firstRowFirstCellIndex].SetValue("INVOICE");
+        worksheet.Cells[firstRowFirstCellIndex].SetFontSize(20);
+
+        worksheet.Cells[IndexRowItemStart, IndexColumnProductID].SetValue("#");
+        worksheet.Cells[IndexRowItemStart, IndexColumnProductName].SetValue("Product Name");
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitPrice].SetValue("Unit Price");
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitPrice].SetHorizontalAlignment(RadHorizontalAlignment.Right);
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitsInStock].SetValue("Units In Stock");
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitsInStock].SetHorizontalAlignment(RadHorizontalAlignment.Right);
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitsOnOrder].SetValue("Units on Order");
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitsOnOrder].SetHorizontalAlignment(RadHorizontalAlignment.Right);
+
+        worksheet.Cells[IndexRowItemStart, IndexColumnProductID, IndexRowItemStart, IndexColumnUnitsOnOrder].SetFill
+        (new GradientFill(GradientType.Horizontal, InvoiceBackground, InvoiceBackground));
+        worksheet.Cells[IndexRowItemStart, IndexColumnProductID, IndexRowItemStart, IndexColumnUnitsOnOrder].SetForeColor(InvoiceHeaderForeground);
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitPrice, lastItemIndexRow, IndexColumnUnitPrice].SetFormat(
+        new CellValueFormat(EnUSCultureAccountFormatString));
+        worksheet.Cells[IndexRowItemStart, IndexColumnUnitsOnOrder, lastItemIndexRow, IndexColumnUnitsOnOrder].SetFormat(
+        new CellValueFormat(EnUSCultureAccountFormatString));
+
+        worksheet.Cells[lastItemIndexRow + 1, IndexColumnUnitPrice].SetValue("TOTAL: ");
+        worksheet.Cells[lastItemIndexRow + 1, IndexColumnUnitsOnOrder].SetFormat(new CellValueFormat(EnUSCultureAccountFormatString));
+
+        string unitsOnOrderColumnCellRange = NameConverter.ConvertCellRangeToName(
+        new CellIndex(IndexRowItemStart + 1, IndexColumnUnitsOnOrder),
+        new CellIndex(lastItemIndexRow, IndexColumnUnitsOnOrder));
+
+        worksheet.Cells[lastItemIndexRow + 1, IndexColumnUnitsOnOrder].SetValue(string.Format("=SUM({0})", unitsOnOrderColumnCellRange));
+
+        worksheet.Cells[lastItemIndexRow + 1, IndexColumnUnitPrice, lastItemIndexRow + 1, IndexColumnUnitsOnOrder].SetFontSize(20);
+    }
+
+    byte[] GenerateDocument()
+    {
+        IWorkbookFormatProvider formatProvider = GetFormatProvider(GetFileExtention());
+        if (formatProvider == null)
+        {
+            return null;
+        }
+
+        Workbook workbook = this.CreateWorkbook();
+        byte[] renderedBytes = null;
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            formatProvider.Export(workbook, ms, null);
+            renderedBytes = ms.ToArray();
+        }
+
+        return renderedBytes;
+    }
+}
+
+<style>
+    .demo-button {
+        width: 140px;
+    }
+</style>

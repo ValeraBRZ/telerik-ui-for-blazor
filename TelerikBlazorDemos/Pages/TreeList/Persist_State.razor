@@ -1,0 +1,150 @@
+@page "/treelist/persist-state"
+
+@using Telerik.DataSource
+@using System.Linq;
+
+@inject EmployeeDirectoryService employeeDirectoryService
+@inject LocalStorage LocalStorage
+@inject IJSRuntime JsInterop
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Control the TreeList state">
+        <TelerikButton OnClick="@SaveState" Icon="@SvgIcon.Save" Class="mr-xs">Save State</TelerikButton>
+        <TelerikButton OnClick="@ReloadPage" Icon="@SvgIcon.ArrowRotateCw" Class="mr-xs">Reload the page</TelerikButton>
+        <TelerikButton OnClick="@LoadState" Icon="@SvgIcon.Download" Class="mr-xs">Load last State</TelerikButton>
+        <TelerikButton OnClick="@SetExplicitState" Icon="@SvgIcon.Gear" Class="mr-xs">Configure State</TelerikButton>
+        <TelerikButton OnClick="@ResetState" Icon="@SvgIcon.ArrowRotateCcw">Reset State</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <strong>Change the treelist</strong> (for example, filter, sort, page, resize columns) and
+    <strong>Save</strong> the treelist state, then <strong>Reload</strong> the page to see the state persisted.
+    <strong>Change</strong> the treelist some more and <strong>Load</strong> the state to see the last one preserved.
+    You can manage the treelist state with your own code to put it in a specific configuration through the <strong>Configure</strong> button.
+    You can also <strong>Reset</strong> the treelist to its default settings. This demo will remember your last treelist layout
+    until your clear your browser storage or click the Reset button.
+</div>
+
+<TelerikTreeList Data="@Data"
+                 @ref="@TreeList"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 Sortable="true"
+                 FilterMode="@TreeListFilterMode.FilterRow"
+                 SelectionMode="@TreeListSelectionMode.Multiple"
+                 Resizable="true"
+                 Reorderable="true"
+                 OnStateInit="@((TreeListStateEventArgs<EmployeeModel> args) => OnStateInit(args))">
+    <TreeListColumns>
+        <TreeListCheckboxColumn SelectChildren="true"></TreeListCheckboxColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    // A simplified model class, for lighter local storage footprint
+    class EmployeeModel
+    {
+        public int EmployeeId { get; set; }
+
+        public int? ReportsTo { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public DateTime? HireDate { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var model = obj as EmployeeModel;
+
+            return model?.EmployeeId == EmployeeId;
+        }
+        public override int GetHashCode() => (FirstName, EmployeeId).GetHashCode();
+    }
+
+    TelerikTreeList<EmployeeModel> TreeList { get; set; }
+    List<EmployeeModel> Data { get; set; }
+    string stateStorageKey = "TelerikBlazorTreeListStateDemoKey";
+
+    protected override void OnInitialized()
+    {
+        var employeeDirectories = employeeDirectoryService.GetEmployeeDirectories();
+
+        Data = employeeDirectories.Select(p => new EmployeeModel
+        {
+            EmployeeId = p.EmployeeId,
+            ReportsTo = p.ReportsTo,
+            FirstName = p.FirstName,
+            LastName = p.LastName,
+            HireDate = p.HireDate
+        }).ToList();
+    }
+
+    private async Task OnStateInit(TreeListStateEventArgs<EmployeeModel> args)
+    {
+        try
+        {
+            var state = await LocalStorage.GetItem<TreeListState<EmployeeModel>>(stateStorageKey);
+            if (state != null)
+            {
+                args.TreeListState = state;
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // the JS Interop for the local storage cannot be used during pre-rendering
+        }
+    }
+
+    async Task SaveState()
+    {
+        var gridState = TreeList.GetState();
+        await LocalStorage.SetItem(stateStorageKey, gridState);
+    }
+
+    async Task LoadState()
+    {
+        TreeListState<EmployeeModel> storedState = await LocalStorage.GetItem<TreeListState<EmployeeModel>>(stateStorageKey);
+        if (storedState != null)
+        {
+            await TreeList.SetStateAsync(storedState);
+        }
+    }
+
+    async void ResetState()
+    {
+        await TreeList.SetStateAsync(null);
+        await LocalStorage.RemoveItem(stateStorageKey);
+    }
+
+    void ReloadPage()
+    {
+        JsInterop.InvokeVoidAsync("window.location.reload");
+    }
+
+    async void SetExplicitState()
+    {
+        TreeListState<EmployeeModel> desiredState = GetDefaultDemoState();
+        await TreeList.SetStateAsync(desiredState);
+        await SaveState();
+    }
+
+    TreeListState<EmployeeModel> GetDefaultDemoState()
+    {
+        TreeListState<EmployeeModel> defaultDemoState = new TreeListState<EmployeeModel>()
+        {
+            SortDescriptors = new List<SortDescriptor>
+            {
+                new SortDescriptor(nameof(EmployeeModel.FirstName), ListSortDirection.Descending)
+            },
+            Page = 3
+        };
+        return defaultDemoState;
+    }
+}

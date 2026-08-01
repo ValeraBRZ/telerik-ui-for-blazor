@@ -1,0 +1,58 @@
+@page "/splitter/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <input id="orientation-horizontal"
+               type="radio"
+               value="@( SplitterOrientation.Horizontal)"
+               checked="@(splitterOrientation == SplitterOrientation.Horizontal)"
+               @onchange="@(() => splitterOrientation = SplitterOrientation.Horizontal)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-horizontal">Horizontal</label>
+
+        <input id="orientation-vertical"
+               type="radio"
+               value="@( SplitterOrientation.Vertical)"
+               checked="@(splitterOrientation == SplitterOrientation.Vertical)"
+               @onchange="@(() => splitterOrientation = SplitterOrientation.Vertical)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-vertical">Vertical</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikSplitter Orientation="@splitterOrientation" Height="350px">
+    <SplitterPanes>
+        <SplitterPane Size="30%" Collapsible="true">
+            <div class="pane-content">
+                <h3>Pane 1</h3>
+                <p>Drag the splitter bar to resize the pane or double click to collapse it. </p>
+                <p>You can also collapse the panes by clicking once on the little arrows.</p>
+            </div>
+        </SplitterPane>
+
+        <SplitterPane Collapsible="true">
+            <div class="pane-content">
+                <h3>Pane 2</h3>
+                <p>Drag the splitter bar to resize the pane or double click to collapse it. </p>
+                <p>You can also collapse the panes by clicking once on the little arrows.</p>
+            </div>
+        </SplitterPane>
+    </SplitterPanes>
+</TelerikSplitter>
+
+@code {
+    public SplitterOrientation splitterOrientation { get; set; } = SplitterOrientation.Horizontal;
+}
+
+<style>
+    .pane-content {
+        padding: 0 12px;
+    }
+
+    h3 {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+</style>

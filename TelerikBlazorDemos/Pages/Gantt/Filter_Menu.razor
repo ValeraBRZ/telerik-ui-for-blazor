@@ -1,0 +1,106 @@
+@page "/gantt/filter-menu"
+
+@using Telerik.DataSource
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+
+<div class="demo-alert demo-alert-info">
+    The <strong>Title</strong> column has <strong>DefaultFilterOperator</strong>. The <strong>Start</strong> column uses customized list of <strong>FilterOperators</strong>.
+</div>
+
+<TelerikGantt Data="@Data"
+              @bind-TreeListWidth="@TreeListWidth"
+              IdField="Id"
+              ParentIdField="ParentId"
+              FilterMode="@GanttFilterMode.FilterMenu"
+              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )"
+              Width="100%"
+              Height="500px">
+    <GanttColumns>
+        <GanttColumn Field="Title"
+                     Width="220px"
+                     Expandable="true"
+                     Title="Task Title"
+                     DefaultFilterOperator="@FilterOperator.StartsWith">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}"
+                     FilterOperators="@DateOperators">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Width="100px"
+                     Title="Status"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttWeekView></GanttWeekView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code {
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    public List<FilterListOperator> DateOperators = new List<FilterListOperator>
+{
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "On" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThan, Text = "After" },
+        new FilterListOperator { Operator = FilterOperator.IsLessThan, Text = "Before" },
+        new FilterListOperator { Operator = FilterOperator.IsNotEqualTo, Text = "Is Not" },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+}
+
+<style>
+    /* Disable Timeline editing via CSS.
+        Will not be necessary when this is done:
+        https://feedback.telerik.com/blazor/1572900
+    */
+
+    /* delete button */
+    .k-gantt .k-task:hover .k-task-actions,
+    /* resize handles */
+    .k-gantt .k-task:hover .k-resize-handle,
+    /* progress drag handle */
+    .k-gantt .k-task-wrap:hover .k-task-draghandle,
+    /* dependency handles */
+    .k-gantt .k-task-wrap:hover .k-task-dot,
+    /* drag overlay */
+    .k-gantt .k-gantt-marquee,
+    /* drag tooltip */
+    .k-gantt .k-gantt-resize-hint {
+        visibility: hidden;
+    }
+</style>

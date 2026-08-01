@@ -1,0 +1,70 @@
+@page "/skeleton/overview"
+
+<div class="card-wrapper">
+    <TelerikCard Width="250px" Class="skeleton-card">
+        <CardHeader Class="k-hbox">
+            <div class="k-rounded-full k-avatar avatar-size">
+                <TelerikSkeleton ShapeType="@SkeletonShapeType.Circle" Width="45px" Height="45px"></TelerikSkeleton>
+            </div>
+            <div>
+                <CardTitle>
+                    <TelerikSkeleton ShapeType="@SkeletonShapeType.Text" Width="90px" Height="20px"></TelerikSkeleton>
+                </CardTitle>
+                <CardSubTitle>
+                    <TelerikSkeleton ShapeType="@SkeletonShapeType.Text" Width="100px" Height="14px"></TelerikSkeleton>
+                </CardSubTitle>
+            </div>
+        </CardHeader>
+        <TelerikSkeleton ShapeType="@SkeletonShapeType.Rectangle" Width="248px" Height="130px"></TelerikSkeleton>
+        <CardActions Class="justify-space-between">
+            <div class="k-d-flex">
+                <TelerikSkeleton ShapeType="@SkeletonShapeType.Circle" Width="28px" Height="28px"></TelerikSkeleton>
+                <TelerikSkeleton ShapeType="@SkeletonShapeType.Circle" Width="28px" Height="28px"></TelerikSkeleton>
+                <TelerikSkeleton ShapeType="@SkeletonShapeType.Circle" Width="28px" Height="28px"></TelerikSkeleton>
+            </div>
+            <TelerikSkeleton ShapeType="@SkeletonShapeType.Text" Width="50px" Height="18px" Class="post-likes-count"></TelerikSkeleton>
+        </CardActions>
+    </TelerikCard>
+
+    <TelerikCard Width="250px" Class="skeleton-card">
+        <CardHeader Class="k-hbox">
+            <div class="k-rounded-full k-avatar avatar-size">
+                <div class="k-avatar-image ng-star-inserted" style="background-image: url(images/cards/bg/rila.jpg);"></div>
+            </div>
+            <div>
+                <CardTitle>
+                    Mountains
+                </CardTitle>
+                <CardSubTitle>
+                    Bulgaria, Europe
+                </CardSubTitle>
+            </div>
+        </CardHeader>
+        <CardImage Src="@($"images/cards/bg/rila_lakes.jpg")" Class="image-height"></CardImage>
+        <CardActions Class="justify-space-between">
+            <div>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@SvgIcon.HeartOutline" Title="Like"></TelerikButton>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@SvgIcon.Comment" Title="Comment"></TelerikButton>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@SvgIcon.Share" Title="Share"></TelerikButton>
+            </div>
+            <span class="post-likes-count">674 likes</span>
+        </CardActions>
+    </TelerikCard>
+</div>
+<style>
+    .card-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 100px;
+    }
+
+    .justify-space-between {
+        justify-content: space-between;
+    }
+
+    .post-likes-count {
+        font-size: 13px;
+        align-self: center;
+        color: #656565;
+    }
+</style>

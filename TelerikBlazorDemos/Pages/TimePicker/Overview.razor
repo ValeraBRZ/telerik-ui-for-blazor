@@ -1,0 +1,16 @@
+@page "/timepicker/overview"
+@page "/timepicker/index"
+
+<ScheduleVisitTemplate Title="Schedule Your Visit" Description="Time">
+    <TelerikTimePicker Min="@Min" Max="@Max"
+                       Format="hh:mm:ss tt"
+                       @bind-Value="@selectedTime"
+                       Id="timepicker">
+    </TelerikTimePicker>
+</ScheduleVisitTemplate>
+
+@code {
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    public DateTime? selectedTime { get; set; } = DateTime.Now.Date.AddHours(7).AddMinutes(45);
+}

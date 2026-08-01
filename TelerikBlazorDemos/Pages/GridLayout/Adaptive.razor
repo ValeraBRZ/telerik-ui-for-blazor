@@ -1,0 +1,207 @@
+@page "/gridlayout/adaptive"
+
+@using TelerikBlazorDemos.Models
+
+<TelerikMediaQuery Media="(max-width: 500px)" OnChange="@SmallMediaQueryChange"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 500px) and (max-width: 768px)" OnChange="@MediumMediaQueryChange"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 768px)" OnChange="@LargeMediaQueryChange"></TelerikMediaQuery>
+
+<div class="grid-layout-container">
+    <TelerikGridLayout RowSpacing="6px" ColumnSpacing="10px" Class="grid-layout">
+        <GridLayoutRows>
+            <GridLayoutRow Height="20px"></GridLayoutRow>
+            @{
+                for (int rowIndex = 0; rowIndex < GridLayoutRowsCount; rowIndex++)
+                {
+                    <GridLayoutRow Height="100px"></GridLayoutRow>
+                }
+            }
+        </GridLayoutRows>
+        <GridLayoutColumns>
+            @{
+                for (int columnIndex = 0; columnIndex < GridLayoutColumnsCount; columnIndex++)
+                {
+                    <GridLayoutColumn></GridLayoutColumn>
+                }
+            }
+        </GridLayoutColumns>
+        <GridLayoutItems>
+            <GridLayoutItem Row="1" Column="1" ColumnSpan="@(GridLayoutColumnsCount + 1)">
+                <div class="grid-layout-heading  k-text-uppercase k-font-weight-bold k-text-inverse">Trending articles</div>
+            </GridLayoutItem>
+            @{
+                var articleIndex = 0;
+                for (int rowIndex = 0; rowIndex < GridLayoutRowsCount; rowIndex++)
+                {
+                    for (int columnIndex = 0; columnIndex < GridLayoutColumnsCount; columnIndex++)
+                    {
+                        var position = articleIndex + 1;
+                        var article = Articles[articleIndex];
+                        var row = rowIndex + 2;
+                        var column = columnIndex + 1;
+
+                        <GridLayoutItem Row="@row" Column="@column">
+                            <GridLayoutArticleHeader Position="@position" Article="@article"></GridLayoutArticleHeader>
+                        </GridLayoutItem>
+
+                        articleIndex += 1;
+                    }
+                }
+            }
+        </GridLayoutItems>
+    </TelerikGridLayout>
+</div>
+
+@code {
+    public enum DemoWindowSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+
+    public List<GridLayoutArticle> Articles { get; set; }
+    public DemoWindowSize WindowSize { get; set; }
+    public int GridLayoutColumnsCount { get; set; }
+    public int GridLayoutRowsCount { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GenerateData();
+    }
+
+    public void UpdateGridLayout()
+    {
+        GridLayoutRowsCount = (WindowSize == DemoWindowSize.Large) ? 2 : (WindowSize == DemoWindowSize.Medium) ? 3 : 6;
+        GridLayoutColumnsCount = (WindowSize == DemoWindowSize.Large) ? 3 : (WindowSize == DemoWindowSize.Medium) ? 2 : 1;
+    }
+
+    public void SmallMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Small;
+            UpdateGridLayout();
+        }
+    }
+
+    public void MediumMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Medium;
+            UpdateGridLayout();
+        }
+    }
+
+    public void LargeMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Large;
+            UpdateGridLayout();
+        }
+    }
+
+    public void GenerateData()
+    {
+        var SelectedDate = DateTime.Now;
+
+        Articles = new List<GridLayoutArticle>()
+        {
+            new GridLayoutArticle()
+            {
+                Author = "Camille Fournier",
+                Title = "An incomplete list of skills senior engineers need",
+                MinsLength = 4,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 6)
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Mathew MacDonald",
+                Title = "A Closer Look at 5 New Features in C# 10",
+                MinsLength = 6,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 11)
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Camille Fournier",
+                Title = "20 Necessary Requirements of a Perfect Laptop",
+                MinsLength = 4,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 14)
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Anton Subbotin",
+                Title = "Top 3 Coding Teachers",
+                MinsLength = 5,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 20)
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Umair Haque",
+                Title = "Welcome to a New Dark Age",
+                MinsLength = 9,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 21)
+            },
+            new GridLayoutArticle()
+            {
+                Author = "Jean Campbell",
+                Title = "An Open Letter to Millennials",
+                MinsLength = 7,
+                Date = new DateTime(SelectedDate.Year, SelectedDate.Month, 25)
+            },
+        }.OrderBy(a => a.Date).ToList();
+    }
+}
+
+<style>
+    .grid-layout {
+        max-width: 800px;
+        margin: auto;
+    }
+
+    .grid-layout-heading {
+        text-transform: uppercase;
+        font-size: 14px;
+        color: #424242;
+        line-height: 20px;
+        font-weight: bold;
+    }
+
+    .article {
+        gap: 10px;
+        color: #656565;
+    }
+
+    .article-description {
+        gap: 6px;
+    }
+
+    .article-position {
+        margin-right: 10px;
+        font-size: 32px;
+        font-weight: bold;
+        color: #ff6358;
+    }
+
+    .article-description .title {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: bold;
+    }
+
+    .article-description .author {
+        font-size: 12px;
+        line-height: 20px;
+    }
+
+    .article-description .date {
+        font-size: 10px;
+        line-height: 20px;
+    }
+
+    .article-description .separator {
+        padding: 0 5px;
+    }
+</style>

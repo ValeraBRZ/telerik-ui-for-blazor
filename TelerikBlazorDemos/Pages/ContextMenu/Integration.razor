@@ -1,0 +1,117 @@
+@page "/contextmenu/integration"
+
+@using System.Collections.Generic
+@using System.Collections.ObjectModel
+
+@inject CustomerService customerService
+
+<TelerikContextMenu @ref="@ContextMenu" Data="@MenuItems" OnClick="@((MenuItem item) => OnItemClick(item))"></TelerikContextMenu>
+
+<TelerikGrid Data="@GridData"
+             Reorderable="true"
+             Pageable="true"
+             EditMode="GridEditMode.Inline"
+             OnRowContextMenu="@OnContextMenu">
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Customer</GridCommandButton>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+        <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+        <GridColumn Field=@nameof(CustomerDto.Address) />
+        <GridColumn Field=@nameof(CustomerDto.Phone) />
+        <GridCommandColumn>
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<CustomerDto> InitialData { get; set; }
+    public ObservableCollection<CustomerDto> GridData { get; set; }
+    public List<MenuItem> MenuItems { get; set; }
+    public CustomerDto SelectedPerson { get; set; }
+    public TelerikContextMenu<MenuItem> ContextMenu { get; set; }
+    protected override void OnInitialized()
+    {
+        GridData = new ObservableCollection<CustomerDto>();
+        var rand = new Random();
+
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem(){ Text = "Delete", Action = DeleteItem },
+            new MenuItem(){ Text = "Move Up", Action = MoveUp },
+            new MenuItem(){ Text = "Move Down", Action = MoveDown },
+        };
+
+        LoadData();
+
+        GridData = new ObservableCollection<CustomerDto>(InitialData);
+    }
+
+    private void LoadData()
+    {
+        InitialData = customerService.GetCustomers();
+    }
+
+    private void OnContextMenu(GridRowClickEventArgs args)
+    {
+        var argsItem = args.Item as CustomerDto;
+
+        SelectedPerson = argsItem;
+
+        if (args.EventArgs is MouseEventArgs mouseEventArgs)
+        {
+            _ = ContextMenu.ShowAsync(mouseEventArgs.ClientX, mouseEventArgs.ClientY);
+        }
+    }
+
+    private void DeleteItem()
+    {
+        var argsItem = SelectedPerson;
+        SelectedPerson = null;
+        GridData.Remove(argsItem);
+    }
+
+    private void MoveUp()
+    {
+        var argsItem = SelectedPerson;
+        SelectedPerson = null;
+
+        var selectedItemIndex = GridData.IndexOf(argsItem);
+        if (selectedItemIndex > 0)
+        {
+            var upItem = GridData.ElementAt(selectedItemIndex - 1);
+            GridData[selectedItemIndex - 1] = argsItem;
+            GridData[selectedItemIndex] = upItem;
+
+        }
+    }
+
+    private void MoveDown()
+    {
+        var argsItem = SelectedPerson;
+        SelectedPerson = null;
+
+        var selectedItemIndex = GridData.IndexOf(argsItem);
+        if (selectedItemIndex != -1 && selectedItemIndex < GridData.Count - 1)
+        {
+            var downItem = GridData.ElementAt(selectedItemIndex + 1);
+            GridData[selectedItemIndex + 1] = argsItem;
+            GridData[selectedItemIndex] = downItem;
+
+        }
+    }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public Action Action { get; set; }
+    }
+
+    public void OnItemClick(MenuItem item)
+    {
+        item.Action.Invoke();
+    }
+}

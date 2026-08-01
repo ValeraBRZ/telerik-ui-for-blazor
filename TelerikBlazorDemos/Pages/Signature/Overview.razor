@@ -1,0 +1,124 @@
+@page "/signature/overview"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Color">
+        <TelerikColorPicker Value="@Color"
+                            ValueChanged="@OnColorValueChanged">
+        </TelerikColorPicker>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Background color">
+        <TelerikColorPicker Value="@BackgroundColor"
+                            ValueChanged="@OnBackgroundColorChanged">
+        </TelerikColorPicker>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Stroke width">
+        <TelerikSlider @bind-Value="@StrokeWidth"
+                       Min="1"
+                       Max="5"
+                       SmallStep="1"
+                       LargeStep="1"
+                       Width="450px">
+        </TelerikSlider>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Popup Scale">
+        <TelerikSlider @bind-Value="@PopupScale"
+                       Min="1"
+                       Max="2"
+                       SmallStep="0.5"
+                       LargeStep="0.5"
+                       Width="150px">
+        </TelerikSlider>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Hide line">
+        <label>
+            <TelerikCheckBox @bind-Value="@HideLine"></TelerikCheckBox>
+            Hide line
+        </label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Smooth">
+        <label>
+            <TelerikCheckBox @bind-Value="@Smooth"></TelerikCheckBox>
+            Smooth
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="signature-wrapper">
+    <TelerikSignature Width="500px"
+                      Height="200px"
+                      Color="@Color"
+                      BackgroundColor="@BackgroundColor"
+                      HideLine="@HideLine"
+                      Smooth="@Smooth"
+                      StrokeWidth="@StrokeWidth"
+                      PopupScale="@PopupScale"
+                      @bind-Value="@Value">
+    </TelerikSignature>
+
+    <div class="notes">
+        By using the Telerik UI for Blazor Signature component,
+        you can allow your end-users to draw their signatures
+        using mouse or touch devices.
+    </div>
+</div>
+
+<style>
+    .signature-wrapper {
+        width: 500px;
+    }
+
+    .notes {
+        font-style: italic;
+        padding: 1em;
+        border-width: 1px;
+        border-bottom-width: 0;
+        border-style: solid;
+        border-radius: 0;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+</style>
+
+@code {
+    public TelerikSignature SignatureRef { get; set; }
+    public string Value { get; set; }
+    public string Color { get; set; }
+    public string BackgroundColor { get; set; }
+    public bool HideLine { get; set; }
+    public bool Smooth { get; set; }
+    public double StrokeWidth { get; set; } = 1.0;
+    public double PopupScale { get; set; } = 2.0;
+
+    public void OnColorValueChanged(string value)
+    {
+        Color = value;
+        StateHasChanged();
+    }
+
+    public void OnBackgroundColorChanged(string value)
+    {
+        BackgroundColor = value;
+        // the background is part of the signature
+        // if the value is not cleared, the new background
+        // will not be visible as the current one will overlap it
+        ClearValue();
+    }
+
+    public void OnSmoothChanged(bool value)
+    {
+        Smooth = value;
+        StateHasChanged();
+    }
+
+    public void OnHideLineChanged(bool value)
+    {
+        HideLine = value;
+        StateHasChanged();
+    }
+
+    public void ClearValue()
+    {
+        Value = string.Empty;
+        StateHasChanged();
+    }
+}
+

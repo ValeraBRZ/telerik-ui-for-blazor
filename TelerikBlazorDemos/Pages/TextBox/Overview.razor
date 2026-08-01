@@ -1,0 +1,10 @@
+@page "/textbox/overview"
+@page "/textbox/index"
+
+<MyProfileTemplate Title="Name">
+    <TelerikTextBox @bind-Value="@Name"></TelerikTextBox>
+</MyProfileTemplate>
+
+@code{
+    public string Name { get; set; } = "John Smith";
+}

@@ -1,0 +1,115 @@
+@page "/aiprompt/templates"
+@using System.Threading
+
+@inject AIPromptService AIPromptAnswerService
+
+@* This demo sample uses a real AI model to simulate a real use case. To test it in the offline demo version, replace the demo service and API key with your own AI service details. *@
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+
+<div class="demo-section" style="max-width: 600px;">
+    <TelerikAIPrompt @ref="@AIPromptRef"
+                     @bind-Prompt="@Prompt"
+                     Commands="@PromptCommands"
+                     PromptSuggestions="@PromptSuggestions"
+                     OnCommandExecute="@HandleCommandExecute"
+                     OnPromptRequest="@HandlePromptRequest"
+                     OnPromptRequestStop="@HandlePromptRequestStop"
+                     EnableSpeechToText="true"
+                     Width="500px">
+        <AIPromptSettings>
+            <AIPromptSpeechToTextButtonSettings Lang="en-US" />
+        </AIPromptSettings>
+        <AIPromptToolBar>
+            <AIPromptToolBarButton FillMode="@ThemeConstants.Button.FillMode.Flat" Icon="@SvgIcon.ArrowRotateCcw"></AIPromptToolBarButton>
+        </AIPromptToolBar>
+
+        <PromptSuggestionItemTemplate>
+            <p class="prompt-suggestion-item" @onclick="@(() => SetPromptSuggestion(context.Suggestion))">@context.Suggestion</p>
+        </PromptSuggestionItemTemplate>
+
+        <OutputItemTemplate>
+            <strong>@context.Output.Title @context.Output.Prompt</strong>@context.Output.Output
+        </OutputItemTemplate>
+    </TelerikAIPrompt>
+</div>
+
+@code {
+    private string Prompt { get; set; }
+    private CancellationTokenSource CancellationTokenSource { get; set; }
+    private TelerikAIPrompt AIPromptRef { get; set; }
+
+    private List<AIPromptCommandDescriptor> PromptCommands { get; set; } = new List<AIPromptCommandDescriptor>()
+    {
+        new AIPromptCommandDescriptor() { Title = "Rewrite in personal voice", Icon = SvgIcon.Pencil },
+        new AIPromptCommandDescriptor() { Title = "Rewrite in brand voice", Icon = SvgIcon.Pencil },
+        new AIPromptCommandDescriptor() { Title = "Generate document headline", Icon = SvgIcon.FileHeader },
+        new AIPromptCommandDescriptor() { Title = "Generate section headline", Icon = SvgIcon.FileFooter },
+    };
+
+    private List<string> PromptSuggestions { get; set; } = new List<string>()
+    {
+        "Act as a marketing specialist and content writer and write a compelling [type of text] that speaks directly to my [ideal customer persona] and encourages them to take [desired action] on my [website/product].",
+        "I'm looking for a [type of text] that will convince [ideal customer persona] to sign up for my [program/subscription] by explaining the value it brings and the benefits they'll receive.",
+        "Write a Twitter thread idea that will both go viral and attract high-quality leads for my [product/service] with a strong call-to-action and compelling visuals."
+    };
+
+    private void SetPromptSuggestion(string suggestion)
+    {
+        Prompt = suggestion;
+    }
+
+    private async Task HandlePromptRequestStop()
+    {
+        if (CancellationTokenSource != null && !CancellationTokenSource.IsCancellationRequested)
+        {
+            await CancellationTokenSource.CancelAsync();
+            Prompt = string.Empty; // Clear the prompt when the request is stopped
+        }
+    }
+
+    private async Task HandlePromptRequest(AIPromptPromptRequestEventArgs args)
+    {
+        // Create a new CancellationTokenSource for each request
+        CancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            args.Output = await AIPromptAnswerService.AnswerQuestion(args.Prompt, CancellationTokenSource.Token);
+
+            // Simulate longer response time for demo purposes - this allows users to test the stop button functionality.
+            // In real applications, remove this delay as AI service calls naturally take time to complete.
+            await Task.Delay(1000, CancellationTokenSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Request was cancelled
+            args.IsCancelled = true;
+        }
+    }
+
+    private void HandleCommandExecute(AIPromptCommandExecuteEventArgs args)
+    {
+        args.Output = "This represents the generated output from the AI in response to the submitted request.";
+    }
+}
+
+<style>
+    .prompt-suggestion-item {
+        cursor: pointer;
+        border: 1px solid #eaeaea;
+        border-radius: 24px;
+        margin: 3px;
+        padding: 0.5rem;
+        transition: transform 0.2s;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+
+        .prompt-suggestion-item:hover {
+            transform: scale(1.05)
+        }
+</style>

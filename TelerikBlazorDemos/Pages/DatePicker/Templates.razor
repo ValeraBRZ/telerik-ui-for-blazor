@@ -1,0 +1,32 @@
+@page "/datepicker/templates"
+
+<TelerikDatePicker @bind-Value="@Value"
+                   @bind-View="@View"
+                   @ref="PickerRef"
+                   Width="300px">
+    <HeaderTemplate>
+        <TelerikButton OnClick="@GoToDecadeView" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Decade View</TelerikButton>
+        <span class="k-spacer"></span>
+        <TelerikButton OnClick="@GoToToday" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" FillMode="@(ThemeConstants.Button.FillMode.Outline)">Today</TelerikButton>
+    </HeaderTemplate>
+</TelerikDatePicker>
+
+@code {
+    public DateTime Value { get; set; } = new DateTime(2025, 2, 2);
+    public CalendarView View { get; set; } = CalendarView.Month;
+    public TelerikDatePicker<DateTime> PickerRef { get; set; }
+
+    public void GoToDecadeView()
+    {
+        View = CalendarView.Decade;
+        PickerRef.Refresh();
+    }
+
+    public void GoToToday()
+    {
+        Value = DateTime.Now;
+        PickerRef.NavigateTo(Value, CalendarView.Month);
+        PickerRef.Refresh();
+        PickerRef.Close();
+    }
+}

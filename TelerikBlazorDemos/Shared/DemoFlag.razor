@@ -1,0 +1,13 @@
+@if (Demo.IsUpdated)
+{
+    <span class="k-badge k-badge-sm k-badge-solid k-badge-inline tag tag-updated">Updated</span>
+}
+@if (Demo.IsNew)
+{
+    <span class="k-badge k-badge-sm k-badge-solid k-badge-inline tag tag-new">New</span>
+}
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+}

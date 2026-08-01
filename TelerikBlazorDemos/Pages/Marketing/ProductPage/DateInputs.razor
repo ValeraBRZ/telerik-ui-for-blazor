@@ -1,0 +1,56 @@
+@page "/marketing-campaigns/product-page/dateinputs"
+
+@layout MainLayout
+
+<div class="kd-marketing-campaign-page">
+    <div class="k-d-grid k-grid-cols-lg-3 k-grid-cols-sm-2 k-grid-cols-xs-1 k-gap-8">
+        <div class="k-col-span-1 k-row-span-2">
+            <p>Calendar</p>
+            <TelerikCalendar Class="k-m-auto k-d-flex"
+                             Date="@CalendarDate"
+                             View="CalendarView.Month"
+                             SelectionMode="@CalendarSelectionMode.Multiple">
+            </TelerikCalendar>
+        </div>
+        <div class="k-col-span-1">
+            <p>DateInput</p>
+            <TelerikDateInput @bind-Value="@DateInputValue"
+                              Width="100%"
+                              Placeholder="Select a date"
+                              ShowClearButton="true">
+            </TelerikDateInput>
+        </div>
+        <div class="k-col-span-1">
+            <p>DatePicker</p>
+            <TelerikDatePicker @bind-Value="@DatePickerValue"
+                               Width="100%"
+                               Placeholder="Select a date"
+                               ShowClearButton="true">
+            </TelerikDatePicker>
+        </div>
+        <div class="k-col-span-1">
+            <p>TimePicker</p>
+            <TelerikTimePicker @bind-Value="@TimePickerValue"
+                               Width="100%"
+                               Placeholder="Select a date"
+                               ShowClearButton="true">
+            </TelerikTimePicker>
+        </div>
+        <div class="k-col-span-1">
+            <p>DateTimePicker</p>
+            <TelerikDateTimePicker @bind-Value="@DateTimePickerValue"
+                                   Width="100%"
+                                   Placeholder="Select a date"
+                                   ShowClearButton="true">
+            </TelerikDateTimePicker>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime? DateInputValue { get; set; } = DateTime.Now;
+    private DateTime? DatePickerValue { get; set; } = DateTime.Now;
+    private DateTime? TimePickerValue { get; set; } = DateTime.Now;
+    private DateTime? DateTimePickerValue { get; set; } = DateTime.Now;
+    private DateTime CalendarDate { get; set; } = DateTime.Now;
+}

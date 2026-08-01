@@ -1,0 +1,26 @@
+@page "/radiogroup/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikRadioGroup Size="@Size"
+                       Data="@Responses"
+                       @bind-Value="@Response"></TelerikRadioGroup>
+</div>
+
+@code  {
+    public List<string> Responses { get; set; } = new List<string>() { "Agree", "Disagree", "N/A" };
+    public string Response { get; set; } = "Agree";
+    public string Size { get; set; } = ThemeConstants.RadioGroup.Size.Medium;
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        {"Small", ThemeConstants.RadioGroup.Size.Small },
+        {"Medium", ThemeConstants.RadioGroup.Size.Medium },
+        {"Large", ThemeConstants.RadioGroup.Size.Large },
+    };
+}

@@ -1,0 +1,37 @@
+@page "/calendar/multiview"
+
+<TelerikCalendar @ref="@CalendarRef"
+                 Views="3"
+                 @bind-Date="@StartDate"
+                 SelectionMode="@CalendarSelectionMode.Multiple"
+                 ValueChanged="@CalendarValueChanged"
+                 DisabledDates="@DisabledDates"
+                 ShowWeekNumbers="true">
+</TelerikCalendar>
+
+@if (ChosenDates != null && ChosenDates.Count > 0)
+{
+    <ul>
+        @foreach (DateTime date in ChosenDates)
+        {
+            <li>@date.ToString("dd MMM yyyy")</li>
+        }
+    </ul>
+}
+
+@code{
+    private TelerikCalendar CalendarRef { get; set; }
+
+    private DateTime StartDate { get; set; } = DateTime.Now;
+
+    private List<DateTime> DisabledDates = new List<DateTime>() { DateTime.Now, DateTime.Now.AddDays(1) };
+
+    private List<DateTime> ChosenDates { get; set; }
+
+    private void CalendarValueChanged()
+    {
+        ChosenDates = CalendarRef.SelectedDates;
+
+        StateHasChanged();
+    }
+}

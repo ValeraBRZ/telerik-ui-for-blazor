@@ -1,0 +1,89 @@
+@page "/gantt/custom-column-menu"
+
+@inject GanttTaskService GanttTaskService
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        Click the three dots in the column header to see the
+        column menu and open the "Columns" section for a customized view of the column list.
+    </p>
+</div>
+
+<TelerikGantt Data="@Data"
+              Width="100%"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              Navigable="true"
+              TreeListEditMode="GanttTreeListEditMode.None"
+              View="@SelectedView"
+              TreeListWidth="@TreeListWidth"
+              Sortable="true"
+              ShowColumnMenu="true">
+    <GanttSettings>
+        <GanttColumnMenuSettings Lockable="false"
+                                 FilterMode="@ColumnMenuFilterMode.None">
+            <GanttColumnMenuChooser>
+                <Template>
+                    <GanttColumnMenuChooserGroup Title="Worker Information">
+                        <GanttColumnMenuChooserItem ColumnId="title-column-id" />
+                    </GanttColumnMenuChooserGroup>
+                    <GanttColumnMenuChooserGroup Title="Time-Frame Information">
+                        <GanttColumnMenuChooserItem ColumnId="percentcomplete-column-id" />
+                        <GanttColumnMenuChooserItem ColumnId="start-column-id" />
+                        <GanttColumnMenuChooserItem ColumnId="end-column-id" />
+                    </GanttColumnMenuChooserGroup>
+                </Template>
+            </GanttColumnMenuChooser>
+        </GanttColumnMenuSettings>
+    </GanttSettings>
+    <GanttColumns>
+        <GanttColumn Field="Id">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Id="title-column-id"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Id="start-column-id"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Id="end-column-id"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Id="percentcomplete-column-id"
+                     Title="Status"
+                     Width="100px"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+</TelerikGantt>
+
+@code {
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public GanttView SelectedView { get; set; } = GanttView.Week;
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+}

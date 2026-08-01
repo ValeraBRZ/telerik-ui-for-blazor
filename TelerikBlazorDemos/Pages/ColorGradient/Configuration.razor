@@ -1,0 +1,47 @@
+@page "/colorgradient/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Opacity">
+        <TelerikCheckBox @bind-Value="@Opacity" Id="opacity"></TelerikCheckBox>
+        <label for="opacity">Toggle Opacity</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Formats">
+        <TelerikCheckBox @bind-Value="@HexFormat" Id="hexformat" OnChange="@OnFormatChanged"></TelerikCheckBox>
+        <label for="hexformat">HexFormat</label>
+        <TelerikCheckBox @bind-Value="@RgbFormat" Id="rgbformat" OnChange="@OnFormatChanged"></TelerikCheckBox>
+        <label for="rgbformat">RgbFormat</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikColorGradient @bind-Value="Value" Formats="@Formats" ShowOpacityEditor="@Opacity"></TelerikColorGradient>
+</div>
+
+@code {
+    public string Value { get; set; } = "rgb(255, 0, 61)";
+
+    public bool Opacity { get; set; } = true;
+
+    public bool HexFormat { get; set; } = true;
+
+    public bool RgbFormat { get; set; } = true;
+
+    public List<ColorFormat> Formats { get; set; } = new List<ColorFormat>() { ColorFormat.Hex, ColorFormat.Rgb };
+
+    public void OnFormatChanged()
+    {
+        Formats = new List<ColorFormat>();
+
+        if (HexFormat)
+        {
+            Formats.Add(ColorFormat.Hex);
+        }
+
+        if (RgbFormat)
+        {
+            Formats.Add(ColorFormat.Rgb);
+        }
+
+        StateHasChanged();
+    }
+}

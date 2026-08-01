@@ -1,0 +1,82 @@
+@page "/rangeslider/customization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tick Position">
+        <TelerikDropDownList @bind-Value="@TickPosition"
+                             Data="@TickPositions"
+                             ValueField="TickPosition">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Small Step">
+        <TelerikNumericTextBox @bind-Value="@SmallStep"
+                               Min="5"
+                               Max="25"
+                               Step="5">
+        </TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Large Step">
+        <TelerikNumericTextBox Value="@LargeStep"
+                               Enabled="false">
+        </TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Disabled State">
+        <TelerikCheckBox Id="enabled" @bind-Value="@Enabled"></TelerikCheckBox>
+        <label for="enabled" class="k-checkbox-label checkbox-label">Toggle Enabled</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikRangeSlider @bind-StartValue="@StartValue"
+                        @bind-EndValue="@EndValue"
+                        TickPosition="@TickPosition"
+                        SmallStep="@SmallStep"
+                        LargeStep="@LargeStep"
+                        Enabled="@Enabled"
+                        Min="0"
+                        Max="100"
+                        Width="400px">
+    </TelerikRangeSlider>
+</div>
+
+@code {
+    public int _smallStep = 10;
+    public int StartValue { get; set; } = 20;
+    public int EndValue { get; set; } = 40;
+
+    public int SmallStep
+    {
+        get
+        {
+            return _smallStep;
+        }
+
+        set
+        {
+            _smallStep = Math.Min(Math.Max(value, 5), 25);
+        }
+    }
+    public int LargeStep => Math.Min(SmallStep * 2, 50);
+
+    public bool Enabled { get; set; } = true;
+
+    public SliderTickPosition TickPosition { get; set; } = SliderTickPosition.Both;
+    public List<TickPositionItem> TickPositions { get; set; } = new List<TickPositionItem>();
+
+    protected override Task OnInitializedAsync()
+    {
+        foreach (SliderTickPosition item in Enum.GetValues(typeof(SliderTickPosition)))
+        {
+            TickPositions.Add(new TickPositionItem { Text = item.ToString(), TickPosition = item });
+        }
+        return base.OnInitializedAsync();
+    }
+
+    public class TickPositionItem
+    {
+        public string Text { get; set; }
+        public SliderTickPosition TickPosition { get; set; }
+    }
+}

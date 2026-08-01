@@ -1,0 +1,64 @@
+@page "/badge/overview"
+@page "/badge/index"
+
+<div class="chat-container">
+    <div class="chat-header">
+        <div style="position: relative; overflow: visible; display: inline-block;">
+            <TelerikAvatar Type="AvatarType.Image">
+                <img src="https://demos.telerik.com/blazor-ui/images/panelbar/robert.jpg" />
+            </TelerikAvatar>
+
+            <TelerikBadge ThemeColor="error"
+                          VerticalAlign="@BadgeVerticalAlign.Bottom"
+                          HorizontalAlign="@BadgeHorizontalAlign.End"
+                          Size="sm">
+                Busy
+            </TelerikBadge>
+        </div>
+    </div>
+    <div class="chat-body">
+        <TelerikSkeleton ShapeType="@SkeletonShapeType.Text"
+                         Width="315px" Height="50px" Visible="true">
+        </TelerikSkeleton>
+        <TelerikSkeleton ShapeType="@SkeletonShapeType.Text"
+                         Width="220px" Height="50px" Visible="true">
+        </TelerikSkeleton>
+    </div>
+    <div class="chat-footer">
+        <TelerikTextBox Width="80%" Placeholder="Type your message"></TelerikTextBox>
+        <TelerikButton Class="send-button" ThemeColor="success">Send</TelerikButton>
+    </div>
+</div>
+
+<style>
+    .chat-footer {
+        text-align: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
+
+    .chat-container {
+        max-width: 400px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-body {
+        padding: 10px;
+        max-height: 300px;
+    }
+
+    .send-button {
+        width: 18%;
+        padding: 8px;
+        height: 30px;
+    }
+</style>

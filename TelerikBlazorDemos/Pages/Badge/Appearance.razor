@@ -1,0 +1,71 @@
+@page "/badge/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikButton Icon="@SvgIcon.User">
+        <TelerikBadge ThemeColor="@ThemeColor"
+                      FillMode="@FillMode"
+                      Rounded="@Rounded"
+                      Size="@Size">
+            10
+        </TelerikBadge>
+    </TelerikButton>
+</div>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.Badge.FillMode.Solid;
+    public string Rounded { get; set; } = ThemeConstants.Badge.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.Badge.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.Badge.ThemeColor.Primary;
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.Badge.FillMode.Solid },
+        { "Flat", ThemeConstants.Badge.FillMode.Flat },
+        { "Outline", ThemeConstants.Badge.FillMode.Outline }
+    };
+
+    public Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Badge.Rounded.Small },
+        { "Medium", ThemeConstants.Badge.Rounded.Medium },
+        { "Large", ThemeConstants.Badge.Rounded.Large },
+        { "Full", ThemeConstants.Badge.Rounded.Full }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Badge.Size.Small },
+        { "Medium", ThemeConstants.Badge.Size.Medium },
+        { "Large", ThemeConstants.Badge.Size.Large }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.Badge.ThemeColor.Base },
+        { "Primary", ThemeConstants.Badge.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.Badge.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.Badge.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.Badge.ThemeColor.Info },
+        { "Success", ThemeConstants.Badge.ThemeColor.Success },
+        { "Warning", ThemeConstants.Badge.ThemeColor.Warning },
+        { "Error", ThemeConstants.Badge.ThemeColor.Error },
+        { "Dark", ThemeConstants.Badge.ThemeColor.Dark },
+        { "Light", ThemeConstants.Badge.ThemeColor.Light },
+        { "Inverse", ThemeConstants.Badge.ThemeColor.Inverse }
+    };
+}

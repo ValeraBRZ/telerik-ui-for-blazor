@@ -1,0 +1,82 @@
+@page "/numerictextbox/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@validationModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="age" class="k-label k-form-label">Age</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikNumericTextBox Placeholder="Enter an int age..." @bind-Value="@validationModel.AgeInYears" ValidateOn="@ValidationEvent" Id="age"></TelerikNumericTextBox>
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.AgeInYears)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    NumericValidationModel validationModel { get; set; }
+    string SuccessMessage = string.Empty;
+    
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    class NumericValidationModel
+    {
+        [Required(ErrorMessage = "Enter an int age")]
+        [Range(0, 200, ErrorMessage = "Nobody is that old")]
+        public int? AgeInYears { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        validationModel = new NumericValidationModel();
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}
+
+
+

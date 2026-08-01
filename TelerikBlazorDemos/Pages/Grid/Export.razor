@@ -1,0 +1,77 @@
+@page "/grid/export"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Select columns for excel export">
+        <TelerikMultiSelect @bind-Value="@ExportColumns" Data="@Colummns">
+            <MultiSelectSettings>
+                <MultiSelectPopupSettings Height="auto"></MultiSelectPopupSettings>
+            </MultiSelectSettings>
+        </TelerikMultiSelect>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Excel Export">
+        <TelerikCheckBox Id="cancel-export" @bind-Value="@CancelExport"></TelerikCheckBox>
+        <label for="cancel-export">Cancel Excel Export</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Export">
+        <label class="k-checkbox-label"><TelerikCheckBox @bind-Value="@ExportAllPages" /> Export All Pages</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData
+             Pageable="true"
+             Groupable="true"
+             Sortable="true"
+             FilterMode="GridFilterMode.FilterMenu"
+             Resizable="true"
+             Reorderable="true">
+    <GridToolBar>
+        <GridToolBarCsvExportTool>
+            Export to CSV
+        </GridToolBarCsvExportTool>
+        <GridToolBarExcelExportTool>
+            Export to Excel
+        </GridToolBarExcelExportTool>
+        <GridToolBarPdfExportTool>
+            Export to PDF
+        </GridToolBarPdfExportTool>
+    </GridToolBar>
+    <GridExport>
+        <GridPdfExport FileName="telerik-grid-export" AllPages="@ExportAllPages" PageOrientation="@GridPdfExportPageOrientation.Landscape" />
+        <GridCsvExport FileName="telerik-grid-export" AllPages="@ExportAllPages" />
+        <GridExcelExport FileName="telerik-grid-export" AllPages="@ExportAllPages" OnBeforeExport="@OnBeforeExcelExport" />
+    </GridExport>
+    <GridColumns>
+        <GridColumn Field="@nameof(ProductDto.ProductId)" Title="Id" Groupable="false" Width="75px" />
+        <GridColumn Field="@nameof(ProductDto.ProductName)" Width="230px" />
+        <GridColumn Field="@nameof(ProductDto.UnitsInStock)" Width="95px" />
+        <GridColumn Field="@nameof(ProductDto.UnitsOnOrder)" Title="On Order" Width="90px" />
+        <GridColumn Field="@nameof(ProductDto.ReorderLevel)" Width="100px" />
+        <GridColumn Field="@nameof(ProductDto.QuantityPerUnit)" Width="250px" />
+        <GridColumn Field="@nameof(ProductDto.UnitPrice)" Title="Price" Width="100px" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    private List<ProductDto> GridData { get; set; }
+    private bool ExportAllPages { get; set; }
+    public List<string> Colummns { get; set; } = new List<string>() { nameof(ProductDto.ProductId), nameof(ProductDto.ProductName), nameof(ProductDto.UnitsInStock), nameof(ProductDto.UnitsOnOrder), nameof(ProductDto.ReorderLevel), nameof(ProductDto.QuantityPerUnit), nameof(ProductDto.UnitPrice) };
+    public List<string> ExportColumns { get; set; } = new List<string>();
+    public bool CancelExport { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+
+    public void OnBeforeExcelExport(GridBeforeExcelExportEventArgs args)
+    {
+        if (ExportColumns.Any())
+        {
+            args.Columns = args.Columns.Where(col => ExportColumns.Contains(col.Field)).ToList();
+        }
+
+        args.IsCancelled = CancelExport;
+    }
+}

@@ -1,0 +1,50 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+
+<h3>Canvas</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Left arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the left color in the canvas.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Right arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the right color in the canvas.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the upper color in the canvas.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the down color in the canvas.
+        </span>
+    </li>
+</ul>
+
+<h3>Sliders</h3>
+<SliderList IsNested="true"HideNotApplicableForColorPickers="true"></SliderList>
+
+<h3>Numeric Editors</h3>
+<NumericTextBoxList IsNested="true"></NumericTextBoxList>
+
+@code {
+    [Parameter] public bool IsNested { get; set; }
+}

@@ -1,0 +1,239 @@
+@page "/grid/events"
+
+@inject ProductService ProductService
+
+<TelerikGrid Data="@GridData"
+             Reorderable="true"
+             Resizable="true"
+             Pageable="true"
+             PageSize="7"
+             EditMode="GridEditMode.Inline"
+             Navigable="true"
+             Sortable="true"
+             FilterMode="@GridFilterMode.FilterMenu"
+             PageChanged="@PageChanged"
+             SelectionMode="@GridSelectionMode.Multiple"
+             SelectedItems="@SelectedProducts"
+             SelectedItemsChanged="@((IEnumerable<ProductDto> productList) => OnSelect(productList))"
+             OnRowClick="@OnRowClickHandler"
+             OnRowDoubleClick="@OnRowDoubleClickHandler"
+             OnRowContextMenu="@OnRowContextMenuHandler"
+             OnStateInit="@((GridStateEventArgs<ProductDto> args) => OnStateInitHandler(args))"
+             OnStateChanged="@((GridStateEventArgs<ProductDto> args) => OnStateChangedHandler(args))"
+             OnUpdate="@UpdateHandler"
+             OnDelete="@DeleteHandler"
+             OnCreate="@CreateHandler"
+             OnEdit="@EditHandler"
+             OnRowExpand="@OnRowExpandHandler"
+             OnRowCollapse="@OnRowCollapseHandler">
+    <GridToolBarTemplate>
+        <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Product</GridCommandButton>
+    </GridToolBarTemplate>
+    <GridColumns>
+        <GridCheckboxColumn SelectAll="true" SelectAllMode="@GridSelectAllMode.Current" />
+        <GridColumn Field="@(nameof(ProductDto.ProductName))" Title="Product Name" Width="250px" />
+        <GridColumn Field="@(nameof(ProductDto.UnitPrice))" Title="Price" Width="90px">
+            <Template>
+                @if ((context as ProductDto).UnitPrice.HasValue)
+                {
+                    @(((context as ProductDto).UnitPrice).Value.ToString("C"))
+                }
+            </Template>
+        </GridColumn>
+        <GridCommandColumn Width="180px">
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+            <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+
+    <DetailTemplate Context="ProductDetailContext">
+        @{
+            int currentId = ProductDetailContext.ProductId;
+
+            var data = GridData.Where(x => x.ProductId == currentId);
+
+            <TelerikListView Data="@data">
+                <HeaderTemplate>
+                    <h4 class="ml-sm">Product Details</h4>
+                </HeaderTemplate>
+                <Template Context="ListViewContext">
+                    <div class="m-sm">
+                        <div><strong>Product name: </strong>@ListViewContext.ProductName</div>
+                        <div><strong>In Stock: </strong> @ListViewContext.UnitsInStock</div>
+                        <div><strong>On Order: </strong> @ListViewContext.UnitsOnOrder </div>
+                    </div>
+                </Template>
+            </TelerikListView> }
+    </DetailTemplate>
+
+</TelerikGrid>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+<TelerikWindow Modal="true" @bind-Visible="@isRowDoubleClicked">
+    <WindowTitle>
+        <strong>@ProductDetailsData.FirstOrDefault().ProductName</strong>
+    </WindowTitle>
+    <WindowContent>
+        <div><strong>In Stock: </strong>@ProductDetailsData.FirstOrDefault().UnitsInStock</div>
+        <div><strong>On Order: </strong>@ProductDetailsData.FirstOrDefault().UnitsOnOrder</div>
+    </WindowContent>
+    <WindowActions>
+        <WindowAction Name="Minimize" />
+        <WindowAction Name="Maximize" />
+        <WindowAction Name="Close" />
+    </WindowActions>
+</TelerikWindow>
+
+@code {
+    public List<ProductDto> GridData { get; set; }
+    public List<ProductDto> ProductDetailsData { get; set; } = new List<ProductDto>();
+    public IEnumerable<ProductDto> SelectedProducts { get; set; } = Enumerable.Empty<ProductDto>();
+    public string EventLog { get; set; } = "";
+    public bool isRowDoubleClicked { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    public void LoadData()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    void PageChanged(int currentPage)
+    {
+        string log = "<div><strong>Page Changed event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnSelect(IEnumerable<ProductDto> productList)
+    {
+        string log = "<div><strong>Select event fired</strong>. The following products have been selected:<ul>";
+
+        SelectedProducts = productList;
+
+        foreach (var product in SelectedProducts)
+        {
+            log += $"<li><strong>{product.ProductName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnRowClickHandler(GridRowClickEventArgs args)
+    {
+        var mouseEventArgs = args.EventArgs as MouseEventArgs;
+        ProductDto item = args.Item as ProductDto;
+
+        var clickInitiatorType = mouseEventArgs != null ? "Mouse" : "Keyboard";
+
+        string log = $"<div><strong>Row Click event fired - Item: {item.ProductName} - Fired with: {clickInitiatorType} - Clicked column: {args.Field}</strong>.";
+
+        if (mouseEventArgs != null)
+        {
+            log += $"<ul><li> Position: {mouseEventArgs.ClientX}, {mouseEventArgs.ClientY}</li></ul>";
+        }
+
+        log += "</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnRowDoubleClickHandler(GridRowClickEventArgs args)
+    {
+        isRowDoubleClicked = true;
+        var item = args.Item as ProductDto;
+
+        ProductDetailsData = GridData.Where(x => x.ProductId == item.ProductId).ToList();
+
+        string log = $"<div><strong>Row Double Click event fired - Item: {item.ProductName}</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnRowContextMenuHandler(GridRowClickEventArgs args)
+    {
+        var item = args.Item as ProductDto;
+
+        string log = $"<div><strong>Row Context Menu event fired - Item: {item.ProductName} </strong>.</div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnStateInitHandler(GridStateEventArgs<ProductDto> args)
+    {
+        string log = "<div><strong>On State Init event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnStateChangedHandler(GridStateEventArgs<ProductDto> args)
+    {
+        var item = args.PropertyName;
+        string log = $"<div><strong>On State Changed event fired</strong> from change in the {item} property in the state.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnRowExpandHandler(GridRowExpandEventArgs args)
+    {
+        var item = args.Item as ProductDto;
+
+        string log = $"<div><strong>Row Expand event fired - Item: {item.ProductName}.</strong></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnRowCollapseHandler(GridRowCollapseEventArgs args)
+    {
+        var item = args.Item as ProductDto;
+
+        string log = $"<div><strong>Row Collapse event fired - Item: {item.ProductName}.</strong></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void UpdateHandler(GridCommandEventArgs args)
+    {
+        var productModel = (ProductDto)args.Item;
+        ProductService.UpdateProduct(productModel);
+        LoadData();
+
+        string log = $"<div><strong>Update event fired</strong>.The updated product name is: {productModel.ProductName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void DeleteHandler(GridCommandEventArgs args)
+    {
+        var productModel = (ProductDto)args.Item;
+        ProductService.DeleteProduct(productModel);
+        LoadData();
+
+        string log = $"<div><strong>Delete event fired</strong>.The deleted product is: {productModel.ProductName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void CreateHandler(GridCommandEventArgs args)
+    {
+        var productModel = (ProductDto)args.Item;
+        ProductService.CreateProduct(productModel);
+        LoadData();
+
+        string log = $"<div><strong>Create event fired</strong>.The created product is: {productModel.ProductName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void EditHandler(GridCommandEventArgs args)
+    {
+        string log = $"<div><strong>Edit event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+}

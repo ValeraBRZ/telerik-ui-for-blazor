@@ -1,0 +1,35 @@
+@page "/breadcrumb/navigation"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items" Class="k-justify-content-center"></TelerikBreadcrumb>
+</div>
+
+@code {
+
+        public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+        protected override void OnInitialized()
+        {
+            var baseUrl = "https://demos.telerik.com/";
+            Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem {  Url = $"{baseUrl}", Icon = SvgIcon.Home },
+            new BreadcrumbItem { Text = "Blazor UI", Url = $"{baseUrl}blazor-ui" },
+            new BreadcrumbItem { Text = "Breadcrumb", Url = $"{baseUrl}blazor-ui/breadcrumb/overview" },
+            new BreadcrumbItem { Text = "Navigation", Url = $"{baseUrl}blazor-ui/breadcrumb/navigation" },
+        };
+    }
+
+    public class BreadcrumbItem
+    {
+        public ISvgIcon Icon { get; set; }
+        public string Text { get; set; }
+        public string Url { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(390px + 6em) !important;
+    }
+</style>

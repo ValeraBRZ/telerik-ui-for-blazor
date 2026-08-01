@@ -1,0 +1,40 @@
+@page "/multiselect/autoclose"
+
+@inject CategoryService categoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <label for="myCheckBox">The Multiselect closes on selection</label>
+        <TelerikCheckBox @bind-Value="@isAutoCloseEnabled" Id="myCheckBox"></TelerikCheckBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <div class="demo-alert demo-alert-info">Try selecting a few items, then toggle the checkbox above and try selecting a few more items.</div>
+            <TelerikMultiSelect Data="@Categories"
+                                @bind-Value="@Values"
+                                TextField="CategoryName"
+                                ValueField="CategoryId"
+                                AutoClose="@isAutoCloseEnabled"
+                                Placeholder="Enter a Category"
+                                Width="100%"
+                                ShowClearButton="true">
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    public bool isAutoCloseEnabled { get; set; } = true;
+    IEnumerable<CategoryDto> Categories { get; set; }
+    List<int> Values { get; set; } = new List<int>();
+
+    protected override void OnInitialized()
+    {
+        Categories = categoryService.GetCategories();
+
+        base.OnInitialized();
+    }
+}

@@ -1,0 +1,130 @@
+@page "/toolbar/adaptive"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Use the slider below to resize the Toolbars and observe the responsive behavior"></DemoConfiguratorColumn>
+    <TelerikSlider Class="toolbar-slider"
+                   @bind-Value="@Width"
+                   Min="0"
+                   Max="100"
+                   ShowButtons="false"
+                   SmallStep="0.1"
+                   TickPosition="SliderTickPosition.None"
+                   Width="100%">
+    </TelerikSlider>
+    <DemoConfiguratorColumn Description="Scroll Buttons">
+        <TelerikCheckBox Id="scroll-buttons" @bind-Value="@ScrollButtons"></TelerikCheckBox>
+        <label for="close-on-overlay-click">@(ScrollButtons ? "Disable " : "Enable ") Scroll Buttons</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Scroll Buttons Layout">
+        <TelerikDropDownList @bind-Value="@ScrollButtonsLayout"
+                             Data="@ButtonsLayouts"
+                             Enabled="@ScrollButtons">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" />
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<h2 class="mb-md">Responsive Overflow Mode Scroll</h2>
+
+<div class="toolbar-wrapper">
+    <TelerikToolBar OverflowMode="@ToolBarOverflowMode.Scroll"
+                    ScrollButtonsVisibility="@(ScrollButtons ? ToolBarScrollButtonsVisibility.Visible : ToolBarScrollButtonsVisibility.Hidden)"
+                    ScrollButtonsPosition="@ScrollButtonsLayout">
+        <ToolBarButton Icon="@SvgIcon.Undo">Undo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Redo">Redo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Image">Image</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarToggleButton Icon="@SvgIcon.ApplyFormat">Format</ToolBarToggleButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.Bold">Bold</ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Italic">Italic</ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Underline">Underline</ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarButton Icon="@SvgIcon.Copy" Overflow="ToolBarItemOverflow.Never">Copy</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Clipboard" Overflow="ToolBarItemOverflow.Never">Paste</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+            <ToolBarToggleButton Icon="@SvgIcon.AlignLeft" OverflowText="Left"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignCenter" OverflowText="Center"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignRight" OverflowText="Right"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+    </TelerikToolBar>
+</div>
+
+<h2 class="mb-md">Responsive Overflow Mode Menu</h2>
+
+<div class="toolbar-wrapper">
+    <TelerikToolBar OverflowMode="@ToolBarOverflowMode.Menu">
+        <ToolBarButton Icon="@SvgIcon.Undo">Undo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Redo">Redo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Image" Overflow="ToolBarItemOverflow.Always">Image</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarToggleButton Icon="@SvgIcon.ApplyFormat">Format</ToolBarToggleButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.Bold">Bold</ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Italic">Italic</ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Underline">Underline</ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarButton Icon="@SvgIcon.Copy" Overflow="ToolBarItemOverflow.Never">Copy</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Clipboard" Overflow="ToolBarItemOverflow.Never">Paste</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+            <ToolBarToggleButton Icon="@SvgIcon.AlignLeft" OverflowText="Left"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignCenter" OverflowText="Center"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignRight" OverflowText="Right"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+    </TelerikToolBar>
+</div>
+
+<h2 class="mb-md">Responsive Overflow Mode Section</h2>
+
+<div class="toolbar-wrapper">
+    <TelerikToolBar OverflowMode="@ToolBarOverflowMode.Section">
+        <ToolBarButton Icon="@SvgIcon.Undo">Undo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Redo">Redo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Image" Overflow="ToolBarItemOverflow.Always">Image</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarToggleButton Icon="@SvgIcon.ApplyFormat"></ToolBarToggleButton>
+        <ToolBarSeparator Overflow="@ToolBarItemOverflow.Always"></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.Bold"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Italic"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Underline"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarButton Icon="@SvgIcon.Copy" Overflow="ToolBarItemOverflow.Never">Copy</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Clipboard" Overflow="ToolBarItemOverflow.Never">Paste</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+            <ToolBarToggleButton Icon="@SvgIcon.AlignLeft" OverflowText="Left"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignCenter" OverflowText="Center"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignRight" OverflowText="Right"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+    </TelerikToolBar>
+</div>
+
+@code {
+    private double Width { get; set; } = 100;
+    private bool ScrollButtons { get; set; } = true;
+    private ToolBarScrollButtonsPosition ScrollButtonsLayout { get; set; } = ToolBarScrollButtonsPosition.Split;
+
+    private List<ToolBarScrollButtonsPosition> ButtonsLayouts { get; set; } = new List<ToolBarScrollButtonsPosition>()
+    {
+        ToolBarScrollButtonsPosition.Start,
+        ToolBarScrollButtonsPosition.End,
+        ToolBarScrollButtonsPosition.Split
+    };
+}
+
+<style>
+    .toolbar-wrapper {
+        width: @(Width.ToString() + "%");
+    }
+
+    .toolbar-slider {
+        padding: 0px 16px;
+    }
+</style>

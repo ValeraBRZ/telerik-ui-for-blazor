@@ -1,0 +1,29 @@
+@page "/multiselect/grouping"
+
+@inject ProductService productService
+
+<div class="demo-section">
+    <label for="selectId">Select a product:</label>
+    <br />
+    <TelerikMultiSelect Data="@Data"
+                        GroupField="@nameof(ProductDto.CategoryName)"
+                        ValueField="ProductId"
+                        TextField="ProductName"
+                        @bind-Value="@SelectedProducts"
+                        Id="selectId">
+    </TelerikMultiSelect>
+</div>
+
+
+@code {
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    public List<int> SelectedProducts { get; set; } = new List<int>();
+
+    protected override void OnInitialized()
+    {
+        Data = productService.GetProducts();
+
+        base.OnInitialized();
+    }
+}

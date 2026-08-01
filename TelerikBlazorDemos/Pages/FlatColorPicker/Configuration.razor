@@ -1,0 +1,29 @@
+@page "/flatcolorpicker/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Customize Header">
+        <TelerikButton OnClick="@(() => ShowClearButton = !ShowClearButton)">Toggle ClearButton</TelerikButton>
+        <TelerikButton OnClick="@(() => ShowPreview = !ShowPreview)">Toggle Preview</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Customize Footer">
+        <TelerikButton OnClick="@(() => ShowButtons = !ShowButtons)">Toggle Buttons</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikFlatColorPicker @bind-Value="Value"
+                        ShowButtons="@ShowButtons"
+                        ShowClearButton="@ShowClearButton"
+                        ShowPreview="@ShowPreview"></TelerikFlatColorPicker>
+</div>
+
+@code {
+    public string Value { get; set; } = "rgb(255, 0, 61)";
+
+    public bool ShowButtons { get; set; }
+    public bool ShowPreview { get; set; }
+    public bool ShowClearButton { get; set; }
+    public bool ShowIcon { get; set; } = true;
+
+    public string Icon => ShowIcon ? "edit-tools" : null;
+}

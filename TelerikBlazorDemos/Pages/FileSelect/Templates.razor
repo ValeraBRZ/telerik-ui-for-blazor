@@ -1,0 +1,210 @@
+@page "/fileselect/templates"
+
+<TelerikFileSelect @ref="@FileSelectRef" Files="@InitialFiles">
+    <SelectFilesButtonTemplate>
+        <div class="custom-select-button">
+            <TelerikSvgIcon Icon="@SvgIcon.FolderOpen" Size="@ThemeConstants.SvgIcon.Size.ExtraLarge" Class="select-icon" />
+            <div class="select-text">
+                <div class="select-title">Browse Files</div>
+                <div class="select-hint">Select one or multiple files</div>
+            </div>
+        </div>
+    </SelectFilesButtonTemplate>
+    <FileTemplate Context="fileContext">
+        <div class="custom-file-item">
+            <div class="file-icon-section">
+                <div class="file-extension-badge">
+                    @fileContext.File.Extension.TrimStart('.').ToUpper()
+                </div>
+            </div>
+            <div class="file-info">
+                <div class="file-name">@fileContext.File.Name@fileContext.File.Extension</div>
+                <div class="file-meta">
+                    <span class="file-size">@GetFormattedFileSize(fileContext.File.Size)</span>
+                    <span class="file-separator">•</span>
+                    <span class="file-type">@fileContext.File.Extension.TrimStart('.').ToUpper() file</span>
+                </div>
+            </div>
+            <TelerikButton Icon="@SvgIcon.Trash"
+                           FillMode="@ThemeConstants.Button.FillMode.Flat"
+                           Rounded="@ThemeConstants.Button.Rounded.Full"
+                           ThemeColor="@ThemeConstants.Button.ThemeColor.Error"
+                           Class="remove-button"
+                           OnClick="@(() => RemoveFile(fileContext.File.Id))">
+            </TelerikButton>
+        </div>
+    </FileTemplate>
+</TelerikFileSelect>
+
+@code {
+    private TelerikFileSelect FileSelectRef { get; set; }
+
+    private List<FileSelectFileInfo> InitialFiles { get; set; } = new List<FileSelectFileInfo>()
+    {
+        new FileSelectFileInfo(){ Id="2", Name="Marketing_Presentation", Extension=".pptx", Size = 1024 * 1024 * 12 },
+        new FileSelectFileInfo(){ Id="3", Name="Budget_Analysis", Extension=".xlsx", Size = 1024 * 1024 * 3 },
+        new FileSelectFileInfo(){ Id="4", Name="Team_Photo", Extension=".jpg", Size = 1024 * 1024 * 6 }
+    };
+
+    private void RemoveFile(string fileId)
+    {
+        FileSelectRef.RemoveFile(fileId);
+    }
+
+    private string GetFormattedFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        double len = bytes;
+        int order = 0;
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len = len / 1024;
+        }
+        return $"{len:0.##} {sizes[order]}";
+    }
+}
+
+<style>
+    /* Override the outer button's default theme styles */
+    .k-button:has(.custom-select-button) {
+        padding: 0;
+        border: none;
+        background: none;
+        box-shadow: none;
+        color: inherit;
+        display: block;
+        width: 100%;
+    }
+
+        .k-button:has(.custom-select-button):hover,
+        .k-button:has(.custom-select-button):focus,
+        .k-button:has(.custom-select-button):active {
+            background: none;
+            border: none;
+            box-shadow: none;
+            color: inherit;
+        }
+
+        .k-button:has(.custom-select-button):focus-visible {
+            outline: 2px solid #0078d4;
+            outline-offset: 2px;
+        }
+
+    /* Custom Select Button - Blue Theme */
+    .custom-select-button {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 12px;
+        border: 2px solid #0078d4;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #f0f6ff 0%, #e6f2ff 100%);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 120, 212, 0.08);
+    }
+
+    .select-icon {
+        color: #0078d4;
+        flex-shrink: 0;
+    }
+
+    .select-text {
+        flex: 1;
+    }
+
+    .select-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #005a9e;
+        margin-bottom: 6px;
+    }
+
+    .select-hint {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    /* File Items - Horizontal Layout */
+    .custom-file-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+        margin-bottom: -2px;
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: white;
+        border: 1px solid #e1e4e8;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .file-icon-section {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0078d4 0%, #00a4ef 100%);
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .file-extension-badge {
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        letter-spacing: 0.5px;
+    }
+
+    .file-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 15px;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .file-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .file-size {
+        font-weight: 500;
+        color: #0078d4;
+    }
+
+    .file-separator {
+        color: #dee2e6;
+    }
+
+    .file-type {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 600;
+        color: #868e96;
+    }
+
+    .remove-button {
+        flex-shrink: 0;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+    }
+
+    .custom-file-item:hover .remove-button {
+        opacity: 1;
+    }
+</style>

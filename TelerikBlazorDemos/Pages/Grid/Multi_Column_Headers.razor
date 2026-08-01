@@ -1,0 +1,44 @@
+@page "/grid/multi-column-headers"
+
+@inject CustomerService customerService
+
+<TelerikGrid Data=@GridData
+             Pageable="true"
+             Sortable="true"
+             Resizable="true"
+             ShowColumnMenu="true"
+             PageSize="10">
+    <GridSettings>
+        <GridColumnMenuSettings FilterMode="@ColumnMenuFilterMode.None"
+                                Lockable="false"></GridColumnMenuSettings>
+    </GridSettings>
+    <GridColumns>
+        <GridColumn Title="Personal Information">
+            <Columns>
+                <GridColumn Field=@nameof(CustomerDto.ContactName) Width="150px" Title="Name" />
+                <GridColumn Field=@nameof(CustomerDto.ContactTitle) Width="150px" Title="Title" />
+            </Columns>
+        </GridColumn>
+        <GridColumn Title="Company">
+            <Columns>
+                <GridColumn Field=@nameof(CustomerDto.CompanyName) Width="150px" Title="Name"></GridColumn>
+            </Columns>
+        </GridColumn>
+        <GridColumn Title="Contact Details">
+            <Columns>
+                <GridColumn Field="@nameof(CustomerDto.Address)" Width="200px" Title="Address"></GridColumn>
+                <GridColumn Field="@nameof(CustomerDto.Phone)" Width="150px" Title="Phone"></GridColumn>
+            </Columns>
+        </GridColumn>
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<CustomerDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = customerService.GetCustomers();
+    }
+}
+

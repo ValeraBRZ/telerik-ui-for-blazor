@@ -1,0 +1,39 @@
+@page "/tabstrip/keyboard-navigation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tabs Position">
+        <select @bind=@tabPosition class="k-dropdownlist k-picker k-picker-md">
+            <option value=@TabPosition.Top>Top</option>
+            <option value=@TabPosition.Left>Left</option>
+            <option value=@TabPosition.Right>Right</option>
+            <option value=@TabPosition.Bottom>Bottom</option>
+        </select>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikTabStrip TabPosition=@tabPosition>
+        <TabStripTab Title="Sofia">
+            <WeatherCard City="Sofia"
+                         TempC="23"
+                         Forecast="ForecastType.Sunny">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="London">
+            <WeatherCard City="London"
+                         TempC="21"
+                         Forecast="ForecastType.Cloudy">
+            </WeatherCard>
+        </TabStripTab>
+        <TabStripTab Title="Paris">
+            <WeatherCard City="Paris"
+                         TempC="17"
+                         Forecast="ForecastType.Rainy">
+            </WeatherCard>
+        </TabStripTab>
+    </TelerikTabStrip>
+</div>
+
+@code {
+    TabPosition tabPosition = TabPosition.Top;
+}

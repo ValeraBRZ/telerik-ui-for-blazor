@@ -1,0 +1,108 @@
+<h3>Supported keys and user actions</h3>
+
+<div class="kd-text kd-text-secondary">
+    <p>When the input is focused, there are actions available in addition to the standard DateInput actions.</p>
+</div>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            opens the popup with the time selection popup.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-preview">
+            <span class="button-preview button-descr">or</span>
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            closes the time selection popup.
+        </span>
+    </li>
+</ul>
+
+<h3>Date Input</h3>
+
+<TelerikBlazorDemos.Shared.KeyboardShortcuts.DateInputList IsNested="true" />
+
+<div class="kd-text kd-text-secondary">
+    <p>In the Date-Time popup, there are a few keys that perform the general actions. The sections below provide more specific datails.</p>
+</div>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-preview">
+            <span class="button-descr">and</span>
+        </span>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves the focus in the popup between buttons (such as the Now button, the Set button and the Date and Time switchers) and the time carousels (in the time portion).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            activates the focused buttons in the popup and selects a date in the calendar portion.
+        </span>
+    </li>
+</ul>
+
+<h3>Time Popup Portion</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Right arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the next carousel (time portion selector) in the time popup.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Left arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the previous carousel (time portion selector) in the time popup.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-descr">
+            selects the previous time in the current carousel (time portion selector) in the time popup.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            selects the next time in the current carousel (time portion selector) in the time popup.
+        </span>
+    </li>
+</ul>
+
+<h3>Date Popup Portion</h3>
+
+<TelerikBlazorDemos.Shared.KeyboardShortcuts.CalendarList HideNotApplicableForPickers="true" IsNested="true" />

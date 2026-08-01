@@ -1,0 +1,24 @@
+@page "/combobox/rtl"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <TelerikComboBox @bind-Value="@Value"
+                     Data="@ComboBoxData"
+                     Placeholder="Select a product"
+                     ValueField="ProductId"
+                     TextField="ProductName">
+    </TelerikComboBox>
+</div>
+
+
+@code {
+    private IEnumerable<ProductDto> ComboBoxData { get; set; }
+
+    private int Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ComboBoxData = ProductService.GetProducts();
+    }
+}

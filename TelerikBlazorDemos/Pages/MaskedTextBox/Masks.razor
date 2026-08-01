@@ -1,0 +1,42 @@
+@page "/maskedtextbox/masks"
+
+<div class="demo-wrapper">
+    <div class="mask-alert">
+        <div class="demo-alert demo-alert-info">
+            <p>Example1: QG-9001595</p>
+            <p>Example2: C4-9000213</p>
+        </div>
+
+        <div class="k-form-field">
+            <label for="invoice-input">Invoice Number:</label>
+            <TelerikMaskedTextBox Mask="LA-\9\0\00000" Id="invoice-input" Value="C41213"></TelerikMaskedTextBox>
+        </div>
+    </div>
+
+    <div class="mask-alert">
+        <div class="demo-alert demo-alert-info">
+            <p>Bulgaria format: (+359) 899-11-22-33</p>
+            <p>UK format: (+44) 111-31-23-4</p>
+        </div>
+
+        <div class="k-form-field">
+            <label for="phone-input">Phone Number:</label>
+            <TelerikMaskedTextBox Mask="(#999) 000-00-00-00" Id="phone-input" Value="+14 111316344"></TelerikMaskedTextBox>
+        </div>
+    </div>
+</div>
+
+<style>
+    .demo-wrapper {
+        display: flex;
+        justify-content: space-around
+    }
+
+    .mask-alert {
+        width: 48%;
+    }
+
+    .k-form-field {
+        flex-direction: column;
+    }
+</style>

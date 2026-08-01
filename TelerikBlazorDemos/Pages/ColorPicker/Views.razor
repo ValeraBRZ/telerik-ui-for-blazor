@@ -1,0 +1,22 @@
+@page "/colorpicker/views"
+
+<div class="demo-section">
+    <h4>ColorPicker with single palette view</h4>
+    <TelerikColorPicker @bind-Value="@PaletteValue">
+        <ColorPickerViews>
+            <ColorPickerPaletteView Colors="@ColorPalettePresets.Austin" TileWidth="30px" TileHeight="30px" Columns="8"></ColorPickerPaletteView>
+        </ColorPickerViews>
+    </TelerikColorPicker>
+    <h4>ColorPicker with single gradient view</h4>
+    <TelerikColorPicker @bind-Value="@GradientValue">
+        <ColorPickerViews>
+            <ColorPickerGradientView ShowOpacityEditor="false"></ColorPickerGradientView>
+        </ColorPickerViews>
+    </TelerikColorPicker>
+</div>
+
+
+@code {
+    public string PaletteValue { get; set; } = "#282f89";
+    public string GradientValue { get; set; } = "#282f89";
+}

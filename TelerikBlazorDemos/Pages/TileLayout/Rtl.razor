@@ -1,0 +1,71 @@
+@page "/tilelayout/rtl"
+
+<TelerikTileLayout Columns="5"
+                   ColumnWidth="300px"
+                   RowHeight="235px"
+                   Reorderable="true"
+                   Resizable="true"
+                   OnResize="@ItemResize">
+    <TileLayoutItems>
+        <TileLayoutItem HeaderText="Page Views" ColSpan="3">
+            <Content>
+                <PageViews @ref="@PageViewsRef"></PageViews>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Conversion Rate">
+            <Content>
+                <ConversionRate></ConversionRate>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Currently">
+            <Content>
+                <Currently></Currently>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Most Visited Pages" ColSpan="2">
+            <Content>
+                <MostVisitedPages @ref="@MostVisitedPagesRef"></MostVisitedPages>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Conversions by Channel" RowSpan="2" ColSpan="2">
+            <Content>
+                <ConversionsByChannel></ConversionsByChannel>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Bounce Rate">
+            <Content>
+                <BounceRate></BounceRate>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Users by Channel" RowSpan="2" ColSpan="2">
+            <Content>
+                <UsersByChannel></UsersByChannel>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Visitors" RowSpan="2">
+            <Content>
+                <Visitors @ref="@VisitorsRef"></Visitors>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Conversion This Month" ColSpan="2">
+            <Content>
+                <ConversionThisMonth @ref="@ConversionsRef"></ConversionThisMonth>
+            </Content>
+        </TileLayoutItem>
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+@code {
+    public ConversionThisMonth ConversionsRef { get; set; }
+    public Visitors VisitorsRef { get; set; }
+    public MostVisitedPages MostVisitedPagesRef { get; set; }
+    public PageViews PageViewsRef { get; set; }
+
+    void ItemResize()
+    {
+        ConversionsRef.Refresh();
+        VisitorsRef.Refresh();
+        MostVisitedPagesRef.Refresh();
+        PageViewsRef.Refresh();
+    }
+}

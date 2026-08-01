@@ -1,0 +1,67 @@
+@page "/checkbox/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@ValidationForm" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label class="k-label k-form-label k-checkbox-label">
+                        <TelerikCheckBox @bind-Value="@ValidationForm.TermsAgreement"></TelerikCheckBox>
+                        &nbsp;I agree with the terms and conditions.
+                    </label>
+                </div>
+
+                <ValidationMessage For="@(() => ValidationForm.TermsAgreement)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code{
+    string SuccessMessage = string.Empty;
+    public Form ValidationForm { get; set; }
+
+    public class Form
+    {
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms and conditions.")]
+        public bool TermsAgreement { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        ValidationForm = new Form();
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

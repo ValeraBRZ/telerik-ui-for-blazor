@@ -1,0 +1,49 @@
+@page "/radiogroup/overview"
+
+<div class="k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label class="label">How to get in touch?</label>
+        <div class="k-form-field-wrap">
+            <TelerikRadioGroup Data="@CommunicationTypes"
+                               @bind-Value="@SelectedCommunicationType"></TelerikRadioGroup>
+            <div class="k-form-hint">You won't be receiving advertising materials.</div>
+        </div>
+    </div>
+</div>
+
+@code  {
+    public CommunicationType SelectedCommunicationType { get; set; } = CommunicationType.Phone;
+    public List<CommunicationTypeModel> CommunicationTypes { get; set; } = new List<CommunicationTypeModel>()
+    {
+        new CommunicationTypeModel() { Text = "Phone (SMS)", Value = CommunicationType.Phone },
+        new CommunicationTypeModel() { Text = "E-mail", Value = CommunicationType.Email },
+        new CommunicationTypeModel() { Text = "None", Value = CommunicationType.None }
+    };
+
+    public class CommunicationTypeModel
+    {
+        public string Text { get; set; }
+        public CommunicationType Value { get; set; }
+
+        public CommunicationTypeModel()
+        {
+        }
+    }
+
+    public enum CommunicationType
+    {
+        Phone,
+        Email,
+        None
+    }
+}
+
+<style>
+    .label {
+        font: normal 14px/16px Metric, Arial, Helvetica, sans-serif;
+        color: #656565;
+        display: inline-block;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+</style>

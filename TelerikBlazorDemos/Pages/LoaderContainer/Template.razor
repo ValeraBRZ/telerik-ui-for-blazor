@@ -1,0 +1,120 @@
+@page "/loadercontainer/template"
+
+@inject SupplierService supplierService
+@inject ProductService productService
+
+<div class="demo-container pt-sm">
+    <TelerikLoaderContainer Visible="@Visible">
+        <Template>
+            <div class="lds-dual-ring"></div>
+        </Template>
+    </TelerikLoaderContainer>
+
+    @if (ProductsLoaded)
+    {
+        <div class="mt-md">
+            <h6 class="kd-demo-heading mt-0">All products</h6>
+            @foreach (var product in SelectedProducts)
+            {
+                <div class="mt-sm">
+                    <label class="lbl-text">Name:</label>
+                    <span class="text-bold">@product.ProductName</span>
+
+                    <label class="lbl-text">, Quantity per Unit:</label>
+                    <span class="text-bold">@product.QuantityPerUnit</span>
+                </div>
+            }
+    </div>
+    }
+    else
+    {
+        <div class="mb-sm mt-md">
+            <h6 class="kd-demo-heading mt-0">All products by</h6>
+            <div class="order-summary-row"><strong>Company:</strong> @Supplier?.CompanyName</div>
+            <div class="order-summary-row"><strong>Contact:</strong> @Supplier?.ContactName</div>
+            <div class="order-summary-row"><strong>Address:</strong> @Supplier?.Address</div>
+        </div>
+        <div class="k-form-field">
+            <TelerikButton OnClick="@GetProducts" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Get Products</TelerikButton>
+        </div>
+    }
+    
+</div>
+
+@code {
+    bool Visible { get; set; }
+    bool ProductsLoaded { get; set; }
+    IEnumerable<ProductDto> SelectedProducts { get; set; }
+    SupplierDto Supplier { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Supplier = supplierService.GetSuppliers().ElementAtOrDefault(6);
+    }
+
+    async Task GetProducts()
+    {
+        Visible = true;
+        await Task.Delay(3000);
+        SelectedProducts = productService.GetProducts().Where(p => p.SupplierId == Supplier.SupplierId);
+        ProductsLoaded = true;
+        Visible = false;
+    }
+}
+
+<style>
+    .lds-dual-ring {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-dual-ring:after {
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border-radius: 50%;
+        border: 6px solid #fff;
+        border-color: #fff transparent #fff transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+    }
+
+    @@keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .demo-container {
+        position: relative;
+        height: 300px;
+        width: 75%;
+        margin: 0 auto;
+    }
+
+    .loader-container-heading {
+        padding-top: 25px;
+    }
+
+    .order-summary-row {
+        line-height: 2;
+    }
+
+    .kd-demo-heading {
+        text-transform: none;
+        width: 200px;
+        margin: 0 auto;
+        font-size: 17px;
+        color: #555;
+        padding-bottom:0.5em;
+    }
+
+    .k-loader-container {
+        z-index: 1;
+    }
+</style>

@@ -1,0 +1,61 @@
+﻿@page "/tilelayout/events"
+
+<TelerikTileLayout Columns="5"
+                   ColumnWidth="285px"
+                   RowHeight="180px"
+                   Resizable="true"
+                   Reorderable="true"
+                   OnResize="@ResizeContent"
+                   OnReorder="@OnReorder">
+    <TileLayoutItems>
+        <TileLayoutItem Id="conversion-chart-item" HeaderText="Conversions by Channel" RowSpan="2" ColSpan="5">
+            <Content>
+                <ConversionThisMonth @ref="@ConversionsRef"></ConversionThisMonth>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem Id="conversion-grid-item" HeaderText="Conversions by Channel" RowSpan="2" ColSpan="3">
+            <Content>
+                <ConversionsByChannel></ConversionsByChannel>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem Id="visitors-item" HeaderText="Visitors" RowSpan="2" ColSpan="2">
+            <Content>
+                <Visitors @ref="@VisitorsRef"></Visitors>
+            </Content>
+        </TileLayoutItem>
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code{
+    ConversionThisMonth ConversionsRef { get; set; }
+    Visitors VisitorsRef { get; set; }
+    public string EventLog { get; set; } = "";
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    void ResizeContent(TileLayoutResizeEventArgs args)
+    {
+        @if (args.Id == "conversion-chart-item")
+        {
+            ConversionsRef.Refresh();   
+        }
+        else if (args.Id == "visitors-item")
+        {
+            VisitorsRef.Refresh();
+        }
+        
+        string log = $"<div><strong>Resize event fired for item with id: {args.Id}</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnReorder(TileLayoutReorderEventArgs args)
+    {
+        string log = $"<div><strong>Reorder event fired for item with id: {args.Id}</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+}

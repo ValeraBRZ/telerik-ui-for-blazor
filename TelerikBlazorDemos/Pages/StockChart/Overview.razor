@@ -1,0 +1,94 @@
+@page "/stockchart/overview"
+@page "/stockchart/index"
+
+@using System.Collections.Generic
+
+@inject StockService StockService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Control the Stock Chart appearance">
+        <label for="label-rotation-angle">The rotation angle of the labels:</label>
+        <TelerikNumericTextBox @bind-Value="@LabelRotationAngle" Id="label-rotation-angle"></TelerikNumericTextBox>
+        <label for="is-navigator-on-top">Place the navigator on top of the StockChart</label>
+        <TelerikCheckBox @bind-Value="@IsNavigatorOnTop" Id="is-navigator-on-top"></TelerikCheckBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+@if (Data?.Count() > 0)
+{
+    <TelerikStockChart Width="@Width"
+                       Height="@Height"
+                       DateField="@nameof(StockDto.Date)" @ref="@StockChartReference">
+        <StockChartTitle Text="The Boeing Company NYSE:BA"></StockChartTitle>
+        <StockChartSubtitle Text="For Q1 2009"></StockChartSubtitle>
+        <StockChartTooltip Visible="true"></StockChartTooltip>
+
+        <StockChartSeriesItems>
+            <StockChartSeries Type="StockChartSeriesType.Candlestick"
+                              Data="@Data"
+                              OpenField="@nameof(StockDto.Open)"
+                              CloseField="@nameof(StockDto.Close)"
+                              HighField="@nameof(StockDto.High)"
+                              LowField="@nameof(StockDto.Low)">
+            </StockChartSeries>
+        </StockChartSeriesItems>
+
+        <StockChartNavigator Position="@NavigatorPosition">
+            <StockChartNavigatorCategoryAxis>
+                <StockChartNavigatorCategoryAxisLabels Format="{0:d}">
+                    <StockChartNavigatorCategoryAxisLabelsRotation Angle="@LabelRotationAngle" Align="ChartAxisLabelsRotationAlignment.Center"></StockChartNavigatorCategoryAxisLabelsRotation>
+                </StockChartNavigatorCategoryAxisLabels>
+            </StockChartNavigatorCategoryAxis>
+            <StockChartNavigatorSeriesItems>
+                <StockChartNavigatorSeries Type="StockChartSeriesType.Area"
+                                           Data="@Data"
+                                           Field="@nameof(StockDto.Close)">
+                </StockChartNavigatorSeries>
+            </StockChartNavigatorSeriesItems>
+
+            <StockChartNavigatorSelect From="@(new DateTime(2009, 2, 5))" To="@(new DateTime(2009, 4, 4))">
+            </StockChartNavigatorSelect>
+        </StockChartNavigator>
+
+        <StockChartCategoryAxes>
+            <StockChartCategoryAxis>
+                <StockChartCategoryAxisLabels Template="#= value.toLocaleDateString('en-US') #">
+                    <StockChartCategoryAxisLabelsRotation Angle="@LabelRotationAngle" Align="ChartAxisLabelsRotationAlignment.Center"></StockChartCategoryAxisLabelsRotation>
+                </StockChartCategoryAxisLabels>
+                <StockChartCategoryAxisPlotBands>
+                    <StockChartCategoryAxisPlotBand From="4" To="7" Color="#cc0000" Opacity="0.3"></StockChartCategoryAxisPlotBand>
+                </StockChartCategoryAxisPlotBands>
+            </StockChartCategoryAxis>
+        </StockChartCategoryAxes>
+
+        <StockChartValueAxes>
+            <StockChartValueAxis>
+                <StockChartValueAxisLabels Format="{0:C3}">
+                    <StockChartValueAxisLabelsRotation Angle="@LabelRotationAngle" Align="ChartAxisLabelsRotationAlignment.Center"></StockChartValueAxisLabelsRotation>
+                </StockChartValueAxisLabels>
+                <StockChartValueAxisPlotBands>
+                    <StockChartValueAxisPlotBand From="34" To="39" Color="#00cc00" Opacity="0.3"></StockChartValueAxisPlotBand>
+                </StockChartValueAxisPlotBands>
+            </StockChartValueAxis>
+        </StockChartValueAxes>
+    </TelerikStockChart>
+}
+
+@code {
+    public const string Height = "400px";
+    public const string Width = "100%";
+    public TelerikStockChart StockChartReference { get; set; }
+
+    public StockChartNavigatorPosition NavigatorPosition => IsNavigatorOnTop ? StockChartNavigatorPosition.Top : StockChartNavigatorPosition.Bottom;
+    public int LabelRotationAngle { get; set; }
+    public bool IsNavigatorOnTop { get; set; }
+
+    IEnumerable<StockDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = StockService.GetStocks().Take(100);
+
+        base.OnInitialized();
+    }
+}

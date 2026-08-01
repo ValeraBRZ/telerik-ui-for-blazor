@@ -1,0 +1,28 @@
+@page "/multicolumncombobox/rtl"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <TelerikMultiColumnComboBox @bind-Value="@Value"
+                                Data="@MultiColumnComboData"
+                                Placeholder="Select a product"
+                                ValueField="ProductId"
+                                TextField="ProductName">
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductId)" Title="Id" Width="80px" />
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductName)" Title="Name" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(ProductDto.UnitsInStock)" Title="In Stock" Width="150px" />
+        </MultiColumnComboBoxColumns>
+    </TelerikMultiColumnComboBox>
+</div>
+
+@code {
+    private List<ProductDto> MultiColumnComboData { get; set; }
+
+    private int Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        MultiColumnComboData = ProductService.GetProducts().ToList();
+    }
+}

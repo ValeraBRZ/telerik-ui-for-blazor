@@ -1,0 +1,66 @@
+@if (!IsNested)
+{
+    <h3>Supported keys and user actions</h3>
+}
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up & Right arrow</span>
+        </span>
+        <span class="button-descr">
+            increases the value of the slider with the SmallStep.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down & Left arrow</span>
+        </span>
+        <span class="button-descr">
+            decreases the value of the slider with the SmallStep.
+        </span>
+    </li>
+    @if (!HideNotApplicableForColorPickers)
+    {
+        <li>
+            <span class="button-preview">
+                <span class="key-button">PageUp</span>
+            </span>
+            <span class="button-descr">
+                increases the value of the slider with the LargeStep.
+            </span>
+        </li>
+        <li>
+            <span class="button-preview">
+                <span class="key-button">PageDown</span>
+            </span>
+            <span class="button-descr">
+                decreases the value of the slider with the LargeStep.
+            </span>
+        </li>
+    }
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            sets the value of the slider to the Min.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            sets the value of the slider with the Max.
+        </span>
+    </li>
+</ul>
+
+@code {
+    [Parameter]
+    public bool IsNested { get; set; }
+
+    [Parameter]
+    public bool HideNotApplicableForColorPickers { get; set; }
+}

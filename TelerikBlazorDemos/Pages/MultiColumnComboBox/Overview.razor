@@ -1,0 +1,60 @@
+@page "/multicolumncombobox/overview"
+@page "/multicolumncombobox/index"
+
+@inject CustomerService CustomerService
+
+<OrderHistoryTemplate>
+    <TelerikMultiColumnComboBox Data="@Data"
+                                ValueField="CustomerId"
+                                TextField="ContactName"
+                                Filterable="true"
+                                @bind-Value="@Value"
+                                Id="customers-combo"
+                                ListHeight="250px"
+                                Placeholder="Hint: You can filter by the Name column">
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.ContactName)" Title="Name" Width="200px">
+                <Template>
+                    @{
+                        var customer = context as CustomerDto;
+
+                        <div class="customer-photo" style="background-image: url(images/customers/@(customer.CustomerId).jpg);"></div>
+                        <span class="customer-name">@customer.ContactName</span>
+                    }
+                </Template>
+            </MultiColumnComboBoxColumn>
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.ContactTitle)" Title="Title" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.CompanyName)" Title="Company" Width="200px" />
+            <MultiColumnComboBoxColumn Field="@nameof(CustomerDto.Country)" Title="Country" Width="150px" />
+        </MultiColumnComboBoxColumns>
+        <FooterTemplate>
+            <span class="combobox-footer k-display-flex k-align-items-center k-justify-content-center">
+                Total: @Data.Count() records
+            </span>
+        </FooterTemplate>
+    </TelerikMultiColumnComboBox>
+</OrderHistoryTemplate>
+
+@code {
+    private string Value { get; set; }
+    private List<CustomerDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = CustomerService.GetCustomers().ToList();
+    }
+}
+
+<style type="text/css">
+    .customer-photo {
+        display: inline-block;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin: 0 10px 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        vertical-align: middle;
+    }
+</style>

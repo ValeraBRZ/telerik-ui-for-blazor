@@ -1,0 +1,79 @@
+@page "/dropdownbutton/appearance"
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@RoundedOptions" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikDropDownButton Icon="@SvgIcon.Clipboard"
+                           FillMode="@FillMode"
+                           Rounded="@Rounded"
+                           Size="@Size"
+                           ThemeColor="@ThemeColor">
+        <DropDownButtonContent>Paste</DropDownButtonContent>
+
+        <DropDownButtonItems>
+            <DropDownButtonItem Icon="@SvgIcon.ClipboardText">Paste Text</DropDownButtonItem>
+            <DropDownButtonItem Icon="@SvgIcon.ClipboardCode">Paste as HTML</DropDownButtonItem>
+            <DropDownButtonItem Icon="@SvgIcon.ClipboardMarkdown">Paste Markdown</DropDownButtonItem>
+            <DropDownButtonItem>Set Default Paste</DropDownButtonItem>
+        </DropDownButtonItems>
+
+    </TelerikDropDownButton>
+</div>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.DropDownButton.FillMode.Solid;
+    public string Rounded { get; set; } = ThemeConstants.DropDownButton.Rounded.Medium;
+    public string Size { get; set; } = ThemeConstants.DropDownButton.Size.Medium;
+    public string ThemeColor { get; set; } = ThemeConstants.DropDownButton.ThemeColor.Base;
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.DropDownButton.FillMode.Solid },
+        { "Flat", ThemeConstants.DropDownButton.FillMode.Flat },
+        { "Outline", ThemeConstants.DropDownButton.FillMode.Outline },
+        { "Link", ThemeConstants.DropDownButton.FillMode.Link },
+        { "Clear", ThemeConstants.DropDownButton.FillMode.Clear },
+    };
+
+    public Dictionary<string, string> RoundedOptions { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownButton.Rounded.Small },
+        { "Medium", ThemeConstants.DropDownButton.Rounded.Medium },
+        { "Large", ThemeConstants.DropDownButton.Rounded.Large },
+        { "Full", ThemeConstants.DropDownButton.Rounded.Full }
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.DropDownButton.Size.Small },
+        { "Medium", ThemeConstants.DropDownButton.Size.Medium },
+        { "Large", ThemeConstants.DropDownButton.Size.Large }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.DropDownButton.ThemeColor.Base },
+        { "Primary", ThemeConstants.DropDownButton.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.DropDownButton.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.DropDownButton.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.DropDownButton.ThemeColor.Info },
+        { "Success", ThemeConstants.DropDownButton.ThemeColor.Success },
+        { "Warning", ThemeConstants.DropDownButton.ThemeColor.Warning },
+        { "Error", ThemeConstants.DropDownButton.ThemeColor.Error },
+        { "Dark", ThemeConstants.DropDownButton.ThemeColor.Dark },
+        { "Light", ThemeConstants.DropDownButton.ThemeColor.Light },
+        { "Inverse", ThemeConstants.DropDownButton.ThemeColor.Inverse }
+    };
+}

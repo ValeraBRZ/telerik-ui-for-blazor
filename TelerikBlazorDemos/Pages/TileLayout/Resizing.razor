@@ -1,0 +1,37 @@
+@page "/tilelayout/resizing"
+
+<div class="demo-alert demo-alert-info">Drag the right-hand or bottom borders, or the bottom right-hand corner of a tile to resize it.</div>
+
+<TelerikTileLayout Columns="5"
+                   ColumnWidth="285px"
+                   RowHeight="180px"
+                   Resizable="true" OnResize="@ResizeContent">
+    <TileLayoutItems>
+        <TileLayoutItem HeaderText="Conversions by Channel" RowSpan="2" ColSpan="5">
+            <Content>
+                <ConversionThisMonth @ref="@ConversionsRef"></ConversionThisMonth>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Conversions by Channel" RowSpan="2" ColSpan="3">
+            <Content>
+                <ConversionsByChannel></ConversionsByChannel>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem HeaderText="Visitors" RowSpan="2" ColSpan="2">
+            <Content>
+                <Visitors @ref="@VisitorsRef"></Visitors>
+            </Content>
+        </TileLayoutItem>
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+@code{
+    ConversionThisMonth ConversionsRef { get; set; }
+    Visitors VisitorsRef { get; set; }
+
+    void ResizeContent()
+    {
+        ConversionsRef.Refresh();
+        VisitorsRef.Refresh();
+    }
+}

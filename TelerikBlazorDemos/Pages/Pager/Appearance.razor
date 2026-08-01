@@ -1,0 +1,77 @@
+@page "/pager/appearance"
+
+@inject MovieService MovieService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+@{
+    var pageData = Data.Skip((Page - 1) * PageSize).Take(PageSize).ToList();
+    foreach (var movie in pageData)
+    {
+        <div class="movie-box">
+            <p>#@movie.Position</p>
+            <h4>@movie.Title</h4>
+            <p><TelerikSvgIcon Icon="@SvgIcon.Star" />@(movie.Rating)/10</p>
+        </div>
+    }
+}
+
+<TelerikPager Size="@Size"
+              PageSize="@PageSize"
+              Total="Data.Count"
+              ButtonCount="3"
+              @bind-Page="@Page">
+</TelerikPager>
+
+@code {
+    public List<MovieDto> Data { get; set; } = new List<MovieDto>();
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 3;
+    public string Size { get; set; } = ThemeConstants.Pager.Size.Medium;
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Pager.Size.Small },
+        { "Medium", ThemeConstants.Pager.Size.Medium },
+        { "Large", ThemeConstants.Pager.Size.Large }
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = MovieService.GetMovies().ToList();
+    }
+}
+
+<style>
+    .movie-box {
+        height: 80px;
+        align-content: space-between;
+        flex-wrap: wrap;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 3px;
+        border-bottom: 1px solid #DDD;
+    }
+
+    .movie-box p, .movie-box h4 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .movie-box p {
+        margin: 0 5px;
+    }
+</style>

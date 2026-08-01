@@ -1,0 +1,69 @@
+@page "/textarea/adornments"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Adornments Orientation">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@OrientationOptions" @bind-Value="@AdornmentsOrientation" Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto">
+                </DropDownListPopupSettings>
+                </DropDownListSettings>
+                </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Adornments Flow">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FlowOptions" @bind-Value="@AdornmentsFlow" Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto">
+                </DropDownListPopupSettings>
+                </DropDownListSettings>
+                </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikTextArea @bind-Value="@TextAreaValue"
+                     Placeholder="Add comment..."
+                     ShowPrefixSeparator="@ShowPrefixSeparator"
+                     ShowSuffixSeparator="@ShowSuffixSeparator"
+                     AdornmentsFlow="@AdornmentsFlow"
+                     AdornmentsOrientation="@AdornmentsOrientation">
+        <TextAreaPrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.Plus"></TelerikSvgIcon>
+            <TelerikSvgIcon Icon="@SvgIcon.Comment"></TelerikSvgIcon>
+        </TextAreaPrefixTemplate>
+        <TextAreaSuffixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.VolumeUp"></TelerikSvgIcon>
+        </TextAreaSuffixTemplate>
+    </TelerikTextArea>
+</div>
+
+@code {
+    public string TextAreaValue { get; set; }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+
+    private TextAreaAdornmentsOrientation AdornmentsOrientation { get; set; } = TextAreaAdornmentsOrientation.Vertical;
+
+    private TextAreaAdornmentsFlow AdornmentsFlow { get; set; } = TextAreaAdornmentsFlow.Horizontal;
+
+    private Dictionary<string, TextAreaAdornmentsOrientation> OrientationOptions { get; set; } = new Dictionary<string, TextAreaAdornmentsOrientation>
+    {
+        { "Horizontal", TextAreaAdornmentsOrientation.Horizontal },
+        { "Vertical", TextAreaAdornmentsOrientation.Vertical }
+    };
+
+    private Dictionary<string, TextAreaAdornmentsFlow> FlowOptions { get; set; } = new Dictionary<string, TextAreaAdornmentsFlow>
+    {
+        { "Horizontal", TextAreaAdornmentsFlow.Horizontal },
+        { "Vertical", TextAreaAdornmentsFlow.Vertical }
+    };
+}

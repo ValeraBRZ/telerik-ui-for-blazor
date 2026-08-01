@@ -1,0 +1,55 @@
+@page "/breadcrumb/collapse-modes"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Collapse Mode">
+        <TelerikDropDownList Data="@Modes" @bind-Value="@Mode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <TelerikSlider Class="breadcrumb-slider" @bind-Value="@Width"
+                   Min="0"
+                   Max="100"
+                   ShowButtons="false"
+                   SmallStep="1"
+                   TickPosition="SliderTickPosition.None"
+                   Width="100%">
+    </TelerikSlider>
+</DemoConfigurator>
+
+<TelerikBreadcrumb Data="@Items" CollapseMode="@Mode" Width="@(Width.ToString() + "%")"></TelerikBreadcrumb>
+
+@code {
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    public int Width { get; set; } = 100;
+
+    public BreadcrumbCollapseMode Mode { get; set; }
+
+    public List<BreadcrumbCollapseMode> Modes => new List<BreadcrumbCollapseMode>
+    {
+        BreadcrumbCollapseMode.Auto,
+        BreadcrumbCollapseMode.Wrap,
+        BreadcrumbCollapseMode.None,
+    };
+
+    protected override void OnInitialized()
+    {
+        var items = new List<BreadcrumbItem>();
+
+        for (int i = 1; i < 13; i++)
+        {
+            items.Add(new BreadcrumbItem { Text = $"Item{i}" });
+        }
+
+        Items = items;
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-slider {
+        padding: 0px 16px;
+    }
+</style>

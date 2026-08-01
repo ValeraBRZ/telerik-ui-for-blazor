@@ -1,0 +1,92 @@
+@page "/dateinput/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@myEvent" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="launch-date" class="k-label k-form-label">Launch Date</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikDateInput ValidateOn="@ValidationEvent" @bind-Value="@myEvent.LaunchDate" Format="MMM dd yyyy" Id="launch-date"></TelerikDateInput>
+                    </div>
+                </div>
+
+                <ValidationMessage For="@(() => myEvent.LaunchDate)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    Event myEvent { get; set; }
+    string SuccessMessage = string.Empty;
+    
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    public class DateAttribute : RangeAttribute
+    {
+        public DateAttribute()
+          : base(typeof(DateTime),
+                DateTime.Today.AddDays(7).ToShortDateString(),
+                DateTime.Today.AddYears(3).ToShortDateString())
+        { }
+    }
+
+    public class Event
+    {
+        [Required]
+        [DateAttribute()]
+        public DateTime? LaunchDate { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        myEvent = new Event()
+        {
+            LaunchDate = DateTime.Today,
+        };
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

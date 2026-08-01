@@ -1,0 +1,83 @@
+@page "/datetimepicker/calendarcellformatting"
+
+<div class="demo-section auto">
+    <TelerikDateTimePicker @bind-Value="Date"
+                           PopupClass="datetimepicker-calendar-formatting"
+                           OnCalendarCellRender="@OnCalendarCellRenderHandler"
+                           Width="318px">
+    </TelerikDateTimePicker>
+</div>
+
+@code {
+    DateTime Date = DateTime.Today;
+
+    private List<string> WeatherOptions = new List<string>() { "cloudy", "rainy", "snowy", "sunny", "partly-sunny" };
+
+    void OnCalendarCellRenderHandler(DateTimePickerCalendarCellRenderEventArgs args)
+    {
+        foreach (var weather in WeatherOptions)
+        {
+            args.Class = "with-forecast " + WeatherOptions[args.Date.Day % WeatherOptions.Count];
+        }
+    }
+}
+
+<style>
+    .datetimepicker-calendar-formatting .k-calendar-view {
+        padding: 0;
+        width: 248px;
+        height: 230px;
+    }
+
+    .datetimepicker-calendar-formatting .k-calendar-monthview .k-link {
+        padding: 0;
+        width: 35px;
+        height: 32px;
+        line-height: 1;
+        flex-flow: column nowrap;
+    }
+
+    .datetimepicker-calendar-formatting .calendar-monthview .k-calendar-td.with-forecast {
+        width: 40px;
+        height: 40px;
+    }
+
+
+    .with-forecast .k-link::after {
+        margin-top: 1px;
+        font-size: 14px;
+        font-family: apple color emoji, segoe ui emoji, noto color emoji, android emoji, emojisymbols, emojione mozilla, twemoji mozilla, segoe ui symbol;
+        display: block;
+    }
+
+    .k-calendar-monthview .sunny .k-link::after {
+        content: '☀️';
+    }
+
+    .k-calendar-monthview .partly-sunny span::after {
+        content: '🌤️';
+    }
+
+    .k-calendar-monthview .sunny,
+    .k-calendar-monthview .partly-sunny {
+        background-color: lightgoldenrodyellow;
+    }
+
+    .k-calendar-monthview .cloudy .k-link::after {
+        content: '☁️';
+    }
+
+    .k-calendar-monthview .rainy .k-link::after {
+        content: '🌧️';
+    }
+
+    .k-calendar-monthview .snowy .k-link::after {
+        content: '🌨️';
+    }
+
+    .k-calendar-monthview .cloudy,
+    .k-calendar-monthview .rainy,
+    .k-calendar-monthview .snowy {
+        background-color: lightgrey;
+    }
+</style>

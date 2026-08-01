@@ -1,0 +1,76 @@
+<rewrite>
+    <rules>
+        <rule name="Skip Redirect index to overview for source files" stopProcessing="true">
+            <match url="(.*)/index" />
+            <action type="None" />
+            <conditions>
+                <add input="{QUERY_STRING}" pattern="path=" />
+            </conditions>
+        </rule>
+        
+        <rule name="Redirect to overview with slash">
+            <match url="(.*)" />
+            <action type="Redirect" url="https://demos.telerik.com/{R:1}overview" redirectType="Found" />
+            <conditions>
+                <add input="{REQUEST_URI}" pattern="blazor-ui/([a-zA-Z]+)(/)$" />
+            </conditions>
+        </rule>
+        
+        <rule name="Redirect to overview">
+            <match url="(.*)" />
+            <action type="Redirect" url="https://demos.telerik.com/{R:1}/overview" redirectType="Found" />
+            <conditions>
+                <add input="{REQUEST_URI}" pattern="blazor-ui/([a-zA-Z]+)$" />
+            </conditions>
+        </rule>
+        
+        <rule name="Redirect index to overview">
+            <match url="(.*)/index" />
+            <action type="Redirect" url="https://demos.telerik.com/{R:1}/overview" redirectType="Found" />
+        </rule>
+        
+        <rule name="Remove trailing slash" stopProcessing="true">
+            <match url="(.*)" />
+            <action type="Redirect" redirectType="Permanent" url="https://demos.telerik.com/blazor-ui" />
+            <conditions>
+                <add input="{REQUEST_URI}" pattern="/blazor-ui/$" />
+            </conditions>
+        </rule>
+        <rule name="Redirect animationcontainer/notification to notification/overview" stopProcessing="true">
+            <match url="(.*)/animationcontainer/notification" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/notification/overview" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect animationcontainer/tooltip to tooltip/overview" stopProcessing="true">
+            <match url="animationcontainer/tooltip" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/tooltip/overview" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect grid/selection to grid/row-selection" stopProcessing="true">
+            <match url="grid/selection" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/grid/row-selection" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect grid/checkbox-only-selection to grid/row-selection" stopProcessing="true">
+            <match url="grid/checkbox-only-selection" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/grid/row-selection" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect treelist/selection to treelist/row-selection" stopProcessing="true">
+            <match url="treelist/selection" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/treelist/row-selection" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect treelist/checkbox-only-selection to treelist/row-selection" stopProcessing="true">
+            <match url="treelist/checkbox-only-selection" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/treelist/row-selection" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect blazorlab/combobox-smart-ai-search to aicomponents/overview" stopProcessing="true">
+            <match url="blazorlab/combobox-smart-ai-search" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/aicomponents/overview" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect blazorlab/grid-smart-ai-search to aicomponents/overview" stopProcessing="true">
+            <match url="blazorlab/grid-smart-ai-search" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/aicomponents/overview" redirectType="Permanent" />
+        </rule>
+        <rule name="Redirect blazorlab/pdfviewer-smart-ai-assistant to aicomponents/overview" stopProcessing="true">
+            <match url="blazorlab/pdfviewer-smart-ai-assistant" />
+            <action type="Redirect" url="https://demos.telerik.com/blazor-ui/aicomponents/overview" redirectType="Permanent" />
+        </rule>
+    </rules>
+</rewrite>

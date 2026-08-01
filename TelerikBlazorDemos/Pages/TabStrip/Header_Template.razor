@@ -1,0 +1,63 @@
+@page "/tabstrip/header-template"
+
+<div class="demo-section">
+    <TelerikTabStrip>
+        <TabStripTab>
+            <HeaderTemplate>
+                <span class="flag italy-flag"></span>
+                <strong>Rome</strong>
+            </HeaderTemplate>
+            <Content>
+                <WeatherCard City="Rome"
+                             TempC="23"
+                             Forecast="ForecastType.Sunny">
+                </WeatherCard>
+            </Content>
+        </TabStripTab>
+        <TabStripTab>
+            <HeaderTemplate>
+                <span class="flag germany-flag"></span>
+                <strong>Berlin</strong>
+            </HeaderTemplate>
+            <Content>
+                <WeatherCard City="Berlin"
+                             TempC="21"
+                             Forecast="ForecastType.Cloudy">
+                </WeatherCard>
+            </Content>
+        </TabStripTab>
+        <TabStripTab>
+            <HeaderTemplate>
+                <span class="flag france-flag"></span>
+                <strong>Paris</strong>
+            </HeaderTemplate>
+            <Content>
+                <WeatherCard City="Paris"
+                             TempC="17"
+                             Forecast="ForecastType.Rainy">
+                </WeatherCard>
+            </Content>
+        </TabStripTab>
+    </TelerikTabStrip>
+</div>
+
+<style>
+    .italy-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/italy-flag.png');
+    }
+
+    .germany-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/germany-flag.png');
+    }
+
+    .france-flag {
+        background-image: url('https://demos.telerik.com/kendo-ui/content/web/drawer/france-flag.png');
+    }
+
+    .flag {
+        background-size: cover;
+        margin-right: 8px;
+        width: 16px;
+        height: 16px;
+    }
+</style>

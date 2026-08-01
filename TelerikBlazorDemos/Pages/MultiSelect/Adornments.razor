@@ -1,0 +1,56 @@
+@page "/multiselect/adornments"
+
+@inject CustomerService customerService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikMultiSelect Data="@Data"
+                        ValueField="@nameof(CustomerDto.CustomerId)"
+                        TextField="@nameof(CustomerDto.ContactName)"
+                        @bind-Value="@SelectedCustomers"
+                        Placeholder="Choose recipients"
+                        ShowClearButton="true"
+                        AutoClose="false"
+                        ShowPrefixSeparator="@ShowPrefixSeparator"
+                        ShowSuffixSeparator="@ShowSuffixSeparator">
+        <MultiSelectPrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.User"></TelerikSvgIcon>
+        </MultiSelectPrefixTemplate>
+        <MultiSelectSuffixTemplate>
+            <TelerikButton Class="suffix-button" FillMode="@ThemeConstants.Button.FillMode.Flat">Cc</TelerikButton>
+        </MultiSelectSuffixTemplate>
+    </TelerikMultiSelect>
+</div>
+
+@code {
+    private IEnumerable<CustomerDto> Data { get; set; }
+
+    private List<string> SelectedCustomers { get; set; } = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        Data = customerService.GetCustomers();
+
+        base.OnInitialized();
+    }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}
+
+<style>
+    .suffix-button {
+        height: 100%;
+    }
+</style>

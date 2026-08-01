@@ -1,0 +1,375 @@
+@page "/menu/adaptive"
+
+<TelerikMediaQuery Media="(max-width: 560px)" OnChange="@SmallMediaQueryChange"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 560px) and (max-width: 828px)" OnChange="@MediumMediaQueryChange"></TelerikMediaQuery>
+@* break point intended for 768px, however, the demo has two paddings 30px each that lead to the new 828px break point *@
+<TelerikMediaQuery Media="(min-width: 828px)" OnChange="@LargeMediaQueryChange"></TelerikMediaQuery>
+
+<div class="demo-menu-container">
+    @{
+        if (WindowSize == DemoWindowSize.Large)
+        {
+                <figure>
+                    <a href="https://www.telerik.com">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 49 60.3">
+                            <path fill="#5ce500" d="M11.2 14.9L0 21.3l17.4 10.1v20.1l11.2-6.4c.5-.3.9-1 .9-1.6V24.4L13 14.9c-.5-.3-1.3-.3-1.8 0z"></path>
+                            <path fill="#5ce500" d="M12.1 48.4V34.5L0 41.5zM25 .2c-.5-.3-1.3-.3-1.8 0L10.7 7.4l24.1 13.9v27.9L47.3 42c.5-.3.9-1 .9-1.6V13.6L25 .2z"></path>
+                        </svg>
+                    </a>
+                </figure>
+        }
+        else
+        {
+            if (IsDrawerOpen)
+            {
+                <TelerikButton OnClick="(() => IsDrawerOpen = false)" Icon="@SvgIcon.X" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
+            }
+            else
+            {
+                <TelerikButton OnClick="@ToggleDrawer" Icon="@SvgIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
+            }
+        }
+    }
+
+    <span class="separator"></span>
+    <h2 class="tk-title">Telerik UI for Blazor</h2>
+    @{
+        if (WindowSize == DemoWindowSize.Large)
+        {
+            <TelerikMenu Data="@MenuItems" CloseOnClick="true" OnClick="@((MenuItem item) => OnMenuItemClick(item))">
+                <ItemTemplate Context="item">
+                    <span class="k-menu-link-text @(item.Text.ToLower() != "components" ? "k-font-weight-bold" : "")">@item.Text</span>
+                </ItemTemplate>
+            </TelerikMenu>
+        }
+    }
+</div>
+
+<TelerikDrawer @ref="@Drawer" Class="@DrawerClass" Data="DrawerItems" @bind-Expanded="IsDrawerOpen" Mode="@DrawerMode.Overlay">
+    <Template>
+        <div class="k-drawer-items" role="menubar" aria-orientation="vertical">
+            <ul>
+                @foreach (var item in context)
+                {
+                    var selectedClass = item == SelectedMenuItem ? "k-selected" : string.Empty;
+                    var boldClass = item.Text.ToLower() != "components" ? "k-font-weight-bold" : "";
+
+                    if (item.Level == 0)
+                    {
+                        <li class="k-drawer-item k-drawer-separator"></li>
+                    }
+
+                    <li @onclick="@(() => OnItemSelect(item))" class="k-drawer-item @selectedClass k-level-@(item.Level)">
+                        @if (item.Expanded && (item.Items?.Any() ?? false))
+                        {
+                            <TelerikSvgIcon Icon="@SvgIcon.ChevronUp"/>
+                        }
+                        else if (!item.Expanded && (item.Items?.Any() ?? false))
+                        {
+                            <TelerikSvgIcon Icon="@SvgIcon.ChevronDown" />
+                        }
+
+                        <span class="k-item-text @boldClass">@item.Text</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </Template>
+    <DrawerContent>
+        @((MarkupString)DrawerContent)
+    </DrawerContent>
+</TelerikDrawer>
+
+@code {
+    public bool IsDrawerOpen { get; set; } = false;
+    public string DrawerClass { get; set; }
+    public string DrawerContent { get; set; }
+    public MenuItem SelectedMenuItem { get; set; }
+    public DemoWindowSize WindowSize { get; set; }
+    public TelerikDrawer<MenuItem> Drawer { get; set; }
+    public List<MenuItem> MenuItems { get; set; }
+    public List<MenuItem> DrawerItems { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public string Url { get; set; }
+        public bool Expanded { get; set; }
+        public int Level { get; set; }
+        public List<MenuItem> Items { get; set; }
+        public string Content { get; set; }
+    }
+
+    public enum DemoWindowSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+
+    private void UpdateDrawerContent(string content)
+    {
+        if (!string.IsNullOrEmpty(content))
+        {
+            DrawerContent = content;
+        }
+    }
+
+    protected void OnMenuItemClick(MenuItem item)
+    {
+        UpdateDrawerContent(item.Content);
+    }
+
+    public async Task ToggleDrawer()
+    {
+        await Drawer.ToggleAsync();
+    }
+
+    public async Task OnItemSelect(MenuItem selectedItem)
+    {
+        SelectedMenuItem = selectedItem;
+        UpdateDrawerContent(selectedItem.Content);
+
+        selectedItem.Expanded = !selectedItem.Expanded;
+        var newData = new List<MenuItem>();
+
+        foreach (var item in DrawerItems.Where(x => x.Level <= selectedItem.Level))
+        {
+            newData.Add(item);
+            if (item == selectedItem && selectedItem.Expanded && (item.Items?.Any() ?? false))
+            {
+                foreach (var child in item.Items)
+                {
+                    newData.Add(child);
+                }
+            }
+
+            if (item != selectedItem && !(item.Items?.Contains(selectedItem) ?? false))
+            {
+                item.Expanded = false;
+            }
+        }
+
+        DrawerItems = newData;
+
+        if (selectedItem.Level != 0)
+        {
+            await ToggleDrawer();
+        }
+
+        await Task.Yield();
+    }
+
+    public void SmallMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Small;
+            DrawerClass = "drawer-sm";
+        }
+    }
+
+    public void MediumMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Medium;
+            DrawerClass = "";
+        }
+    }
+
+    public async Task LargeMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Large;
+            DrawerClass = "";
+
+            if (IsDrawerOpen)
+            {
+                await Drawer.ToggleAsync();
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Text = "Getting Started",
+                Expanded = false,
+                Level = 0,
+                Content = "<h2>First Steps with Telerik Blazor Components</h2><p>Telerik Blazor Components come with built-in support for WASM and server-side Blazor apps. Depending on your business needs and preferences, get started with the <a href=\"https://docs.telerik.com/blazor-ui/getting-started/client-blazor\">Client-Side UI for Blazor</a> or get started with the <a href=\"https://docs.telerik.com/blazor-ui/getting-started/server-blazor\">Server-Side UI for Blazor</a>.</p>",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Text = "Integration",
+                        Level = 1,
+                        Content = "<h2>Visual Studio Integration</h2><p>The <strong>Telerik Blazor Components</strong> can be used in any IDE that supports C# and the .NET Blazor framework. To get started with the Visual Studio Extensions, check the <a href=\"https://docs.telerik.com/blazor-ui/getting-started/vs-integration/introduction\">Integration help article</a>.</p><p>The Blazor team at Telerik has developed a <a href=\"https://docs.telerik.com/blazor-ui/getting-started/repl/overview\">REPL tool </a>that allows writing and running Blazor application directly in the browser without the need for an IDE.</p>",
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Installation",
+                        Level = 1,
+                        Content = "<h2>Intalling Telerik UI for Blazor</h2><p>The <strong>Telerik UI for Blazor</strong> suite is distributed via a private NuGet package. For a step-by-step tutorial on how to setup the feed and download <strong>Telerik UI for Blazor</strong>, check the <a href=\"https://docs.telerik.com/blazor-ui/installation/nuget\">Installation documentation article</a>.</p>"
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Components",
+                Expanded = false,
+                Level = 0,
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Text = "Grid",
+                        Level = 1,
+                        Content = "<h2>Telerik Blazor Data Grid</h2><p>The <strong>Telerik Blazor Data Grid</strong> is a powerful component that allows displaying, arranging and modifyingdata. It provides various features - from paging, filtering and editing to row and column virtualization, accessibility and keyboard navigation. Check out the comprehensive <a href=\"https://docs.telerik.com/blazor-ui/components/grid/overview\">getting started article</a> or enjoy a <a href=\"https://docs.telerik.com/blazor-ui/components/grid/overview#video-tutorial\">video tutorial</a>.</p>"
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Chart",
+                        Level = 1,
+                        Content = "<h2>Telerik Blazor Chart</h2><p>The <strong>Telerik Blazor Charts</strong> cover any data visualization needs with ease, providing a large number of chart types and flexible data binding so you can plug them easily into your WebAssembly (WASM) and Server-side Blazor applications and dashboards."
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Scheduler",
+                        Level = 1,
+                        Content = "<h2>Telerik Blazor Scheduler</h2><p>The <strong>Telerik Blazor Scheduler</strong> comes handy when users have to see and plan their agenda. It provides features ranging from adding and editing appointments to managing different view types that span over various periods of time. Explore more of the capabilities of the component at the <a href=\"https://docs.telerik.com/blazor-ui/components/scheduler/overview\">Scheduler's documentation section</a>."
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Knowledge Base",
+                Level = 0,
+                Content = "<h2>Knowledge Base</h2><p><strong>Telerik UI for Blazor</strong> comes with a set of official demo pages that showcase the most common scenarios for each component. If you would like to see more case-specific examples, you can visit the <a href=\"https://docs.telerik.com/blazor-ui/knowledge-base\">Knowledge Base section</a>.</p>"
+            },
+        };
+
+        DrawerContent = MenuItems[0].Content;
+        DrawerItems = MenuItems;
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    #demo-runner {
+        padding: 0px;
+    }
+
+    .drawer-sm.k-drawer-expanded .k-drawer.telerik-blazor {
+        width: 100%;
+    }
+
+    .drawer-sm.k-drawer-expanded .k-drawer-wrapper,
+    .drawer-sm.k-drawer-expanded .k-drawer-items {
+        width: 100% !important;
+    }
+
+    .drawer-sm.k-drawer-expanded .k-drawer {
+        max-width: 100vh;
+    }
+
+    .drawer-sm.k-drawer-expanded .k-overlay {
+        display: none;
+    }
+
+    .k-drawer-container {
+        position: relative;
+        width: 100%;
+        height: 95%;
+        min-height: 300px;
+    }
+
+        .k-drawer-container .k-drawer-content {
+            font-size: 16px;
+            line-height: 20px;
+        }
+
+        .k-drawer-container.k-drawer-overlay .k-drawer {
+            position: absolute;
+        }
+
+    .k-drawer-content {
+        padding: 25px;
+        font-size: 18px;
+    }
+
+        .k-drawer-content a {
+            color: #3D57D8;
+            text-decoration: inherit;
+        }
+
+            .k-drawer-content a:hover {
+                text-decoration: underline;
+            }
+
+        .k-drawer-content h2 {
+            font-weight: 300;
+        }
+
+    .tk-logo,
+    .tk-logo svg {
+        height: 19px;
+        width: 18px;
+    }
+
+    .tk-logo {
+        margin: 5px;
+    }
+
+    .tk-title {
+        font-size: 19px;
+        font-weight: 400;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .separator {
+        box-sizing: border-box;
+        width: 1px;
+        height: 20px;
+        background: #E5E5E5;
+        border-radius: 0px;
+    }
+
+    .demo-menu-container {
+        height: 48px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0px 8px;
+        gap: 8px;
+        height: 48px;
+        left: 0px;
+        top: 0px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.03), 0px 4px 5px rgba(0, 0, 0, 0.04);
+    }
+
+        .demo-menu-container figure {
+            width: 19px;
+            height: 19px;
+            margin: 0 5px 0 0;
+        }
+
+        .demo-menu-container .k-menu {
+            height: 100%;
+        }
+
+    .k-drawer-item.k-level-1 {
+        padding-inline-start: 60px;
+    }
+
+    .k-overlay {
+        position: absolute;
+    }
+</style>

@@ -1,0 +1,412 @@
+<h3>Spreadsheet Keyboard Navigation</h3>
+<p>
+    The Spreadsheet component is a container that consists of several logically separated structural elements.
+    Some of them implement the keyboard navigation specification of other Telerik components:
+</p>
+<ul>
+    <li><a href="/blazor-ui/menu/keyboard-navigation">Menu</a></li>
+    <li><a href="/blazor-ui/toolbar/keyboard-navigation">ToolBar</a></li>
+    <li><a href="/blazor-ui/combobox/keyboard-navigation">ComboBox</a> for the range editor</li>
+    <li>Formula bar</li>
+    <li>Sheet area</li>
+    <li><a href="/blazor-ui/tabstrip/keyboard-navigation">TabStrip</a> for the sheet bar</li>
+    <li><a href="/blazor-ui/dropdownbutton/keyboard-navigation">DropDownButton</a> for the All Sheets button in the sheet bar</li>
+</ul>
+<p>Each of the above components is part of the page tab sequence and can be navigated to using the Tab key. The list above illustrates the focus sequence. The only exception is the Sheet area which implements its own inner Tab-based navigation.</p>
+<p>Upon opening any of the Spreadsheet Dialogs, the focus must move to the Dialog and navigation must be trapped within the Dialog. Upon closing the dialog if a manipulation on the Spreadsheet cell has been performed, focus must move to that cell. If no manipulation has been performed, focus must return to the Tool of the ToolBar that has opened the Dialog.</p>
+
+<h3>Sheet Area Shortcuts</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">C</span>
+        </span>
+        <span class="button-descr">
+            copies the selected cells (range).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">V</span>
+        </span>
+        <span class="button-descr">
+            inserts copied or cut cells to a selected location within the worksheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">X</span>
+        </span>
+        <span class="button-descr">
+            cuts the selected cells (range).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Y</span>
+        </span>
+        <span class="button-descr">
+            repeats the last action if possible by using the Redo command.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Z</span>
+        </span>
+        <span class="button-descr">
+            reverses the last action if possible by using the Undo command.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Delete</span>
+        </span>
+        <span class="button-descr">
+            deletes the character to the right in the Formula bar. In cell selection mode, removes the content from selected cells without affecting cell formats. In cell editing mode, deletes the character to the right of the insertion point.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Backspace</span>
+        </span>
+        <span class="button-descr">
+            Deletes one character to the left in the Formular bar. In cell selection mode, removes the content of the active cell. In cell editing mode, deletes the character to the left of the insertion point.
+        </span>
+    </li>
+</ul>
+
+<h3>Selection Shortcuts</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Select a cell</span>
+        </span>
+        <span class="button-descr">
+            selects an adjacent or non-adjacent cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Select cells</span>
+        </span>
+        <span class="button-descr">
+            selects a range of adjacent or non-adjacent.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">A</span>
+        </span>
+        <span class="button-descr">
+            selects the whole worksheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Select a row or column</span>
+        </span>
+        <span class="button-descr">
+            selects an adjacent or nonadjacent row or column.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Select rows or columns</span>
+        </span>
+        <span class="button-descr">
+            selects a range of adjacent or non-adjacent rows or columns.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Arrow key</span>
+        </span>
+        <span class="button-descr">
+            selects a range of adjacent cells, rows or columns by extending the selection by one cell, row or column.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Arrow key</span>
+        </span>
+        <span class="button-descr">
+            extends the selection of cells to the last cell of the current series of data. If there is another set of data afterwards, the cell selection will be extended to the first cell of the new series of data. Otherwise, the cell selection will be extended to the last cell of the worksheet in the corresponding direction.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up / Down arrow</span>
+        </span>
+        <span class="button-descr">
+            selects the next or previous command in a menu or submenu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            extends the cell selection to the last cell on the worksheet located in bottom-right corner. In the formula bar, selects all text in the formula bar from the cursor position to the end.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            extends the cell selection to the beginning (the top-left cell) of the worksheet. In the formula bar, selects all text in the formula bar from the cursor position to the beginning of the input.
+        </span>
+    </li>
+</ul>
+
+<h3>Navigation Shortcuts</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Arrow key</span>
+        </span>
+        <span class="button-descr">
+            navigates to the end of the current series of data. If there is another set of data afterwards, the first cell of the new series will be selected. Otherwise, you will be navigated to the last cell of the worksheet in the corresponding direction.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Arrow key</span>
+        </span>
+        <span class="button-descr">
+            moves one cell up, down, right of left in the worksheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves one cell to the right in a worksheet, when in cell selection mode. If the currently active cell is the last cell (the bottom-right cell) in the Sheet, pressing Tab will move the focus outside of the Sheet cells to the next focusable element on the page. In a dialog box, moves to the next focusable element in the Dialog. In range selection of cells, rows or columns, moves to the next cell within the active range. If the focus is on the last cell (the bottom-right cell) in the range, the focus will return to the first cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves to the previous cell in a worksheet, when in cell selection mode. If the currently active cell is the first cell (the top-left cell) in the Sheet, pressing Shift + Tab will move the focus outside of the Sheet to the Named ranges ComboBox. In a dialog box, moves to the previous focusable element. In range selection of cells, rows or columns, moves to the previous cell within the active range. If the focus is on the first cell (the top-left cell) in the range (the top-left), the focus will return to the last (the bottom-left) cell in the range.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Page Down</span>
+        </span>
+        <span class="button-descr">
+            moves one screen down in a worksheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Page Up</span>
+        </span>
+        <span class="button-descr">
+            moves one screen up in a worksheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            In cell selection mode, moves to the beginning of a row in a worksheet. In a menu or submenu, selects the first command.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            In cell selection mode, moves to the first cell (the top-left cell) on a worksheet. In the Formula Bar, moves the cursor to the beginning of the text.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            In cell selection mode, moves to the far right cell of the active row. In a menu or submenu, selects the last command.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            In cell selection mode, moves to the last cell on a worksheet, in the lowest used row of the used column on the bottom-right. In the Formula Bar, moves the cursor to the end of the text.
+        </span>
+    </li>
+</ul>
+
+<h3>Other Shortcuts</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            displays the Control menu for the Spreadsheet window.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Space</span>
+            +
+        </span>
+        <span class="button-descr">
+            In a dialog box, performs the action for the selected button, or selects or clears a check box.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            In cell editing mode or in the formula bar, completes a cell entry and selects the cell below. In a data form, it moves to the first field in the next record. In the command toolbar, executes the active action. In a dialog box, performs the action for the default command button in the dialog box.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            In cell editing mode or in the Formula bar, cancels an entry in the cell or Formula Bar. Closes an open menu or submenu, dialog box or message window.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">H</span>
+        </span>
+        <span class="button-descr">
+            displays the Home tab on the ToolBar.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">N</span>
+        </span>
+        <span class="button-descr">
+            displays the Insert tab on the ToolBar.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">A</span>
+        </span>
+        <span class="button-descr">
+            displays the Data tab on the ToolBar.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl (Cmd on macOS)</span>
+            +
+            <span class="key-button">Page Down</span>
+        </span>
+        <span class="button-descr">
+            activates the next sheet from the SheetBar if such exists.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl (Cmd on macOS)</span>
+            +
+            <span class="key-button">Page Up</span>
+        </span>
+        <span class="button-descr">
+            activates the previous sheet from the SheetBar if such exists.
+        </span>
+    </li>
+</ul>
+
+<h3>Sheet Bar Shortcuts</h3>
+
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves the focus to the next focusable element in the Sheets Bar. If the last element is focused, pressing Tab will move the focus outside of the Spreadsheet.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves the focus to the previous focusable element in the Sheets Bar. If the first element is focused, pressing Tab will move the focus to the Sheet area.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt (Option on macOS)</span>
+            +
+            <span class="key-button">Down Arrow</span>
+        </span>
+        <span class="button-descr">
+            opens the actions DropDownButton popup for the current active tab.
+        </span>
+    </li>
+</ul>

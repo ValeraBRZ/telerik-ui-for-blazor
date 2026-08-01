@@ -1,0 +1,44 @@
+@page "/scheduler/agenda-view"
+
+@inject AppointmentService appointmentService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Number of Days">
+        <TelerikNumericTextBox Step="1" Min="1" Max="14" @bind-Value="@NumberOfDays" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Hide Empty Days">
+        <TelerikCheckBox @bind-Value="@HideEmptyDays" Id="hide-emptydays-checkbox"></TelerikCheckBox>
+        <label for="hide-emptydays-checkbox" class="k-checkbox-label checkbox-label">Hide Empty Days</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" @bind-View="@SelectedView" Height="600px">
+    <SchedulerViews>
+        <SchedulerAgendaView HideEmptyAgendaDays="@HideEmptyDays" NumberOfDays="@NumberOfDays"></SchedulerAgendaView>
+    </SchedulerViews>
+</TelerikScheduler>
+
+@code {
+    private IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+
+    private DateTime StartDate { get; set; } = new DateTime(2025, 6, 16);
+
+    private DateTime StartTime { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    private SchedulerView SelectedView { get; set; } = SchedulerView.Agenda;
+
+    private bool HideEmptyDays { get; set; }
+
+    private int NumberOfDays { get; set; } = 7;
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+}

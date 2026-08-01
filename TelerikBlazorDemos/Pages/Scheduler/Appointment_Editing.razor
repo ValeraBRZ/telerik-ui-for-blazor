@@ -1,0 +1,60 @@
+@page "/scheduler/appointment-editing"
+
+@inject AppointmentService appointmentService
+
+<TelerikScheduler Data="@Appointments"
+                  @bind-Date="@StartDate"
+                  @bind-View="@CurrView"
+                  Height="600px"
+                  OnUpdate="@UpdateAppointment"
+                  OnCreate="@AddAppointment"
+                  OnDelete="@DeleteAppointment"
+                  ConfirmDelete="true"
+                  AllowCreate="true"
+                  AllowDelete="true"
+                  AllowUpdate="true">
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" />
+        <SchedulerWeekView StartTime="@DayStart" />
+        <SchedulerMultiDayView StartTime="@DayStart" />
+        <SchedulerMonthView></SchedulerMonthView>
+        <SchedulerTimelineView StartTime="@DayStart" />
+    </SchedulerViews>
+</TelerikScheduler>
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+
+    void UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        appointmentService.UpdateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void AddAppointment(SchedulerCreateEventArgs args)
+    {
+        appointmentService.CreateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        appointmentService.DeleteAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+}
+

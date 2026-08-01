@@ -1,0 +1,20 @@
+@page "/buttongroup/button-types"
+
+<h4>Buttons</h4>
+
+<TelerikButtonGroup>
+    <ButtonGroupButton Icon="@SvgIcon.Indent"></ButtonGroupButton>
+    <ButtonGroupButton Icon="@SvgIcon.Outdent"></ButtonGroupButton>
+</TelerikButtonGroup>
+
+<h4>Toggle Buttons</h4>
+
+<TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+    <ButtonGroupToggleButton @bind-Selected="@BoldSelected" Icon="@SvgIcon.Bold"></ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Italic"></ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Strikethrough"></ButtonGroupToggleButton>
+</TelerikButtonGroup>
+
+@code {
+    public bool BoldSelected { get; set; } = true;
+}

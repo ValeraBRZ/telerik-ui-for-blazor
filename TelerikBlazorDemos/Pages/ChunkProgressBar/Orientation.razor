@@ -1,0 +1,34 @@
+@page "/chunkprogressbar/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <input id="orientation-horizontal"
+               type="radio"
+               value="@( ProgressBarOrientation.Horizontal)"
+               checked="@(ProgressOrientation == ProgressBarOrientation.Horizontal)"
+               @onchange="@(() => ProgressOrientation = ProgressBarOrientation.Horizontal)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-horizontal">Horizontal</label>
+
+        <input id="orientation-vertical"
+               type="radio"
+               value="@( ProgressBarOrientation.Vertical)"
+               checked="@(ProgressOrientation == ProgressBarOrientation.Vertical)"
+               @onchange="@(() => ProgressOrientation = ProgressBarOrientation.Vertical)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-vertical">Vertical</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikChunkProgressBar Value="60"
+                         ChunkCount="5"
+                         Orientation="@ProgressOrientation"
+                         AriaLabel="Chunk Progress Bar">
+</TelerikChunkProgressBar>
+
+@code {
+    public ProgressBarOrientation ProgressOrientation { get; set; } = ProgressBarOrientation.Horizontal;
+}
+

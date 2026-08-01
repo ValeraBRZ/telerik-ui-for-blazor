@@ -1,0 +1,33 @@
+@page "/buttongroup/overview"
+
+<h4>Default Buttons</h4>
+
+<TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+    <ButtonGroupToggleButton>Bold</ButtonGroupToggleButton>
+    <ButtonGroupToggleButton>Italic</ButtonGroupToggleButton>
+    <ButtonGroupToggleButton>Underline</ButtonGroupToggleButton>
+</TelerikButtonGroup>
+
+<h4>Buttons with icons</h4>
+
+<TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+    <ButtonGroupToggleButton Icon="@SvgIcon.Bold"></ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Italic"></ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Strikethrough"></ButtonGroupToggleButton>
+</TelerikButtonGroup>
+
+<h4>ButtonGroup with stretched buttons</h4>
+
+<TelerikButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple" Width="400px">
+    <ButtonGroupToggleButton Icon="@SvgIcon.Bold">Bold</ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Italic">Italic</ButtonGroupToggleButton>
+    <ButtonGroupToggleButton Icon="@SvgIcon.Underline">Underline</ButtonGroupToggleButton>
+</TelerikButtonGroup>
+
+<h4>Disabled ButtonGroup</h4>
+
+<TelerikButtonGroup Enabled="false">
+    <ButtonGroupToggleButton Icon="@SvgIcon.Bold" />
+    <ButtonGroupToggleButton Icon="@SvgIcon.Italic" />
+    <ButtonGroupToggleButton Icon="@SvgIcon.Strikethrough" />
+</TelerikButtonGroup>

@@ -1,0 +1,100 @@
+@implements IDisposable
+
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsInterop
+@inject TelerikBlazorDemos.Services.IDemoList demoList
+
+@using System.Text.RegularExpressions
+
+<title>@GetTitle()</title>
+<meta name="title" content="@GetTitle()" />
+<meta name="description" content="@GetMetaDescription()" />
+<meta name="author" content="Telerik" />
+
+@code {
+    DemoItem CurrentDemo { get; set; }
+
+    string GetTitle()
+    {
+        if (!IsDemoHomePage())
+        {
+            if (!string.IsNullOrEmpty(CurrentDemo.SeoTitle))
+            {
+                return CurrentDemo.SeoTitle;
+            }
+            if(CurrentDemo.Component == "Chart")
+            {
+                return $"Blazor Charts and Graphs Demos - {CurrentDemo.Text} | Telerik UI for Blazor";
+            }
+            if(CurrentDemo.Component == "Scheduler")
+            {
+                return $"Blazor Scheduler (Event Calendar) Demos - {CurrentDemo.Text} | Telerik UI for Blazor";
+            }
+            if (CurrentDemo.Component == "Form")
+            {
+                return $"Blazor Form Demos and Examples - {CurrentDemo.Text} | Telerik UI for Blazor";
+            }
+            return $"Blazor {CurrentDemo.Component} Demos - {CurrentDemo.Text} | Telerik UI for Blazor";
+        }
+        return "Blazor Demos and Examples - Telerik UI for Blazor";
+    }
+
+    string GetMetaDescription()
+    {
+        if (!IsDemoHomePage())
+        {
+            if (!string.IsNullOrEmpty(CurrentDemo.SeoDescription))
+            {
+                return CurrentDemo.SeoDescription;
+            }
+            if (!string.IsNullOrEmpty(CurrentDemo.Description))
+            {
+                return StripHtml(CurrentDemo.Description);
+            }
+            return $"Learn more about the Telerik Blazor {CurrentDemo.Component} and its {CurrentDemo.Text} abilities. Check also some of the other Blazor components demos and examples.";
+        }
+        return "Explore and test a wide range of Telerik UI for Blazor examples, demos, and sample applications.";
+    }
+
+    string StripHtml(string input)
+    {
+        var tagsExpression = new Regex(@"</?.+?>");
+        return Regex.Replace(tagsExpression.Replace(input, " "), @"\s+", " ").Trim();
+    }
+
+    string ComponentPage()
+    {
+        return demoList.GetCurrentDemoPage(NavigationManager);
+    }
+
+    bool IsDemoHomePage()
+    {
+        //to prevent errors elsewhere we generally return the first demo if there is no match, so we have an extra check here
+        return string.IsNullOrEmpty(ComponentPage()) || string.IsNullOrEmpty(CurrentDemo?.Text);
+    }
+
+    protected override void OnInitialized()
+    {
+        CurrentDemo = demoList.GetDemoFromUri(ComponentPage());
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        CurrentDemo = demoList.GetDemoFromUri(ComponentPage());
+
+        // Google Analytics tracking for SPA
+        try
+        {
+            JsInterop.InvokeVoidAsync("googleAnalytics.trackSpaNavigation");
+        }
+        catch { }
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

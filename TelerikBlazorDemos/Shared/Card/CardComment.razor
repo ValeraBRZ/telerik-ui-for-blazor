@@ -1,0 +1,36 @@
+@namespace TelerikBlazorDemos.Shared
+
+@using TelerikBlazorDemos.Models
+
+<div class="k-hbox justify-space-between mb-xs">
+    <div class="k-hbox mb-xs">
+        <div class="k-rounded-full k-avatar-primary k-avatar-solid k-avatar avatar-size">
+            <span class="k-avatar-text">JD</span>
+        </div>
+        <div class="k-vbox">
+            <span class="comment-text">@Comment.Text</span>
+            <span class="comment-data">
+                @Comment.FormattedTimeString
+                <span>@Comment.Likes like</span>
+            </span>
+        </div>
+    </div>
+    <div class="align-end">
+        <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)"
+                       Class="@Comment.LikeButtonClass"
+                       Icon="@Comment.LikeButtonIcon"
+                       Title="Like"
+                       OnClick="@ToggleLike">
+        </TelerikButton>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CardCommentModel Comment {get; set; }
+
+    public void ToggleLike()
+    {
+        Comment.Likes = Comment.Likes == 1 ? 0 : 1;
+    }
+}

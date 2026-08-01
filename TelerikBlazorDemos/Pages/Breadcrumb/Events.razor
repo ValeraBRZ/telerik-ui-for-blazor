@@ -1,0 +1,60 @@
+@page "/breadcrumb/events"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Class="k-justify-content-center"
+                       Data="@Items"
+                       OnItemClick="@ClickHandler">
+    </TelerikBreadcrumb>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    public string EventLog { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Home", Title = "Home", Icon = SvgIcon.Home },
+            new BreadcrumbItem { Text = "Products", Title = "Products" },
+            new BreadcrumbItem { Text = "Computer Peripherals", Title = "Computer Peripherals" },
+            new BreadcrumbItem { Text = "Keyboards", Title = "Keyboards" },
+        };
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    void ClickHandler(BreadcrumbItemClickEventArgs args)
+    {
+        var item = args.Item as BreadcrumbItem;
+
+        var log = $"<div><strong>On Item Click event</strong> triggered for <strong>{item.Text}</strong></div>";
+        EventLog = EventLog.Insert(0, log);
+
+        if (item.Text == "Products")
+        {
+            args.IsCancelled = true;
+            log = $"<div>Event cancelled!</div>";
+            EventLog = EventLog.Insert(0, log);
+        }
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public string Title { get; set; }
+        public ISvgIcon Icon { get; set; }
+    }
+}
+
+<style>
+    .demo-section.breadcrumb-wrapper {
+        max-width: calc(600px + 6em) !important;
+    }
+</style>

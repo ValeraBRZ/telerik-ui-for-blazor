@@ -1,0 +1,36 @@
+@page "/autocomplete/virtualization"
+
+@inject UrbanAreaService urbanAreaService
+
+<div class="k-form k-form-md demo-section k-form-vertical">
+    <div class="k-form-field">
+        <label for="city-select" class="k-label k-form-label">Select a city:</label>
+        <div class="k-form-field-wrap">
+            <TelerikAutoComplete ScrollMode="@DropDownScrollMode.Virtual"
+                                 Id="city-select"
+                                 Data="@UrbanAreas"
+                                 ValueField="@(nameof(UrbanAreaDto.City))"
+                                 Width="100%"
+                                 Filterable="true"
+                                 PageSize="10"
+                                 ItemHeight="35"
+                                 FilterOperator="@StringFilterOperator.Contains">
+                <AutoCompleteSettings>
+                    <AutoCompletePopupSettings Height="300px"></AutoCompletePopupSettings>
+                </AutoCompleteSettings>
+                <ItemTemplate>
+                    <span>@($"{context.City} ({context.Country})")</span>
+                </ItemTemplate>
+            </TelerikAutoComplete>
+        </div>
+    </div>
+</div>
+
+@code {
+    public IEnumerable<UrbanAreaDto> UrbanAreas { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UrbanAreas = urbanAreaService.GetUrbanAreas();
+    }
+}

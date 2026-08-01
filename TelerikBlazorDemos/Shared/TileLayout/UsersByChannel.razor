@@ -1,0 +1,29 @@
+<TelerikGrid Data="@GridData" Height="100%">
+    <GridColumns>
+        <GridColumn Field=@nameof(Channel.ChannelName) Title="Channel" />
+        <GridColumn Field=@nameof(Channel.Users) />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    class Channel
+    {
+        public string ChannelName { get; set; }
+        public int Users { get; set; }
+    }
+
+    IEnumerable<Channel> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = new List<Channel>
+        {
+            new Channel { ChannelName = "Organic Search", Users = 70500 },
+            new Channel { ChannelName = "Direct", Users = 24900 },
+            new Channel { ChannelName = "Referral", Users = 20000 },
+            new Channel { ChannelName = "Social Media", Users = 19500 },
+            new Channel { ChannelName = "Email", Users = 18100 },
+            new Channel { ChannelName = "Other", Users = 16540 }
+        };
+    }
+}

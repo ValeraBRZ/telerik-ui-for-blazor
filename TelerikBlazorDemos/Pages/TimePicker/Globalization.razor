@@ -1,0 +1,22 @@
+@page "/timepicker/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="timepicker" class="k-label k-form-label">Time</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Min="@Min" Max="@Max" @bind-Value="@selectedTime" Id="timepicker"></TelerikTimePicker>
+        </div>
+    </div>
+</div>
+
+@code {
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    private DateTime? selectedTime = DateTime.Now;
+}

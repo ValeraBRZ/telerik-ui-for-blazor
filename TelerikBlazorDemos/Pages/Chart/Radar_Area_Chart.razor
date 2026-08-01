@@ -1,0 +1,47 @@
+@page "/chart/radar-area-chart"
+
+<TelerikChart Width="100%" Height="400px">
+    <ChartTitle Text="Employee Evaluation"></ChartTitle>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.RadarArea"
+                     Name="Chris"
+                     Color="#4B5FFA"
+                     Opacity="0.3"
+                     Data="@(new List<object>() { 80, 60, 90, 55, 90, 55, 70, 90 })">
+            <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
+            <ChartSeriesLine Width="1"></ChartSeriesLine>
+        </ChartSeries>
+
+        <ChartSeries Type="ChartSeriesType.RadarArea"
+                     Name="Anna"
+                     Color="#AC58FF"
+                     Opacity="0.3"
+                     Data="@(new List<object>() { 30, 90, 50, 90, 50, 70, 90, 65 })">
+            <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
+            <ChartSeriesLine Width="1"></ChartSeriesLine>
+        </ChartSeries>
+
+        <ChartSeries Type="ChartSeriesType.RadarArea"
+                     Name="Taylor"
+                     Color="#FF5892"
+                     Opacity="0.3"
+                     Data="@(new List<object>() { 60, 70, 70, 30, 70, 90, 30, 100 })">
+            <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
+            <ChartSeriesLine Width="1"></ChartSeriesLine>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartLegend Position="@ChartLegendPosition.Bottom"></ChartLegend>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Categories="@RadarAreaCategories"></ChartCategoryAxis>
+    </ChartCategoryAxes>
+</TelerikChart>
+
+@code {
+    public string[] RadarAreaCategories = new string[]
+    {
+        "Dedication", "Confidence", "Reliability", "Teamwork", "Independence", "Leadership", "Self-awareness", "Integrity"
+    };
+}

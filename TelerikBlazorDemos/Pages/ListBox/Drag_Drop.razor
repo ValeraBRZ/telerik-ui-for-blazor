@@ -1,0 +1,151 @@
+@page "/listbox/drag-drop"
+
+@inject ProductService productService
+
+<div class="demo-section auto">
+
+    <img style="margin-bottom:10px" src="images/listbox/arrow-left2right.png" />
+    <TelerikListBox Id="@ListBoxId"
+                    ConnectedListBoxId="@ConnectedListBoxId"
+                    Data="@AllProducts"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    @bind-SelectedItems="@SelectedProducts"
+                    SelectionMode="@ListBoxSelectionMode.Single"
+                    Draggable="@IsDraggable"
+                    DropSources="@ListBoxDropSources"
+                    OnDrop="@((ListBoxDropEventArgs<ProductDto> args) => OnDropFirst(args))">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+
+    <TelerikListBox Id="@ConnectedListBoxId"
+                    Data="@ProductsToPurchase"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    @bind-SelectedItems="@SelectedProductsToPurchase"
+                    SelectionMode="@ListBoxSelectionMode.Single"
+                    Draggable="@IsDraggable"
+                    DropSources="@ConnectedListBoxDropSources"
+                    OnDrop="@((ListBoxDropEventArgs<ProductDto> args) => OnDropSecond(args))">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+    <img style="margin-top:10px" src="images/listbox/arrow-right2left.png"/>
+</div>
+
+
+@code {
+    private string ListBoxId = "first-listbox";
+    private string ConnectedListBoxId = "connected-listbox";
+
+    private bool IsDraggable { get; set; } = true;
+
+    private IEnumerable<ProductDto> AllProducts { get; set; } = new List<ProductDto>();
+    private IEnumerable<ProductDto> SelectedProducts { get; set; } = new List<ProductDto>();
+
+    private IEnumerable<ProductDto> ProductsToPurchase { get; set; } = new List<ProductDto>();
+    private IEnumerable<ProductDto> SelectedProductsToPurchase { get; set; } = new List<ProductDto>();
+
+    private List<string> ListBoxDropSources => new List<string> { ConnectedListBoxId };
+    private List<string> ConnectedListBoxDropSources => new List<string> { ListBoxId };
+
+    #region Drop Handlers
+
+    private void OnDropFirst(ListBoxDropEventArgs<ProductDto> args)
+    {
+        var payload = AllProducts.FirstOrDefault(x => args.Items.Select(x => x.ProductId).Contains(x.ProductId));
+
+        //reordering through drag within the first list box
+        if (args.DestinationListBoxId == ListBoxId)
+        {
+            var data = AllProducts.ToList();
+            _ = data.Remove(payload);
+            data.Insert(args.DestinationIndex.Value, payload);
+
+            AllProducts = data;
+        }
+        // transferring items from first list box to second list box
+        else
+        {
+            var firstProductDto = AllProducts.ToList();
+            _ = firstProductDto.Remove(payload);
+
+            var secondProductDto = ProductsToPurchase.ToList();
+            secondProductDto.Insert(GetIndexToInsertAt(args.DestinationIndex), payload);
+
+            AllProducts = firstProductDto;
+            ProductsToPurchase = secondProductDto;
+        }
+    }
+
+    private void OnDropSecond(ListBoxDropEventArgs<ProductDto> args)
+    {
+        var payload = ProductsToPurchase.FirstOrDefault(x => args.Items.Select(x => x.ProductId).Contains(x.ProductId));
+
+        //reordering through drag within the second list box
+        if (args.DestinationListBoxId == ConnectedListBoxId)
+        {
+            var data = ProductsToPurchase.ToList();
+            _ = data.Remove(payload);
+            data.Insert(args.DestinationIndex.Value, payload);
+
+            ProductsToPurchase = data;
+        }
+        // transferring items from second list box to first list box
+        else
+        {
+            var secondProductDto = ProductsToPurchase.ToList();
+            _ = secondProductDto.Remove(payload);
+
+            var firstProductDto = AllProducts.ToList();
+            firstProductDto.Insert(GetIndexToInsertAt(args.DestinationIndex), payload);
+
+            AllProducts = firstProductDto;
+            ProductsToPurchase = secondProductDto;
+        }
+    }
+
+    #endregion Drop Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        var allData = productService.GetProducts().Take(20).ToList();
+
+        AllProducts = allData.Take(15).ToList();
+        ProductsToPurchase = allData.Skip(15).Take(5).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+
+    private int GetIndexToInsertAt(int? destinationIndex)
+           => destinationIndex.HasValue && destinationIndex.Value > 0 ? destinationIndex.Value : 0;
+
+    #endregion Data
+}
+
+<style>
+    .k-listbox {
+        height: 360px;
+    }
+
+    #first-listbox {
+        width: 270px;
+    }
+
+    #connected-listbox {
+        margin-left: 0.6em;
+        width: 232px;
+    }
+
+    .demo-section img {
+        display: block;
+        margin: auto;
+    }
+</style>

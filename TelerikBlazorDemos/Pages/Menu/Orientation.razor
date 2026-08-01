@@ -1,0 +1,108 @@
+@page "/menu/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Select the orientation of the menu">
+        <TelerikDropDownList Data="@OrientationOptions" @bind-Value="@orientation" Width="">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<br />
+
+<TelerikMenu Data="@MenuItems" Orientation="@orientation">
+</TelerikMenu>
+
+@code {
+    MenuOrientation orientation = MenuOrientation.Vertical;
+
+    public List<MenuOrientation> OrientationOptions { get; set; } = new List<MenuOrientation>()
+    {
+        MenuOrientation.Horizontal,
+        MenuOrientation.Vertical
+    };
+    public IEnumerable<MenuItem> MenuItems { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public bool Separator { get; set; }
+        public IEnumerable<MenuItem> Items { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Text = "Date Picker",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem { Text = "Overview" },
+                    new MenuItem { Text = "Validation" },
+                    new MenuItem { Text = "Events" }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Text Box",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem { Text = "Overview" },
+                    new MenuItem { Text = "Validation" },
+                    new MenuItem { Text = "Events" }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Color Picker",
+                Disabled = true
+            },
+            new MenuItem()
+            {
+                Separator = true
+            },
+            new MenuItem()
+            {
+                Text = "Menu",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem { Text = "Overview" },
+                    new MenuItem { Text = "Orientation" },
+                    new MenuItem { Text = "Keyboard Navigation" }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "TreeView",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem { Text = "Overview" },
+                    new MenuItem { Text = "Flat Data" },
+                    new MenuItem { Text = "Events" }
+                }
+            },
+            new MenuItem()
+            {
+                Separator = true
+            },
+            new MenuItem()
+            {
+                Text = "Map",
+                Disabled = true
+            }
+        };
+
+        base.OnInitialized();
+    }
+}
+
+<style>
+    #demo-runner {
+        height: 500px;
+    }
+</style>

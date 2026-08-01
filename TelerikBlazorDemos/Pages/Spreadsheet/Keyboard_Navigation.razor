@@ -1,0 +1,17 @@
+@page "/spreadsheet/keyboard-navigation"
+
+@using TelerikBlazorDemos.Constants
+
+<TelerikSpreadsheet Data="@FileData">
+</TelerikSpreadsheet>
+
+@code {
+    private byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FileData = Convert.FromBase64String(SpreadsheetConstants.SampleFileBase64);
+
+        await base.OnInitializedAsync();
+    }
+}

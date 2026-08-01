@@ -1,0 +1,37 @@
+@page "/window/keyboard-navigation"
+
+<TelerikWindow Width="500px" @bind-Visible="@WindowVisible" Modal="true">
+    <WindowTitle>
+        <strong>List of Shortcuts</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize" Title="Minimize" />
+        <WindowAction Name="Maximize" Title="Maximize" />
+        <WindowAction Name="Close" Title="Close" />
+    </WindowActions>
+    <WindowContent>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">User Details</legend>
+
+                <label class="k-form-field">
+                    <span>First Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Name" />
+                </label>
+                <label class="k-form-field">
+                    <span>Last Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Last Name" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+@if(!WindowVisible)
+{
+    <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@( () => WindowVisible=true )">Show the Window</TelerikButton>
+}
+
+@code{
+    bool WindowVisible { get; set; } = true;
+}

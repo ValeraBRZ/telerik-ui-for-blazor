@@ -1,0 +1,30 @@
+@using Telerik.SvgIcons;
+@using TelerikBlazorDemos.DocumentProcessing;
+@inject IJSRuntime JsRuntime
+
+<label class="k-button telerik-blazor k-button-solid k-button-md k-button-rectangle k-rounded-md k-button-solid-base mb-sm">
+    <input @onchange="@UploadHandler"
+           id="@ID"
+           accept="@Accept"
+           class="k-hidden"
+           type="file" />
+    <TelerikSvgIcon Class="k-button-icon" Icon="@SvgIcon.Upload"/>
+    <span class="k-button-text">Select File ...</span>
+</label>
+<span>@FileDetails.Name</span>
+
+@code {
+    [Parameter] public string ID { get; set; }
+    [Parameter] public string Accept { get; set; }
+
+    [Parameter] public EventCallback<UploadedFileDetails> FileDetailsChanged { get; set; }
+
+    [Parameter]
+    public UploadedFileDetails FileDetails { get; set; } = new UploadedFileDetails();
+
+    private async void UploadHandler()
+    {
+        FileDetails = await DemoFileExporter.Upload(JsRuntime, ID);
+        await FileDetailsChanged.InvokeAsync(FileDetails);
+    }
+}

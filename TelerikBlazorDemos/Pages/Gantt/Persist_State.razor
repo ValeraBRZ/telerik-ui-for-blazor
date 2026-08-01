@@ -1,0 +1,257 @@
+@page "/gantt/persist-state"
+
+@using Telerik.DataSource
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+@inject LocalStorage LocalStorage
+@inject IJSRuntime JsInterop
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Control the Gantt state">
+        <TelerikButton OnClick="@SaveState" Icon="@SvgIcon.Save" Class="mr-xs">Save State</TelerikButton>
+        <TelerikButton OnClick="@ReloadPage" Icon="@SvgIcon.Save" Class="mr-xs">Reload the page</TelerikButton>
+        <TelerikButton OnClick="@LoadState" Icon="@SvgIcon.Download" Class="mr-xs">Load last State</TelerikButton>
+        <TelerikButton OnClick="@SetExplicitState" Icon="@SvgIcon.Gear" Class="mr-xs">Configure State</TelerikButton>
+        <TelerikButton OnClick="@ResetState" Icon="@SvgIcon.ArrowRotateCcw">Reset State</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGantt Data="@Data"
+              @ref="@Gantt"
+              Width="100%"
+              @bind-TreeListWidth="@TreeListWidth"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              @bind-View="@SelectedView"
+              OnUpdate="@UpdateTask"
+              OnDelete="@DeleteTask"
+              OnCreate="@CreateTask"
+              Navigable="true"
+              Sortable="true"
+              SortMode="@SortMode.Multiple"
+              FilterMode="@GanttFilterMode.FilterMenu"
+              ColumnReorderable="true"
+              ColumnResizable="true"
+              OnStateInit="@((GanttStateEventArgs<GanttTaskModel> args) => OnStateInit(args))"
+              FilterMenuType="@FilterMenuType.Menu">
+    <GanttToolBarTemplate>
+        <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+    </GanttToolBarTemplate>
+    <GanttColumns>
+        <GanttColumn Field="Id"
+                     Visible="false">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Title="Status"
+                     Width="100px"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+        <GanttCommandColumn Title="Commands" Width="100px">
+            <GanttCommandButton AriaLabel="Add item" Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton AriaLabel="Delete item" Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+        </GanttCommandColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type"
+                           OnCreate="@CreateDependency"
+                           OnDelete="@DeleteDependency">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code{
+    const string StateStorageKey = "TelerikBlazorGanttStateDemoKey";
+
+    TelerikGantt<GanttTaskModel> Gantt { get; set; }
+    List<GanttTaskModel> Data { get; set; } = new List<GanttTaskModel>();
+    List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+    GanttView SelectedView { get; set; } = GanttView.Week;
+    string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task OnStateInit(GanttStateEventArgs<GanttTaskModel> args)
+    {
+        try
+        {
+            var state = await LocalStorage.GetItem<GanttState<GanttTaskModel>>(StateStorageKey);
+            if (state != null)
+            {
+                args.State = state;
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // the JS Interop for the local storage cannot be used during pre-rendering
+        }
+    }
+
+    async Task SaveState()
+    {
+        var gridState = Gantt.GetState();
+        await LocalStorage.SetItem(StateStorageKey, gridState);
+    }
+
+    async Task LoadState()
+    {
+        GanttState<GanttTaskModel> storedState = await LocalStorage.GetItem<GanttState<GanttTaskModel>>(StateStorageKey);
+        if (storedState != null)
+        {
+            await Gantt.SetStateAsync(storedState);
+        }
+    }
+
+    async void ResetState()
+    {
+        await Gantt.SetStateAsync(new GanttState<GanttTaskModel>() { View = GanttView.Week, TreeListWidth = "30%"});
+        await LocalStorage.RemoveItem(StateStorageKey);
+    }
+
+    void ReloadPage()
+    {
+        JsInterop.InvokeVoidAsync("window.location.reload");
+    }
+
+    async void SetExplicitState()
+    {
+        GanttState<GanttTaskModel> desiredState = GetDefaultDemoState();
+        await Gantt.SetStateAsync(desiredState);
+        await SaveState();
+    }
+
+    GanttState<GanttTaskModel> GetDefaultDemoState()
+    {
+        GanttState<GanttTaskModel> defaultDemoState = new GanttState<GanttTaskModel>()
+        {
+            SortDescriptors = new List<SortDescriptor>
+            {
+                new SortDescriptor(nameof(GanttTaskModel.Start), ListSortDirection.Descending)
+            },
+            TreeListWidth = "30%"
+        };
+        return defaultDemoState;
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).Select(x => new GanttTaskModel
+        {
+            Id = x.Id,
+            End = x.End,
+            ParentId = x.ParentId,
+            PercentComplete = x.PercentComplete,
+            Start = x.Start,
+            Title = x.Title,
+        }).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+
+    private async Task CreateTask(GanttCreateEventArgs args)
+    {
+        GanttTaskService.CreateTask(args.Item as GanttTaskModel, args.ParentItem as GanttTaskModel);
+        await LoadDataAsync();
+    }
+
+    private async Task UpdateTask(GanttUpdateEventArgs args)
+    {
+        var updatedItem = (GanttTaskModel)args.Item;
+        var parentItem = (GanttTaskModel)args.ParentItem;
+
+        GanttTaskService.UpdateTask(updatedItem, parentItem);
+
+        UpdateDependencies(args);
+
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private void UpdateDependencies(GanttUpdateEventArgs args)
+    {
+        args?.CreatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.CreateDependency((int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.UpdatedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.UpdateDependency(x.DataItem as GanttDependencyDto, (int)x.PredecessorId, (int)x.SuccessorId, (int)x.Type);
+        });
+
+        args?.DeletedDependencies?.ForEach(x =>
+        {
+            GanttDependencyService.DeleteDependency((x.DataItem as GanttDependencyDto).Id);
+        });
+    }
+
+    private async Task DeleteTask(GanttDeleteEventArgs args)
+    {
+        GanttTaskService.DeleteTask(args.Item as GanttTaskModel);
+        await LoadDataAsync();
+    }
+
+    private async Task CreateDependency(GanttDependencyCreateEventArgs args)
+    {
+        GanttDependencyService.CreateDependency((int)args.PredecessorId, (int)args.SuccessorId, (int)args.Type);
+        await LoadDependenciesAsync();
+    }
+
+    private async Task DeleteDependency(GanttDependencyDeleteEventArgs args)
+    {
+        GanttDependencyService.DeleteDependency((args.Item as GanttDependencyDto).Id);
+        await LoadDependenciesAsync();
+    }
+
+    class GanttTaskModel : GanttTaskDto
+    {
+        public override bool Equals(object obj)
+        {
+            var model = obj as GanttTaskDto;
+
+            return model?.Id == Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
+    }
+}
+
+<style>
+    /*needed as we want to override the default
+        outlining styles coming from the browser*/
+    .k-gantt [tabindex="-1"]:focus {
+        outline: 0;
+    }
+</style>

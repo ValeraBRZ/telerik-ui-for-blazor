@@ -1,0 +1,74 @@
+    @page "/grid/paging"
+
+@inject CustomerService customerService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Page Sizes">
+        <TelerikCheckBox @bind-Value="@ShowPageSizeDropdown" Id="show-page-size-dropdown"></TelerikCheckBox>
+        <label for="show-page-size-dropdown" class="k-checkbox-label checkbox-label">Show Page Sizes</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Input Type">
+        <TelerikDropDownList Data="InputTypes" @bind-Value="@InputType" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Buttons Count">
+        <TelerikNumericTextBox Min="1" @bind-Value="@ButtonsCount"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pager Position">
+        <TelerikDropDownList Data="PagerPositions" @bind-Value="@PagerPosition" Width="150px">
+            <DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData
+             Height=@Height
+             Pageable=true
+             @bind-PageSize="@PageSize"
+             @bind-Page="@CurrentPage">
+    <GridSettings>
+        <GridPagerSettings InputType="@InputType" PageSizes="@PageSizes" ButtonCount="@ButtonsCount" Position="@PagerPosition" />
+    </GridSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+        <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+        <GridColumn Field=@nameof(CustomerDto.Address) />
+        <GridColumn Field=@nameof(CustomerDto.Phone) />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<CustomerDto> GridData { get; set; }
+    int PageSize = 10;
+    int CurrentPage = 3;
+    string Height = "400px";
+    int _buttonsCount = 5;
+    public int ButtonsCount
+    {
+        get
+        {
+            return _buttonsCount;
+        }
+        set
+        {
+            if (value < 1)
+            {
+                _buttonsCount = 1;
+            }
+            else
+            {
+                _buttonsCount = value;
+            }
+        }
+    }
+    public PagerInputType InputType { get; set; }
+    public PagerPosition PagerPosition { get; set; } = PagerPosition.Bottom;
+    public bool ShowPageSizeDropdown { get; set; }
+    public List<int?> PageSizes => ShowPageSizeDropdown ? new List<int?> { 5, 10, 25, 50, null } : null;
+    public List<PagerInputType> InputTypes => new List<PagerInputType> { PagerInputType.Buttons, PagerInputType.Input };
+    public List<PagerPosition> PagerPositions => new List<PagerPosition> { PagerPosition.Bottom, PagerPosition.Top };
+
+    protected override void OnInitialized()
+    {
+        GridData = customerService.GetCustomers();
+    }
+}

@@ -1,0 +1,16 @@
+@page "/colorpalette/custom-palette"
+
+<div class="demo-section auto">
+    <TelerikColorPalette @bind-Value="@SelectedColor"
+                         Colors="@Palette"
+                         TileWidth="40px" TileHeight="40px">
+    </TelerikColorPalette>
+</div>
+
+@code {
+    public string SelectedColor { get; set; }
+    public List<string> Palette { get; set; } = new List<string>()
+    {
+        "#0275d8", "#5cb85c", "#5bc0de", "#2dbf8e", "#f0ad4e", "#d9534f", "#292b2c", "#536878"
+    };
+}

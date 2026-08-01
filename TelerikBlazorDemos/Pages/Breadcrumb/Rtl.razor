@@ -1,0 +1,50 @@
+@page "/breadcrumb/rtl"
+
+<div class="demo-section breadcrumb-wrapper">
+    <TelerikBreadcrumb Data="@Items"
+                       OnItemClick="@ClickHandler"
+                       Class="k-justify-content-center">
+    </TelerikBreadcrumb>
+</div>
+
+@code {
+    public IEnumerable<BreadcrumbItem> initialItems = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem {Text = "Home", Title = "Home", Icon = SvgIcon.Home },
+        new BreadcrumbItem {Text = "Products", Title = "Products" },
+        new BreadcrumbItem {Text = "Computer Peripherals", Title = "Computer Peripherals" },
+        new BreadcrumbItem {Text = "Keyboards", Title = "Keyboards" },
+        new BreadcrumbItem {Text = "Gaming Keyboards", Title = "Gaming Keyboards" }
+    };
+
+    public IEnumerable<BreadcrumbItem> Items = new List<BreadcrumbItem>();
+
+    protected override void OnInitialized()
+    {
+        Items = initialItems;
+    }
+
+    void ClickHandler(BreadcrumbItemClickEventArgs args)
+    {
+        var item = args.Item as BreadcrumbItem;
+
+        var newItems = Items
+            .TakeWhile(bc => bc.Text != item.Text)
+            .Append(item);
+
+        Items = newItems;
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public string Title { get; set; }
+        public ISvgIcon Icon { get; set; }
+    }
+}
+
+<style>
+    .breadcrumb-wrapper {
+        max-width: calc(680px + 6em) !important;
+    }
+</style>

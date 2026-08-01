@@ -1,0 +1,116 @@
+@page "/multiselect/custom-filtering"
+
+@using Telerik.DataSource;
+@using Telerik.DataSource.Extensions;
+
+<div class="demo-alert demo-alert-info">In this example, the Telerik DataSource is used to filter existing data to skip the first 10 items.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="countries" class="k-label k-form-label">Countries</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiSelect @bind-Value="@CountryIds"
+                                TItem="Country" TValue="int"
+                                ValueField="Id"
+                                TextField="Name"
+                                OnRead=@ReadCountries
+                                Filterable="true"
+                                Placeholder="Enter your preferred destinations"
+                                Id="countries"
+                                Width="100%">
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<Country> AllCountries { get; set; }
+    List<int> CountryIds { get; set; }
+    List<Country> Countries { get; set; }
+
+    class Country
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public Country()
+        {
+
+        }
+
+        public Country(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+    }
+
+    protected void ReadCountries(MultiSelectReadEventArgs args)
+    {
+        EnsureData();
+
+        //add manual filter - show only countries with ID greater than 10
+        args.Request.Filters.Add(new FilterDescriptor("Id", FilterOperator.IsGreaterThan, 10));
+
+        var datasourceResult = AllCountries.ToDataSourceResult(args.Request);
+        args.Data = datasourceResult.Data;
+    }
+
+    void EnsureData()
+    {
+        if (AllCountries == null)
+        {
+            AllCountries = new List<Country>()
+            {
+                new Country(0, "Albania"),
+                new Country(1, "Andorra"),
+                new Country(2, "Azerbaijan"),
+                new Country(3, "Armenia"),
+                new Country(4, "Belarus"),
+                new Country(5, "Bosnia & Herzegovina"),
+                new Country(6, "Bulgaria"),
+                new Country(7, "Croatia"),
+                new Country(8, "Cyprus"),
+                new Country(9, "Czech Republic"),
+                new Country(10, "Denmark"),
+                new Country(11, "Estonia"),
+                new Country(12, "Finland"),
+                new Country(13, "France"),
+                new Country(14, "Georgia"),
+                new Country(15, "Germany"),
+                new Country(16, "Greece"),
+                new Country(17, "Hungary"),
+                new Country(18, "Iceland"),
+                new Country(19, "Ireland"),
+                new Country(20, "Italy"),
+                new Country(21, "Kosovo"),
+                new Country(22, "Latvia"),
+                new Country(23, "Liechtenstein"),
+                new Country(24, "Lithuania"),
+                new Country(25, "Luxembourg"),
+                new Country(26, "Macedonia"),
+                new Country(27, "Malta"),
+                new Country(28, "Moldova"),
+                new Country(29, "Monaco"),
+                new Country(30, "Montenegro"),
+                new Country(31, "Netherlands"),
+                new Country(32, "Norway"),
+                new Country(33, "Poland"),
+                new Country(34, "Portugal"),
+                new Country(35, "Romania"),
+                new Country(36, "Russia"),
+                new Country(37, "San Marino"),
+                new Country(38, "Serbia"),
+                new Country(39, "Slovakia"),
+                new Country(40, "Slovenia"),
+                new Country(41, "Spain"),
+                new Country(42, "Sweden"),
+                new Country(43, "Switzerland"),
+                new Country(44, "Turkey"),
+                new Country(45, "Ukraine"),
+                new Country(46, "United Kingdom"),
+                new Country(47, "Vatican City")
+            };
+        }
+    }
+}

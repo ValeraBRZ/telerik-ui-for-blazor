@@ -1,0 +1,20 @@
+@page "/datepicker/overview"
+@page "/datepicker/index"
+
+<ScheduleVisitTemplate Title="Schedule Your Visit" Description="Select Appointment Date">
+    <TelerikDatePicker @bind-Value="@SelectedDate"
+                       Min="@Min"
+                       Max="@Max"
+                       Format="MM/dd/yyyy"
+                       DebounceDelay="@DebounceDelay"
+                       ShowWeekNumbers="true">
+                       <DatePickerFormatPlaceholder Day="day" Month="month" Year="year" />
+    </TelerikDatePicker>
+</ScheduleVisitTemplate>
+
+@code {
+    private DateTime? SelectedDate { get; set; }
+    private DateTime Max = new DateTime(2050, 12, 31);
+    private DateTime Min = new DateTime(1950, 1, 1);
+    private int DebounceDelay { get; set; } = 200;
+}

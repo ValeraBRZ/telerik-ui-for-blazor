@@ -1,0 +1,25 @@
+@page "/toolbar/keyboard-navigation"
+
+<TelerikToolBar Class="toolbar-size" OverflowMode="@ToolBarOverflowMode.None">
+    <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+        <ToolBarToggleButton Icon="@SvgIcon.Bold"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.Italic"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.Underline"></ToolBarToggleButton>
+    </ToolBarButtonGroup>
+    <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+        <ToolBarToggleButton Icon="@SvgIcon.AlignLeft"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.AlignCenter"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.AlignRight"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.AlignJustify"></ToolBarToggleButton>
+    </ToolBarButtonGroup>
+    <ToolBarSpacer></ToolBarSpacer>
+    <ToolBarButton Icon="@SvgIcon.Cut">Cut</ToolBarButton>
+    <ToolBarButton Icon="@SvgIcon.Copy">Copy</ToolBarButton>
+    <ToolBarButton Icon="@SvgIcon.Clipboard">Paste</ToolBarButton>
+</TelerikToolBar>
+
+<style>
+    .toolbar-size {
+        max-width: 830px;
+    }
+</style>

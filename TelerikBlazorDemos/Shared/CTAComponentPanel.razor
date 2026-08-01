@@ -1,0 +1,27 @@
+<section class="kd-cta-panel">
+    <div class="container flex-center">
+        <div class="kd-cta kd-cta-lg">
+            <div class="kd-cta-content-wrapper">
+                <div class="kd-cta-image">
+                    <img loading="lazy" src="images/devcraft-ninja-small.svg" alt="blazor ui ninja image" />
+                </div>
+                <div class="kd-cta-title-desc">
+                    <div class="kd-cta-desc">
+                        <p class="text-small m-0">
+                            The @Component @ComponentKeyWord is part of <a href="https://www.telerik.com/blazor-ui" class="kd-link text-bold">Telerik UI for Blazor</a>, a professional grade UI library with 110+ native components for building modern and feature-rich  applications. To try it out sign up for a free 30-day trial.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="kd-cta-button-wrapper">
+                <a href="https://www.telerik.com/download-trial-file/v2-b/ui-for-blazor" class="kd-button kd-button-primary kd-button-md">Download Free Trial</a>
+            </div>
+        </div>
+    </div>
+</section>
+@code {
+    [Parameter]
+    public string Component { get; set; }
+
+    private string ComponentKeyWord => Component.Contains("Library") || Component.Contains("Processing") ? string.Empty : "component";
+}

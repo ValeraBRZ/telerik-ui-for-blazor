@@ -1,0 +1,56 @@
+@page "/card/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <TelerikDropDownList @bind-Value="@CardOrientation"
+                             Data="@OrientationTypes"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="flex-center">
+    <TelerikCard Orientation="@CardOrientation" Width="@Width">
+        <CardImage Src="@($"images/cards/{ImageId}")"></CardImage>
+        <div class="k-vbox">
+            <CardHeader>
+                <CardTitle>Coffee with friends</CardTitle>
+                <CardSubTitle>
+                    <div>
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            <TelerikSvgIcon Class="star-icon" Icon="@SvgIcon.Star" />
+                        }
+                        <TelerikSvgIcon Icon="@SvgIcon.StarOutline" />
+                    </div>
+                    <div>4/5 (681)</div>
+                </CardSubTitle>
+            </CardHeader>
+            <CardBody>
+                The right place to be if you're in love with high quality espresso or tea. We offer wide range to top coffee brands as Davidoff Cafe, Lavazza, Tchibo, Illy.
+            </CardBody>
+            <CardActions>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Review</TelerikButton>
+            </CardActions>
+        </div>
+    </TelerikCard>
+</div>
+@code {
+    public CardOrientation CardOrientation { get; set; }
+    public List<CardOrientation> OrientationTypes { get; set; } = new List<CardOrientation>()
+    {
+        CardOrientation.Horizontal,
+        CardOrientation.Vertical,
+    };
+
+    public string Width => CardOrientation == CardOrientation.Horizontal ? "450px" : "300px";
+
+    public string ImageId => CardOrientation == CardOrientation.Horizontal
+        ? "coffee_first.jpg"
+        : "coffee_second.jpg";
+}
+
+<style>
+    .star-icon {
+        color: #ffce2a;
+    }
+</style>

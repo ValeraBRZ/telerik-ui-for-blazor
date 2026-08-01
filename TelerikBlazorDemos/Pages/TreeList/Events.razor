@@ -1,0 +1,173 @@
+@page "/treelist/events"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 PageChanged="@PageChanged"
+                 SelectionMode="@TreeListSelectionMode.Multiple"
+                 EditMode="TreeListEditMode.Inline"
+                 SelectedItems="@SelectedItems"
+                 SelectedItemsChanged="@((IEnumerable<EmployeeDirectoryDto> itemsList) => OnSelect(itemsList))"
+                 OnEdit="@EditHandler"
+                 OnRowClick="@RowClickHandler"
+                 OnRowDoubleClick="@RowDoubleClickHandler"
+                 OnRowContextMenu="@RowContextMenuHandler"
+                 OnCancel="@CancelHandler"
+                 OnCreate="@CreateHandler"
+                 OnUpdate="@UpdateHandler"
+                 OnDelete="@DeleteHandler"
+                 OnExpand="@ExpandHandler"
+                 OnCollapse="@CollapseHandler"
+                 Height="300px">
+    <TreeListToolBarTemplate>
+        <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</TreeListCommandButton>
+    </TreeListToolBarTemplate>
+    <TreeListColumns>
+        <TreeListCheckboxColumn SelectChildren="true"></TreeListCheckboxColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+        <TreeListCommandColumn>
+            <TreeListCommandButton Command="Add" Icon="@SvgIcon.Plus"></TreeListCommandButton>
+            <TreeListCommandButton Command="Edit" Icon="@SvgIcon.Pencil"></TreeListCommandButton>
+            <TreeListCommandButton Command="Delete" Icon="@SvgIcon.Trash"></TreeListCommandButton>
+            <TreeListCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true"></TreeListCommandButton>
+            <TreeListCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true"></TreeListCommandButton>
+        </TreeListCommandColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    public IEnumerable<EmployeeDirectoryDto> SelectedItems { get; set; } = Enumerable.Empty<EmployeeDirectoryDto>();
+    public string EventLog { get; set; } = "";
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    void PageChanged(int currentPage)
+    {
+        string log = "<div><strong>Page Changed event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    void OnSelect(IEnumerable<EmployeeDirectoryDto> itemsList)
+    {
+        string log = "<div><strong>Select event fired</strong>. The following products have been selected:<ul>";
+
+        SelectedItems = itemsList;
+
+        foreach (var item in SelectedItems)
+        {
+            log += $"<li><strong>{item.FirstName} {item.LastName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void EditHandler(TreeListCommandEventArgs args)
+    {
+        string log = $"<div><strong>Edit event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void CancelHandler(TreeListCommandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+        string log = $"<div><strong>Cancel event fired</strong>.The cancelled item is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void CreateHandler(TreeListCommandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+
+        string log = $"<div><strong>Create event fired</strong>.The created item is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+
+        argsItem.ReportsTo = ((EmployeeDirectoryDto)args.ParentItem)?.EmployeeId;
+
+        employeeDirectoryService.CreateEmployeeDirectory(argsItem);
+        LoadData();
+    }
+
+    private void UpdateHandler(TreeListCommandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+
+        string log = $"<div><strong>Update event fired</strong>.The updated item name is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+
+        employeeDirectoryService.UpdateEmployeeDirectory(argsItem);
+        LoadData();
+    }
+
+    private void DeleteHandler(TreeListCommandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+
+        string log = $"<div><strong>Delete event fired</strong>.The deleted item is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+
+        employeeDirectoryService.DeleteEmployeeDirectory(argsItem);
+        LoadData();
+    }
+
+    public void ExpandHandler(TreeListExpandEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+
+        string log = $"<div><strong>Expand event fired</strong>.The expanded item is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void CollapseHandler(TreeListCollapseEventArgs args)
+    {
+        var argsItem = args.Item as EmployeeDirectoryDto;
+
+        string log = $"<div><strong>Collapse event fired</strong>.The collapsed item is: {argsItem.FirstName} {argsItem.LastName}</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void RowClickHandler(TreeListRowClickEventArgs args)
+    {
+        var mouseEventArgs = args.EventArgs as MouseEventArgs;
+        var item = args.Item as EmployeeDirectoryDto;
+
+        var clickInitiatorType = mouseEventArgs != null ? "Mouse" : "Keyboard";
+
+        string log = $"<div><strong>Row Click event fired - Item: {item.FirstName} - Fired with: {clickInitiatorType} - Clicked column: {args.Field}</strong>.";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void RowDoubleClickHandler(TreeListRowClickEventArgs args)
+    {
+        string log = $"<div><strong>Row double click event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void RowContextMenuHandler(TreeListRowClickEventArgs args)
+    {
+        string log = $"<div><strong>Row contextmenu event fired</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+}

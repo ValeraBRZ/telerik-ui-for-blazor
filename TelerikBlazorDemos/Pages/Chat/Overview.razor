@@ -1,0 +1,353 @@
+@page "/chat/overview"
+
+@using Microsoft.AspNetCore.Hosting
+@using System.IO
+@using TelerikBlazorDemos.Models.Chat
+@inject AIPromptService AIPromptAnswerService
+@inject IJSRuntime JS
+@inject IWebHostEnvironment Environment
+
+<div class="chat-container">
+    <TelerikChat @ref="@ChatRef"
+                 Data="@ChatData"
+                 AuthorId="@ChatAuthors["jamie"].Id"
+                 EnableSpeechToText="true"
+                 Height="600px"
+                 InputValue="@ChatInputValue"
+                 OnDownload="@OnChatDownload"
+                 OnInputValueChanged="@OnChatInputValueChanged"
+                 OnMessageUnpin="@OnChatMessageUnpin"
+                 OnSendMessage="@OnChatSendMessage"
+                 Width="400px">
+        <ChatSettings>
+            <AIPromptSpeechToTextButtonSettings Lang="en-US" />
+            <ChatAuthorMessageSettings>
+                <ChatMessageContextMenuActions>
+                    <ChatMessageContextMenuAction Icon="@SvgIcon.Pin" OnClick="@OnChatContextMenuPin" Text="Pin" />
+                    <ChatMessageContextMenuAction Icon="@SvgIcon.Trash" OnClick="@OnChatContextMenuDelete" Text="Delete" />
+                </ChatMessageContextMenuActions>
+            </ChatAuthorMessageSettings>
+            <ChatReceiverMessageSettings>
+                <ChatMessageContextMenuActions>
+                    <ChatMessageContextMenuAction Name="Reply" />
+                    <ChatMessageContextMenuAction Name="Copy" />
+                    <ChatMessageContextMenuAction Icon="@SvgIcon.Pin" OnClick="@OnChatContextMenuPin" Text="Pin" />
+                </ChatMessageContextMenuActions>
+            </ChatReceiverMessageSettings>
+        </ChatSettings>
+        <TimestampTemplate>
+            @context.Timestamp.ToString("dddd, MMMM d, yyyy")
+        </TimestampTemplate>
+        <ChatFileActions>
+            <ChatFileAction Icon="@SvgIcon.Download" Text="Download" OnClick="@OnChatFileActionDownload" />
+        </ChatFileActions>
+    </TelerikChat>
+</div>
+
+<script>
+    window.downloadFileFromBytes = (base64Data, filename, mimeType) => {
+        try {
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType });
+            const objectUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = objectUrl;
+            a.download = filename;
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(objectUrl);
+        } catch (error) {
+            console.error("Error downloading file: ", error);
+        }
+    };
+</script>
+
+<style>
+    .chat-container {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
+@code {
+    private TelerikChat<Message> ChatRef;
+
+    private List<Message> ChatData { get; set; }
+
+    private string ChatInputValue { get; set; } = "Can you attach the files, please?";
+
+    private readonly Dictionary<string, Author> ChatAuthors = new() {
+        { "jane", new Author() { Id = "jane", Name = "Jane", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jane.jpg" } },
+        { "jamie", new Author() { Id = "jamie", Name = "Jamie", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jamie.jpg" } }
+    };
+
+    private void OnChatContextMenuPin(ChatMessageActionClickEventArgs args)
+    {
+        var message = ChatData.FirstOrDefault(m => m.Id == args.MessageId);
+        if (message != null)
+        {
+            ChatData.ForEach(m => m.IsPinned = false);
+            message.IsPinned = true;
+        }
+    }
+
+    private void OnChatMessageUnpin(ChatMessageUnpinEventArgs args)
+    {
+        var message = ChatData.FirstOrDefault(x => x.Id == args.MessageId);
+        if (message != null)
+        {
+            message.IsPinned = false;
+        }
+    }
+
+    private void OnChatContextMenuDelete(ChatMessageActionClickEventArgs args)
+    {
+        //ChatData.RemoveAll(m => m.Id == args.MessageId);
+        ChatData.First(x => x.Id == args.MessageId).IsDeleted = true;
+    }
+
+    private async Task OnChatFileActionDownload(ChatFileActionClickEventArgs args)
+    {
+        await DownloadChatFile(args.File);
+    }
+
+    private async Task OnChatDownload(ChatDownloadEventArgs args)
+    {
+        foreach (var file in args.Files)
+        {
+            await DownloadChatFile(file);
+        }
+    }
+
+    private async Task DownloadChatFile(FileSelectFileInfo file)
+    {
+        try
+        {
+            var filePath = Path.Combine(Environment.WebRootPath, "chat-files", file.Name);
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                var base64String = Convert.ToBase64String(fileBytes);
+                var mimeType = GetFileMimeType(file.Extension);
+
+                await JS.InvokeVoidAsync("downloadFileFromBytes", base64String, file.Name, mimeType);
+            }
+            else
+            {
+                Console.WriteLine($"File not found: {filePath}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error downloading file {file.Name}: {ex.Message}");
+        }
+    }
+
+    private void OnChatSendMessage(ChatSendMessageEventArgs args)
+    {
+        var userMessage = new Message
+        {
+            Id = Guid.NewGuid().ToString(),
+            AuthorName = ChatAuthors["jamie"].Name,
+            AuthorId = ChatAuthors["jamie"].Id,
+            AuthorImageUrl = ChatAuthors["jamie"].ImageUrl,
+            Text = args.Message,
+            ReplyToId = args.ReplyMessageId,
+            Status = "Seen",
+            Timestamp = DateTime.Now
+        };
+
+        ChatData.Add(userMessage);
+
+        string userInput = args.Message?.ToLowerInvariant() ?? "";
+
+        if (userInput.Contains("file"))
+        {
+            AddFileMessage();
+        }
+        else if (userInput.Contains("link"))
+        {
+            AddLinkMessage();
+        }
+        else
+        {
+            AddHintMessage();
+        }
+
+        ChatRef?.Refresh();
+    }
+
+    private void AddFileMessage()
+    {
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Text = "Cool, I'll send them now. Thanks",
+            Status = "Seen"
+        });
+
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Text = "",
+            Status = "Seen",
+            Files = new List<FileSelectFileInfo>
+            {
+                new FileSelectFileInfo
+                {
+                    Id = "portfolio",
+                    Name = "Portfolio.pdf",
+                    Size = GetFileSize("portfolio.pdf"),
+                    Extension = ".pdf"
+                },
+                new FileSelectFileInfo
+                {
+                    Id = "letter",
+                    Name = "Cover_Letter.pdf",
+                    Size = GetFileSize("cover_letter.pdf"),
+                    Extension = ".pdf"
+                }
+            }
+        });
+
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Text = "Sorry, I forgot to upload my CV",
+            Status = "Seen"
+        });
+
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Status = "Seen",
+            Files = new List<FileSelectFileInfo>
+            {
+                new FileSelectFileInfo
+                {
+                    Id = "cv",
+                    Name = "CV.pdf",
+                    Size = GetFileSize("cv.pdf"),
+                    Extension = ".pdf"
+                }
+            }
+        });
+    }
+
+    private void AddLinkMessage()
+    {
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Text = "Here you go: https://demos.telerik.com/blazor-ui/pdfviewer/overview \n Let me know if you have any problem opening it.",
+            Status = "Seen"
+        });
+    }
+
+    private void AddHintMessage()
+    {
+        ChatData.Add(new Message
+        {
+            AuthorId = ChatAuthors["jane"].Id,
+            AuthorName = ChatAuthors["jane"].Name,
+            AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+            Text = "Please choose between 'files' or 'link' - which option works best for you?",
+            Status = "Seen"
+        });
+    }
+
+    private void OnChatInputValueChanged(string value)
+    {
+        ChatInputValue = value;
+    }
+
+    private long GetFileSize(string fileName)
+    {
+        try
+        {
+            var filePath = Path.Combine(Environment.WebRootPath, "chat-files", fileName);
+            if (System.IO.File.Exists(filePath))
+            {
+                return new FileInfo(filePath).Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting file size for {fileName}: {ex.Message}");
+        }
+
+        return 123_456; // Size for unsaved user files
+    }
+
+    private string GetFileMimeType(string extension)
+    {
+        return extension.ToLower() switch
+        {
+            ".pdf" => "application/pdf",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".doc" => "application/msword",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".xls" => "application/vnd.ms-excel",
+            ".txt" => "text/plain",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream"
+        };
+    }
+
+    protected override void OnInitialized()
+    {
+        ChatData = new List<Message>()
+        {
+            new Message()
+            {
+                AuthorId = ChatAuthors["jane"].Id,
+                AuthorName = ChatAuthors["jane"].Name,
+                AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+                Text = "Hey Jamie, do you have a minute? I've been working on my job application documents and could use a second opinion. Mind taking a look and telling me what you think?",
+                Status = "Seen",
+                Timestamp = DateTime.Now.AddSeconds(-30)
+            },
+            new Message()
+            {
+                AuthorId = ChatAuthors["jamie"].Id,
+                AuthorName = ChatAuthors["jamie"].Name,
+                AuthorImageUrl = ChatAuthors["jamie"].ImageUrl,
+                Text = "Hi Jane, sure!",
+                Status = "Seen",
+                Timestamp = DateTime.Now.AddSeconds(-15)
+            },
+            new Message()
+            {
+                AuthorId = ChatAuthors["jane"].Id,
+                AuthorName = ChatAuthors["jane"].Name,
+                AuthorImageUrl = ChatAuthors["jane"].ImageUrl,
+                Text = "I can send you the files or a link. Which one works best for you?",
+                Status = "Seen"
+            }
+        };
+
+        base.OnInitialized();
+    }
+}

@@ -1,0 +1,21 @@
+@page "/pager/adaptive"
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <p>
+        Resize the browser to see how the pager adapts to different resolutions.
+    </p>
+</div>
+
+<div class="page-wrapper mt-md" style="width: 100%">
+    <TelerikPager @bind-PageSize="@PageSize" 
+                  PageSizes="@(new List<int?> {5, 10, 20, null})"
+                  Total="100"
+                  ButtonCount="6"
+                  Responsive="true"
+                  @bind-Page="@Page"></TelerikPager>
+</div>
+
+@code{
+    public int Page { get; set; } = 3;
+    public int PageSize { get; set; } = 5;
+}

@@ -1,0 +1,31 @@
+@page "/combobox/localization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="sport" class="k-label k-form-label">Sport</label>
+        <div class="k-form-field-wrap">
+            <TelerikComboBox Data="@Data"
+                             @bind-Value="@SelectedValue"
+                             Placeholder="filter so there are no results, hover the [x] button"
+                             Id="sport" Width="100%"
+                             Filterable="true">
+            </TelerikComboBox>
+        </div>
+    </div>
+</div>
+
+@code  {
+    public string[] Data { get; } = new string[]
+    {
+        "Baseball", "Basketball", "Cricket",
+        "Field Hockey", "Football", "Table Tennis",
+        "Tennis", "Volleyball"
+            };
+    public string SelectedValue { get; set; }
+}

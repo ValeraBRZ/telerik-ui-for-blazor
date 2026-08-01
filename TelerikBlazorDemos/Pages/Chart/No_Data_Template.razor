@@ -1,0 +1,84 @@
+@page "/chart/no-data-template"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <label>Toggle Data</label>
+        <TelerikSwitch Value="@HasData"
+                       ValueChanged="@((bool newValue) => ToggleData(newValue))"
+                       OnLabel="On"
+                       OffLabel="Off">
+        </TelerikSwitch>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikChart @ref="ChartRef"
+              Class="demo-no-data-chart">
+    <ChartTitle Text="Product Sales Over the Years" />
+    <ChartTooltip Visible="true" />
+    <ChartLegend Visible="false" />
+    <ChartSettings>
+        <NoDataTemplate>
+            <div>
+                <span style="font-size: 100px;">📉</span>
+                <p><strong>No data available to display. Please add product data or check back later.</strong></p>
+            </div>
+        </NoDataTemplate>
+    </ChartSettings>
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Column"
+                     Data="@ChartData"
+                     Name="Product"
+                     Field="@nameof(ChartSeriesData.ProductSales)"
+                     CategoryField="@nameof(ChartSeriesData.Year)">
+        </ChartSeries>
+    </ChartSeriesItems>
+</TelerikChart>
+
+<style>
+    /* Custom styles necessary for the correct appearance of the demo */
+    .demo-no-data-chart {
+        z-index: 1;
+    }
+</style>
+
+@code {
+    private TelerikChart ChartRef { get; set; }
+    private List<ChartSeriesData> ChartData { get; set; } = new List<ChartSeriesData>();
+    private bool HasData { get; set; }
+
+    private void ToggleData(bool newValue)
+    {
+        if (!HasData)
+        {
+            ChartData = DataGenerator.GenerateData();
+        }
+        else
+        {
+            ChartData = new List<ChartSeriesData>();
+        }
+
+        HasData = newValue;
+        ChartRef.Refresh();
+    }
+
+    public class ChartSeriesData
+    {
+        public int ProductSales { get; set; }
+        public int Year { get; set; }
+    }
+
+    public static class DataGenerator
+    {
+        public static List<ChartSeriesData> GenerateData()
+        {
+            return new List<ChartSeriesData>
+            {
+                new ChartSeriesData { ProductSales = 80, Year = 2020 },
+                new ChartSeriesData { ProductSales = 120, Year = 2021 },
+                new ChartSeriesData { ProductSales = 180, Year = 2022 },
+                new ChartSeriesData { ProductSales = 220, Year = 2023 },
+                new ChartSeriesData { ProductSales = 300, Year = 2024 }
+            };
+        }
+    }
+}

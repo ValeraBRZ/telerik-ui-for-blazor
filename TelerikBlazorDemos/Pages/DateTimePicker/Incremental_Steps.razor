@@ -1,0 +1,37 @@
+@page "/datetimepicker/incremental-steps"
+
+<div class="demo-alert demo-alert-info">Open the popup to see how the <strong>time</strong> tumblers show every n-th item as per the <code>DateTimePickerSteps</code> tag settings. Also, focus the input and use the <code>Up</code> and <code>Down</code> arrows to change the selected date and time. They change with the increment steps defined in the code, not by the default 1.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="datetimepicker" class="k-label k-form-label">Date/Time</label>
+        <div class="k-form-field-wrap">
+            <TelerikDateTimePicker @bind-Value="@SelectedDate" Format="yyyy MMM dd hh:mm:ss tt" Id="datetimepicker">
+                <DateTimePickerSteps Year="@Year"
+                                     Month="@Month"
+                                     Day="@Day"
+                                     Hour="@Hour"
+                                     Minute="@Minute"
+                                     Second="@Second">
+                </DateTimePickerSteps>
+            </TelerikDateTimePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        Steps: Year: @Year, Month: @Month, Day: @Day  Hour: @Hour, Minute: @Minute, Second: @Second
+    </div>
+</div>
+
+@code {
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    public DateTime? SelectedDate = DateTime.Now;
+
+    public int Year { get; set; } = 2;
+    public int Month { get; set; } = 3;
+    public int Day { get; set; } = 5;
+    public int Hour { get; set; } = 7;
+    public int Minute { get; set; } = 15;
+    public int Second { get; set; } = 30;
+
+}

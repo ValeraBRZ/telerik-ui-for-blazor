@@ -1,0 +1,68 @@
+@page "/treelist/binding-hierarchical-data"
+
+@using System.ComponentModel.DataAnnotations;
+
+<TelerikTreeList Data="@Data"
+                 ItemsField="Items"
+                 Pageable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="Id" Width="60px"></TreeListColumn>
+        <TreeListColumn Field="Name" Expandable="true" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="AgeInYears"></TreeListColumn>
+        <TreeListColumn Field="GraduateGrade"></TreeListColumn>
+        <TreeListColumn Field="HireDate"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public class TreeListHierarchicalItem
+    {
+        public TreeListHierarchicalItem()
+        {
+            HireDate = DateTime.Now;
+        }
+
+        public int? Id { get; set; }
+        public string Name { get; set; }
+        public int? AgeInYears { get; set; }
+        public decimal? GraduateGrade { get; set; }
+        public DateTime HireDate { get; set; }
+
+        public List<TreeListHierarchicalItem> Items { get; set; } = new List<TreeListHierarchicalItem>();
+    }
+
+    public List<TreeListHierarchicalItem> Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = new List<TreeListHierarchicalItem>();
+        var rand = new Random();
+
+        for (int i = 1; i < 7; i++)
+        {
+            var item = new TreeListHierarchicalItem()
+            {
+                Id = i,
+                Name = "Item " + i.ToString(),
+                AgeInYears = rand.Next(10, 80),
+                HireDate = DateTime.Now.Date.AddDays(rand.Next(-20, 20)),
+                GraduateGrade = i % 4 + 3
+            };
+            Data.Add(item);
+
+            for (int j = 1; j < 15; j++)
+            {
+                item.Items.Add(new TreeListHierarchicalItem()
+                {
+                    Id = j,
+                    Name = $"Item {i}:{j}",
+                    AgeInYears = rand.Next(10, 80),
+                    HireDate = DateTime.Now.Date.AddDays(rand.Next(-20, 20)),
+                    GraduateGrade = i % 4 + 3
+                });
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+ }

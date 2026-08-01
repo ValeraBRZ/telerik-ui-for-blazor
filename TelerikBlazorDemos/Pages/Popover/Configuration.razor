@@ -1,0 +1,192 @@
+@page "/popover/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Animation">
+        <div>
+            <label>
+                Duration
+                <TelerikNumericTextBox @bind-Value="@PopoverAnimationDuration" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Type
+                <TelerikDropDownList @bind-Value="@PopoverAnimationType" Data="@AnimationTypes" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show and Collision">
+        <div>
+            <label>
+                Show Event
+                <TelerikDropDownList @bind-Value="@PopoverShowOn" Data="@PopoverShowOns"
+                                     OnChange="@RecreatePopover" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Collision
+                <TelerikDropDownList @bind-Value="@PopoverCollision" Data="@PopoverCollisions" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Alignment">
+        <div>
+            <label>
+                Position
+                <TelerikDropDownList @bind-Value="@PopoverPosition" Data="@PopoverPositions" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Offset
+                <TelerikNumericTextBox @bind-Value="@PopoverOffset" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Dimensions">
+        <div>
+            <label>
+                Width
+                <TelerikNumericTextBox @bind-Value="@PopoverWidth" Min="0" Max="5000" />
+            </label>
+        </div>
+        <div>
+            <label>
+                Height
+                <TelerikNumericTextBox @bind-Value="@PopoverHeight" Min="0" Max="5000" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Actions">
+        <div>
+            <label>
+                Layout
+                <TelerikDropDownList @bind-Value="@PopoverActionsLayout" Data="@PopoverActionsLayouts" />
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<ul>
+    <li><strong>Flip collision</strong> allows the Popover to use the opposite <code>Position</code> if it's too close to the viewport boundary.</li>
+    <li><strong>Fit collision</strong> allows the Popover to shift its position in order to be fully visible.</li>
+</ul>
+
+@if (CreatePopover)
+{
+    <TelerikPopover @ref="@PopoverRef"
+                    ActionsLayout="@PopoverActionsLayout"
+                    AnchorSelector=".popover-anchor"
+                    AnimationDuration="@PopoverAnimationDuration"
+                    AnimationType="@PopoverAnimationType"
+                    Collision="@PopoverCollision"
+                    Height="@($"{PopoverHeight}px")"
+                    Offset="@PopoverOffset"
+                    Position="@PopoverPosition"
+                    ShowCallout="@PopoverShowCallout"
+                    ShowOn="@PopoverShowOn"
+                    Width="@($"{PopoverWidth}px")">
+        <PopoverHeader>
+            Telerik Popover
+        </PopoverHeader>
+        <PopoverContent>
+            <span>I popped!</span>
+        </PopoverContent>
+        <PopoverActions>
+            @if (PopoverShowOn == PopoverShowOn.Click)
+            {
+                <TelerikButton Icon="@SvgIcon.XCircle" OnClick="@( () => PopoverRef.Hide() )">Close</TelerikButton>
+            }
+            else
+            {
+                <text>Use actions when <code>ShowOn</code> is set to <code>Click</code></text>
+            }
+
+        </PopoverActions>
+    </TelerikPopover>
+}
+
+<style>
+    .configurator label {
+        display: inline-block;
+        width: min-content;
+        min-width: 12em;
+    }
+</style>
+
+<div style="text-align: center;">
+    <TelerikButton Class="popover-anchor"
+                   ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                   Icon="@SvgIcon.QuestionCircle">Toggle Popover</TelerikButton>
+</div>
+
+@code {
+    private TelerikPopover PopoverRef { get; set; }
+
+    #region Popover Parameters
+
+    private PopoverActionsLayoutAlign PopoverActionsLayout { get; set; } = PopoverActionsLayoutAlign.Center;
+    private int PopoverAnimationDuration { get; set; } = 300;
+    private AnimationType PopoverAnimationType { get; set; } = AnimationType.Fade;
+    private PopoverCollision PopoverCollision { get; set; } = PopoverCollision.Flip;
+    private int PopoverHeight { get; set; } = 170;
+    private int PopoverOffset { get; set; } = 20;
+    private PopoverPosition PopoverPosition { get; set; } = PopoverPosition.Top;
+    private bool PopoverShowCallout { get; set; } = true;
+    private PopoverShowOn PopoverShowOn { get; set; } = PopoverShowOn.MouseEnter;
+    private int PopoverWidth { get; set; } = 300;
+
+    #endregion Popover Parameters
+
+    private bool CreatePopover { get; set; } = true;
+
+    private async Task RecreatePopover(object newValue)
+    {
+        // ShowOn is not a reactive parameter yet
+        CreatePopover = false;
+        await Task.Delay(1);
+        CreatePopover = true;
+    }
+
+    #region Popover Parameter Options
+
+    private readonly List<PopoverActionsLayoutAlign> PopoverActionsLayouts = new List<PopoverActionsLayoutAlign>() {
+        PopoverActionsLayoutAlign.Center,
+        PopoverActionsLayoutAlign.End,
+        PopoverActionsLayoutAlign.Start,
+        PopoverActionsLayoutAlign.Stretch
+    };
+
+    private readonly List<AnimationType> AnimationTypes = new List<AnimationType>() {
+        AnimationType.SlideDown,
+        AnimationType.SlideUp,
+        AnimationType.SlideLeft,
+        AnimationType.SlideRight,
+        AnimationType.Fade,
+        AnimationType.PushDown,
+        AnimationType.PushUp,
+        AnimationType.PushLeft,
+        AnimationType.PushRight,
+        AnimationType.ZoomIn
+    };
+
+    private readonly List<PopoverCollision> PopoverCollisions = new List<PopoverCollision>() {
+        PopoverCollision.Fit,
+        PopoverCollision.Flip
+    };
+
+    private readonly List<PopoverPosition> PopoverPositions = new List<PopoverPosition>() {
+        PopoverPosition.Top,
+        PopoverPosition.Right,
+        PopoverPosition.Bottom,
+        PopoverPosition.Left
+    };
+
+    private readonly List<PopoverShowOn> PopoverShowOns = new List<PopoverShowOn>() {
+        PopoverShowOn.Click,
+        PopoverShowOn.MouseEnter
+    };
+
+    #endregion Popover Parameter Options
+}

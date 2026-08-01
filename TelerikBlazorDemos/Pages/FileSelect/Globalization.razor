@@ -1,0 +1,36 @@
+@page "/fileselect/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="row">
+    <div class="col-6">
+        <TelerikFileSelect AllowedExtensions="@AllowedExtensions"
+                           MinFileSize="@MinFileSize"
+                           MaxFileSize="@MaxFileSize">
+        </TelerikFileSelect>
+        <div class="k-form-hint">The FileSelect expects <strong>JPG</strong> or <strong>PNG</strong> files
+            between <strong> 1KB </strong> and <strong> 4MB </strong>.
+            Select invalid files to see more localized messages.</div>
+    </div>
+</div>
+
+@code {
+    public List<string> AllowedExtensions { get; set; } = new List<string>() { ".jpg", ".png" };
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+}
+
+<style>
+    .k-upload-files {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .k-form-hint {
+        display: block;
+        margin-top: 1em;
+    }
+</style>

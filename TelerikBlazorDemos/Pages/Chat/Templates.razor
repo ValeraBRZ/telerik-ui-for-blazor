@@ -1,0 +1,368 @@
+@page "/chat/templates"
+
+@using TelerikBlazorDemos.Models.Chat
+
+<div class="chat-container">
+    <TelerikChat @ref="@ChatRefForJane"
+                 Data="@ChatDataForJane"
+                 AuthorId="@ChatAuthors["jane"].Id"
+                 Width="400px"
+                 Height="600px"
+                 InputValue="@ChatInputValue1"
+                 OnInputValueChanged="@( (string newValue) => OnChatInputValueChanged(newValue, ChatAuthors["jane"].Id) )"
+                 OnSendMessage="@( (ChatSendMessageEventArgs args) => OnChatSendMessage(args, ChatAuthors["jane"].Id) )">
+        <NoDataTemplate>
+            <p>Chat component <code>&lt;NoDataTemplate&gt;</code></p>
+            <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                            OnClick="@PopulateChatMessages">
+                Populate Messages and User Status
+            </TelerikButton>
+        </NoDataTemplate>
+        <HeaderTemplate>
+            <div class="chat-header-container">
+                Jane's Chat with David
+            </div>
+        </HeaderTemplate>
+        <TimestampTemplate>
+            @context.Timestamp.ToString("dddd, MMMM d, yyyy")
+        </TimestampTemplate>
+        <UserStatusTemplate>
+            <TelerikBadge ThemeColor="@GetThemeColorForUserStatus(context.Message.AuthorId)" Position="@BadgePosition.Inline" />
+        </UserStatusTemplate>
+        <MessageStatusTemplate>
+            <TelerikSvgIcon Icon="@GetIconForMessageStatus(context.Message.Status)" />
+            @context.Message.Status
+        </MessageStatusTemplate>
+        <MessageContentTemplate>
+            @{
+                string messageText = context.Message.Text.Trim();
+
+                if (!string.IsNullOrEmpty(context.Message.ReplyToId))
+                {
+                    string replyToMessageContent = ChatData.First(x => x.Id == context.Message.ReplyToId).Text;
+
+                    <div class="k-message-reference k-message-reference-receiver" @onclick:stopPropagation="true">
+                        <div class="k-message-reference-content">
+                            @replyToMessageContent
+                        </div>
+                    </div>
+                }
+
+                if (CheckForImage(messageText))
+                {
+                    <img src="@messageText" style="max-width:100px;max-height:100px" alt="User Image" />
+                }
+                else if (CheckForLink(messageText))
+                {
+                    <a href="@messageText" target="_blank" />
+                }
+                else if (context.Message.IsTyping)
+                {
+                    <div class="k-typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                }
+                else
+                {
+                    <div>@context.Message.Text</div>
+                }
+            }
+        </MessageContentTemplate>
+        <ChatMessageContextMenuActions>
+            <ChatMessageContextMenuAction Name="Reply" />
+        </ChatMessageContextMenuActions>
+    </TelerikChat>
+
+    <TelerikChat @ref="@ChatRefForDavid"
+                 Data="@ChatDataForDavid"
+                 AuthorId="@ChatAuthors["david"].Id"
+                 Width="400px"
+                 Height="600px"
+                 InputValue="@ChatInputValue2"
+                 OnInputValueChanged="@( (string newValue) => OnChatInputValueChanged(newValue, ChatAuthors["david"].Id) )"
+                 OnSendMessage="@( (ChatSendMessageEventArgs args) => OnChatSendMessage(args, ChatAuthors["david"].Id) )">
+        <HeaderTemplate>
+            <div class="chat-header-container">
+                David's Chat with Jane
+            </div>
+        </HeaderTemplate>
+        <TimestampTemplate>
+            @context.Timestamp.ToString("dddd, MMMM d, yyyy")
+        </TimestampTemplate>
+        <UserStatusTemplate>
+            <TelerikBadge ThemeColor="@GetThemeColorForUserStatus(context.Message.AuthorId)" Position="@BadgePosition.Inline" />
+        </UserStatusTemplate>
+        <MessageStatusTemplate>
+            <TelerikSvgIcon Icon="@GetIconForMessageStatus(context.Message.Status)" />
+            @context.Message.Status
+        </MessageStatusTemplate>
+        <MessageTemplate>
+            <div class="message-container container-@context.Message.AuthorId">
+                @{
+                    string messageText = context.Message.Text.Trim();
+
+                    if (!string.IsNullOrEmpty(context.Message.ReplyToId))
+                    {
+                        string replyToMessageContent = ChatData.First(x => x.Id == context.Message.ReplyToId).Text;
+
+                        <div class="k-message-reference k-message-reference-receiver" @onclick:stopPropagation="true">
+                            <div class="k-message-reference-content">
+                                @replyToMessageContent
+                            </div>
+                        </div>
+                    }
+
+                    if (CheckForImage(messageText))
+                    {
+                        <img src="@messageText" style="max-width:100px;max-height:100px" alt="User Image" />
+                    }
+                    else if (CheckForLink(messageText))
+                    {
+                        <a href="@messageText" target="_blank" />
+                    }
+                    else if (context.Message.IsTyping)
+                    {
+                        <div class="k-typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>@context.Message.Text</div>
+                    }
+                }
+            </div>
+        </MessageTemplate>
+        <ChatMessageContextMenuActions>
+            <ChatMessageContextMenuAction Name="Reply" />
+        </ChatMessageContextMenuActions>
+    </TelerikChat>
+</div>
+
+<style>
+    .chat-container {
+        display: flex;
+        gap: 1em;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .message-container {
+        border: 1px solid var(--kendo-color-border);
+        padding: var(--kendo-spacing-2) var(--kendo-spacing-3);
+        border-radius: var(--kendo-border-radius-xl);
+        background: var(--kendo-color-base-emphasis);
+    }
+
+    .container-david {
+        border-color: var(--kendo-color-success);
+        background: var(--kendo-color-success-subtle);
+    }
+
+    .container-jane {
+        border-color: var(--kendo-color-warning);
+        background: var(--kendo-color-warning-subtle);
+    }
+
+    .k-chat-header .k-appbar-section {
+        width: 100%;
+    }
+
+    .chat-header-container {
+        font-weight: 400;
+        font-size: 20px;
+    }
+</style>
+
+@code {
+    private List<Message> ChatData { get; set; } = new();
+
+    private TelerikChat<Message> ChatRefForJane;
+    private TelerikChat<Message> ChatRefForDavid;
+
+    private string ChatInputValue1 { get; set; } = string.Empty;
+    private string ChatInputValue2 { get; set; } = string.Empty;
+
+    private readonly Dictionary<string, Author> ChatAuthors = new() {
+        { "jane", new Author() { Id = "jane", Name = "Jane", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jane.jpg" } },
+        { "david", new Author() { Id = "david", Name = "David", ImageUrl = "https://demos.telerik.com/blazor-ui/images/chat/avatar-jamie.jpg" } }
+    };
+
+    // Skip other user's failed messages and own user's typing indicator
+    private IEnumerable<Message> ChatDataForJane => ChatData
+        .Where(x => (x.Status != "Failed" || x.AuthorId == ChatAuthors["jane"].Id) && (!x.IsTyping || x.AuthorId == ChatAuthors["david"].Id));
+    private IEnumerable<Message> ChatDataForDavid => ChatData
+        .Where(x => (x.Status != "Failed" || x.AuthorId == ChatAuthors["david"].Id) && (!x.IsTyping || x.AuthorId == ChatAuthors["jane"].Id));
+
+    private bool IsDavidOnline { get; set; }
+
+    // Initial chat messages
+    private readonly List<string> ChatMessages = new() {
+        "Hey! Looks who's the new member of our family!",
+        "https://demos.telerik.com/blazor-ui/chat-files/corgi.jpg",
+        "Oooohhhh! So cute! What's the name?"
+    };
+
+    private readonly IEnumerable<string> ChatSuggestions = new List<string>() { "Foo", "Bar" };
+
+    private void OnChatSendMessage(ChatSendMessageEventArgs args, string authorId)
+    {
+        Author messageAuthor = ChatAuthors[authorId];
+        ChatData.RemoveAll(x => x.AuthorId == authorId && x.IsTyping);
+
+        // Bring back David online
+        if (authorId == ChatAuthors["david"].Id)
+        {
+            IsDavidOnline = true;
+        }
+
+        ChatData.Add(new Message
+        {
+            Id = Guid.NewGuid().ToString(),
+            AuthorId = messageAuthor.Id,
+            AuthorImageUrl = messageAuthor.ImageUrl,
+            AuthorName = messageAuthor.Name,
+            ReplyToId = args.ReplyMessageId,
+            Text = args.Message
+        });
+
+        // Scroll to last message
+        ChatRefForJane.Refresh();
+        ChatRefForDavid.Refresh();
+    }
+
+    private ISvgIcon GetIconForMessageStatus(string status)
+    {
+        switch (status)
+        {
+            case "Received":
+                return SvgIcon.CheckCircle;
+            case "Seen":
+                return SvgIcon.Eye;
+            case "Failed":
+                return SvgIcon.XOutline;
+            default:
+                return SvgIcon.CheckOutline;
+        }
+    }
+
+    private string GetThemeColorForUserStatus(string authorId)
+    {
+        string themeColor = ThemeConstants.Badge.ThemeColor.Success;
+        if (authorId == ChatAuthors["david"].Id && !IsDavidOnline)
+        {
+            themeColor = ThemeConstants.Badge.ThemeColor.Warning;
+        }
+
+        return themeColor;
+    }
+
+    private ISvgIcon GetIconForUserStatus(string authorId)
+    {
+        ISvgIcon icon = SvgIcon.Check;
+        if (authorId == ChatAuthors["david"].Id && !IsDavidOnline)
+        {
+            icon = SvgIcon.Clock;
+        }
+
+        return icon;
+    }
+
+    private bool CheckForImage(string messageText)
+    {
+        string[] imageExtensions = { ".gif", ".jpg", ".jpeg", ".png" };
+        return messageText.StartsWith("https://") && imageExtensions.Any(x => messageText.EndsWith(x));
+    }
+
+    private bool CheckForLink(string messageText)
+    {
+        return messageText.StartsWith("https://") && !CheckForImage(messageText);
+    }
+
+    private void OnChatInputValueChanged(string newInputValue, string authorId)
+    {
+        Author messageAuthor = ChatAuthors[authorId];
+
+        if (authorId == ChatAuthors["jane"].Id)
+        {
+            ChatInputValue1 = newInputValue;
+        }
+        else if (authorId == ChatAuthors["david"].Id)
+        {
+            IsDavidOnline = true;
+            ChatInputValue2 = newInputValue;
+        }
+
+        Message lastMessageBySelf = ChatData.LastOrDefault(x => x.AuthorId == authorId);
+
+        if (!string.IsNullOrEmpty(newInputValue) &&
+            (lastMessageBySelf is null || (lastMessageBySelf is not null && !lastMessageBySelf.IsTyping)))
+        {
+            ChatData.Add(new Message
+            {
+                Id = Guid.NewGuid().ToString(),
+                AuthorId = messageAuthor.Id,
+                AuthorImageUrl = messageAuthor.ImageUrl,
+                AuthorName = messageAuthor.Name,
+                IsTyping = true
+            });
+        }
+        else if (string.IsNullOrEmpty(newInputValue))
+        {
+            ChatData.RemoveAll(x => x.AuthorId == authorId && x.IsTyping);
+        }
+    }
+
+    private void PopulateChatMessages()
+    {
+        Author userJane = ChatAuthors.First().Value;
+        Author userDavid = ChatAuthors.Last().Value;
+
+        ChatData = new();
+
+        ChatData.Add(new Message
+        {
+            Text = "Hey! Looks who's the new member of our family!",
+            AuthorId = userDavid.Id,
+            AuthorImageUrl = userDavid.ImageUrl,
+            AuthorName = userDavid.Name,
+            Status = "Seen",
+            Timestamp = DateTime.Now.AddSeconds(-103)
+        });
+
+        ChatData.Add(new Message
+        {
+            Text = "https://demos.telerik.com/blazor-ui/chat-files/corgi.jpg",
+            AuthorId = userDavid.Id,
+            AuthorImageUrl = userDavid.ImageUrl,
+            AuthorName = userDavid.Name,
+            Status = "Seen",
+            Timestamp = DateTime.Now.AddSeconds(-97)
+        });
+
+        ChatData.Add(new Message
+        {
+            Text = "So cute! What's the little Corgi's name?",
+            AuthorId = userJane.Id,
+            AuthorImageUrl = userJane.ImageUrl,
+            AuthorName = userJane.Name,
+            Status = "Received",
+            Timestamp = DateTime.Now.AddMinutes(-3)
+        });
+
+        ChatData.Add(new Message
+        {
+            AuthorId = userJane.Id,
+            AuthorImageUrl = userJane.ImageUrl,
+            AuthorName = userJane.Name,
+            IsTyping = true,
+            Timestamp = DateTime.Now.AddMinutes(-3)
+        });
+
+        ChatInputValue1 = "And how old is it?";
+    }
+}

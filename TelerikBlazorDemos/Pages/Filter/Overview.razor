@@ -1,0 +1,104 @@
+@page "/filter/overview"
+
+@using Telerik.DataSource
+@using Telerik.DataSource.Extensions
+
+@inject OrderDetailService orderDetailService
+
+<TelerikFilter Value="@Value" OnUpdate="@OnValueChanged">
+    <FilterFields>
+        <FilterField Name="@nameof(OrderDetailDto.OrderId)" Type="typeof(int)" Label="Id" />
+        <FilterField Name="@nameof(OrderDetailDto.Quantity)" Type="typeof(short)" />
+        <FilterField Name="@nameof(OrderDetailDto.OrderFreight)" Type="@typeof(decimal)" Label="Freight" />
+        <FilterField Name="@nameof(OrderDetailDto.OrderShipCountry)" Type="typeof(string)" Label="Country" />
+        <FilterField Name="@nameof(OrderDetailDto.OrderShipName)" Type="typeof(string)" Label="Ship to" />
+        <FilterField Name="@nameof(OrderDetailDto.OrderShipAddress)" Type="typeof(string)" Label="Ship Address" />
+    </FilterFields>
+</TelerikFilter>
+
+<TelerikGrid Data=@GridData Pageable="true" PageSize="10">
+    <GridColumns>
+        <GridColumn Field="@nameof(OrderDetailDto.OrderId)" Title="Id" Width="120px" />
+        <GridColumn Field="@nameof(OrderDetailDto.Quantity)" Title="Quantity" Width="120px" />
+        <GridColumn Field="@nameof(OrderDetailDto.OrderFreight)" Title="Freight" Width="150px" />
+        <GridColumn Field="@nameof(OrderDetailDto.OrderShipCountry)" Title="Country" Width="200px" />
+        <GridColumn Field="@nameof(OrderDetailDto.OrderShipName)" Title="Ship to" Width="250px" />
+        <GridColumn Field="@nameof(OrderDetailDto.OrderShipAddress)" Title="Ship Address" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<OrderDetailDto> GridData { get; set; } = new List<OrderDetailDto>();
+    public IEnumerable<OrderDetailDto> InitialData { get; set; } = new List<OrderDetailDto>();
+
+    public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor()
+    {
+        LogicalOperator = FilterCompositionLogicalOperator.And,
+        FilterDescriptors = new FilterDescriptorCollection
+        {
+            new FilterDescriptor
+            {
+                Member = "Quantity",
+                MemberType = typeof(short),
+                Value = 25,
+                Operator = FilterOperator.IsGreaterThanOrEqualTo
+            },
+            new FilterDescriptor
+            {
+                Member = "Quantity",
+                MemberType = typeof(short),
+                Value = 40,
+                Operator = FilterOperator.IsLessThanOrEqualTo
+            },
+            new FilterDescriptor
+            {
+                Member = "OrderShipCountry",
+                MemberType = typeof(string),
+                Value = "France",
+                Operator = FilterOperator.IsEqualTo
+            },
+            new CompositeFilterDescriptor
+            {
+                LogicalOperator = FilterCompositionLogicalOperator.Or,
+                FilterDescriptors = new FilterDescriptorCollection
+                {
+                    new FilterDescriptor
+                    {
+                        Member = "OrderShipName",
+                        MemberType = typeof(string),
+                        Value = "La maison d'Asie",
+                        Operator = FilterOperator.Contains
+                    },
+                    new FilterDescriptor
+                    {
+                        Member = "OrderShipName",
+                        MemberType = typeof(string),
+                        Value = "Victuailles en stock",
+                        Operator = FilterOperator.Contains
+                    }
+                },
+            }
+        }
+    };
+
+    void OnValueChanged()
+    {
+        ApplyFilter(Value);
+    }
+
+    void ApplyFilter(CompositeFilterDescriptor filter)
+    {
+        var dataSourceRequest = new DataSourceRequest { Filters = new List<IFilterDescriptor>{ filter } };
+
+        var datasourceResult = InitialData.ToDataSourceResult(dataSourceRequest);
+
+        GridData = datasourceResult.Data.Cast<OrderDetailDto>().ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        InitialData = orderDetailService.GetOrderDetails();
+
+        ApplyFilter(Value);
+    }
+}

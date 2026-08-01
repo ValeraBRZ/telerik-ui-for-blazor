@@ -1,0 +1,35 @@
+@page "/rangeslider/label-template"
+
+<div class="demo-section auto">
+    <label class="title"> Define price range for the product</label>
+    <div class="mt-md">
+        <TelerikRangeSlider @bind-StartValue="@Value"
+                            @bind-EndValue="@EndValue"
+                            Min="5.0m"
+                            Max="10.0m"
+                            SmallStep="0.25m"
+                            LargeStep="0.5m"
+                            Decimals="2"
+                            Width="500px">
+            <LabelTemplate>
+                <span class="label-template">@context.ToString("c1")</span>
+            </LabelTemplate>
+        </TelerikRangeSlider>
+    </div>
+</div>
+
+@code {
+    public decimal Value { get; set; } = 6.5m;
+    public decimal EndValue { get; set; } = 9.5m;
+}
+
+<style>
+    .title {
+        text-align: center;
+        font-size: 18px;
+        color: #656565;
+    }
+    .label-template {
+        font-style: italic;
+    }
+</style>

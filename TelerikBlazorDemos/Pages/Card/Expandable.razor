@@ -1,0 +1,62 @@
+@page "/card/expandable"
+
+<div class="flex-center">
+    <TelerikCard Width="280px">
+        <CardHeader Class="k-hbox justify-space-between">
+            <div>
+                <CardTitle>Rome</CardTitle>
+                <CardSubTitle>Capital of Italy</CardSubTitle>
+            </div>
+
+            <div>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@ExpandIcon.ToString()" OnClick="@ToggleAsync"></TelerikButton>
+            </div>
+        </CardHeader>
+        <TelerikAnimationContainer @ref="@AnimationContainerRef"
+                                   AnimationDuration="300"
+                                   AnimationType="@AnimationType.RevealVertical"
+                                   ParentInlineStyle="display: block; position: relative;">
+            <CardImage Src="images/cards/places/rome.jpg"></CardImage>
+            <CardBody>
+                <p>Rome is a sprawling, cosmopolitan city with nearly 3,000 years of globally influential art, architecture and culture on display.</p>
+                <p>Ancient ruins such as the Forum and the Colosseum evoke the power of the former Roman Empire. </p>
+            </CardBody>
+            <CardActions Layout="@CardActionsLayout.Stretch">
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Map</TelerikButton>
+                <CardSeparator Orientation="@CardOrientation.Vertical"></CardSeparator>
+                <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)">Weather</TelerikButton>
+            </CardActions>
+        </TelerikAnimationContainer>
+    </TelerikCard>
+</div>
+
+@code {
+    public bool Expanded { get; set; } = false;
+
+    public TelerikAnimationContainer AnimationContainerRef { get; set; }
+
+    public ISvgIcon ExpandIcon => Expanded ? SvgIcon.ChevronUp : SvgIcon.ChevronDown;
+
+    private void ToggleAsync()
+    {
+        if (Expanded)
+        {
+            AnimationContainerRef?.HideAsync();
+        }
+        else
+        {
+            AnimationContainerRef?.ShowAsync();
+        }
+
+        Expanded = !Expanded;
+    }
+}
+
+<style>
+    .justify-space-between {
+        justify-content: space-between;
+    }
+    #demo-runner {
+        height: 530px;
+    }
+</style>

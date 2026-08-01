@@ -1,0 +1,35 @@
+@page "/radiogroup/templates"
+
+<div class="demo-section">
+    <TelerikRadioGroup Data="@Responses"
+                       @bind-Value="@Response"
+                       TextField="@nameof(SurveyResponse.Text)"
+                       ValueField="@nameof(SurveyResponse.Id)">
+        <ItemTemplate>
+            @{
+                var item = context as SurveyResponse;
+            }
+            <span style="color: @item.Color; font-weight: @( item.Id == Response ? "bold" : "normal" );">
+                @item.Text
+            </span>
+        </ItemTemplate>
+    </TelerikRadioGroup>
+</div>
+
+@code  {
+    private List<SurveyResponse> Responses { get; set; } = new List<SurveyResponse>()
+    {
+        new SurveyResponse() { Id = 1, Text = "Agree", Color = "green" },
+        new SurveyResponse() { Id = 2, Text = "Disagree", Color = "red" },
+        new SurveyResponse() { Id = 3, Text = "N/A", Color = "inherit" },
+    };
+
+    private int Response { get; set; } = 1;
+
+    public class SurveyResponse
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public string Color { get; set; }
+    }
+}

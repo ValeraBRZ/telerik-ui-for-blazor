@@ -1,0 +1,115 @@
+@page "/scheduler/custom-filtering"
+
+@using System.Collections.Generic
+
+@inject AppointmentService appointmentService
+@inject ManagerService managerService
+
+<div id="example">
+    <div id="team-schedule">
+        <div id="people">
+            @foreach (var item in Managers)
+            {
+                <TelerikCheckBox Value="@SelectedManagers.Contains(item.Id)"
+                                 ValueChanged="@((bool value) => FilterAppointments(item, value))"
+                                 Id="@item.Name">
+                </TelerikCheckBox>
+            }
+        </div>
+    </div>
+    <TelerikScheduler Data="@Appointments"
+                      @bind-Date="@StartDate"
+                      Height="600px"
+                      @bind-View="@CurrView"
+                      AllowCreate="false"
+                      AllowDelete="false"
+                      AllowUpdate="false">
+        <SchedulerViews>
+            <SchedulerDayView StartTime="@DayStart" />
+            <SchedulerWeekView StartTime="@DayStart" />
+            <SchedulerMultiDayView StartTime="@DayStart" />
+            <SchedulerMonthView></SchedulerMonthView>
+        </SchedulerViews>
+        <SchedulerResources>
+            <SchedulerResource Field="ManagerId" TextField="Name" ValueField="Id" Data="@Managers"></SchedulerResource>
+        </SchedulerResources>
+    </TelerikScheduler>
+</div>
+
+@code {
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+    IEnumerable<AppointmentDto> SourceData = new List<AppointmentDto>();
+    IEnumerable<ManagerDto> Managers = new List<ManagerDto>();
+    List<int?> SelectedManagers = new List<int?>() { 1, 2 };
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 21);
+    public SchedulerView CurrView { get; set; } = SchedulerView.Week;
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        Managers = managerService.GetManagers();
+
+        LoadData();
+        LoadAppointments();
+    }
+
+    private void LoadData()
+    {
+        SourceData = appointmentService.GetAppointments();
+    }
+
+    private void LoadAppointments()
+    {
+        Appointments = SourceData.Where(a => SelectedManagers.Contains(a.ManagerId));
+    }
+
+    private void FilterAppointments(ManagerDto item, bool value)
+    {
+        if (value)
+        {
+            SelectedManagers.Add(item.Id);
+        }
+        else
+        {
+            SelectedManagers.Remove(item.Id);
+        }
+
+        LoadAppointments();
+    }
+}
+
+<style>
+
+    #team-schedule {
+        background: url('images/scheduler/team-schedule.png')transparent no-repeat;
+        height: 115px;
+        position: relative;
+    }
+
+    #people {
+        background: url('images/scheduler/scheduler-people.png') no-repeat;
+        width: 345px;
+        height: 115px;
+        position: absolute;
+        right: 0;
+    }
+
+    #Alex {
+        position: absolute;
+        left: 6px;
+        top: 82px;
+    }
+
+    #Bob {
+        position: absolute;
+        left: 121px;
+        top: 82px;
+    }
+
+    #Charlie {
+        position: absolute;
+        left: 236px;
+        top: 82px;
+    }
+</style>

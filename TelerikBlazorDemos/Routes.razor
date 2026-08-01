@@ -1,0 +1,31 @@
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(DemoLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(Error404Layout)">
+            <div class="container pt-lg pb-lg">
+                <div class="row mt-lg mb-lg">
+                    <div class="col-2">
+                        <img title="404 error page ninja icon" src="images/404-error-page-ninja-icon.png" alt="404 error page icon" class="mt-md">
+                    </div>
+                    <div class="col-10">
+                        <h1 class="mb-lg kd-title">
+                            Oh, no!
+                            <br>
+                            It seems we've lost this page
+                        </h1>
+                        <h2 class="mb-sm">Things you can try:</h2>
+                        <ul class="mb-md">
+                            <li><a href="javascript:history.back()" class="js-go-back">Go back</a> and try another way</li>
+                            <li>Use the navigation above</li>
+                            <!--<li>Try the search bar</li>-->
+                            <li>Head to the <a href="/blazor-ui">Homepage</a></li>
+                            <li>Cheer up and <a href="https://www.telerik.com/download">try our products</a>. Some of them are free!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

@@ -1,0 +1,10 @@
+@page "/dateinput/overview"
+@page "/dateinput/index"
+
+<MyProfileTemplate IsDateInput="true" Title="Date of Birth">
+    <TelerikDateInput Format="MM/dd/yyyy" @bind-Value="@DateOfBirth" />
+</MyProfileTemplate>
+
+@code {
+    public DateTime? DateOfBirth { get; set; }
+}

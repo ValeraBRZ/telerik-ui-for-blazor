@@ -1,0 +1,13 @@
+@page "/floatinglabel/rtl"
+
+<div class="demo-section auto">
+    <TelerikFloatingLabel Text="Name:">
+        <div class="k-form-field-wrap">
+            <TelerikTextBox @bind-Value="@Name"></TelerikTextBox>
+        </div>
+    </TelerikFloatingLabel>
+</div>
+
+@code{
+    public string Name { get; set; }
+}

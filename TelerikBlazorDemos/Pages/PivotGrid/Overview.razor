@@ -1,0 +1,51 @@
+@page "/pivotgrid/overview"
+
+<TelerikPivotGridContainer>
+    <TelerikPivotGridConfiguratorButton></TelerikPivotGridConfiguratorButton>
+
+    <TelerikPivotGridConfigurator></TelerikPivotGridConfigurator>
+
+    <TelerikPivotGrid TItem="object"
+                      DataProviderType="@PivotGridDataProviderType.Xmla"
+                      Height="600px"
+                      ColumnHeadersWidth="100px"
+                      RowHeadersWidth="130px">
+        <PivotGridSettings>
+            <PivotGridXmlaDataProviderSettings ServerUrl="https://demos.telerik.com/service/v2/olap/msmdpump.dll"
+                                               Catalog="Adventure Works DW 2008R2"
+                                               Cube="Adventure Works">
+            </PivotGridXmlaDataProviderSettings>
+        </PivotGridSettings>
+
+        <PivotGridRows>
+            <PivotGridRow Name="[Product].[Category]"
+                          Title="Category">
+            </PivotGridRow>
+            <PivotGridRow Name="[Product].[Model Name]"
+                          Title="Model">
+            </PivotGridRow>
+        </PivotGridRows>
+
+        <PivotGridColumns>
+            <PivotGridColumn Name="[Date].[Calendar Quarter of Year]"
+                             Title="Quarter"
+                             HeaderClass="quarter-header">
+            </PivotGridColumn>
+            <PivotGridColumn Name="[Date].[Calendar Year]"
+                             Title="Year">
+            </PivotGridColumn>
+        </PivotGridColumns>
+
+        <PivotGridMeasures>
+            <PivotGridMeasure Name="[Measures].[Reseller Order Count]"
+                              Title="Reseller Order Count">
+            </PivotGridMeasure>
+        </PivotGridMeasures>
+    </TelerikPivotGrid>
+</TelerikPivotGridContainer>
+
+<style>
+    .k-pivotgrid-column-headers .quarter-header {
+        text-align:center;
+    }    
+</style>

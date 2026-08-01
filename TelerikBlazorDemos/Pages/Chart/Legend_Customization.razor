@@ -1,0 +1,228 @@
+@page "/chart/legend-customization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Legend Title">
+        <div>
+            <label>
+                Legend Title
+                <TelerikTextBox @bind-Value="@LegendTitle" Placeholder="Set title for the Chart legend..."></TelerikTextBox>
+            </label>
+            <label>
+                Legend Alignment
+                <TelerikDropDownList @bind-Value="@SelectedAlignment" Data="@PossibleTitleAligns"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Position
+                <TelerikDropDownList @bind-Value="@SelectedPosition" Data="@PossibleTitlePositions"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Background Color
+                <TelerikTextBox @bind-Value="@LegendBackgroundColor" Placeholder="Type a valid CSS color..."></TelerikTextBox>
+            </label>
+            <label>
+                Legend Text Color
+                <TelerikTextBox @bind-Value="@LegendTextColor" Placeholder="Type a valid CSS color..."></TelerikTextBox>
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Legend Items">
+        <div>
+            <label>
+                Legend Item Type
+                <TelerikDropDownList @bind-Value="@ItemType" Data="@PossibleItemTypes"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Item Markers Type
+                <TelerikDropDownList @bind-Value="@ItemMarkersType" Data="@PossibleMarkerTypes"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Markers Color
+                <TelerikTextBox @bind-Value="@ItemMarkersColor" Placeholder="Type a valid CSS color..."></TelerikTextBox>
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+
+    <DemoConfiguratorColumn Description="Legend Series Items">
+        <div>
+            <label>
+                Legend Series Item Type
+                <TelerikDropDownList @bind-Value="@SeriesItemType" Data="@PossibleItemTypes"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Series Item Markers Type
+                <TelerikDropDownList @bind-Value="@ItemMarkersType" Data="@PossibleMarkerTypes"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Series Markers Color
+                <TelerikTextBox @bind-Value="@SeriesItemMarkerColor" Placeholder="Type a valid CSS color..."></TelerikTextBox>
+            </label>
+            <label>
+                Legend Series Hightlight Item Markers Type
+                <TelerikDropDownList @bind-Value="@ChartSeriesHightLightMarkersType" Data="@PossibleMarkerTypes"></TelerikDropDownList>
+            </label>
+            <label>
+                Legend Series Hightlight Markers Color
+                <TelerikTextBox @bind-Value="@ChartSeriesHightlightColor" Placeholder="Type a valid CSS color..."></TelerikTextBox>
+            </label>
+        </div>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikChart>
+    <ChartTitle Text="Gross domestic product growth /GDP annual %/">
+        <ChartTitleMargin Bottom="20"></ChartTitleMargin>
+    </ChartTitle>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Line"
+                     Name="Chile"
+                     Data="@Data"
+                     Width="2"
+                     DashType="@DashType.DashDot"
+                     Field="@nameof(ModelData.Series1)">
+            <ChartSeriesLegendItem Type="@SeriesItemType">
+                <ChartSeriesLegendItemMarkers Type="@ItemMarkersType"
+                                              Background="@SeriesItemMarkerColor">
+                </ChartSeriesLegendItemMarkers>
+                <ChartSeriesLegendItemHighlight Visible="true">
+                    <ChartSeriesLegendItemHighlightMarkers Visible="true"
+                                                           Type="@ChartSeriesHightLightMarkersType"
+                                                           Background="@ChartSeriesHightlightColor">
+                    </ChartSeriesLegendItemHighlightMarkers>
+                </ChartSeriesLegendItemHighlight>
+            </ChartSeriesLegendItem>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartLegend Visible="true">
+        <ChartLegendTitle Text="@LegendTitle"
+                          Align="@SelectedAlignment"
+                          Color="@LegendTextColor"
+                          Background="@LegendBackgroundColor"
+                          Position="@SelectedPosition">
+        </ChartLegendTitle>
+        <ChartLegendItem Type="@ItemType">
+            <ChartLegendItemMarkers Type="@ChartSeriesMarkersType.Cross"
+                                    Background="#00ff00">
+            </ChartLegendItemMarkers>
+        </ChartLegendItem>
+    </ChartLegend>
+
+</TelerikChart>
+
+@code {
+    #region LegendSeriesItem
+    private string SeriesItemMarkerColor { get; set; }
+    private string ChartSeriesHightlightColor { get; set; }
+    private ChartLegendItemType SeriesItemType { get; set; } = ChartLegendItemType.Line;
+    private List<ChartLegendItemType> PossibleSeriesItemTypes { get; set; } = new List<ChartLegendItemType>()
+    {
+        ChartLegendItemType.Area,
+        ChartLegendItemType.Line
+    };
+
+    private ChartSeriesMarkersType ChartSeriesHightLightMarkersType { get; set; } = ChartSeriesMarkersType.Cross;
+    private List<ChartSeriesMarkersType> PossibleChartSeriesHightLightMarkersType { get; set; } = new List<ChartSeriesMarkersType>()
+    {
+        ChartSeriesMarkersType.Rect,
+        ChartSeriesMarkersType.Circle,
+        ChartSeriesMarkersType.Cross,
+        ChartSeriesMarkersType.Square,
+        ChartSeriesMarkersType.RoundedRect,
+    };
+    #endregion
+
+    #region LegendItem
+    private string ItemMarkersColor { get; set; }
+    private ChartSeriesMarkersType ItemMarkersType { get; set; } = ChartSeriesMarkersType.Circle;
+    private List<ChartSeriesMarkersType> PossibleMarkerTypes { get; set; } = new List<ChartSeriesMarkersType>()
+    {
+        ChartSeriesMarkersType.Rect,
+        ChartSeriesMarkersType.Circle,
+        ChartSeriesMarkersType.Cross,
+        ChartSeriesMarkersType.Square,
+        ChartSeriesMarkersType.RoundedRect,
+    };
+    private ChartLegendItemType ItemType { get; set; } = ChartLegendItemType.Line;
+    private List<ChartLegendItemType> PossibleItemTypes { get; set; } = new List<ChartLegendItemType>()
+    {
+        ChartLegendItemType.Area,
+        ChartLegendItemType.Line
+    };
+    #endregion
+
+    #region LegendTitle
+    private string LegendTitle { get; set; } = "Sports";
+    private string LegendBackgroundColor { get; set; }
+    private string LegendTextColor { get; set; }
+    private ChartLegendTitleAlign SelectedAlignment { get; set; } = ChartLegendTitleAlign.Right;
+    private List<ChartLegendTitleAlign> PossibleTitleAligns { get; set; } = new List<ChartLegendTitleAlign>()
+    {
+        ChartLegendTitleAlign.Center,
+        ChartLegendTitleAlign.Left,
+        ChartLegendTitleAlign.Right
+    };
+
+    private ChartLegendTitlePosition SelectedPosition { get; set; } = ChartLegendTitlePosition.Top;
+    private List<ChartLegendTitlePosition> PossibleTitlePositions { get; set; } = new List<ChartLegendTitlePosition>()
+    {
+        ChartLegendTitlePosition.Top,
+        ChartLegendTitlePosition.Bottom,
+    };
+    #endregion
+
+    public class ModelData
+    {
+        public double Series1 { get; set; }
+    }
+
+    public string[] Categories = new string[] { "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011" };
+
+    public object[] AxisCrossingValue = new object[] { -10 };
+
+
+    public List<ModelData> Data = new List<ModelData>()
+    {
+        new ModelData()
+        {
+            Series1 = 3.907
+        },
+        new ModelData()
+        {
+            Series1 = 7.943
+        },
+        new ModelData()
+        {
+            Series1 = 7.848
+        },
+        new ModelData()
+        {
+            Series1 = 9.284
+        },
+        new ModelData()
+        {
+            Series1 = 9.263
+        },
+        new ModelData()
+        {
+            Series1 = 9.801
+        },
+        new ModelData()
+        {
+            Series1 = 3.89
+        },
+        new ModelData()
+        {
+            Series1 = 8.238
+        },
+        new ModelData()
+        {
+            Series1 = 9.552
+        },
+        new ModelData()
+        {
+            Series1 = 6.855
+        }
+    };
+}

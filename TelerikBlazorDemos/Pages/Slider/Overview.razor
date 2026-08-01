@@ -1,0 +1,33 @@
+@page "/slider/overview"
+
+<div class="demo-section auto">
+    <label class="title">Years of service</label>
+    <div class="mt-md">
+        <TelerikSlider @bind-Value="@Value"
+                       Min="@TenYearsAgo"
+                       Max="@CurrentYear"
+                       SmallStep="1"
+                       LargeStep="1"
+                       Width="550px">
+        </TelerikSlider>
+    </div>
+</div>
+
+<TelerikTooltip TargetSelector=".k-draghandle">
+    <Template>
+        @TenYearsAgo - @Value
+    </Template>
+</TelerikTooltip>
+
+@code {
+    public int Value { get; set; } = DateTime.Now.AddYears(-5).Year;
+    public int CurrentYear { get; set; } = DateTime.Now.Year;
+    public int TenYearsAgo { get; set; } = DateTime.Now.AddYears(-10).Year;
+}
+<style>
+    .title {
+        text-align: center;
+        font-size: 18px;
+        color: #656565;
+    }
+</style>

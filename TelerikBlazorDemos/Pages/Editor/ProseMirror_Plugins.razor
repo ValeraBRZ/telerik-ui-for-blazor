@@ -1,0 +1,62 @@
+@page "/editor/prosemirror-plugins"
+
+
+<script suppress-error="BL9992">
+    window.pluginsProvider = (args) => {
+        const schema = args.getSchema();
+        const inputRule = () => {
+            const { ordered_list, bullet_list, heading, code_block } = schema.nodes;
+
+            return args.ProseMirror.inputRules({
+                rules: [
+                    // Converts double dashes to an emdash.
+                    new args.ProseMirror.InputRule(/--$/, "—"),
+
+                    // Converts three dots to an ellipsis character.
+                    new args.ProseMirror.InputRule(/\.\.\.$/, "…"),
+
+                    // Converts '# ', '## ', '### ', '#### ', '##### ', '###### '
+                    // into heading 1, 2, 3, 4, 5, and 6, according to the '#' characters count.
+                    args.ProseMirror.textblockTypeInputRule(/^(#{1,6})\s$/, heading, (match) => ({
+                        level: match[1].length,
+                    })),
+
+                    // Converts '- ' or '+ ' to a bullet list.
+                    args.ProseMirror.wrappingInputRule(/^\s*([-+*])\s$/, bullet_list),
+
+                    // Converts '1. ' to an ordered list.
+                    args.ProseMirror.wrappingInputRule(
+                        /^(\d+)\.\s$/,
+                        ordered_list,
+                        (match) => ({ order: Number(match[1]) }),
+                        (match, node) => node.childCount + node.attrs.order === match[1]
+                    ),
+                ],
+            });
+        };
+
+        return [...args.getPlugins(schema), inputRule()];
+    }
+</script>
+
+<div class="demo-alert demo-alert-info">
+    <h4>
+        The example uses the following input rules:
+    </h4>
+    <ul>
+        <li>Converts "- " or "+ " to a bullet list.</li>
+        <li>Converts "1. " or another number to an ordered list.</li>
+        <li>Converts "# ", "## ", "### ", "#### ", "##### ", "###### " into heading 1, 2, 3, 4, 5, and 6, according to the "#" characters count.</li>
+        <li>Converts double dashes to an emdash ("—").</li>
+        <li>Converts three dots to an ellipsis ("...")character.</li>
+    </ul>
+</div
+
+<TelerikEditor @bind-Value="@EditorValue"
+               Plugins="pluginsProvider">
+</TelerikEditor>
+
+@code {
+    private string EditorValue { get; set; } = "<p>Start typing to see the input rules in action.</p>";
+
+}

@@ -1,0 +1,35 @@
+@page "/daterangepicker/templates"
+
+<TelerikDateRangePicker @bind-StartValue="@StartValue"
+                        @bind-EndValue="@EndValue"
+                        @ref="PickerRef"
+                        @bind-View="@View">
+    <HeaderTemplate>
+        <span class="k-spacer"></span>
+        <TelerikButton OnClick="@SetNextWeek" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Select Next Week</TelerikButton>
+    </HeaderTemplate>
+</TelerikDateRangePicker>
+
+@code {
+    public DateTime? StartValue { get; set; } = new DateTime(2025, 2, 2);
+    public DateTime? EndValue { get; set; } = new DateTime(2025, 2, 6);
+    public CalendarView View { get; set; } = CalendarView.Month;
+    public TelerikDateRangePicker<DateTime?> PickerRef { get; set; }
+
+    public void GoToDecadeView()
+    {
+        View = CalendarView.Year;
+        PickerRef.Refresh();
+    }
+
+    public void SetNextWeek()
+    {
+        var nextDay = StartValue.Value.AddDays(1);
+        int daysUntilMonday = ((int)DayOfWeek.Monday - (int)nextDay.DayOfWeek + 7) % 7;
+        DateTime nextMonday = nextDay.AddDays(daysUntilMonday);
+        StartValue = nextMonday;
+        EndValue = nextMonday.AddDays(6);
+        PickerRef.NavigateTo(StartValue.Value, CalendarView.Month);
+        PickerRef.Refresh();
+    }
+}

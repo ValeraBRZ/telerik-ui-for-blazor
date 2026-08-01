@@ -1,0 +1,107 @@
+@page "/window/overview"
+@page "/window/index"
+
+@using User = TelerikBlazorDemos.Models.Form.User
+
+<TelerikButton OnClick="@ToggleWindow">@ToggleButtonText</TelerikButton>
+
+<TelerikWindow Class="demo-window"
+               Width="400px"
+               Height="fit-content"
+               @bind-Visible="@IsVisible"
+               @bind-Top="@Top"
+               @bind-Left="@Left"
+               FooterLayoutAlign="@WindowFooterLayoutAlign.Start"
+               AnimationType="@WindowAnimationType.ZoomOut">
+    <WindowTitle>
+        <strong>Profile Data</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        @if (!IsFormSubmitted)
+        {
+            <TelerikForm Model="@UserModel">
+                <FormItems>
+                    <FormItem Field="@nameof(User.FirstName)"></FormItem>
+                    <FormItem Field="@nameof(User.LastName)"></FormItem>
+                    <FormItem Field="@nameof(User.Email)">
+                        <Template>
+                            <label for="email" class="k-label k-form-label">Email*:</label>
+                            <TelerikTextBox Id="email" @bind-Value="@UserModel.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                        </Template>
+                    </FormItem>
+                    <FormItem Field="@nameof(User.Password)">
+                        <Template>
+                            <label for="password" class="k-label k-form-label">Password*:</label>
+                            <TelerikTextBox Id="password" @bind-Value="@UserModel.Password" Password="true"></TelerikTextBox>
+                        </Template>
+                    </FormItem>
+                </FormItems>
+                <FormButtons>@*no buttons defined, as the buttons are rendered outside of the form tag*@</FormButtons>
+            </TelerikForm>
+        }
+        else
+        {
+            <div class="demo-alert demo-alert-success">
+                <text>The form was submitted successfully.</text>
+            </div>
+        }
+    </WindowContent>
+    <WindowFooter>
+        <TelerikButton OnClick="Submit"
+                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                       Enabled="@(!IsFormSubmitted)">
+            Submit
+        </TelerikButton>
+        <TelerikButton OnClick="Cancel"
+                       FillMode="@ThemeConstants.Button.FillMode.Flat"
+                       Enabled="@(!IsFormSubmitted)">
+            Cancel
+        </TelerikButton>
+    </WindowFooter>
+</TelerikWindow>
+
+
+
+@code {
+    private bool IsVisible { get; set; }
+    private string ToggleButtonText => IsVisible ? "Hide Window" : "Show Window";
+    private bool IsFormSubmitted { get; set; }
+    private string Top { get; set; } = "50%";
+    private string Left { get; set; } = "45%";
+
+    private void ToggleWindow() => IsVisible = !IsVisible;
+
+    private void Cancel() => IsVisible = false;
+
+    private async Task Submit()
+    {
+        IsFormSubmitted = true;
+
+        // simmulate actual remote work
+        await Task.Delay(1500);
+
+        IsFormSubmitted = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Artificial delay to show the window after initialization with animation for the sake of the example
+        await Task.Delay(500);
+        IsVisible = true;
+
+        await base.OnInitializedAsync();
+    }
+
+    private User UserModel { get; set; } = new User()
+        {
+            FirstName = "Johny",
+            LastName = "Doe",
+            Email = "johny.doe@email.com",
+            Password = "testpassword",
+        };
+}

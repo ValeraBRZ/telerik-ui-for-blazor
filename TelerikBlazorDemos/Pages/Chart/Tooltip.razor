@@ -1,0 +1,187 @@
+@page "/chart/tooltip"
+
+<div class="k-d-flex k-flex-wrap">
+    <div class="k-flex-grow" style="min-width: 530px;">
+        <h2 class="text-center">Series Tooltip</h2>
+        <TelerikChart>
+            <ChartTitle Text="Favorite Sports"></ChartTitle>
+            <ChartLegend Visible="true" Position="ChartLegendPosition.Top"></ChartLegend>
+
+            <ChartSeriesItems>
+                <ChartSeries Type="ChartSeriesType.Donut"
+                             Data="@DonutData"
+                             Field="@nameof(DonutModelData.VotesCount)"
+                             CategoryField="@nameof(DonutModelData.SportName)">
+                    <ChartSeriesTooltip Visible="true">
+                        <Template>
+                            @{ var dataItem = context.DataItem as DonutModelData; }
+                            <div>
+                                <strong>Sport Name:</strong> @dataItem.SportName
+                            </div>
+                            <div>
+                                <strong>Votes Count:</strong> @dataItem.VotesCount
+                            </div>
+                        </Template>
+                    </ChartSeriesTooltip>
+                    <ChartSeriesLabels Position="ChartSeriesLabelsPosition.InsideBase"
+                                       Visible="true"
+                                       Background="transparent"
+                                       Template="#= dataItem.SportName # - #= percentage*100 #%">
+                    </ChartSeriesLabels>
+                </ChartSeries>
+            </ChartSeriesItems>
+        </TelerikChart>
+    </div>
+    <div class="k-flex-grow" style="min-width: 530px;">
+        <h2 class="text-center">Shared Tooltip</h2>
+        <TelerikChart>
+            <ChartTitle Text="Votes for sport events host"></ChartTitle>
+
+            <ChartLegend Visible="false"></ChartLegend>
+
+            <ChartTooltip Visible="true" Shared="true">
+                <SharedTemplate>
+                    <div>
+                        <div class="shared-tooltip-title">Votes for @context.Category </div>
+                        @{
+                            var points = context.Points as List<ChartSeriesTooltipTemplatePoint>;
+
+                            foreach (var point in points)
+                            {
+                                var value = (point.DataItem as ColumnSeriesData).VotesCount;
+
+                                <div>
+                                    <span class="k-chart-shared-tooltip-marker"
+                                          style="background-color: @point.SeriesColor; display: inline-block;">
+                                    </span>
+                                    @(point.SeriesName): @value.ToString("N0")
+                                </div>
+                            }
+                        }
+                    </div>
+                </SharedTemplate>
+            </ChartTooltip>
+
+            <ChartSeriesItems>
+                <ChartSeries Type="ChartSeriesType.Column"
+                             Name="Chicago"
+                             Data="@ColumnData.Series1"
+                             CategoryField="@nameof(ColumnSeriesData.Year)"
+                             Field="@nameof(ColumnSeriesData.VotesCount)">
+                </ChartSeries>
+                <ChartSeries Type="ChartSeriesType.Column"
+                             Name="Dallas"
+                             Data="@ColumnData.Series2"
+                             CategoryField="@nameof(ColumnSeriesData.Year)"
+                             Field="@nameof(ColumnSeriesData.VotesCount)">
+                </ChartSeries>
+                <ChartSeries Type="ChartSeriesType.Column"
+                             Name="Orlando"
+                             Data="@ColumnData.Series3"
+                             CategoryField="@nameof(ColumnSeriesData.Year)"
+                             Field="@nameof(ColumnSeriesData.VotesCount)">
+                </ChartSeries>
+            </ChartSeriesItems>
+        </TelerikChart>
+    </div>
+</div>
+
+@code {
+    public List<DonutModelData> DonutData = new List<DonutModelData>();
+    public ColumnModelData ColumnData = new ColumnModelData();
+
+    protected override async Task OnInitializedAsync()
+    {
+        DonutData = GetDonutData();
+        ColumnData = GetColumnData();
+
+        await base.OnInitializedAsync();
+    }
+
+    public class DonutModelData
+    {
+        public string SportName { get; set; }
+        public int VotesCount { get; set; }
+    }
+
+    public List<DonutModelData> GetDonutData()
+    {
+        var data = new List<DonutModelData>()
+        {
+            new DonutModelData()
+            {
+                SportName = "Football",
+                VotesCount = 35
+            },
+            new DonutModelData()
+            {
+                SportName = "Basketball",
+                VotesCount = 25
+            },
+            new DonutModelData()
+            {
+                SportName = "Volleyball",
+                VotesCount = 20
+            },
+            new DonutModelData()
+            {
+                SportName = "Rugby",
+                VotesCount = 10
+            },
+            new DonutModelData()
+            {
+                SportName = "Tennis",
+                VotesCount = 10
+            }
+        };
+
+        return data;
+    }
+
+    public class ColumnModelData
+    {
+        public List<ColumnSeriesData> Series1 { get; set; }
+        public List<ColumnSeriesData> Series2 { get; set; }
+        public List<ColumnSeriesData> Series3 { get; set; }
+    }
+
+    public class ColumnSeriesData
+    {
+        public int VotesCount { get; set; }
+        public string Year { get; set; }
+    }
+
+    public ColumnModelData GetColumnData()
+    {
+        var data = new ColumnModelData()
+        {
+            Series1 = new List<ColumnSeriesData>()
+            {
+                new ColumnSeriesData() { VotesCount = 105000, Year = "2018" },
+                new ColumnSeriesData() { VotesCount = 211000, Year = "2019" },
+                new ColumnSeriesData() { VotesCount = 195000, Year = "2020" }
+            },
+            Series2 = new List<ColumnSeriesData>()
+            {
+                new ColumnSeriesData() { VotesCount = 228000, Year = "2018" },
+                new ColumnSeriesData() { VotesCount = 242000, Year = "2019" },
+                new ColumnSeriesData() { VotesCount = 219000, Year = "2020" }
+            },
+            Series3 = new List<ColumnSeriesData>()
+            {
+                new ColumnSeriesData() { VotesCount = 152000, Year = "2018" },
+                new ColumnSeriesData() { VotesCount = 195000, Year = "2019" },
+                new ColumnSeriesData() { VotesCount = 218000, Year = "2020" }
+            }
+        };
+
+        return data;
+    }
+}
+
+<style>
+    .shared-tooltip-title {
+        font-size: 15px;
+        font-weight: 500;
+    }
+</style>

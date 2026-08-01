@@ -1,0 +1,30 @@
+@page "/timepicker/incremental-steps"
+
+<div class="demo-alert demo-alert-info">Open the popup to see how the <strong>time</strong> tumblers show every n-th item as per the <code>TimePickerSteps</code> tag settings. Also, focus the input and use the <code>Up</code> and <code>Down</code> arrows to change the selected date and time. They change with the increment steps defined in the code, not by the default 1.</div>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="timepicker" class="k-label k-form-label">Time</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Min="@Min" Max="@Max" Format="hh:mm:ss tt" @bind-Value="@SelectedTime" Id="timepicker">
+                <TimePickerSteps Hour="@Hour"
+                                 Minute="@Minute"
+                                 Second="@Second">
+                </TimePickerSteps>
+            </TelerikTimePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        Steps: Hour: @Hour, Minute: @Minute, Second: @Second
+    </div>
+</div>
+
+@code {
+    public DateTime Min = new DateTime(1900, 1, 1, 10, 0, 0);
+    public DateTime Max = new DateTime(1900, 1, 1, 20, 0, 0);
+    public DateTime? SelectedTime = DateTime.Now;
+
+    public int Hour { get; set; } = 2;
+    public int Minute { get; set; } = 15;
+    public int Second { get; set; } = 20;
+}

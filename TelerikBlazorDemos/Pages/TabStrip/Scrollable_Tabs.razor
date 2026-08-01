@@ -1,0 +1,108 @@
+@page "/tabstrip/scrollable-tabs"
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Use the slider below to resize the TabStrip and observe the visibility of the scroll buttons"></DemoConfiguratorColumn>
+    <TelerikSlider @bind-Value="@TabStripWidth" Min="0" Max="100"
+                   ShowButtons="false"
+                   Width="100%"
+                   TickPosition="@SliderTickPosition.None"
+                   Class="tabstrip-slider" />
+    <DemoConfiguratorColumn Description="Scroll Buttons Visibility">
+        <TelerikDropDownList @bind-Value="@ScrollButtonsVisibility"
+                             Data="@ButtonsVisibilityOptions">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" />
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Scroll Buttons Position">
+        <TelerikDropDownList @bind-Value="@ScrollButtonsPosition"
+                             Data="@ButtonsPositions"
+                             Enabled="@(ScrollButtonsVisibility==TabStripScrollButtonsVisibility.Hidden ? false : true)">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" />
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTabStrip @bind-ActiveTabIndex="@ActiveTabIndex"
+                 Scrollable="true"
+                 ScrollButtonsPosition="@ScrollButtonsPosition"
+                 ScrollButtonsVisibility="@ScrollButtonsVisibility"
+                 Width="@($"{TabStripWidth}%")">
+    <TabStripTab Title="Sofia">
+        <WeatherCard City="Sofia"
+                     TempC="23"
+                     Forecast="ForecastType.Sunny">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="London">
+        <WeatherCard City="London"
+                     TempC="21"
+                     Forecast="ForecastType.Cloudy">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Berlin">
+        <WeatherCard City="Berlin"
+                     TempC="25"
+                     Forecast="ForecastType.Sunny">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Paris">
+        <WeatherCard City="Paris"
+                     TempC="17"
+                     Forecast="ForecastType.Rainy">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Rome">
+        <WeatherCard City="Rome"
+                     TempC="20"
+                     Forecast="ForecastType.Cloudy">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Vienna">
+        <WeatherCard City="Vienna"
+                     TempC="19"
+                     Forecast="ForecastType.Rainy">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Stockholm">
+        <WeatherCard City="Stockholm"
+                     TempC="10"
+                     Forecast="ForecastType.Rainy">
+        </WeatherCard>
+    </TabStripTab>
+    <TabStripTab Title="Barcelona">
+        <WeatherCard City="Sunny"
+                     TempC="26"
+                     Forecast="ForecastType.Sunny">
+        </WeatherCard>
+    </TabStripTab>
+</TelerikTabStrip>
+
+@code {
+    private int ActiveTabIndex { get; set; } = 1;
+    private int TabStripWidth { get; set; } = 100;
+
+    private TabStripScrollButtonsVisibility ScrollButtonsVisibility { get; set; } = TabStripScrollButtonsVisibility.Auto;
+    private List<TabStripScrollButtonsVisibility> ButtonsVisibilityOptions { get; set; } = new List<TabStripScrollButtonsVisibility>()
+    {
+        TabStripScrollButtonsVisibility.Auto,
+        TabStripScrollButtonsVisibility.Hidden,
+        TabStripScrollButtonsVisibility.Visible
+    };
+
+    private TabStripScrollButtonsPosition ScrollButtonsPosition { get; set; } = TabStripScrollButtonsPosition.Split;
+    private List<TabStripScrollButtonsPosition> ButtonsPositions { get; set; } = new List<TabStripScrollButtonsPosition>()
+    {
+        TabStripScrollButtonsPosition.Start,
+        TabStripScrollButtonsPosition.End,
+        TabStripScrollButtonsPosition.Split
+    };
+}
+
+<style>
+    .tabstrip-slider {
+        padding: 0px 16px;
+    }
+</style>

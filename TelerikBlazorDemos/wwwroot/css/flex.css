@@ -1,0 +1,13 @@
+/* temporarily copy flex styles until fluent theme catch up*/
+.k-d-flex {
+    display: flex;
+}
+
+.k-flex-wrap {
+    flex-wrap: wrap;
+}
+
+.k-flex-grow {
+    flex-grow: 1;
+}
+/* temporarily copy flex styles until fluent theme catch up*/

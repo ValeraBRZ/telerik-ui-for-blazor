@@ -1,0 +1,91 @@
+@using TelerikBlazorDemos.Services.GoogleSearch
+
+@inject NavigationManager NavigationManager
+@inject GoogleSearchService GoogleSearchService
+@inject IJSRuntime JsRuntime
+
+<nav class="kd-sub-nav">
+
+    @if (ShowNavigationButton)
+    {
+        <div class="kd-side-nav-toggle">
+            <a class="kd-link" @onclick="@OnNavigationClick">
+                <img src="images/site/menu.svg" alt="toggle menu" />
+            </a>
+        </div>
+    }
+
+    <div class="kd-search">
+        <div class="kd-search-container">
+            <form @onsubmit="@InvokeSearchQueryChanged">
+                <div class="input-container">
+                    <label for="search" class="hidden">Search: </label>
+                    <TelerikBlazorDemos.Shared.SVG.Zoom />
+                    <input class="kd-input" name="q" @bind-value="@SearchQuery" placeholder="Search ..." autofocus />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="kd-switch-button" @onclick="@ToggleDarkMode">
+        <span class="kd-switch-icon"></span>
+    </div>
+
+</nav>
+
+@code {
+    [Parameter]
+    public bool ShowNavigationButton { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigationButtonClick { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SearchQueryChanged { get; set; }
+
+    public GoogleSearchResult GoogleSearchResult { get; set; }
+
+    [Parameter]
+    public string SearchQuery { get; set; }
+
+    [Parameter]
+    public bool DarkMode { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> DarkModeChanged { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            NavigationManager.TryGetQueryString<string>("q", out string query);
+            SearchQuery = query;
+            if (!string.IsNullOrEmpty(SearchQuery))
+            {
+                InvokeSearchQueryChanged();
+            }
+        }
+    }
+
+    public async Task ToggleDarkMode()
+    {
+        DarkMode = await JsRuntime.InvokeAsync<bool>("theme.appTheme.switchTheme");
+        await DarkModeChanged.InvokeAsync(DarkMode);
+    }
+
+    public void OnNavigationClick()
+    {
+        if (OnNavigationButtonClick.HasDelegate)
+        {
+            OnNavigationButtonClick.InvokeAsync(null);
+        }
+    }
+
+    void InvokeSearchQueryChanged()
+    {
+        if (SearchQueryChanged.HasDelegate)
+        {
+            SearchQueryChanged.InvokeAsync(SearchQuery);
+        }
+    }
+}

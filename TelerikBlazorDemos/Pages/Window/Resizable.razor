@@ -1,0 +1,57 @@
+@page "/window/resizable"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Resizable">
+        <input class="k-checkbox k-checkbox-md k-roundend-md" type="checkbox" id="is-window-resizable" @bind="@IsResizable" />
+        <label class="k-checkbox-label" for="is-window-resizable">
+            You can resize the Window
+        </label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Visible">
+        <input class="k-checkbox k-checkbox-md k-roundend-md" type="checkbox" id="canSee" @bind="@Visible" />
+        <label class="k-checkbox-label" for="canSee">
+            The Window is visible
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<TelerikWindow Resizable="@IsResizable"
+               @bind-Visible="@Visible"
+               @bind-Width="@Width"
+               @bind-Height="@Height"
+               @bind-Top="@Top"
+               @bind-Left="@Left"
+               Class="demo-window">
+    <WindowTitle>
+        <strong>Resize me</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <div class="demo-alert demo-alert-info">
+            @if (IsResizable)
+            {
+                <text>Drag the edges of the window to resize it.</text>
+            }
+            else
+            {
+                <text>The window cannot be resized.</text>
+            }
+        </div>
+    </WindowContent>
+</TelerikWindow>
+
+
+
+@code {
+    public bool IsResizable { get; set; } = true;
+    public bool Visible { get; set; } = true;
+    public string Width { get; set; } = "400px";
+    public string Height { get; set; } = "200px";
+    public string Top { get; set; } = "60%";
+    public string Left { get; set; } = "45%";
+}

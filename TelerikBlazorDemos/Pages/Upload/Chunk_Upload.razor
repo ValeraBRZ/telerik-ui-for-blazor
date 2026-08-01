@@ -1,0 +1,40 @@
+@page "/upload/chunk-upload"
+
+@using System.ComponentModel.DataAnnotations
+@using Telerik.Blazor.Components.Upload
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsInterop
+
+<div class="demo-section k-form k-form-md k-form-horizontal">
+    <div class="k-form-field-wrap">
+        <TelerikUpload SaveUrl="@SaveUrl"
+                       RemoveUrl="@RemoveUrl"
+                       AllowedExtensions="@AllowedExtensions"
+                       AutoUpload="false"
+                       MinFileSize="@MinFileSize"
+                       MaxFileSize="@MaxFileSize">
+            <UploadSettings>
+                <UploadChunkSettings Size="1024"
+                                     AutoRetryAfter="1000"
+                                     MaxAutoRetries="2"
+                                     Resumable="true">
+                </UploadChunkSettings>
+            </UploadSettings>
+        </TelerikUpload>
+        <div class="k-form-hint">Accepted files: <strong>DOCX, PDF, JPG and PNG</strong></div>
+    </div>
+</div>
+
+@code {
+    public string SaveUrl => ToAbsoluteUrl("api/upload/chunksave");
+    public string RemoveUrl => ToAbsoluteUrl("api/upload/remove");
+    public List<string> AllowedExtensions { get; set; } = new List<string>() {".docx", ".pdf", ".jpg", ".png"};
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+
+    public string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+}
+

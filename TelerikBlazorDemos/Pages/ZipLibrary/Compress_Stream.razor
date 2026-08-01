@@ -1,0 +1,131 @@
+@page "/ziplibrary/compress-stream"
+
+@using System;
+@using System.IO;
+@using System.Text;
+@using System.Xml;
+@using Telerik.Zip;
+@using Microsoft.AspNetCore.Hosting;
+@inject IWebHostEnvironment Environment
+@inject IJSRuntime JsRuntime
+
+
+<div class="demo-section">
+    <h6 class="kd-demo-heading">Select compression method</h6>
+
+    <TelerikDropDownList Data="@Formats"
+                         @bind-Value="@SelectedMethod"
+                         Width="180px"
+                         Class="mb-sm">
+        <DropDownListSettings>
+            <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+        </DropDownListSettings>
+    </TelerikDropDownList><br />
+
+    <textarea class="k-textbox k-input k-input-md k-rounded-md k-input-solid" autocomplete="off" @bind="@Content"></textarea><br />
+    <label class="mt-sm mb-md">Uncompressed size: @UncompressedSize</label><br /><br />
+
+    <TelerikButton OnClick="@CompressHandler"
+                   Icon="@SvgIcon.FileZip"
+                   ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)"
+                   Class="mb-sm">Compress</TelerikButton><br />
+
+    <textarea class="k-textbox k-input k-input-md k-rounded-md k-input-solid" autocomplete="off">@CompressedContent</textarea><br />
+    <label class="mt-sm">Compressed size: @CompressedSize</label>
+</div>
+
+@code {
+    string[] Formats = { "Deflate", "Lzma", "Stored" };
+    string SelectedMethod = "Deflate";
+
+    string Content { get; set; }
+    string CompressedContent { get; set; }
+
+    int UncompressedSize => Content.Length;
+    int CompressedSize;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Content = await GetSampleDocument();
+        await base.OnInitializedAsync();
+    }
+
+    Task<string> GetSampleDocument()
+    {
+        XmlDocument document = new XmlDocument();
+
+        document.Load(Path.Combine(Environment.WebRootPath, @"shared/web/ziplibrary/BasicTools.xml"));
+
+        if (document.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
+        {
+            document.RemoveChild(document.FirstChild);
+        }
+
+        var output = BeautifyXML(document);
+
+        return Task.FromResult(output);
+    }
+
+    string BeautifyXML(XmlDocument document)
+    {
+        StringBuilder sb = new StringBuilder();
+        XmlWriterSettings settings = new XmlWriterSettings
+        {
+            Indent = true
+        };
+
+        using (XmlWriter writer = XmlWriter.Create(sb, settings))
+        {
+            document.Save(writer);
+        }
+
+        return sb.ToString();
+    }
+
+    void CompressHandler()
+    {
+        var decodedContent = Uri.UnescapeDataString(Content);
+        var memoryStream = new MemoryStream();
+
+        CompressionSettings settings;
+        switch (SelectedMethod.ToLowerInvariant())
+        {
+            case "deflate":
+                settings = new DeflateSettings();
+                break;
+            case "lzma":
+                settings = new LzmaSettings();
+                break;
+            default:
+                settings = new StoreSettings();
+                break;
+        }
+
+        using (CompressedStream stream = new CompressedStream(memoryStream, StreamOperationMode.Write, settings))
+        {
+            byte[] decBytes = Encoding.UTF8.GetBytes(decodedContent);
+            stream.Write(decBytes, 0, decBytes.Length);
+        }
+
+        CompressedContent = Convert.ToBase64String(memoryStream.ToArray());
+        CompressedSize = CompressedContent.Length;
+    }
+}
+<style>
+    .demo-section > textarea {
+        width: 100%;
+        height: 200px;
+        resize: none;
+    }
+
+    .demo-section > label {
+        float: right;
+        font-weight: bold;
+        height: auto;
+    }
+
+    .demo-section > button {
+        width: 180px;
+    }
+</style>
+

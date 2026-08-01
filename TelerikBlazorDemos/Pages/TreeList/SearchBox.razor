@@ -1,0 +1,106 @@
+@page "/treelist/searchbox"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+@using Telerik.DataSource
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Clear SearchBox">
+        <TelerikButton OnClick="@ClearSearchBox" Icon="@SvgIcon.Trash">Clear SearchBox</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Search by `Mar`">
+        <TelerikButton OnClick="@Search" Icon="@SvgIcon.Search">Search by `Mar`</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Placeholder">
+        <TelerikTextBox @bind-Value="@Placeholder"></TelerikTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Width">
+        <TelerikNumericTextBox @bind-Value="@SearchBoxWidth" Min="100" Max="500"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@DebounceDelay" Min="0" Max="1000"></TelerikNumericTextBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList @ref="@TreeListRef"
+                 Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true">
+    <TreeListToolBarTemplate>
+        <span>Write in the textbox on the right-hand side to filter all string columns.</span>
+        <span class="k-toolbar-spacer"></span>
+        <TreeListSearchBox Placeholder="@Placeholder"
+                           Width="@(SearchBoxWidth >= 100 ? SearchBoxWidth +"px" : "100px")"
+                           DebounceDelay="@DebounceDelay">
+        </TreeListSearchBox>
+    </TreeListToolBarTemplate>
+    <TreeListColumns>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.FirstName)" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.LastName)"></TreeListColumn>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Position)"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public TelerikTreeList<EmployeeDirectoryDto> TreeListRef { get; set; }
+
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    string Placeholder { get; set; } = "Search...";
+
+    int? SearchBoxWidth { get; set; } = 200;
+
+    int DebounceDelay { get; set; } = 200;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadData();
+        await base.OnInitializedAsync();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+
+    private async Task ClearSearchBox()
+    {
+        await SetSearchBoxState(null);
+    }
+
+    private async Task Search()
+    {
+        var descriptor = CreateSearchFilter("Mar", new List<string> { "FirstName", "LastName" });
+
+        await SetSearchBoxState(descriptor);
+    }
+
+    private async Task SetSearchBoxState(IFilterDescriptor descriptor)
+    {
+        TreeListState<EmployeeDirectoryDto> state = new TreeListState<EmployeeDirectoryDto>()
+            {
+                SearchFilter = descriptor
+            };
+
+        await TreeListRef?.SetStateAsync(state);
+    }
+
+    private IFilterDescriptor CreateSearchFilter(string searchValue, List<string> fields)
+    {
+        var descriptor = new CompositeFilterDescriptor();
+        descriptor.LogicalOperator = FilterCompositionLogicalOperator.Or;
+
+        foreach (var field in fields)
+        {
+            var filter = new FilterDescriptor(field, FilterOperator.Contains, searchValue);
+
+            filter.MemberType = typeof(string);
+
+            descriptor.FilterDescriptors.Add(filter);
+        }
+
+        return descriptor;
+    }
+}

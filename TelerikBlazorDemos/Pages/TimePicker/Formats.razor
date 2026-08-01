@@ -1,0 +1,32 @@
+@page "/timepicker/formats"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="t-format" class="k-label k-form-label">"t" Standard DateTime format</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Format="t" @bind-Value="@CurrentDate" Width="100%" Id="t-format"></TelerikTimePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="T-format" class="k-label k-form-label">"T" Standard DateTime format</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Format="T" @bind-Value="@CurrentDate" Width="100%" Id="T-format"></TelerikTimePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="F-format" class="k-label k-form-label">"F" Standard DateTime format</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Format="F" @bind-Value="@CurrentDate" Width="100%" Id="F-format"></TelerikTimePicker>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <label for="custom-format" class="k-label k-form-label">"HH:mm:ss tt" Custom DateTime format</label>
+        <div class="k-form-field-wrap">
+            <TelerikTimePicker Format="t" @bind-Value="@CurrentDate" Width="100%" Id="custom-format"></TelerikTimePicker>
+        </div>
+    </div>
+</div>
+
+@code {
+    public DateTime CurrentDate { get; set; } = DateTime.Now;
+}

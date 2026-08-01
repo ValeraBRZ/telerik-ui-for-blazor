@@ -1,0 +1,74 @@
+@page "/form/layout"
+@using User = TelerikBlazorDemos.Models.Form.User
+
+<div class="demo-section auto">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@TestUser"
+                     Width="700px"
+                     Columns="2"
+                     ColumnSpacing="20px"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+            </FormValidation>
+            <FormItems>
+                <FormGroup LabelText="User Information">
+                    <FormItem Field="@nameof(User.FirstName)"></FormItem>
+                    <FormItem Field="@nameof(User.LastName)"></FormItem>
+                    <FormItem Field="@nameof(User.Email)">
+                        <Template>
+                            <label for="mail" class="k-label k-form-label">Email*:</label>
+                            <TelerikTextBox Id="mail" @bind-Value="@TestUser.Email" InputMode="email" Placeholder="example@domain.com"></TelerikTextBox>
+                            <TelerikValidationMessage For="@(() => TestUser.Email)"></TelerikValidationMessage>
+                        </Template>
+                    </FormItem>
+                    <FormItem Field="@nameof(User.Password)">
+                        <Template>
+                            <label for="pass" class="k-label k-form-label">Password*:</label>
+                            <TelerikTextBox Id="pass" @bind-Value="@TestUser.Password" Password="true"></TelerikTextBox>
+                            <TelerikValidationMessage For="@(() => TestUser.Password)"></TelerikValidationMessage>
+                        </Template>
+                    </FormItem>
+                    <FormItem Field="@nameof(User.BirthDate)" />
+                    <FormItem Field="@nameof(User.AcceptTerms)" />
+                </FormGroup>
+                <FormGroup LabelText="Shipping Address" Columns="2" ColumnSpacing="10px">
+                    <FormItem LabelText="Country*: " Field="@nameof(User.Country)" ColSpan="1" />
+                    <FormItem LabelText="City*: " Field="@nameof(User.City)" ColSpan="1" />
+                    <FormItem LabelText="Address Line*: " Field="@nameof(User.AddressLine)" ColSpan="2" />
+                    <FormItem LabelText="Second Address Line: " Field="@nameof(User.AddressLine2)"ColSpan="2" />
+                </FormGroup>
+            </FormItems>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    public User TestUser { get; set; } = new User();
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

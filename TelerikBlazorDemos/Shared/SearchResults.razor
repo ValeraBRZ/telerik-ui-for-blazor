@@ -1,0 +1,153 @@
+@layout HomeLayout;
+
+@using Telerik.DataSource
+
+@inject GoogleSearchService GoogleSearchService
+
+<main role="main" class="kd-blazor kd-search-page hub-search">
+    <section>
+        <div class="container">
+            <h1 class="kd-title">Search Results</h1>
+
+            <div class="kd-search-content">
+                <div id="search-container">
+                    @if (GoogleSearchResult?.Information?.Total > 0)
+                    {
+                        <div id="results-msg" class="result-message">
+                            <p class="kd-text text-small m-0">
+                                About @(GoogleSearchResult?.Information?.TotalResults)
+                                results (@(GoogleSearchResult?.Information?.SearchTime) seconds)
+                            </p>
+                            <hr>
+                        </div>
+
+                        <TelerikListView TItem="GoogleSearchResultItem"
+                                            OnRead="@OnRead"
+                                            Page="@Page"
+                                            PageChanged="@OnPageChanged"
+                                            Pageable="true"
+                                            Class="result-content"
+                                            PageSize="10">
+                            <Template>
+                                @{ var item = context; }
+
+                                <div class="item" role="option" aria-selected="false">
+                                    <h4 class="kd-title">
+                                        <a class="kd-link" href="@item.Link">@item.Title</a>
+                                    </h4>
+                                    <p class="kd-text text-small">@((MarkupString)item.Snippet)</p>
+                                    <p class="kd-text text-small">
+                                        <a class="kd-link" href="@item.Link">@item.ShortLink</a>
+                                    </p>
+                                </div>
+                            </Template>
+                        </TelerikListView>
+                    }
+                    else if (SearchExecuted && !SearchInProgress)
+                    {
+                        <div id="no-results" class="no-result" style="display: block;">
+                            <h1 class="kd-title">Sorry,</h1>
+                            <h2 class="kd-title">There were no results found. Maybe try a broader search or:</h2>
+                            <ul class="kd-list">
+                                <li><p class="kd-text">Make sure all words are spelled correctly.</p></li>
+                                <li><p class="kd-text">Try different keywords.</p></li>
+                                <li><p class="kd-text">Try more general keywords.</p></li>
+                            </ul>
+                            <span @onclick="@ClearSearch" class="kd-link go-back">Go back</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="k-loading-mask k-opaque" style="width: 100%; height: 100%; top: 0px; left: 0px;">
+                            <span class="k-loading-text">Loading...</span>
+                            <div class="k-loading-image"></div>
+                            <div class="k-loading-color"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+@code {
+    [Inject]
+    public IJSRuntime JsRuntime { get; set; }
+
+    [Parameter]
+    public string SearchQuery { get; set; }
+
+    [Parameter]
+    public EventCallback OnSeachClear { get; set; }
+
+    public GoogleSearchResult GoogleSearchResult { get; set; }
+
+    public DataSourceRequest ListViewDataSourceRequest { get; set; }
+
+    public int TotalCount { get; set; } = 0;
+
+    public int Page { get; set; } = 1;
+
+    public bool SearchExecuted { get; set; }
+    public bool SearchInProgress { get; set; }
+
+    private bool shouldSeachOnParametersSet { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (shouldSeachOnParametersSet)
+        {
+            await GetGoogleSearchResultsAsync();
+        }
+        shouldSeachOnParametersSet = false;
+    }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        string currQuery;
+        parameters.TryGetValue<string>("SearchQuery", out currQuery);
+        if(!string.Equals(currQuery, SearchQuery))
+        {
+            shouldSeachOnParametersSet = true;
+        }
+
+        await base.SetParametersAsync(parameters);
+    }
+
+    public async Task OnPageChanged(int value)
+    {
+        Page = value;
+        await GetGoogleSearchResultsAsync(Page);
+    }
+
+    public void OnRead(ListViewReadEventArgs args)
+    {
+        args.Data = GoogleSearchResult.Items;
+        args.Total = GoogleSearchResult?.Information?.Total ?? 0;
+    }
+
+    public async Task GetGoogleSearchResultsAsync(int page = 1)
+    {
+        GoogleSearchResult = null;
+        SearchExecuted = true;
+        SearchInProgress = true;
+
+        if (!string.IsNullOrEmpty(SearchQuery))
+        {
+            var results = await GoogleSearchService.SearchAsync(JsRuntime, SearchQuery, page);
+            GoogleSearchResult = results;
+        }
+
+        SearchInProgress = false;
+
+        StateHasChanged();
+    }
+
+    void ClearSearch()
+    {
+        if (OnSeachClear.HasDelegate)
+        {
+            OnSeachClear.InvokeAsync(null);
+        }
+    }
+}

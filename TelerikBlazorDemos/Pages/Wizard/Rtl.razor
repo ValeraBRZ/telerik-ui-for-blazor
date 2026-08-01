@@ -1,0 +1,63 @@
+@page "/wizard/rtl"
+
+<div style="width: 70%; margin: 0 auto;">
+    <TelerikWizard>
+        <WizardSteps>
+            <WizardStep Label="Welcome">
+                <Content>
+                    <div style="text-align:center">
+                        <h3>Complete the Registration Form to enroll in the course</h3>
+                    </div>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="User Details">
+                <Content>
+                    <TelerikForm Model="UserDetailsModel">
+                        <FormButtons></FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Personal Details">
+                <Content>
+                    <TelerikForm Model="RegistrationModel">
+                        <FormButtons></FormButtons>
+                    </TelerikForm>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Finish">
+                <Content>
+                    <div style="text-align:center">
+                        <h3>Registration Complete!</h3>
+                    </div>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+        <WizardSettings>
+            <WizardStepperSettings Linear="false" />
+        </WizardSettings>
+    </TelerikWizard>
+</div>
+
+@code {
+    public UserDetails UserDetailsModel { get; set; } = new UserDetails();
+    public PersonalDetails RegistrationModel { get; set; } = new PersonalDetails();
+
+    public class UserDetails
+    {
+        public string Username { get; set; }
+
+        public string Email { get; set; }
+
+        public string Password { get; set; }
+    }
+
+    public class PersonalDetails
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+    }
+}
+

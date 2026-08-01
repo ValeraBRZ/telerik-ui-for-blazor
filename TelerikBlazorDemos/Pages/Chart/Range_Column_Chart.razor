@@ -1,0 +1,72 @@
+@page "/chart/range-column-chart"
+
+<TelerikChart>
+    <ChartSeriesItems>
+        <ChartSeries Name="University 1"
+                     Data="@StudentScores1"
+                     Type="ChartSeriesType.RangeColumn">
+            <ChartSeriesLabels>
+                <ChartSeriesLabelsFrom Visible="true" />
+                <ChartSeriesLabelsTo Visible="false" />
+            </ChartSeriesLabels>
+        </ChartSeries>
+        <ChartSeries Name="University 2"
+                     Data="@StudentScores2"
+                     Type="ChartSeriesType.RangeColumn">
+            <ChartSeriesLabels>
+                <ChartSeriesLabelsFrom Visible="true" />
+                <ChartSeriesLabelsTo Visible="false" />
+            </ChartSeriesLabels>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Categories="@Years" />
+    </ChartCategoryAxes>
+
+    <ChartTooltip Visible="true">
+        <Template>
+            @{
+                var item = (int[])context.DataItem;
+                <span>@item[0] - @item[1]</span>
+            }
+        </Template>
+    </ChartTooltip>
+
+    <ChartTitle Text="Exam Score Ranges"></ChartTitle>
+
+    <ChartLegend Position="ChartLegendPosition.Right"></ChartLegend>
+</TelerikChart>
+
+@code {
+    private int[][] StudentScores1 { get; set; }
+    private int[][] StudentScores2 { get; set; }
+    private object[] Years { get; set; }
+
+    private int _dataPointCount = 5;
+
+    private void GenerateData()
+    {
+        List<int[]> seriesData1 = new List<int[]>();
+        List<int[]> seriesData2 = new List<int[]>();
+        List<object> yearData = new List<object>();
+
+        var thisYear = DateTime.Now.Year;
+
+        for (int i = 1; i <= _dataPointCount; i++)
+        {
+            yearData.Add(thisYear - _dataPointCount + i);
+            seriesData1.Add(new int[] { i * 5, i * 6 + 30 });
+            seriesData2.Add(new int[] { i * 5 + 10, i * 6 + 40 });
+        }
+
+        StudentScores1 = seriesData1.ToArray();
+        StudentScores2 = seriesData2.ToArray();
+        Years = yearData.ToArray();
+    }
+
+    protected override void OnInitialized()
+    {
+        GenerateData();
+    }
+}

@@ -1,0 +1,135 @@
+@page "/diagram/overview"
+
+@inject NavigationManager NavigationManager
+
+<TelerikDiagram Height="900px" Zoom="1" MinZoom="0.3" MaxZoom="1.5">
+    <DiagramLayout Type="@DiagramLayoutType.Tree"
+                   Subtype="@DiagramLayoutSubtype.Down" />
+    <DiagramConnectionDefaults FromConnector="@DiagramConnectionsFromConnector.Bottom"
+                               ToConnector="@DiagramConnectionsToConnector.Top" />
+    <DiagramShapeDefaults CornerRadius="6"
+                          Height="89"
+                          Width="300"
+                          Visual="shapeVisualFunction">
+        <DiagramShapeDefaultsContent Color="#212529" FontSize="20" FontWeight="bold" />
+    </DiagramShapeDefaults>
+    <DiagramShapes>
+        @foreach (DiagramEmployee employee in Employees)
+        {
+            <DiagramShape @key="@employee"
+                          Id="@( $"shape-{employee.Id}" )"
+                          DataItem="@employee"
+                          Source="@( $"{GetBaseUri()}images/diagram/{employee.Id}.png" )">
+                <DiagramShapeFill Color="@employee.BackgroundColor" />
+                <DiagramShapeStroke Color="@employee.BorderColor" Width="2" />
+            </DiagramShape>
+        }
+    </DiagramShapes>
+    <DiagramConnections>
+        @foreach (DiagramEmployee employee in Employees)
+        {
+            if (employee.ParentId is not null)
+            {
+                <DiagramConnection @key="@employee"
+                                   FromId="@( $"shape-{employee.ParentId}" )"
+                                   ToId="@( $"shape-{employee.Id}" )" />
+            }
+        }
+    </DiagramConnections>
+</TelerikDiagram>
+
+@* Move JavaSctipt code to a separate JS file *@
+<script suppress-error="BL9992">
+    function shapeVisualFunction(context) {
+        let diagramNS = TelerikBlazor.DiagramCommon;
+
+        let shapeGroup = new diagramNS.Group();
+
+        // Most settings are obtained from the Diagram parameters (context...).
+        // The text labels are obtained from the Shape DataItem (context.dataItem...).
+        // In this specific case, the Shape background and border styles are available in both.
+
+        shapeGroup.append(new diagramNS.Process({
+            width: context.width,
+            height: context.height,
+            fill: {
+                color: context.fill.color
+            },
+            stroke: {
+                color: context.stroke.color,
+                width: context.stroke.width
+            },
+            cornerRadius: context.cornerRadius
+        }));
+
+        shapeGroup.append(new diagramNS.Image({
+            source: context.source,
+            width: 64,
+            height: 64,
+            x: 16,
+            y: 12
+        }));
+
+        shapeGroup.append(new diagramNS.TextBlock({
+            text: clipText(context.dataItem.Name, 14),
+            color: context.content.color,
+            fontSize: context.content.fontSize,
+            fontWeight: context.content.fontWeight,
+            x: 96,
+            y: 16
+        }));
+
+        shapeGroup.append(new diagramNS.TextBlock({
+            text: clipText(context.dataItem.Title, 20),
+            color: context.content.color,
+            fontSize: "16",
+            x: 96,
+            y: 48
+        }));
+
+        return shapeGroup;
+    }
+
+    function clipText(text, maxLength) {
+        if (text.length > maxLength) {
+            return text.substring(0, maxLength) + "...";
+        } else {
+            return text;
+        }
+    }
+</script>
+
+@code {
+    private List<DiagramEmployee> Employees { get; set; } = new()
+    {
+        new() { Id = 1, Name = "Jane Simmons", Title = "CEO", BackgroundColor = "#d1e7dd", BorderColor = "#a3cfbb" },
+        new() { Id = 2, ParentId = 1, Name = "Liam Turner", Title = "General Manager", BackgroundColor = "#d1e7dd", BorderColor = "#a3cfbb" },
+        new() { Id = 3, ParentId = 2, Name = "Amelia Carter", Title = "HR Director", BackgroundColor = "#e2d9f3", BorderColor = "#c5b3e6" },
+        new() { Id = 4, ParentId = 3, Name = "Chandrakant Krishnan", Title = "HR Manager", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 5, ParentId = 4, Name = "Sofia Bennett", Title = "Recruitment Lead", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 6, ParentId = 2, Name = "Noah Sullivan", Title = "UX Manager", BackgroundColor = "#e2d9f3", BorderColor = "#c5b3e6" },
+        new() { Id = 7, ParentId = 6, Name = "Isabella Hayes", Title = "UX Design Lead", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 8, ParentId = 7, Name = "Mateo Brooks", Title = "UX Designer", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 9, ParentId = 8, Name = "Lena Robinson", Title = "UX Intern", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 10, ParentId = 2, Name = "Zara Mitchell", Title = "Marketing Manager", BackgroundColor = "#e2d9f3", BorderColor = "#c5b3e6" },
+        new() { Id = 11, ParentId = 10, Name = "Leo Anderson", Title = "Marketing Lead", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" },
+        new() { Id = 12, ParentId = 11, Name = "Elias Parker", Title = "Senior Copywriter", BackgroundColor = "#cfe2ff", BorderColor = "#9ec5fe" }
+    };
+
+    private string GetBaseUri()
+    {
+        string baseUri = NavigationManager.BaseUri;
+
+        return baseUri.Contains("repl") ? "https://demos.telerik.com/blazor-ui/" : baseUri;
+    }
+
+    public class DiagramEmployee
+    {
+        public int Id { get; set; }
+        public int? ParentId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string BorderColor { get; set; } = string.Empty;
+        public string BackgroundColor { get; set; } = string.Empty;
+    }
+}

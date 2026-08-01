@@ -1,0 +1,164 @@
+@page "/form/adaptive"
+@using System.ComponentModel.DataAnnotations
+@using TelerikBlazorDemos.Models.Form
+
+<TelerikMediaQuery Media="(max-width: 800px)" OnChange="@SmallMediaQueryChange"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 801px) and (max-width: 1280px)" OnChange="@MediumMediaQueryChange"></TelerikMediaQuery>
+<TelerikMediaQuery Media="(min-width: 1281px)" OnChange="@LargeMediaQueryChange"></TelerikMediaQuery>
+
+<div class="demo-alert demo-alert-info" role="alert">
+    Resize the browser window to see the responsive Form behavior.
+</div>
+
+<div class="demo-section auto">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The Form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@TestUser"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit"
+                     Columns="@FormColumnsCount"
+                     ColumnSpacing="@FormColumnSpacing"
+                     RowSpacing="@FormRowSpacing">
+            <FormValidation>
+                <DataAnnotationsValidator />
+            </FormValidation>
+            <FormItems>
+                <FormGroup LabelText="Personal Information" Columns="@PersonalInfoColumnsCount" ColumnSpacing="@FormColumnSpacing">
+                    <FormItem Field="@nameof(DetailedUser.Title)" Class="narrow-editor" ColSpan="@PersonalInfoColumnsCount" />
+                    <FormItem Field="@nameof(DetailedUser.FirstName)" />
+                    <FormItem Field="@nameof(DetailedUser.LastName)" />
+                    <FormItem Field="@nameof(DetailedUser.BirthDate)" Class="narrow-editor" ColSpan="@PersonalInfoColumnsCount" />
+                    <FormItem Field="@nameof(DetailedUser.Email)" />
+                    <FormItem Field="@nameof(DetailedUser.Password)" />
+                    <FormItem Field="@nameof(DetailedUser.AcceptTerms)" ColSpan="@PersonalInfoColumnsCount" />
+                </FormGroup>
+                <FormGroup LabelText="Shipping Address" Columns="@ShippingAddressColumnsCount" ColumnSpacing="@FormColumnSpacing">
+                    <FormItem Field="@nameof(DetailedUser.Country)" ColSpan="@ShippingAddressColumnsCount" />
+                    <FormItem Field="@nameof(DetailedUser.PostCode)" />
+                    <FormItem Field="@nameof(DetailedUser.City)" ColSpan="3" />
+                    <FormItem Field="@nameof(DetailedUser.AddressLine)" ColSpan="@ShippingAddressColumnsCount" />
+                    <FormItem Field="@nameof(DetailedUser.AddressLine2)" ColSpan="@ShippingAddressColumnsCount" />
+                </FormGroup>
+            </FormItems>
+        </TelerikForm>
+    }
+</div>
+
+<style>
+    .k-grid-cols-2 .narrow-editor .k-input,
+    .k-grid-cols-2 .narrow-editor .k-picker {
+        max-width: 50%;
+    }
+</style>
+
+@code {
+    public class DetailedUser : TelerikBlazorDemos.Models.Form.User
+    {
+        [Display(Name = "Title:")]
+        public UserTitle? Title { get; set; }
+
+        [Display(Name = "Post Code*:")]
+        [Required(ErrorMessage = "You must specify a Post Code")]
+        public string PostCode { get; set; }
+    }
+
+    public enum DemoWindowSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+
+    private DetailedUser TestUser { get; set; } = new DetailedUser() { AcceptTerms = true };
+    public DemoWindowSize WindowSize { get; set; }
+
+    public int FormColumnsCount { get; set; }
+    public int PersonalInfoColumnsCount { get; set; }
+    public int ShippingAddressColumnsCount { get; set; } = 4;
+    public int CountryColSpan => WindowSize == DemoWindowSize.Small ? 1 : 4;
+    public string FormColumnSpacing { get; set; }
+    public string FormRowSpacing { get; set; }
+
+    public double Width { get; set; } = 100;
+    public bool ValidSubmit { get; set; } = false;
+
+    public void UpdateFormLayout()
+    {
+        FormColumnsCount = (WindowSize == DemoWindowSize.Large) ? 2 : 1;
+        PersonalInfoColumnsCount = (WindowSize == DemoWindowSize.Small) ? 1 : 2;
+
+        switch (WindowSize)
+        {
+            case DemoWindowSize.Small:
+                FormColumnSpacing = "8px";
+                FormRowSpacing = "8px";
+                break;
+            case DemoWindowSize.Medium:
+                FormColumnSpacing = "12px";
+                FormRowSpacing = "12px";
+                break;
+            default:
+                FormColumnSpacing = "16px";
+                FormRowSpacing = "16px";
+                break;
+        }
+    }
+
+    public async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        // simulate async action
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    public void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+
+    public void SmallMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Small;
+            UpdateFormLayout();
+        }
+    }
+
+    public void MediumMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Medium;
+            UpdateFormLayout();
+        }
+    }
+
+    public void LargeMediaQueryChange(bool matchesMediaQuery)
+    {
+        if (matchesMediaQuery)
+        {
+            WindowSize = DemoWindowSize.Large;
+            UpdateFormLayout();
+        }
+    }
+
+    public enum UserTitle
+    {
+        Mr,
+        Mrs,
+        Miss,
+        Ms
+    }
+}

@@ -1,0 +1,16 @@
+@page "/colorpicker/overview"
+
+<TShirtDesignTemplate SelectedColor="@Value">
+    <TelerikColorPicker Value="@Value" ValueChanged="ColorPickerValueChanged"></TelerikColorPicker>
+</TShirtDesignTemplate>
+
+@code {
+    private const string defaultColor = "#8174F2";
+
+    public string Value { get; set; } = defaultColor;
+
+    public void ColorPickerValueChanged(string color)
+    {
+        Value = string.IsNullOrEmpty(color) ? defaultColor : color;
+    }
+}

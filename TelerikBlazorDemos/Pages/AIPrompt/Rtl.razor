@@ -1,0 +1,51 @@
+@page "/aiprompt/rtl"
+
+<div class="demo-section k-d-flex" style="max-width: 600px;">
+    <TelerikAIPrompt OnPromptRequest="@HandlePromptRequest"
+                     OnCommandExecute="@HandleCommandExecute"
+                     Commands="@PromptCommands"
+                     PromptSuggestions="@Suggestions"
+                     Width="500px">
+    </TelerikAIPrompt>
+</div>
+
+@code {
+    private List<string> Suggestions { get; set; } = new List<string>()
+    {
+        "Generate an Out of Office email.",
+        "Write a LinkedIn post for the importance of work/life balance."
+    };
+
+    private List<Dictionary<string, string>> PromptData { get; set; }
+
+    private List<AIPromptCommandDescriptor> PromptCommands { get; set; } = new List<AIPromptCommandDescriptor>()
+    {
+        new AIPromptCommandDescriptor()
+        {
+            Id="1",
+            Title = "Command 1",
+            Icon = nameof(SvgIcon.ApplyFormat),
+            Children = new List<AIPromptCommandDescriptor>
+            {
+                new AIPromptCommandDescriptor() { Id="2", Title = "Command 1.1" },
+                new AIPromptCommandDescriptor() { Id="3", Title = "Command 1.2" },
+            }
+        },
+        new AIPromptCommandDescriptor()
+        {
+            Id="4",
+            Title = "Command 2",
+            Icon = nameof(SvgIcon.EditTools)
+        }
+    };
+
+    private void HandlePromptRequest(AIPromptPromptRequestEventArgs args)
+    {
+        args.Output = "Response from the AI service";
+    }
+
+    private void HandleCommandExecute(AIPromptCommandExecuteEventArgs args)
+    {
+        args.Output = "Response from the AI service";
+    }
+}

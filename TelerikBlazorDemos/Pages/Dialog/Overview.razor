@@ -1,0 +1,21 @@
+@page "/dialog/overview"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@(() => Visible = true)">Show dialog</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikDialog @bind-Visible="@Visible" Width="320px" Title="Submit the page">
+    <DialogContent>
+        <p style="text-align: center;">Are you sure you want to continue?</p>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@(() => { Visible = false; })">No</TelerikButton>
+        <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => { Visible = false; })">Yes</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>
+
+@code {
+    private bool Visible { get; set; } = true;
+}

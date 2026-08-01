@@ -1,0 +1,33 @@
+@page "/grid/export-csv"
+
+@inject ProductService ProductService
+
+<TelerikGrid Data=@GridData Pageable="true" Groupable="true" Sortable="true"
+             FilterMode="GridFilterMode.FilterMenu" Resizable="true" Reorderable="true">
+    <GridToolBarTemplate>
+        <GridCommandButton Command="CsvExport" Icon="@SvgIcon.FileCsv">Export to CSV</GridCommandButton>
+        <label class="k-checkbox-label"><TelerikCheckBox @bind-Value="@ExportAllPages" /> Export All Pages</label>
+    </GridToolBarTemplate>
+    <GridExport>
+        <GridCsvExport FileName="telerik-grid-export" AllPages="@ExportAllPages" />
+    </GridExport>
+    <GridColumns>
+        <GridColumn Field="@nameof(ProductDto.ProductId)" Title="Id" Groupable="false" Width="75px" />
+        <GridColumn Field="@nameof(ProductDto.ProductName)" Width="230px" />
+        <GridColumn Field="@nameof(ProductDto.UnitsInStock)" Width="95px" />
+        <GridColumn Field="@nameof(ProductDto.UnitsOnOrder)" Title="On Order" Width="90px" />
+        <GridColumn Field="@nameof(ProductDto.ReorderLevel)" Width="100px" />
+        <GridColumn Field="@nameof(ProductDto.QuantityPerUnit)" Width="250px" />
+        <GridColumn Field="@nameof(ProductDto.UnitPrice)" Title="Price" Width="100px" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public List<ProductDto> GridData { get; set; }
+    bool ExportAllPages { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+}

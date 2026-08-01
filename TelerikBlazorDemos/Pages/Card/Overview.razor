@@ -1,0 +1,169 @@
+@page "/card/overview"
+
+@using TelerikBlazorDemos.Models
+@using TelerikBlazorDemos.Shared
+
+<div class="k-card-deck justify-center">
+    @foreach (var item in Items)
+    {
+        <div>
+            <TelerikCard Width="250px">
+                <CardHeader Class="k-hbox">
+                    <div class="k-rounded-full k-avatar avatar-size">
+                        <div class="k-avatar-image ng-star-inserted" style="background-image: url(images/cards/bg/@item.AvatarFile);"></div>
+                    </div>
+                    <div>
+                        <CardTitle>
+                            @item.Title
+                        </CardTitle>
+                        <CardSubTitle>
+                            @item.SubTitle
+                        </CardSubTitle>
+                    </div>
+                </CardHeader>
+                <CardImage Src="@($"images/cards/bg/{item.ImageFile}")" Class="image-height"></CardImage>
+                <CardActions Class="justify-space-between">
+                    <div>
+                        <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Class="@item.LikeActionClass" Icon="@item.LikeActionIcon" Title="Like" OnClick="(() => item.PostLiked = !item.PostLiked)"></TelerikButton>
+                        <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@SvgIcon.Comment" Title="Comment" OnClick="@(() => item.CommentsVisible = !item.CommentsVisible)"></TelerikButton>
+                        <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" Icon="@SvgIcon.Share" Title="Share" OnClick="@(() => Share(item))"></TelerikButton>
+                    </div>
+                    <span class="post-likes-count">@item.PostLikedText</span>
+                </CardActions>
+                @if (item.CommentsVisible)
+                {
+                    <CardSeparator></CardSeparator>
+                    <CardBody>
+                        @foreach (var comment in item.Comments)
+                        {
+                            <CardComment Comment="@comment"></CardComment>
+                        }
+                        <TelerikTextArea @bind-Value="@item.TempComment" Width="100%" Class="mb-xs"></TelerikTextArea>
+                        <div class="align-end">
+                            <TelerikButton FillMode="@(ThemeConstants.Button.FillMode.Flat)" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => PostComment(item))">Post</TelerikButton>
+                        </div>
+                    </CardBody>
+                }
+            </TelerikCard>
+        </div>
+    }
+</div>
+
+<TelerikWindow @bind-Visible="@WindowVisible" Modal="true">
+    <WindowTitle>
+        Shared Post
+    </WindowTitle>
+    <WindowContent>
+        <img src="@($"images/cards/bg/{SharedItem.ImageFile}")" style="width: 250px" alt="@SharedItem.Title" class="mb-sm" />
+        <div>@SharedItem.Title post is shared.</div>
+        <div class="flex-end">
+            <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => WindowVisible = false)">OK</TelerikButton>
+        </div>
+    </WindowContent>
+</TelerikWindow>
+
+@code {
+    public List<CardItem> Items { get; set; }
+    public bool WindowVisible { get; set; }
+    public CardItem SharedItem { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Items = new List<CardItem>()
+    {
+            new CardItem()
+            {
+                AvatarFile = "bg_flag.jpg",
+                Title = "Traditions",
+                SubTitle = "Bulgaria, Europe",
+                ImageFile = "kukeri.jpg",
+                Likes = 674,
+                Comments = new List<CardCommentModel>()
+            },
+            new CardItem()
+            {
+                AvatarFile = "rila.jpg",
+                Title = "Mountains",
+                SubTitle = "Bulgaria, Europe",
+                ImageFile = "rila_lakes.jpg",
+                Likes = 891,
+                Comments = new List<CardCommentModel>()
+            }
+        };
+        return base.OnInitializedAsync();
+    }
+
+    public void Share(CardItem item)
+    {
+        SharedItem = item;
+
+        WindowVisible = true;
+    }
+
+    public void PostComment(CardItem item)
+    {
+        item.Comments.Add(new CardCommentModel()
+        {
+            DateTime = DateTime.Now,
+            Text = item.TempComment
+        });
+
+        item.TempComment = string.Empty;
+    }
+}
+<style>
+    .post-likes-count {
+        font-size: 13px;
+        align-self: center;
+        color: #656565;
+    }
+
+    .image-height {
+        height: 170px;
+    }
+
+    .comment-text {
+        font-size: 13px;
+        font-weight: bold;
+        max-width: 100px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .comment-data {
+        font-size: 10px;
+        font-weight: normal;
+    }
+
+        .comment-data span {
+            margin-left: 8px;
+        }
+
+    .avatar-size {
+        width: 35px !important;
+        height: 35px !important;
+        flex-basis: 35px !important;
+    }
+
+    .mb-xs {
+        margin-bottom: 8px;
+    }
+
+    .align-end {
+        text-align: end;
+    }
+
+    .justify-space-between {
+        justify-content: space-between;
+    }
+
+    .justify-center {
+        justify-content: center;
+    }
+
+    .flex-end {
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>

@@ -1,0 +1,32 @@
+@page "/pdfviewer/localization"
+
+@using System.IO
+@using Telerik.Blazor.Components
+@using TelerikBlazorDemos.Constants
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikPdfViewer @ref="@PdfViewerRef"
+                  Width="100%"
+                  Height="800px"
+                  Data="@FileData">
+</TelerikPdfViewer>
+
+@code {
+    public TelerikPdfViewer PdfViewerRef { get; set; }
+    public byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fileBytes = Convert.FromBase64String(PdfViewerConstants.SampleFileBase64);
+
+        FileData = fileBytes;
+
+        await base.OnInitializedAsync();
+    }
+}
+

@@ -1,0 +1,59 @@
+@page "/grid/frozen-columns"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@(() => isFrozen = !isFrozen)">
+            @(isFrozen ? "Unfreeze" : "Freeze") Command Column
+        </TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class=@("demo-alert " + ( isFrozen ? "demo-alert-success" : "demo-alert-error" ) )>
+    The Command Column is
+    <strong class="text-muted">
+        @(isFrozen ? "Frozen" : "Unfrozen")
+    </strong>
+</div>
+
+@if (!string.IsNullOrEmpty(Result))
+{
+<div class="demo-alert demo-alert-info">@Result</div>}
+
+<TelerikGrid Data="@GridData"
+             Pageable="true"
+             PageSize="10"
+             Height="400px" Width="900px">
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductName) Title="Product Name" Width="250px" Locked="true" />
+        <GridColumn Field=@nameof(ProductDto.QuantityPerUnit) Title="Quantity per Unit" Width="250px" />
+        <GridColumn Field=@nameof(ProductDto.UnitsInStock) Title="In Stock" Width="120px" Locked="true" />
+        <GridColumn Field=@nameof(ProductDto.UnitsOnOrder) Title="On Order" Width="120px" />
+        <GridColumn Field=@nameof(ProductDto.CategoryName) Title="Category" Width="150px" />
+        <GridColumn Field=@nameof(ProductDto.CategoryId) Title="Category Id" Width="100px" />
+        <GridColumn Field=@nameof(ProductDto.Discontinued) Title="Discontinued" Width="120px" />
+        <GridCommandColumn Width="200px" Locked="@isFrozen" Title="Command Column">
+            <GridCommandButton Command="CustomCommand"
+                               Icon="@SvgIcon.InfoCircle"
+                               OnClick="@((GridCommandEventArgs  e) => Result = $" Click from {(e.Item as ProductDto).ProductName}" )">
+                Information
+            </GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
+@code {
+    private bool isFrozen { get; set; } = false;
+    private string Result { get; set; }
+    public List<ProductDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        GridData = ProductService.GetProducts().ToList();
+    }
+}

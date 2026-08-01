@@ -1,0 +1,131 @@
+@page "/wizard/stepper-template"
+
+<TelerikWizard>
+    <WizardSteps>
+        <WizardStep>
+            <StepTemplate>
+                <div class="custom-step">
+                    <TelerikSvgIcon Icon="SvgIcon.User" />
+                </div>
+                <label class="step-label">Registration</label>
+            </StepTemplate>
+            <Content>
+                <TelerikForm Model="@RegistrationModel"
+                             @ref="@RegisterForm">
+                    <FormItems>
+                        <FormItem LabelText="Email" Field="@nameof(UserDetails.Email)">
+                            <Template>
+                                <label for="mail" class="k-label k-form-label">Email:</label>
+                                <TelerikTextBox Id="mail" @bind-Value="@RegistrationModel.Email" InputMode="email"></TelerikTextBox>
+                            </Template>
+                        </FormItem>
+                        <FormItem LabelText="Password" Field="@nameof(UserDetails.Password)">
+                            <Template>
+                                <label for="pass" class="k-label k-form-label">Password:</label>
+                                <TelerikTextBox Id="pass" @bind-Value="@RegistrationModel.Password" Password="true"></TelerikTextBox>
+                            </Template>
+                        </FormItem>
+                    </FormItems>
+                    <FormButtons></FormButtons>
+                </TelerikForm>
+            </Content>
+        </WizardStep>
+        <WizardStep>
+            <StepTemplate>
+                <div class="custom-step">
+                    <TelerikSvgIcon Icon="SvgIcon.DetailSection" />
+                </div>
+                <label class="step-label">Personal Details</label>
+            </StepTemplate>
+            <Content>
+                <TelerikForm Model="@PersonalDetailsModel"
+                             @ref="@PersonalDetailsForm">
+                    <FormItems>
+                        <FormItem LabelText="First Name" Field="@nameof(PersonalDetails.FirstName)" />
+                        <FormItem LabelText="Last Name" Field="@nameof(PersonalDetails.LastName)" />
+                    </FormItems>
+                    <FormButtons></FormButtons>
+                </TelerikForm>
+            </Content>
+        </WizardStep>
+        <WizardStep>
+            <StepTemplate>
+                <div class="custom-step">
+                    <TelerikSvgIcon Icon="SvgIcon.ThumbUp" />
+                </div>
+                <label class="step-label">Confirmation</label>
+            </StepTemplate>
+            <Content>
+                <h2>Registration completed.</h2>
+            </Content>
+        </WizardStep>
+    </WizardSteps>
+</TelerikWizard>
+
+<style>
+    .k-stepper > .k-progressbar {
+        height: 4px;
+        top: 18px;
+    }
+
+        .k-stepper > .k-progressbar .k-selected {
+            background: linear-gradient(to right, #ffc837, #ff8008);
+        }
+
+    .custom-step {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #ff8008;
+        border-radius: 10px;
+        background-clip: padding-box;
+        border-radius: 10px;
+        box-sizing: border-box;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+    }
+
+    .k-step-done .custom-step {
+        background-image: radial-gradient( circle at center, #ffc837 10px, #ff8008 );
+    }
+
+    .k-step:not(.k-step-done):not(.k-step-current) .custom-step {
+        border: 2px solid #ccc;
+    }
+
+    .k-step-link .k-icon {
+        width: 24px;
+        color: #000;
+    }
+
+    .k-step-link .step-label {
+        color: #f25202;
+        font-weight: bold;
+    }
+</style>
+
+@code {
+    private int Value { get; set; }
+
+    private TelerikForm RegisterForm { get; set; }
+    private UserDetails RegistrationModel { get; set; } = new UserDetails();
+
+    private TelerikForm PersonalDetailsForm { get; set; }
+    private PersonalDetails PersonalDetailsModel { get; set; } = new PersonalDetails();
+
+    public class UserDetails
+    {
+        public string Email { get; set; } = "john.smith@domain.com";
+
+        public string Password { get; set; } = "12345678";
+    }
+
+    public class PersonalDetails
+    {
+        public string FirstName { get; set; } = "John";
+
+        public string LastName { get; set; } = "Smith";
+    }
+}

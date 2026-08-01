@@ -1,0 +1,66 @@
+@page "/appbar/position"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Position Mode">
+        <TelerikRadioGroup Data="@PositionModes" Value="@PositionMode" ValueChanged="@( (AppBarPositionMode newMode) => AppBarPositionModeChanged(newMode) )" Layout="@RadioGroupLayout.Horizontal" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div style="height: 300px; overflow: auto; margin-bottom: 30px;">
+    <TelerikAppBar PositionMode="@PositionMode">
+        <AppBarSection>
+            <h1 style="font-size: 18px">Telerik UI for Blazor AppBar</h1>
+        </AppBarSection>
+
+        <AppBarSeparator></AppBarSeparator>
+
+        <AppBarSection>
+            <span>Use the radio buttons in the Configurator to change the PositionMode of the AppBar</span>
+        </AppBarSection>
+    </TelerikAppBar>
+
+    <div class="content">
+        <p class="p-content">
+            Personal branding is the conscious and intentional effort to create and influence public perception of an individual by positioning
+            them as an authority in their industry, elevating their credibility, and differentiating themselves from the competition,
+            to ultimately advance their career, increase their circle of influence, and have a larger impact.
+        </p>
+        <p class="p-content">
+            The process of personal branding involves finding your uniqueness, building a reputation on the things you want to be known for,
+            and then allowing yourself to be known for them. Ultimately, the goal is to create something that conveys a message and that can be monetized.
+        </p>
+        <p class="p-content">
+            Whereas some self-help practices focus on self-improvement, personal branding defines success as a form of self-packaging. The term is thought
+            to have originated from an article written by Tom Peters in 1997. In Be Your Own Brand, first published in 1999, marketers David McNally
+            and Karl Speak wrote: "Your brand is a perception or emotion, maintained by somebody other than you, that describes the total
+            experience of having a relationship with you."
+        </p>
+    </div>
+</div>
+
+@code {
+    private void AppBarPositionModeChanged(AppBarPositionMode mode)
+    {
+        PositionMode = mode;
+    }
+
+    private List<AppBarPositionMode> PositionModes = new List<AppBarPositionMode>()
+    {
+        AppBarPositionMode.Static,
+        AppBarPositionMode.Sticky
+    };
+
+    private AppBarPositionMode PositionMode { get; set; } = AppBarPositionMode.Static;
+}
+
+<style>
+    .content {
+        background: white;
+        padding: 25px 10px;
+        margin-top: 1px;
+    }
+
+        .content p {
+            font-size: 18px;
+        }
+</style>

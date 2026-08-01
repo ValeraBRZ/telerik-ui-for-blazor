@@ -1,0 +1,21 @@
+@page "/datetimepicker/globalization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="selected-date" class="k-label k-form-label">Select Date and Time</label>
+        <div class="k-form-field-wrap">
+            <TelerikDateTimePicker @bind-Value="@selectedTime" Id="selected-date"></TelerikDateTimePicker>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime? selectedTime = DateTime.Now;
+}

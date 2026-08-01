@@ -1,0 +1,28 @@
+@page "/fileselect/keyboard-navigation"
+
+<div class="demo-section k-form k-form-md k-form-horizontal">
+    <div class="k-form-field-wrap">
+        <TelerikFileSelect AllowedExtensions="@AllowedExtensions"
+                           MinFileSize="@MinFileSize"
+                           MaxFileSize="@MaxFileSize">
+        </TelerikFileSelect>
+        <div class="k-form-hint">
+            Expected files: <strong>DOCX, PDF, JPG, PNG</strong>
+            between <strong>1KB</strong> and <strong>4MB</strong>.
+        </div>
+    </div>
+</div>
+
+<style>
+    .k-form-hint {
+        display: block;
+        margin-top: 1em;
+    }
+</style>
+
+
+@code {
+    public List<string> AllowedExtensions { get; set; } = new List<string>() { ".docx", ".pdf", ".jpg", ".png" };
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+}

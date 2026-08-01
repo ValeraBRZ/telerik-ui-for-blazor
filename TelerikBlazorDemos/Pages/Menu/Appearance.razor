@@ -1,0 +1,81 @@
+@page "/menu/appearance"
+
+<TelerikMenu Data="@MenuItems"
+             OnItemRender="OnItemRender"
+             ItemsField="@nameof(MenuItem.SubSectionList)"
+             TextField="@nameof(MenuItem.Section)">
+</TelerikMenu>
+
+@code {
+    private List<MenuItem> MenuItems { get; set; }
+
+    private void OnItemRender(MenuItemRenderEventArgs args)
+    {
+        var item = args.Item as MenuItem;
+
+        args.Class = item.SubSectionList == null ? "no-children" : "";
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Section = "Company",
+                SubSectionList = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Section = "Overview"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Events"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Careers"
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Section = "Employees",
+            },
+            new MenuItem()
+            {
+                Section = "Services",
+                SubSectionList = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Section = "Consulting"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Education"
+                    }
+                }
+            }
+        };
+
+        base.OnInitialized();
+    }
+
+    public class MenuItem
+    {
+        public string Section { get; set; }
+        public List<MenuItem> SubSectionList { get; set; }
+    }
+}
+
+<style>
+    .no-children:hover {
+        text-decoration: underline;
+    }
+
+    .k-menu-item {
+        font-weight: 700;
+    }
+</style>

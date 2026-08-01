@@ -1,0 +1,55 @@
+@page "/grid/custom-editor"
+
+@inject OrderService orderService
+
+<TelerikGrid Data=@GridData
+             EditMode="@GridEditMode.Inline"
+             Pageable="true"
+             PageSize=@PageSize
+             OnUpdate=@UpdateItem>
+    <GridColumns>
+        <GridColumn Field=@nameof(OrderDto.CustomerId) />
+        <GridColumn Field=@nameof(OrderDto.ShipCountry) Title="Ship Country">
+            <EditorTemplate>
+                @{
+                    OrderToEdit = context as OrderDto;
+
+                    <TelerikDropDownList Data="@DdlData"
+                                         @bind-Value="@OrderToEdit.ShipCountry"/>
+                }
+            </EditorTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(OrderDto.ShipCity) />
+        <GridColumn Field=@nameof(OrderDto.OrderDate) Title="Delivery Time" EditorType="@GridEditorType.DateTimePicker" Width="320px" />
+        <GridCommandColumn>
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Update</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public List<OrderDto> GridData { get; set; }
+    public List<string> DdlData { get; set; }
+    public OrderDto OrderToEdit { get; set; }
+    int PageSize = 15;
+
+    private void LoadData()
+    {
+        GridData = orderService.GetOrders().ToList();
+        DdlData = GridData.Select(order => order.ShipCountry).Distinct().ToList();
+
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void UpdateItem(GridCommandEventArgs args)
+    {
+        orderService.UpdateOrder((OrderDto)args.Item);
+        LoadData();
+    }
+}

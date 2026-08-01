@@ -1,0 +1,78 @@
+@page "/grid/footer-template"
+
+@inject ProductService ProductService
+
+@if (GridData != null)
+{
+<TelerikGrid Data=@GridData
+             Resizable="true"
+             Pageable="true"
+             Sortable="true"
+             FilterMode="@GridFilterMode.FilterRow"
+             Class="max-width"
+             Height="400px">
+    <GridColumns>
+        <GridColumn Field=@nameof(ProductDto.ProductName) Width="200px" />
+        <GridColumn Field=@nameof(ProductDto.UnitPrice) Width="250px" Title="Actual Price">
+            <Template>
+                @{ var product = context as ProductDto; }
+                @(product.UnitPrice.Value.ToString("C0"))
+            </Template>
+            <FooterTemplate>
+                <div class="demo-text-center">
+                    Average: @context.Average?.ToString("C0") Sum: @context.Sum?.ToString("C0")
+                </div>
+            </FooterTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.UnitsOnOrder) Width="250px" Title="Units On Order" Groupable="false">
+            <Template>
+                @{ var product = context as ProductDto; }
+                @product.UnitsOnOrder
+            </Template>
+            <FooterTemplate>
+                @{ var inStock = (context?.Sum); }
+                <div class="demo-text-center">
+                    Total in stock: @inStock
+                </div>
+            </FooterTemplate>
+        </GridColumn>
+        <GridColumn Field=@nameof(ProductDto.UnitsInStock) Title="In Stock" Width="210px">
+            <FooterTemplate>
+                <div class="demo-text-center">
+                    Min: @context.Min Max: @context.Max
+                </div>
+            </FooterTemplate>
+        </GridColumn>
+    </GridColumns>
+    <GridAggregates>
+        <GridAggregate Field=@nameof(ProductDto.UnitPrice) Aggregate="@GridAggregateType.Sum" />
+        <GridAggregate Field=@nameof(ProductDto.UnitPrice) Aggregate="@GridAggregateType.Average" />
+        <GridAggregate Field=@nameof(ProductDto.UnitsOnOrder) Aggregate="@GridAggregateType.Sum" />
+        <GridAggregate Field=@nameof(ProductDto.UnitsInStock) Aggregate="@GridAggregateType.Min" />
+        <GridAggregate Field=@nameof(ProductDto.UnitsInStock) Aggregate="@GridAggregateType.Max" />
+    </GridAggregates>
+</TelerikGrid>}
+
+@code {
+    public List<ProductDto> GridData { get; set; }
+    public int productsCount { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = ProductService.GetProducts().ToList();
+        productsCount = GridData.Count();
+    }
+}
+<style>
+    .max-width {
+        max-width: 900px;
+    }
+
+    .hr-style {
+        border-color: rgba(0, 0, 0, 0.2)
+    }
+
+    .demo-text-center {
+        text-align: center !important;
+    }
+</style>

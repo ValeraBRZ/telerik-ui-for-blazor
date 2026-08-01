@@ -1,0 +1,186 @@
+@using Microsoft.JSInterop;
+@using System.IO;
+
+@namespace TelerikBlazorDemos.Shared
+
+@inject JsonDataService JsonDataService
+@inject IJSRuntime JsRuntime
+
+<span class="theme-chooser-label kd-text kd-text-primary mb-0">Change Theme</span>
+<div class="theme-chooser-wrapper dropdown-wrapper" tabindex="0" @onblur="@(() => OnBlur())">
+    <div class="theme-chooser-toggle-btn track--theme-popup dropdown-toggle @((ThemeDropdownToggled ? "opened" : ""))" @onclick="@(() => ToggleThemeDropdown())">
+
+        <ThemePalette Palette="@GetAccentPalette(SelectedSwatch)"></ThemePalette>
+
+        <span class="theme-@SelectedTheme.Name">
+            <span class="theme-name">@SelectedTheme.Name</span>
+        </span>
+        <span class="spacer"></span>
+        <span class="icon arrow" aria-hidden="true">
+            <TelerikBlazorDemos.Shared.SVG.Arrow60Down />
+        </span>
+    </div>
+
+    @if (ThemeDropdownToggled)
+    {
+        <div class="theme-chooser-dropdown dropdown active">
+            <div class="theme-chooser-header">                
+            </div>
+            <div class="themes-list sass-list kd-list">
+                @foreach (var theme in Themes)
+                {
+                    <div class="theme-col">
+                        <div class="theme-title">
+                            @theme.Title Theme
+                        </div>
+                        <ul class="kd-list">
+                            @foreach (var swatch in theme.Swatches)
+                            {
+                                var selectedClass = SelectedSwatch.Name.Equals(swatch.Name) ? "kd-theme-selected" : string.Empty;
+                                <li class="kd-theme theme-@swatch.Title @selectedClass" @onclick="@(() => ChangeTheme(theme, swatch))">
+                                    <ThemePalette Palette="@GetAccentPalette(swatch)"></ThemePalette>
+                                    <span class="theme-name">@swatch.Title</span>
+                                    @if (swatch.Icon != null)
+                                    {
+                                        <span class="theme-icon">
+                                            <ThemeIcon Icon="@swatch.Icon"></ThemeIcon>
+                                        </span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+            <div class="theme-chooser-footer">
+                <ThemeBuilderButton Link="https://themebuilderapp.telerik.com/"
+                                    Text="Start Theme Builder"
+                                    Class="track--launch-themebuilder"
+                                    OnMouseDown="@OnMouseDown"
+                                    OnClick="@CloseThemeDropdown"></ThemeBuilderButton>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<string> ThemeChanged { get; set; }
+
+    [Parameter]
+    public bool ShowEditInThemeBuilderButton { get; set; }
+
+    public List<Theme> Themes { get; set; }
+
+    public Swatch SelectedSwatch { get; set; }
+    public Theme SelectedTheme { get; set; }
+
+    public bool ThemeDropdownToggled = false;
+    public bool PreventBlur = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string themesJsonPath = Path.Combine("css", "themes", "theme-chooser.json");
+
+        Themes = await JsonDataService.GetJsonDataAsync<List<Theme>>(themesJsonPath, string.Empty);
+
+        SelectedTheme = Themes.FirstOrDefault(t => t.Name == "default");
+        SelectedSwatch = SelectedTheme.Swatches.FirstOrDefault(s => s.Name == "default-ocean-blue");
+
+        await base.OnInitializedAsync();
+    }
+
+    void ToggleThemeDropdown()
+    {
+        ThemeDropdownToggled = !ThemeDropdownToggled;
+    }
+
+    void CloseThemeDropdown()
+    {
+        ThemeDropdownToggled = false;
+    }
+
+    void OnBlur()
+    {
+        if (PreventBlur)
+        {
+            PreventBlur = false;
+            return;
+        }
+
+        CloseThemeDropdown();
+    }
+
+    void OnMouseDown()
+    {
+        PreventBlur = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ThemeState themeState = await JsRuntime.InvokeAsync<ThemeState>("theme.restoreCss");
+            if (themeState != null && (themeState.ThemeName != SelectedTheme.Name || themeState.SwatchName != SelectedSwatch.Name))
+            {
+                await ChangeThemeFromClient(themeState);
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task ChangeThemeFromClient(ThemeState themeState)
+    {
+        Theme foundTheme = Themes.Where(t => t.Name == themeState.ThemeName).FirstOrDefault();
+        if (foundTheme != null)
+        {
+            Swatch foundSwatch = foundTheme.Swatches.Where(s => s.Name == themeState.SwatchName).FirstOrDefault();
+            if (foundSwatch != null)
+            {
+                await ChangeTheme(foundTheme, foundSwatch, false);
+            }
+        }
+    }
+
+    async Task ChangeTheme(Theme theme, Swatch swatch, bool toggleThemeChooser = true)
+    {
+        // For local build and usage: 1) Run `npm install` and `npm run demos:swatches` in blazor/css folder 2) Use `css/themes/{swatch.Name}.css` path
+        // temporarily hardcodes version until latest alias works
+        string themePath = $"css/themes/{swatch.Name}.css".ToLower();
+
+        await JsRuntime.InvokeVoidAsync("theme.changeCss", themePath,
+            new ThemeState() { ThemeName = theme.Name, SwatchName = swatch.Name });
+
+        SelectedTheme = theme;
+        SelectedSwatch = swatch;
+
+        if (toggleThemeChooser)
+        {
+            ToggleThemeDropdown();
+        }
+
+        await ThemeChanged.InvokeAsync(theme.Title);
+
+        StateHasChanged();
+    }
+
+    public async Task ChangeSwatch(bool isDark)
+    {
+        var defaultDarkSwatch = "-main-dark";
+        var defaultLightSwatch = SelectedTheme.Name == "default" ? "-ocean-blue" : "-main";
+
+        String newSwatchName = SelectedSwatch.Name.Substring(0, SelectedSwatch.Name.IndexOf('-')) + (isDark ? defaultDarkSwatch : defaultLightSwatch);
+        var newSwatch = SelectedTheme.Swatches.FirstOrDefault(s => s.Name == newSwatchName);
+
+        if (newSwatch != null)
+        {
+            await ChangeTheme(SelectedTheme, newSwatch, false);
+        }
+    }
+
+    public string[] GetAccentPalette(Swatch swatch)
+    {
+        return swatch.Palette.Where((_, i) => i % 2 == 0).ToArray();
+    }
+}

@@ -1,0 +1,112 @@
+@page "/treeview/bindings"
+
+<h2> Bindings applied to Hierarchical Data</h2>
+
+<TelerikTreeView Data="@HierarchicalData" @bind-ExpandedItems="@ExpandedItems">
+    <TreeViewBindings>
+        <TreeViewBinding Level="0" TextField="Category" ItemsField="Products"></TreeViewBinding>
+        <TreeViewBinding Level="1" TextField="ProductName"></TreeViewBinding>
+    </TreeViewBindings>
+</TelerikTreeView>
+
+<h2> Bindings applied to Flat Data</h2>
+
+<TelerikTreeView Data="@FlatData">
+	<TreeViewBindings>
+		<TreeViewBinding ParentIdField="Parent"></TreeViewBinding>
+	</TreeViewBindings>
+</TelerikTreeView>
+
+
+@code {
+    public IEnumerable<TreeItem> FlatData { get; set; }
+    public IEnumerable<ProductCategoryItem> HierarchicalData { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? Parent { get; set; }
+        public bool HasChildren { get; set; }
+    }
+
+    public class ProductCategoryItem
+    {
+        public string Category { get; set; }
+        public List<ProductItem> Products { get; set; }
+    }
+
+    public class ProductItem
+    {
+        public string ProductName { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadHierarchical();
+        LoadFlat();
+    }
+
+    private void LoadHierarchical()
+    {
+        List<ProductItem> beverages = new List<ProductItem>()
+        {
+            new ProductItem { ProductName= "Chai" },
+            new ProductItem { ProductName= "Chang" },
+            new ProductItem { ProductName= "Guaraná Fantástica" }
+        };
+
+        List<ProductItem> condiments = new List<ProductItem>()
+        {
+            new ProductItem { ProductName= "Aniseed Syrup" },
+            new ProductItem { ProductName= "Chef Anton's Cajun Seasoning" },
+            new ProductItem { ProductName= "Chef Anton's Gumbo Mix" }
+        };
+
+        List<ProductCategoryItem> roots = new List<ProductCategoryItem>();
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Beverages",
+            Products = beverages
+        });
+
+        roots.Add(new ProductCategoryItem
+        {
+            Category = "Condiments",
+            Products = condiments
+        });
+
+        HierarchicalData = roots;
+        ExpandedItems = roots.Take(1);
+    }
+
+    private void LoadFlat()
+    {
+        List<TreeItem> items = new List<TreeItem>();
+
+        for (int i = 1; i <= 4; i++)
+        {
+            items.Add(new TreeItem()
+            {
+                Id = i,
+                Text = "Parent " + i,
+                Parent = null,
+                HasChildren = i < 3
+            });
+        }
+
+        for (int i = 5; i < 15; i++)
+        {
+            items.Add(new TreeItem()
+            {
+                Id = i,
+                Text = "Child " + i,
+                Parent = i < 10 ? 1 : 2
+            });
+        }
+
+        FlatData = items;
+    }
+}

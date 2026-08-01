@@ -1,0 +1,27 @@
+@page "/dropdownlist/grouping"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <label for="selectId">Select a product:</label>
+    <br />
+    <TelerikDropDownList Data="@Data"
+                         GroupField="CategoryName"
+                         ValueField="ProductId"
+                         TextField="ProductName"
+                         @bind-Value="@SelectedProduct"
+                         Id="selectId">
+    </TelerikDropDownList>
+</div>
+
+
+@code {
+    public int SelectedProduct { get; set; }
+
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

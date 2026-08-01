@@ -1,0 +1,72 @@
+@using Telerik.SvgIcons;
+
+<li class="@LevelClass">
+    <NavLink ActiveClass="@ActiveClass" class="@LinkClass" href="@Demo.Path" @onclick="@(() => Demo.Expanded = !Demo.Expanded)">
+        @if (HasChildren)
+        {
+            var toggleIcon = Demo.Expanded ? SvgIcon.ChevronDown : SvgIcon.ChevronRight;
+            <TelerikSvgIcon Class="k-button-icon" Icon="@toggleIcon" />
+        }
+        @if (Demo.Component == "Blazor Lab" && Demo.Parent == null)
+        {
+            <span class="k-d-inline-flex k-align-items-baseline">
+                <span style="margin-right: 6px; display: inline-flex; fill: #8174F2; align-self: center">
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16">
+                        <path d="m443.14,431.04s-21.67-36.61-46.83-79.04c-34.44-58.11-75.44-127.13-76.31-128V96h20c6.63,0,12-5.37,12-12v-8c0-6.63-5.37-12-12-12h-168c-6.63,0-12,5.37-12,12v8c0,6.63,5.37,12,12,12h20v128c-.66.75-41.72,69.84-76.25,128-25.18,42.42-46.89,79.04-46.89,79.04-3.23,5.18-4.86,11.06-4.86,16.96,0,5.34,1.33,10.68,4.01,15.51,5.64,10.18,16.36,16.49,27.99,16.49h320c11.63,0,22.35-6.31,27.99-16.49,2.68-4.83,4.01-10.17,4.01-15.51,0-5.9-1.63-11.78-4.86-16.96Zm-219.14-191.04V96h64v144l29.54,48h-123.08l29.54-48Zm-32,208c-26.51,0-48-21.49-48-48s21.49-48,48-48,48,21.49,48,48-21.49,48-48,48Zm128-48c-17.67,0-32-14.33-32-32s14.33-32,32-32,32,14.33,32,32-14.33,32-32,32Z"></path>
+                    </svg>
+                </span>
+                @Demo.Text
+                <DemoFlag Demo="@Demo" />
+            </span>
+        }
+        else
+        {
+            @Demo.Text
+            <DemoFlag Demo="@Demo" />
+        }
+
+    </NavLink>
+
+    @if (Demo?.IsExpanded() == true)
+    {
+        <ul class="kd-list">
+            @for (int i = 0; i < Demo.Items?.Count(); i++)
+            {
+                var childDemo = Demo.Items[i];
+
+                <NavMenuChildGroup Level="@(Level + 1)" Demo="@childDemo"></NavMenuChildGroup>
+            }
+        </ul>
+    }
+</li>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    [Parameter]
+    public int Level { get; set; }
+
+    public bool HasChildren => Demo?.Items?.Count > 0;
+
+    public string LevelClass => $"level-{Level}";
+    public string GroupClass => HasChildren ? "kd-group-link" : string.Empty;
+
+    public string ExpandClass => Demo.Expanded && HasChildren ? "selected" : string.Empty;
+    public string LinkClass => $"kd-link {ExpandClass} {GroupClass}";
+
+    public string ActiveClass => HasChildren ? string.Empty : "active";
+
+    protected override void OnInitialized()
+    {
+        SetInitialDemoExpandState();
+    }
+
+    private void SetInitialDemoExpandState()
+    {
+        Demo.ForEachItem((item, parentItem) =>
+        {
+            item.Expanded = item.Component.Equals(Demo.Component);
+        });
+    }
+}

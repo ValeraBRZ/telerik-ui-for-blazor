@@ -1,0 +1,26 @@
+@page "/spreadsheet/localization"
+@page "/spreadsheet/globalization"
+
+@using Telerik.Blazor.Services
+@using TelerikBlazorDemos.Constants
+@using TelerikBlazorDemos.Resources
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikSpreadsheet Data="@FileData">
+</TelerikSpreadsheet>
+
+@code {
+    private byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        FileData = Convert.FromBase64String(SpreadsheetConstants.SampleFileBase64);
+
+        await base.OnInitializedAsync();
+    }
+}

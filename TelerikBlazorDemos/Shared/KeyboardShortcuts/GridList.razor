@@ -1,0 +1,662 @@
+<h3>Supported keys and user actions</h3>
+
+<div class="kd-text kd-text-secondary">
+
+    <h3>Managing Focus</h3>
+
+    The Grid component is a container that consists of the following 4 logically separated structural elements: <strong>Toolbar, Group Header, Data Grid and Pager</strong>. Each of them is part of the page tab sequence and can be navigated to using the Tab key of the keyboard.
+
+    <h3>Toolbar</h3>
+    <p>
+        <ul class="keyboard-legend">
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">Right arrow</span>
+                </span>
+                <span class="button-preview">
+                    <span class="button-descr">and</span>
+                </span>
+                <span class="button-preview">
+                    <span class="key-button">Left arrow</span>
+                </span>
+                <span class="button-descr">
+                    moves the focus between the toolbar focusable elements.
+                </span>
+            </li>
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">Home</span>
+                </span>
+                <span class="button-descr">
+                    focuses to the first focusable element.
+                </span>
+            </li>
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">End</span>
+                </span>
+                <span class="button-descr">
+                    focuses to the last focusable element.
+                </span>
+            </li>
+        </ul>
+    </p>
+
+    <h3>Group Header</h3>
+    <p>
+        <ul class="keyboard-legend">
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">Right arrow</span>
+                </span>
+                <span class="button-preview">
+                    <span class="button-descr">and</span>
+                </span>
+                <span class="button-preview">
+                    <span class="key-button">Left arrow</span>
+                </span>
+                <span class="button-descr">
+                    moves the focus between the toolbar focusable elements.
+                </span>
+            </li>
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">Home</span>
+                </span>
+                <span class="button-descr">
+                    focuses to the first focusable element.
+                </span>
+            </li>
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">End</span>
+                </span>
+                <span class="button-descr">
+                    focuses to the last focusable element.
+                </span>
+            </li>
+            <li>
+                <span class="button-preview">
+                    <span class="key-button">Delete</span>
+                    or
+                    <span class="key-button">Backspace</span>
+                </span>
+                <span class="button-descr">
+                    deletes the grouping for the focused field name.
+                </span>
+            </li>
+        </ul>
+    </p>
+
+    <h3>Pager</h3>
+    <p>
+        The Pager implements the keyboard navigation specification for a Pager component. You can refer
+        to <a href="https://demos.telerik.com/blazor-ui/pager/keyboard-navigation" target="_blank">Pager - Keyboard Navigation</a>
+        for its supported shortcuts.
+    </p>
+
+    <h3>Data Grid Focus</h3>
+    <p>
+        The Data Grid is a single tab stop component. Upon focusing the Data Grid, the initial focus is set to either the previously focused cell (if any), or the first data cell in the Data Grid.
+        The
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        key moves focus through all focusable elements and the grid does not block it -
+        it uses <a href="https://www.w3.org/TR/wai-aria-practices/#kbd_roving_tabindex" target="_blank">roving tab index</a>.
+    </p>
+</div>
+
+
+<h3>All Grid Cells</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Right arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus one cell to the right (if any).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Left arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus one cell to the left (if any).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Up arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus one cell up (if any).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Down arrow</span>
+        </span>
+        <span class="button-descr">
+            moves focus one cell down (if any).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Home</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the first cell in the row that contains focus.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the last cell in the row that contains focus.
+        </span>
+    </li>
+    <li>
+            <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Home</span>
+            </span>
+            <span class="button-descr">
+                moves focus to the first (top-left) data cell in the grid.
+            </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">End</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the last cell in the last loaded row of the Grid.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Page Down</span>
+        </span>
+        <span class="button-descr">
+            loads and displays the next page of data. If virtual scrolling is used, scrolls one page down.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Page Up</span>
+        </span>
+        <span class="button-descr">
+            loads and displays the previous page of data. If virtual scrolling is used, scrolls one page up.
+        </span>
+    </li>
+</ul>
+
+<h3>Grid Data Cells</h3>
+<p>All scenarios</p>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            when the grid is in InCell EditMode - EditMode is activated. In hierarchy cell - expands /collapses the detail row. In grouping cell - expands /collapses the group. If the cell contains a focusable elements - focus moves to the first focusable element inside.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">F2</span>
+        </span>
+        <span class="button-descr">
+            enters edit mode when the Grid is in InCell EditMode.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            if editor is opened, cancels the edit and closes the editor. If focus is on an element inside a cell, returns the focus back to the cell.
+        </span>
+    </li>
+</ul>
+
+<p>In a row selection scenario</p>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            selects the row holding the currently focused cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            selects or deselects the current row, while persisting previously selected rows (only for selection mode "multiple").
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            performs range selection, selects all the rows between the last selected one (with SPACE or mouse click) and the one holding the focused cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Up Arrow</span>
+        </span>
+        <span class="button-descr">
+            selects the row above. When multiple selection is enabled, extends the selection to that row.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Down Arrow</span>
+        </span>
+        <span class="button-descr">
+            Selects the row below. When multiple selection is enabled, extends the selection to that row.
+        </span>
+    </li>
+</ul>
+
+<h3>Grid header cells</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+	        if sorting is enabled, Sort is applied.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Arrow Down</span>
+        </span>
+        <span class="button-descr">
+            opens the Column menu / Filter menu and moves focus to that menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+	        closes Column menu / Filter menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            group/ungroup the focused column.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Left Arrow</span>
+        </span>
+        <span class="button-descr">
+            reorders the column with the one on its left.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Ctrl</span>
+            +
+            <span class="key-button">Right Arrow</span>
+        </span>
+        <span class="button-descr">
+            reorders the column with the one on its right.
+        </span>
+    </li>
+</ul>
+
+<h3>Command column cells</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+	        moves focus inside the command column. First button is focused. If a button is focused, triggers the button action.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            if a button is focused, returns focus to the command cell.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+	        moves focus to the next button in the column.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            moves focus to the previous button in the column.
+        </span>
+    </li>
+</ul>
+
+<h3>Inline Edit Row</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+	        moves to the next editor in the row.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            cancels the row edit. The focus goes to the command cell from where the row edit was triggered.
+        </span>
+    </li>
+</ul>
+
+<h3>Incell Edit Cell</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            Moves to the next editor in the row (closing current editor). It skips cells with <code>Editable=false</code> and command columns. If focus is already on the last editable cell on the row, focus is moved to the first editable cell on the next row, and it's editor is opened. If we're already on the last row of the grid, focus remains on the cell, with the editor closed.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            Moves to the previous editor in the row (closing current editor). It skips cells with <code>Editable=false</code> and command columns. If focus is already on the first editable cell on the row, focus is moved to the last editable cell on the previous row, and it's editor is opened. If we're already on the first row of the grid, focus remains on the cell, with the editor closed.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            commits changes for the edited item, and moves focus to the same cell on the row below, opening it for edit.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            cancels the edit. The focus goes to the current cell.
+        </span>
+    </li>
+</ul>
+
+<h3>Popup editor</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+	        moves to the next editor in the form.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            closes the editor. The focus goes to the command cell from where the popup was opened.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            triggers a submit action for the editor, including validation.
+        </span>
+    </li>
+</ul>
+
+<h3>Filter Row</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Arrow Keys</span>
+        </span>
+        <span class="button-descr">
+	        moves to the next editor in the form.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            enters in the <strong>td</strong> and focuses the first focusable element in it. All filter row components gain tabindex=0. Focus remains trapped inside the filter row.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            goes through the filter row components.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            focus goes to the <strong>td</strong> element wrapping the currently focused filter component.
+        </span>
+    </li>
+</ul>
+
+<h3>Column Menu</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Arrow Down</span>
+        </span>
+        <span class="button-descr">
+	        when the header cell is focused, opens the column menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Arrow Down</span>
+        </span>
+        <span class="button-descr">
+	        focuses the next item in the column menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Arrow Up</span>
+        </span>
+        <span class="button-descr">
+	        focuses the previous item in the column menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            activates the focused action in the column menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            toggles a checkboxmenuitem (if focused).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            closes the column menu. If the focus is inside a dropdown list or a filter, closes the dropdown.
+        </span>
+    </li>
+</ul>
+
+<h3>Filter Menu</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Alt</span>
+            +
+            <span class="key-button">Arrow Down</span>
+        </span>
+        <span class="button-descr">
+	        when a header cell is focused, opens the filter menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+	        focuses the next item in the filter menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+	        focuses the previous item in the filter menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            closes the filter menu. Note that if a popup inside the menu is currently opened, Escape will close it instead. Pressing Escape a second time will close the menu.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            toggles a checkboxmenuitem (if focused).
+        </span>
+    </li>
+</ul>
+
+<h3>Group Row</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            Expands/Collapses the row
+        </span>
+    </li>
+</ul>
+
+<h3>Detail Template Master Row</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Enter</span>
+        </span>
+        <span class="button-descr">
+            toggles the detail template.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            if expanded, focus the first focusable element inside the detail template (if any).
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Shift</span>
+            +
+            <span class="key-button">Tab</span>
+        </span>
+        <span class="button-descr">
+            if on the first focusable item inside the template, returns focus to the Grid (first focusable cell).
+        </span>
+    </li>
+</ul>
+
+<h3>Checkbox Column</h3>
+<ul class="keyboard-legend">
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Space</span>
+        </span>
+        <span class="button-descr">
+            toggle checkbox. Toggling the checkbox selects/deselects a row.
+        </span>
+    </li>
+    <li>
+        <span class="button-preview">
+            <span class="key-button">Esc</span>
+        </span>
+        <span class="button-descr">
+            returns focus to the cell.
+        </span>
+    </li>
+</ul>

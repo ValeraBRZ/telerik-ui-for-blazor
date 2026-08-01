@@ -1,0 +1,38 @@
+@page "/dropdownbutton/items"
+
+<div class="demo-section auto">
+    <TelerikDropDownButton Icon="@SvgIcon.Share">
+        <DropDownButtonContent>Share</DropDownButtonContent>
+
+        <DropDownButtonItems>
+            <DropDownButtonItem>
+                <span class="k-button-icon">
+                    <TelerikSvgIcon ThemeColor="@ThemeConstants.SvgIcon.ThemeColor.Info"
+                                    Icon="@SvgIcon.Facebook">
+                    </TelerikSvgIcon>
+                </span>
+                <span class="k-menu-link-text">
+                    Facebook
+                </span>
+            </DropDownButtonItem>
+            <DropDownButtonItem Icon="@SvgIcon.Twitter" OnClick="@(()=>OnItemClick("Twitter"))">Twitter</DropDownButtonItem>
+            <DropDownButtonItem Icon="@SvgIcon.Linkedin" Enabled="false">Linkedin</DropDownButtonItem>
+            <DropDownButtonItem Icon="@SvgIcon.Reddit" Class="reddit-item">Reddit</DropDownButtonItem>
+        </DropDownButtonItems>
+
+    </TelerikDropDownButton>
+</div>
+
+@code {
+    private void OnItemClick(string item)
+    {
+        Console.WriteLine($"User clicked {item} option");
+    }
+}
+
+<style>
+    .reddit-item svg {
+        color: #FF4500;
+    }
+</style>
+

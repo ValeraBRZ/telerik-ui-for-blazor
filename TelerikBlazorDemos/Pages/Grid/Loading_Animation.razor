@@ -1,0 +1,110 @@
+@page "/grid/loading-animation"
+
+@using System.Collections.Generic;
+@using Telerik.DataSource;
+@using Telerik.DataSource.Extensions;
+
+@inject ProductService ProductService
+
+<div class="demo-alert demo-alert-info">
+    Data operations are intentionally slowed down for the purpose of the demo.<br />
+    Change something in the grid (<strong>edit</strong> an item, <strong>sort</strong>, <strong>filter</strong>, and so on) to see the built-in loading animation.
+</div>
+
+<div style="position: relative; width:100%; min-height: 400px;">
+    <TelerikLoaderContainer OverlayThemeColor="light"
+                            Visible="@( !IsInitialDataLoadComplete )"
+                            Text="@null" Class="initial-data-loader">
+        <Template>
+            <TelerikLoader Type="@LoaderType.InfiniteSpinner"
+                           Size="@(ThemeConstants.Loader.Size.Large)">
+            </TelerikLoader>
+        </Template>
+    </TelerikLoaderContainer>
+
+    <TelerikGrid TItem="ProductDto" EditMode="@GridEditMode.Inline"
+                 Pageable="true" PageSize=@PageSize Resizable="true"
+                 FilterMode="@GridFilterMode.FilterMenu" Sortable="true"
+                 OnRead="@OnReadHandler"
+                 OnUpdate=@UpdateItem OnDelete=@DeleteItem OnCreate=@CreateItem>
+        <GridToolBarTemplate>
+            <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Product</GridCommandButton>
+        </GridToolBarTemplate>
+        <GridColumns>
+            <GridColumn Field=@nameof(ProductDto.ProductId) Width="150px" Editable="false" />
+            <GridColumn Field=@nameof(ProductDto.ProductName) Width="250px" />
+            <GridColumn Field=@nameof(ProductDto.CategoryId) Width="150px" Title="Category Id" />
+            <GridColumn Field=@nameof(ProductDto.SupplierId) Width="150px" Title="Supplier Id" />
+            <GridCommandColumn Width="200px">
+                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Edit</GridCommandButton>
+                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+                <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+                <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+            </GridCommandColumn>
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+@code {
+    int PageSize = 10;
+    List<ProductDto> AllGridData { get; set; }
+    bool IsInitialDataLoadComplete { get; set; }
+
+    async Task OnReadHandler(GridReadEventArgs args)
+    {
+        await DeliberateDemoDelay();
+
+        if (AllGridData == null && IsInitialDataLoadComplete == false)
+        {
+            // if you do not use OnRead you would usually fetch the data like this
+            // in the OnInitializedAsync event - in such cases, display a custom
+            // loading panel over the grid - the grid can't know if/when you will provide data
+            // in this demo we use a flag to simulate this - we otherwise use OnRead
+            // with that local data to be able to slow down the calls artificially
+            LoadData();
+            IsInitialDataLoadComplete = true;
+        }
+
+        DataSourceResult result = AllGridData.ToDataSourceResult(args.Request);
+        args.Data = result.Data;
+        args.Total = result.Total;
+    }
+
+    public void LoadData()
+    {
+        AllGridData = ProductService.GetProducts().ToList();
+    }
+
+    private void CreateItem(GridCommandEventArgs args)
+    {
+        ProductService.CreateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void DeleteItem(GridCommandEventArgs args)
+    {
+        ProductService.DeleteProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    private void UpdateItem(GridCommandEventArgs args)
+    {
+        ProductService.UpdateProduct((ProductDto)args.Item);
+        LoadData();
+    }
+
+    async Task DeliberateDemoDelay()
+    {
+        await Task.Delay(3000);
+    }
+}
+
+<style>
+    .initial-data-loader .k-loader-container-overlay.k-overlay-light {
+        background-color: white;
+    }
+
+    .k-loader-container {
+        z-index: 100;
+    }
+</style>

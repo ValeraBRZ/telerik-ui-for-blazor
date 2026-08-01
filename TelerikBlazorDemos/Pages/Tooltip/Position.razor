@@ -1,0 +1,45 @@
+@page "/tooltip/position"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Tooltip Position">
+        <select @bind=@position class="k-dropdownlist k-picker k-picker-md" style="width: auto;">
+            <option value=@TooltipPosition.Top>Top</option>
+            <option value=@TooltipPosition.Bottom>Bottom</option>
+            <option value=@TooltipPosition.Left>Left</option>
+            <option value=@TooltipPosition.Right>Right</option>
+        </select>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Delay">
+        <TelerikNumericTextBox @bind-Value="@TooltipShowDelay" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Hide Delay">
+        <TelerikNumericTextBox @bind-Value="@TooltipHideDelay" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTooltip TargetSelector=".example>button[title]"
+                Position="@position"
+                ShowOn="@TooltipShowEvent.Hover"
+                ShowDelay="@TooltipShowDelay"
+                HideDelay="@TooltipHideDelay"
+                Id="position-tooltip">
+</TelerikTooltip>
+
+<div class="example p-lg text-center">
+    <button title="Try to change the position" class="k-button kd-button-md k-rounded-md k-button-solid k-button-solid-primary button-wide telerik-blazor" aria-describedby="position-tooltip">Button with Tooltip</button>
+</div>
+
+@code {
+    private TooltipPosition position = TooltipPosition.Top;
+
+    public int TooltipShowDelay { get; set; } = 200;
+
+    public int TooltipHideDelay { get; set; } = 150;
+}
+
+<style>
+    .button-wide {
+        padding: 1em;
+        width: 200px;
+    }
+</style>

@@ -1,0 +1,80 @@
+@page "/multicolumncombobox/filtering"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enable filtering for the ComboBox">
+        <TelerikCheckBox @bind-Value="@Filterable" Id="filterableCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="filterableCheckBox">Enable Filtering</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description=" Select the filter operator">
+        <TelerikDropDownList @bind-Value="@filterOperator"
+                             Data="@filterOperators"
+                             Enabled="@Filterable"
+                             Width="100%" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@DebounceDelay" Min="0" Max="1000"/>
+    </DemoConfiguratorColumn>    
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="products-combo" class="k-label k-form-label">Select a product:</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiColumnComboBox Data="@Data"
+                                        Filterable="@Filterable"
+                                        FilterOperator="@filterOperator"
+                                        Placeholder="Find a product by typing part of its name"
+                                        Id="products-combo"
+                                        Width="100%"
+                                        @bind-Value="@Value"
+                                        TextField="ProductName"
+                                        ValueField="ProductId"
+                                        AllowCustom="false"
+                                        DebounceDelay="@DebounceDelay">
+                <MultiColumnComboBoxColumns>
+                    <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductId)" Title="Id" />
+                    <MultiColumnComboBoxColumn Field="@nameof(ProductDto.ProductName)" Title="Name" />
+                </MultiColumnComboBoxColumns>
+                <NoDataTemplate>
+                    <div>
+                        <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Large" />
+                        <br />
+                        <br />
+                        No items to display...
+                    </div>
+                </NoDataTemplate>
+            </TelerikMultiColumnComboBox>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IEnumerable<ProductDto> Data;
+    private int DebounceDelay { get; set; } = 200;
+    private bool Filterable { get; set; } = true;
+    private int? Value { get; set; }
+    private StringFilterOperator filterOperator { get; set; } = StringFilterOperator.Contains;
+
+    private List<StringFilterOperator> filterOperators { get; set; } = new List<StringFilterOperator>()
+{
+        StringFilterOperator.Contains,
+        StringFilterOperator.DoesNotContain,
+        StringFilterOperator.EndsWith,
+        StringFilterOperator.IsContainedIn,
+        StringFilterOperator.StartsWith
+    };
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts().ToList();
+    }
+}
+
+<style type="text/css">
+    .example-wrapper {
+        min-height: 250px;
+    }
+</style>

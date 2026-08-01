@@ -1,0 +1,54 @@
+@using TelerikBlazorDemos.Shared.HubCarousel 
+@namespace TelerikBlazorDemos.Shared
+
+<div class="kd-carousel-wrapper">
+    <div class="container">
+        <div class="kd-carousel-controls">
+            <span class="kd-carousel-control-prev @PrevButtonClass" @onclick="@OnPrevClick" role="button">
+                <span class="hide-text">Previous</span>
+                <span class="carousel-arrow-prev"></span>
+            </span>
+            <span class="kd-carousel-control-next @NextButtonClass" @onclick="@OnNextClick" role="button">
+                <span class="hide-text">Next</span>
+                <span class="carousel-arrow-next"></span>
+            </span>
+        </div>
+
+        <div class="kd-carousel">
+            <div class="kd-carousel-slides">
+                @if (Groups == null)
+                {
+                    //renders empty carousel slides to handle flickering
+                    for (int i = 0; i < Slides.Count; i++)
+                    {
+                        <CarouselSlide></CarouselSlide>
+                    }
+                }
+                else
+                {
+                    @for (int i = 0; i < Groups.Count; i++)
+                    {
+                        var group = Groups[i];
+                        var activeClass = i == ActiveIndex ? "active" : string.Empty;
+
+                        <div class="kd-carousel-slide-wrap @activeClass">
+                            @foreach (var slide in group)
+                            {
+                                <CarouselSlide Slide="@slide"></CarouselSlide>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+            <div class="kd-carousel-indicators">
+                @for (int i = 0; i < GroupsCount; i++)
+                {
+                    var activeClass = i == ActiveIndex ? "active" : string.Empty;
+                    var index = i;
+
+                    <span class="kd-carousel-indicator @activeClass" @onclick="@(() => SetActiveIndex(index))"></span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

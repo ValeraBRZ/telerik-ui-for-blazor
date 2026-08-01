@@ -1,0 +1,71 @@
+@page "/dropzone/overview"
+
+@inject NavigationManager NavigationManager
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Upload Button">
+        <label><TelerikCheckBox @bind-Value="@UploadVisible" /> Show Upload Component</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Custom Styles">
+        <label><TelerikCheckBox @bind-Value="@UseDropZoneOverStyles" /> Highlight DropZone on Drag Over</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikDropZone Id="dropzone-id"
+                 DragOverClass="dropzone-over"
+                 NoteText="@DropZoneHintText">
+</TelerikDropZone>
+
+@if (UseDropZoneOverStyles)
+{
+    <style>
+        .dropzone-over .k-dropzone-inner {
+            border: 2px dashed;
+        }
+    </style>
+}
+
+<TelerikUpload DropZoneId="dropzone-id"
+               SaveUrl="@UploadSaveUrl"
+               RemoveUrl="@UploadRemoveUrl"
+               MaxFileSize="@( 16 * 1024 * 1024 )"
+               Class="@UploadClass"
+               OnSuccess="@OnUploadSuccess" />
+
+<style>
+    /* Hide Upload DropZone hint */
+    .no-dropzone .k-dropzone-hint {
+        display: none;
+    }
+</style>
+
+<TelerikNotification @ref="@NotificationRef" />
+
+@code {
+    private string DropZoneHintText => UploadVisible ? "Or click the 'Select files...' button below." : string.Empty;
+
+    private bool UseDropZoneOverStyles { get; set; } = true;
+
+    private bool UploadVisible { get; set; } = true;
+
+    private string UploadClass => $"no-dropzone {(!UploadVisible ? "k-hidden" : string.Empty)}";
+
+    private string UploadSaveUrl => ToAbsoluteUrl("api/upload/save");
+
+    private string UploadRemoveUrl => ToAbsoluteUrl("api/upload/remove");
+
+    private string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+
+    private TelerikNotification NotificationRef { get; set; }
+
+    private void OnUploadSuccess(UploadSuccessEventArgs args)
+    {
+        if (!UploadVisible && args.Operation == UploadOperationType.Upload)
+        {
+            NotificationRef.Show($"Successfully uploaded: {args.Files.First().Name}", ThemeConstants.Notification.ThemeColor.Success);
+        }
+    }
+}

@@ -1,0 +1,24 @@
+@page "/switch/keyboard-navigation"
+
+<div class="demo-section">
+        <label>
+            Do Not Disturb:
+            <TelerikSwitch @bind-Value="@Value"></TelerikSwitch>
+        </label>
+        <div class="hint">Do not disturb silences calls and notification</div>
+</div>
+
+@code {
+    private bool Value { get; set; }
+}
+
+<style>
+    .hint {
+        font-size: 12px;
+        font-style: italic;
+        margin-top: 5px;
+    }
+    .demo-section {
+        color: #656565;
+    }
+</style>

@@ -1,0 +1,47 @@
+@page "/combobox/adornments"
+
+@inject UrbanAreaService urbanAreaService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikComboBox @bind-Value="@ComboBoxValue"
+                     Data="@UrbanAreas"
+                     ValueField="@(nameof(UrbanAreaDto.Id))"
+                     TextField="@(nameof(UrbanAreaDto.City))"
+                     Placeholder="Select location"
+                     ShowClearButton="true"
+                     ShowPrefixSeparator="@ShowPrefixSeparator"
+                     ShowSuffixSeparator="@ShowSuffixSeparator">
+        <ComboBoxPrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.MapMarker"></TelerikSvgIcon>
+        </ComboBoxPrefixTemplate>
+        <ComboBoxSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat" Icon="@SvgIcon.Copy"></TelerikButton>
+        </ComboBoxSuffixTemplate>
+    </TelerikComboBox>
+</div>
+
+@code {
+    private IEnumerable<UrbanAreaDto> UrbanAreas { get; set; }
+
+    private int ComboBoxValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UrbanAreas = urbanAreaService.GetUrbanAreas();
+    }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

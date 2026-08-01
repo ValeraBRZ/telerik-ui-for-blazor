@@ -1,0 +1,63 @@
+@page "/dropdownlist/templates"
+
+@inject ProductService ProductService
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="product" class="k-label k-form-label">Product</label>
+        <div class="k-form-field-wrap">
+            <TelerikDropDownList @bind-Value="SelectedValue" Data="@DropDownListData"
+                                 ValueField="ProductId" TextField="ProductName"
+                                 Filterable="true"
+                                 Id="product" Width="100%">
+                <HeaderTemplate>
+                    <div class="dropdown-header">Header</div>
+                </HeaderTemplate>
+                <FooterTemplate>
+                    <div class="dropdown-footer">Footer</div>
+                </FooterTemplate>
+                <ValueTemplate>
+                    Selection: <strong>@((context as ProductDto).ProductName)</strong>
+                </ValueTemplate>
+                <ItemTemplate>
+                    @((context as ProductDto).ProductName) - @(String.Format("{0:C2}", (context as ProductDto).UnitPrice))
+                </ItemTemplate>
+                <NoDataTemplate>
+                    <div>
+                        <TelerikSvgIcon Icon="@SvgIcon.InfoCircle" Size="@ThemeConstants.SvgIcon.Size.Large" />
+                        <br />
+                        <br />
+                        No items to display...
+                    </div>
+                </NoDataTemplate>
+            </TelerikDropDownList>
+        </div>
+    </div>
+</div>
+
+@code  {
+    public static IEnumerable<ProductDto> DropDownListData { get; set; }
+    public int? SelectedValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        DropDownListData = ProductService.GetProducts();
+        SelectedValue = DropDownListData.FirstOrDefault()?.ProductId;
+    }
+}
+
+<style type="text/css">
+    .dropdown-header {
+        background-color: #fff;
+        padding: 10px 8px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .dropdown-footer {
+        padding: 10px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        border-top: 1px solid rgba(0,0,0,0.08);
+    }
+</style>

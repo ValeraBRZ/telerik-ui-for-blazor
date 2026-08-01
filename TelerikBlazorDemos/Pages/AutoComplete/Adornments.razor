@@ -1,0 +1,47 @@
+@page "/autocomplete/adornments"
+
+@inject ProductService ProductService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikAutoComplete Data="@Data"
+                         @bind-Value="@Value"
+                         Title="Choose a product"
+                         ValueField="@nameof(ProductDto.ProductName)"
+                         Placeholder="Enter a product, e.g., Tofu"
+                         ShowClearButton="true"
+                         ShowPrefixSeparator="@ShowPrefixSeparator"
+                         ShowSuffixSeparator="@ShowSuffixSeparator">
+        <AutoCompletePrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.Search"></TelerikSvgIcon>
+        </AutoCompletePrefixTemplate>
+        <AutoCompleteSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat">Search</TelerikButton>
+        </AutoCompleteSuffixTemplate>
+    </TelerikAutoComplete>
+</div>
+
+@code {
+    private string Value { get; set; }
+
+    private IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

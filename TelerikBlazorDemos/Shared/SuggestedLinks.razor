@@ -1,0 +1,14 @@
+<section class="kd-demo-resources">
+    <h3 class="kd-title">Support & Learning Resources</h3>
+    <ul class="kd-list kd-list-bullets">
+        @foreach (DemoSuggestedLink link in Demo.Links)
+        {
+            <li><a class="kd-link" href="@link.Url" target="_blank">@link.Text</a></li>
+        }
+    </ul>
+</section>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+}

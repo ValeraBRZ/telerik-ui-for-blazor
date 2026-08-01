@@ -1,0 +1,73 @@
+@page "/chart/plot-bands"
+
+@inject OrderService orderService
+
+<TelerikChart>
+    <ChartTitle Text="Total freight shipped per month"></ChartTitle>
+    <ChartCategoryAxes>
+        <ChartCategoryAxis BaseUnit="@ChartCategoryAxisBaseUnit.Months"
+                           Type="@ChartCategoryAxisType.Date">
+        </ChartCategoryAxis>
+    </ChartCategoryAxes>
+
+    <ChartSeriesItems>
+        <ChartSeries Type="@ChartSeriesType.Column"
+                     Aggregate="@ChartSeriesAggregate.Sum"
+                     Data="@ChartData"
+                     Field="@nameof(OrderDto.Freight)"
+                     CategoryField="@nameof(OrderDto.OrderDate)"
+                     Name="Total freight shipped">
+            <ChartSeriesTooltip Visible="true">
+                <Template>
+                    @{
+                        var DateCategory = DateTime.Parse(context.Category.ToString());
+
+                        <div>
+                            Total freight shipped: @((context.DataItem as OrderDto).Freight?.ToString("N")) kg.
+                        </div>
+                        <div>
+                            Total Shipments: @GetDataPointsFromCategory(DateCategory)?.Count()
+                        </div>
+                    }
+                </Template>
+            </ChartSeriesTooltip>
+        </ChartSeries>
+
+        <ChartSeries Type="ChartSeriesType.Line"
+                     Name="Maximum freight shipped per order"
+                     Data="@ChartData"
+                     Field="@nameof(OrderDto.Freight)"
+                     CategoryField="@nameof(OrderDto.OrderDate)"
+                     Aggregate="@ChartSeriesAggregate.Max"
+                     Color="green">
+            <ChartSeriesMarkers Visible="false"></ChartSeriesMarkers>
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartValueAxes>
+        <ChartValueAxis>
+            <ChartValueAxisLabels Format="{0:N}kg"></ChartValueAxisLabels>
+            <ChartValueAxisPlotBands>
+                <ChartValueAxisPlotBand From="2500" To="4000" Color="#c00" Opacity="0.4"></ChartValueAxisPlotBand>
+            </ChartValueAxisPlotBands>
+        </ChartValueAxis>
+    </ChartValueAxes>
+
+</TelerikChart>
+
+@code {
+    public IEnumerable<OrderDto> ChartData { get; set; }
+    public int[] monthsRange = new int[] { 1, 12 };
+    public const int yearFilter = 2024;
+
+    protected override void OnInitialized()
+    {
+        ChartData = orderService.GetOrders()
+            .Where(x => x.OrderDate?.Year == yearFilter);
+    }
+
+    List<OrderDto> GetDataPointsFromCategory(DateTime currentCategory)
+    {
+        return ChartData.Where(x => x.OrderDate?.Month == currentCategory.Month).ToList();
+    }
+}

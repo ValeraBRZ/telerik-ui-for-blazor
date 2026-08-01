@@ -1,0 +1,301 @@
+@page "/popup/overview"
+
+@inject OrderService OrderService
+
+@using Telerik.DataSource
+
+<p>Filter the Grid to see the Popup component in action. The Country selector and the Filter button use Popups for custom dropdowns.</p>
+
+<TelerikGrid Data="@GridData"
+             Sortable="true"
+             Height="460px"
+             Pageable="true"
+             PageSize="10"
+             FilterMode="@GridFilterMode.FilterRow">
+    <GridColumns>
+        <GridColumn Field="@(nameof(OrderDto.OrderId))" Title="Order ID" Width="120px" Filterable="false" />
+        <GridColumn Field="@(nameof(OrderDto.ShipCountry))" Title="Country" Width="300px">
+            <FilterCellTemplate>
+                @{ ShipCountryFilterContext = context; }
+                <TelerikButtonGroup Class="popup-treeview-trigger">
+                    <ButtonGroupButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" OnClick="@TogglePopupTreeView">@DropDownTreeViewText</ButtonGroupButton>
+                    <ButtonGroupButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary" Icon="@SvgIcon.CaretAltDown" OnClick="@TogglePopupTreeView"></ButtonGroupButton>
+                </TelerikButtonGroup>
+                <TelerikButton Icon="@SvgIcon.Filter"
+                               ThemeColor="@FilterOperatorThemeColor"
+                               Class="popup-filter-trigger"
+                               OnClick="@TogglePopupFilter"></TelerikButton>
+                <TelerikButton Icon="@SvgIcon.FilterClear"
+                               Enabled="@( DropDownTreeViewSelectedItem != null )"
+                               OnClick="@ClearFilterShipCountry"></TelerikButton>
+            </FilterCellTemplate>
+        </GridColumn>
+        <GridColumn Field="@(nameof(OrderDto.ShipCity))" Title="City" Width="200px" Filterable="false" />
+        <GridColumn Field="@(nameof(OrderDto.ShipName))" Title="Ship Name" Filterable="false" />
+    </GridColumns>
+</TelerikGrid>
+
+<TelerikPopup @ref="@PopupTreeViewRef"
+              AnimationDuration="300"
+              AnimationType="@AnimationType.SlideDown"
+              AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Left"
+              AnchorVerticalAlign="@PopupAnchorVerticalAlign.Bottom"
+              HorizontalAlign="@PopupHorizontalAlign.Left"
+              VerticalAlign="@PopupVerticalAlign.Top"
+              AnchorSelector=".popup-treeview-trigger">
+    <div class="k-body" style="height: 200px; overflow: auto;">
+        <TelerikTreeView Data="@TreeViewData"
+                         SelectionMode="@TreeViewSelectionMode.Single"
+                         SelectedItems="@TreeViewSelectedItems"
+                         SelectedItemsChanged="@( (IEnumerable<object> newSelected) => TreeViewSelectedItemsChanged(newSelected) )"
+                         @bind-ExpandedItems="@TreeViewExpandedItems">
+        </TelerikTreeView>
+    </div>
+</TelerikPopup>
+
+<TelerikPopup @ref="@PopupFilterRef"
+              AnimationDuration="300"
+              AnimationType="@AnimationType.SlideDown"
+              AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Left"
+              AnchorVerticalAlign="@PopupAnchorVerticalAlign.Bottom"
+              HorizontalAlign="@PopupHorizontalAlign.Left"
+              VerticalAlign="@PopupVerticalAlign.Top"
+              AnchorSelector=".popup-filter-trigger"
+              Width="auto"
+              Height="auto">
+    <div class="k-body">
+        <TelerikListBox Data="@ListBoxData"
+                        TextField="@nameof(FilterOperatorItem.Text)"
+                        SelectionMode="@ListBoxSelectionMode.Single"
+                        SelectedItems="@ListBoxSelectedItems"
+                        SelectedItemsChanged="@( (IEnumerable<FilterOperatorItem> newSelected) => ListBoxSelectedItemsChanged(newSelected) )"
+                        Height="auto">
+            <ListBoxToolBarSettings>
+                <ListBoxToolBar Visible="false" />
+            </ListBoxToolBarSettings>
+        </TelerikListBox>
+    </div>
+</TelerikPopup>
+
+<style>
+    .popup-treeview-trigger,
+    .popup-treeview-trigger > button:first-child {
+        width: 100%;
+    }
+
+        .popup-treeview-trigger > button:first-child {
+            justify-content: space-between;
+        }
+
+        .popup-treeview-trigger > button + button {
+            width: min-content;
+        }
+</style>
+
+@code {
+    #region Component Instances and Data Collections
+
+    private TelerikPopup PopupTreeViewRef { get; set; } = null!;
+    private TelerikPopup PopupFilterRef { get; set; } = null!;
+    private TelerikGrid<OrderDto> GridRef { get; set; } = null!;
+
+    private IEnumerable<OrderDto> GridData { get; set; } = Enumerable.Empty<OrderDto>();
+    private IEnumerable<object> TreeViewData { get; set; } = Enumerable.Empty<TreeItem>();
+    private IEnumerable<object> TreeViewSelectedItems { get; set; } = Enumerable.Empty<TreeItem>();
+    private IEnumerable<object> TreeViewExpandedItems { get; set; } = Enumerable.Empty<TreeItem>();
+
+    #endregion Component Instances and Data Collections
+
+    #region Popup Visibility Control
+
+    private bool PopupTreeViewVisible { get; set; }
+    private bool PopupFilterVisible { get; set; }
+
+    private void TogglePopupTreeView()
+    {
+        if (!PopupTreeViewVisible)
+        {
+            PopupFilterRef.Hide();
+            PopupFilterVisible = false;
+            PopupTreeViewRef.Show();
+            PopupTreeViewVisible = true;
+        }
+        else
+        {
+            PopupTreeViewRef.Hide();
+            PopupTreeViewVisible = false;
+        }
+    }
+
+    private void TogglePopupFilter()
+    {
+        if (!PopupFilterVisible)
+        {
+            PopupTreeViewRef.Hide();
+            PopupTreeViewVisible = false;
+            PopupFilterRef.Show();
+            PopupFilterVisible = true;
+        }
+        else
+        {
+            PopupFilterRef.Hide();
+            PopupFilterVisible = false;
+        }
+    }
+
+    #endregion Popup Visibility Control
+
+    #region Grid Filtering in Popups
+
+    private FilterCellTemplateContext ShipCountryFilterContext { get; set; } = null!;
+    private FilterOperator ShipCountryFilterOperator { get; set; } = FilterOperator.IsEqualTo;
+
+    private IEnumerable<FilterOperatorItem> ListBoxData { get; set; } = Enumerable.Empty<FilterOperatorItem>();
+    private IEnumerable<FilterOperatorItem> ListBoxSelectedItems { get; set; } = Enumerable.Empty<FilterOperatorItem>();
+
+    private TreeItem DropDownTreeViewSelectedItem => TreeViewSelectedItems.FirstOrDefault() as TreeItem;
+    private string DropDownTreeViewText => DropDownTreeViewSelectedItem?.Text ?? "Select Country or Continent";
+    private string FilterOperatorThemeColor =>
+        ShipCountryFilterOperator == FilterOperator.IsEqualTo ?
+            ThemeConstants.Button.ThemeColor.Primary :
+            ThemeConstants.Button.ThemeColor.Warning;
+
+    private async Task TreeViewSelectedItemsChanged(IEnumerable<object> newSelected)
+    {
+        TreeViewSelectedItems = newSelected.Cast<TreeItem>();
+
+        if (TreeViewSelectedItems.Count() > 0)
+        {
+            await FilterShipCountry();
+        }
+        else
+        {
+            await ShipCountryFilterContext.ClearFilterAsync();
+        }
+
+        PopupTreeViewRef.Hide();
+        PopupTreeViewVisible = false;
+    }
+
+    private async Task ListBoxSelectedItemsChanged(IEnumerable<FilterOperatorItem> newSelected)
+    {
+        ListBoxSelectedItems = newSelected.ToList();
+
+        if (ListBoxSelectedItems.Count() > 0)
+        {
+            ShipCountryFilterOperator = ListBoxSelectedItems.First().FilterOperator;
+            PopupFilterRef.Hide();
+            PopupFilterVisible = false;
+        }
+        else
+        {
+            ShipCountryFilterOperator = FilterOperator.IsEqualTo;
+        }
+
+        if (TreeViewSelectedItems.Count() > 0)
+        {
+            await FilterShipCountry();
+        }
+    }
+
+    private async Task FilterShipCountry()
+    {
+        var cfd = (CompositeFilterDescriptor)ShipCountryFilterContext.FilterDescriptor;
+        cfd.FilterDescriptors.Clear();
+
+        if (DropDownTreeViewSelectedItem?.ParentId != null)
+        {
+            cfd.FilterDescriptors.Add(new FilterDescriptor()
+            {
+                Member = nameof(OrderDto.ShipCountry),
+                MemberType = typeof(string),
+                Operator = ShipCountryFilterOperator,
+                Value = DropDownTreeViewText
+            });
+        }
+        else
+        {
+            cfd.LogicalOperator = ShipCountryFilterOperator == FilterOperator.IsEqualTo ? FilterCompositionLogicalOperator.Or : FilterCompositionLogicalOperator.And;
+            var countriesForContinent = TreeViewData.OfType<TreeItem>().Where(x => x.ParentId == DropDownTreeViewSelectedItem.Id);
+            foreach (var country in countriesForContinent)
+            {
+                cfd.FilterDescriptors.Add(new FilterDescriptor()
+                {
+                    Member = nameof(OrderDto.ShipCountry),
+                    MemberType = typeof(string),
+                    Operator = ShipCountryFilterOperator,
+                    Value = country.Text
+                });
+            }
+        }
+
+        await ShipCountryFilterContext.FilterAsync();
+    }
+
+    private async Task ClearFilterShipCountry()
+    {
+        TreeViewSelectedItems = Enumerable.Empty<TreeItem>();
+
+        await ShipCountryFilterContext.ClearFilterAsync();
+
+        PopupTreeViewRef.Hide();
+        PopupTreeViewVisible = false;
+    }
+
+    #endregion Grid Filtering in Popups
+
+    protected override void OnInitialized()
+    {
+        GridData = OrderService.GetOrders();
+
+        TreeViewData = new List<TreeItem>() {
+            new TreeItem() { Id = 1, Text = "North America", HasChildren = true },
+            new TreeItem() { Id = 2, ParentId = 1, Text = "Canada" },
+            new TreeItem() { Id = 3, ParentId = 1, Text = "Mexico" },
+            new TreeItem() { Id = 4, ParentId = 1, Text = "USA" },
+            new TreeItem() { Id = 5, Text = "South America", HasChildren = true },
+            new TreeItem() { Id = 6, ParentId = 5, Text = "Argentina" },
+            new TreeItem() { Id = 7, ParentId = 5, Text = "Brazil" },
+            new TreeItem() { Id = 8, ParentId = 5, Text = "Venezuela" },
+            new TreeItem() { Id = 9, Text = "Europe", HasChildren = true },
+            new TreeItem() { Id = 10, ParentId = 9, Text = "Austria" },
+            new TreeItem() { Id = 11, ParentId = 9, Text = "Belgium" },
+            new TreeItem() { Id = 12, ParentId = 9, Text = "Denmark" },
+            new TreeItem() { Id = 13, ParentId = 9, Text = "Finland" },
+            new TreeItem() { Id = 14, ParentId = 9, Text = "France" },
+            new TreeItem() { Id = 15, ParentId = 9, Text = "Germany" },
+            new TreeItem() { Id = 16, ParentId = 9, Text = "Ireland" },
+            new TreeItem() { Id = 17, ParentId = 9, Text = "Italy" },
+            new TreeItem() { Id = 18, ParentId = 9, Text = "Norway" },
+            new TreeItem() { Id = 19, ParentId = 9, Text = "Poland" },
+            new TreeItem() { Id = 20, ParentId = 9, Text = "Portugal" },
+            new TreeItem() { Id = 21, ParentId = 9, Text = "Spain" },
+            new TreeItem() { Id = 22, ParentId = 9, Text = "Sweden" },
+            new TreeItem() { Id = 23, ParentId = 9, Text = "Switzerland" },
+            new TreeItem() { Id = 24, ParentId = 9, Text = "UK" }
+        };
+
+        TreeViewExpandedItems = TreeViewData.OfType<TreeItem>().Where(x => x.ParentId == null);
+
+        ListBoxData = new List<FilterOperatorItem>() {
+            new FilterOperatorItem() { FilterOperator = FilterOperator.IsEqualTo, Text = "Is Equal To" },
+            new FilterOperatorItem() { FilterOperator = FilterOperator.IsNotEqualTo, Text = "Is Not Equal To" }
+        };
+
+        ListBoxSelectedItems = new List<FilterOperatorItem>() { ListBoxData.First() };
+    }
+
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public int? ParentId { get; set; }
+        public string Text { get; set; }
+        public bool HasChildren { get; set; }
+    }
+
+    public class FilterOperatorItem
+    {
+        public FilterOperator FilterOperator { get; set; }
+        public string Text { get; set; }
+    }
+}

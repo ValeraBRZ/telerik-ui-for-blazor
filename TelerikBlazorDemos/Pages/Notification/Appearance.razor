@@ -1,0 +1,65 @@
+@page "/notification/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList Data="@ThemeColors" @bind-Value="@SelectedThemeColor"></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Has Icon">
+        <TelerikCheckBox Id="has-icon-checkbox" @bind-Value="@HasIcon"></TelerikCheckBox>
+        <label for="has-icon-checkbox" class="k-checkbox-label checkbox-label">Has Icon</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Icon Name">
+        <TelerikComboBox Data="@Icons" @bind-Value="@SelectedIcon"></TelerikComboBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikButton OnClick="ShowNotifications">Show Notification</TelerikButton>
+<TelerikNotification @ref="NotificationComponent"
+                     Class="demo-notification"></TelerikNotification>
+
+@code {
+    TelerikNotification NotificationComponent { get; set; }
+    string SelectedThemeColor { get; set; } = "success";
+    bool HasIcon { get; set; } = true;
+    FontIcon SelectedIcon { get; set; }
+    List<string> ThemeColors = new List<string>
+    {
+        "primary",
+        "secondary",
+        "tertiary",
+        "info",
+        "success",
+        "warning",
+        "error",
+        "dark",
+        "light",
+        "inverse"
+    };
+
+    void ShowNotifications()
+    {
+        NotificationComponent.Show(new NotificationModel()
+        {
+            Text = "New Notification!",
+            ThemeColor = SelectedThemeColor,
+            ShowIcon = HasIcon,
+            Icon = SelectedIcon
+        });
+    }
+
+    List<FontIcon> Icons { get; set; } = Enum.GetValues(typeof(FontIcon)).Cast<FontIcon>().ToList();
+}
+
+<style>
+    .demo-notification {
+        position: absolute;
+    }
+
+    #demo-runner {
+        height: 320px;
+    }
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+</style>

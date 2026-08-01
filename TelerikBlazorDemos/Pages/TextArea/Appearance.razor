@@ -1,0 +1,45 @@
+@page "/textarea/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Rounded">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Roundnesses" @bind-Value="@Rounded" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikTextArea FillMode="@FillMode" Rounded="@Rounded" Size="@Size" Placeholder="Input..."></TelerikTextArea>
+</div>
+
+@code {
+    public string FillMode { get; set; } = ThemeConstants.TextArea.FillMode.Solid;
+    public string Rounded {  get; set; } = ThemeConstants.TextArea.Rounded.Medium;
+    public string Size {  get; set; } = ThemeConstants.TextArea.Size.Medium;
+
+    public Dictionary<string, string> Roundnesses { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.TextArea.Rounded.Small },
+        { "Medium", ThemeConstants.TextArea.Rounded.Medium },
+        { "Large", ThemeConstants.TextArea.Rounded.Large },
+        { "Full", ThemeConstants.TextArea.Rounded.Full }
+    };
+
+    public Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Solid", ThemeConstants.TextArea.FillMode.Solid },
+        { "Flat", ThemeConstants.TextArea.FillMode.Flat },
+        { "Outline", ThemeConstants.TextArea.FillMode.Outline },
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.TextArea.Size.Small },
+        { "Medium", ThemeConstants.TextArea.Size.Medium },
+        { "Large", ThemeConstants.TextArea.Size.Large }
+    };
+}

@@ -1,0 +1,109 @@
+@page "/treelist/filter-row"
+
+@using Telerik.DataSource
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Filter Cell Buttons">
+        <TelerikCheckBox @bind-Value="@showFilterButtons" Id="filterableCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="filterableCheckBox">Show Filter Buttons</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Filter Debounce Delay">
+        <TelerikNumericTextBox @bind-Value="@filterDebounceDelay" Min="0" Max="1000" />
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Default filter operator for the `First Name` column">
+        <TelerikDropDownList @bind-Value="@filterOperator"
+                             Data="@filterOperators"
+                             OnChange="@OnFilterOperatorChanged"
+                             Width="100%">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-info">
+    The <strong>Hire Date</strong> column uses customized list of <strong>FilterOperators</strong>.
+</div>
+
+<TelerikTreeList @ref="@TreeListRef"
+                 Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 FilterMode="@TreeListFilterMode.FilterRow"
+                 FilterRowDebounceDelay="filterDebounceDelay">
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId"
+                        Title="Id" Width="150px"
+                        ShowFilterCellButtons="@showFilterButtons">
+        </TreeListColumn>
+        <TreeListColumn Field="FirstName"
+                        Title="First Name" Width="350px"
+                        Expandable="true"
+                        ShowFilterCellButtons="@showFilterButtons"
+                        DefaultFilterOperator="@filterOperator">
+        </TreeListColumn>
+        <TreeListColumn Field="LastName"
+                        Title="Last Name"
+                        ShowFilterCellButtons="@showFilterButtons">
+        </TreeListColumn>
+        <TreeListColumn Field="HireDate"
+                        Title="Hire Date"
+                        ShowFilterCellButtons="@showFilterButtons"
+                        DefaultFilterOperator="@FilterOperator.IsLessThan"
+                        FilterOperators="@DateOperators">
+        </TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    TelerikTreeList<EmployeeDirectoryDto> TreeListRef { get; set; }
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    public int filterDebounceDelay { get; set; } = 200;
+    public bool showFilterButtons { get; set; } = true;
+    FilterOperator filterOperator { get; set; } = FilterOperator.StartsWith;
+
+    public List<FilterOperator> filterOperators { get; set; } = new List<FilterOperator>()
+    {
+        FilterOperator.IsEqualTo,
+        FilterOperator.IsNotEqualTo,
+        FilterOperator.StartsWith,
+        FilterOperator.Contains,
+        FilterOperator.DoesNotContain
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void OnFilterOperatorChanged()
+    {
+        var state = TreeListRef?.GetState();
+
+        var productNameFilter = state.FilterDescriptors.FirstOrDefault(f => (f as FilterDescriptor).Member == nameof(EmployeeDirectoryDto.FirstName));
+
+        if (productNameFilter != null)
+        {
+            state.FilterDescriptors.Remove(productNameFilter);
+
+            TreeListRef?.SetStateAsync(state);
+        }
+    }
+
+    public List<FilterListOperator> DateOperators = new List<FilterListOperator>
+    {
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "On" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThan, Text = "After" },
+        new FilterListOperator { Operator = FilterOperator.IsLessThan, Text = "Before" },
+        new FilterListOperator { Operator = FilterOperator.IsNotEqualTo, Text = "Is Not" },
+    };
+}

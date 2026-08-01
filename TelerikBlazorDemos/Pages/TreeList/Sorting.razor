@@ -1,0 +1,95 @@
+@page "/treelist/sorting"
+
+<div class="demo-alert demo-alert-info">The second treelist allows sorting by multiple fields. For example, try sorting on the "Graduate Grade" column, then by the "Age " column to see the difference in behavior with single-column sorting.</div>
+
+<h3>TreeList with sorting enabled for a single column.</h3>
+
+<TelerikTreeList Data="@Data"
+                 IdField="Id"
+                 Sortable="true"
+                 SortMode="@SortMode.Single"
+                 ParentIdField="ParentId"
+                 Pageable="true"
+                 Height="350px">
+    <TreeListColumns>
+        <TreeListColumn Field="Id" Width="80px"></TreeListColumn>
+        <TreeListColumn Field="Name" Expandable="true" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="AgeInYears" Title="Age"></TreeListColumn>
+        <TreeListColumn Field="GraduateGrade" Title="Graduate Grade"></TreeListColumn>
+        <TreeListColumn Field="HireDate"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+<h3>TreeList with sorting enabled for multiple columns.</h3>
+
+<TelerikTreeList Data="@Data"
+                 IdField="Id"
+                 Sortable="true"
+                 SortMode="@SortMode.Multiple"
+                 ParentIdField="ParentId"
+                 Pageable="true"
+                 Height="350px">
+    <TreeListColumns>
+        <TreeListColumn Field="Id" Width="80px"></TreeListColumn>
+        <TreeListColumn Field="Name" Expandable="true" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="AgeInYears" Title="Age"></TreeListColumn>
+        <TreeListColumn Field="GraduateGrade" Title="Graduate Grade"></TreeListColumn>
+        <TreeListColumn Field="HireDate"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public class TreeListFlatItem
+    {
+        public TreeListFlatItem()
+        {
+            HireDate = DateTime.Now;
+        }
+
+        public int? Id { get; set; }
+        public int? ParentId { get; set; }
+        public string Name { get; set; }
+        public int? AgeInYears { get; set; }
+        public decimal? GraduateGrade { get; set; }
+        public DateTime HireDate { get; set; }
+    }
+
+    public List<TreeListFlatItem> Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = new List<TreeListFlatItem>();
+        var rand = new Random();
+
+        // Create Parent Items
+        for (int i = 1; i < 7; i++)
+        {
+            Data.Add(new TreeListFlatItem()
+            {
+                Id = i,
+                ParentId = null,
+                Name = "Item " + i.ToString(),
+                AgeInYears = rand.Next(1, 100) % 50,
+                HireDate = DateTime.Now.Date.AddDays(rand.Next(-20, 20)),
+                GraduateGrade = i % 4 + 3
+            });
+        }
+
+        for (int i = 7; i < 100; i++)
+        {
+            var parentId = rand.Next(1, 7);
+
+            Data.Add(new TreeListFlatItem()
+            {
+                Id = i,
+                ParentId = parentId,
+                Name = $"Item {parentId}:{i}",
+                AgeInYears = rand.Next(1, 100) % 50,
+                HireDate = DateTime.Now.Date.AddDays(rand.Next(-20, 20)),
+                GraduateGrade = i % 4 + 3
+            });
+        }
+
+        await base.OnInitializedAsync();
+    }
+}

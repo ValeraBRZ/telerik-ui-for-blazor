@@ -1,0 +1,9 @@
+@page "/timepicker/rtl"
+
+<div class="demo-section auto">
+    <TelerikTimePicker @bind-Value="@Value"/>
+</div>
+
+@code {
+    public DateTime Value { get; set; } = DateTime.Now.Date.AddHours(14).AddMinutes(15);
+}

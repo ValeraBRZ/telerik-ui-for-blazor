@@ -1,0 +1,96 @@
+@page "/pager/overview"
+
+@inject PhotoContestService PhotoContestService
+
+<div class="page-wrapper">
+    <h1>Photography Contests</h1>
+
+    <div class="contests-wrapper">
+        @{ var pagecontests = PhotoContests.Skip((Page - 1) * PageSize).Take(PageSize).ToList();
+
+            foreach (var contest in pagecontests)
+            {
+                <section class="contest-card-wrapper">
+                    <h3 title="@contest.Title">@contest.Title</h3>
+                    <div class="contest-image" style="background-image: url(images/photo-contest/@(contest.Id.ToString("000")).jpg)" alt="@contest.Title" />
+                    <span class="contest-rating"><TelerikSvgIcon Icon="@SvgIcon.User" /> @contest.Participants / 100</span>
+                    <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" Class="join-button">Join</TelerikButton>
+                </section>
+                }
+            }
+    </div>
+    <TelerikPager PageSize="@PageSize" Total="TotalCount" ButtonCount="7" @bind-Page="@Page"></TelerikPager>
+</div>
+
+@code{
+    public int Page { get; set; } = 3;
+    public int PageSize { get; set; } = 4;
+    public int TotalCount { get; set; }
+
+    public IEnumerable<PhotoContestDto> PhotoContests { get; set; } = new List<PhotoContestDto>();
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        PhotoContests = PhotoContestService.GetPhotoContests();
+        TotalCount = PhotoContests.Count();
+    }
+}
+
+<style>
+
+    .join-button, .contest-rating, .contest-image {
+        align-self: center;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .contest-rating {
+        font-size: 20px;
+    }
+
+    .contest-image {
+        width: 95%;
+        height: 200px;
+        background-size: cover;
+    }
+
+    .contests-wrapper {
+        display: flex;
+    }
+
+    .contests-wrapper .contest-card-wrapper:first-child {
+        margin-left: 0;
+    }
+
+    .contests-wrapper .contest-card-wrapper:last-child {
+        margin-right: 0;
+    }
+
+    .contest-card-wrapper {
+        width: 300px;
+        border-color: rgba(0,0,0,0.08);
+        border-radius: 4px;
+        border-width: 1px;
+        border-style: solid;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 10px
+    }
+
+    .contest-card-wrapper h3 {
+        margin-top: 5px;
+        align-self: center;
+        font-size: 18px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 90%;
+        text-align: center;
+    }
+</style>

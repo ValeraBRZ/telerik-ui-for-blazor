@@ -1,0 +1,80 @@
+@page "/treelist/column-menu"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Employee ID in Column Chooser">
+        <TelerikCheckBox @bind-Value="@ShowEmployeeIdInChooser"
+                         Id="EmployeeIdInChooser">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="EmployeeIdInChooser">Include Employee ID</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Hire Date Lockable">
+        <TelerikCheckBox @bind-Value="@IsHireDateLockable"
+                         Id="HireDateLockable">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="HireDateLockable">Enable Lockable</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Column Menu for Position">
+        <TelerikCheckBox @bind-Value="@ShowPositionColumnMenu"
+                         Id="PositionColumnMenu">
+        </TelerikCheckBox>
+        <label class="k-checkbox-label" for="PositionColumnMenu">Enable Column Menu</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Filter Mode">
+        <TelerikRadioGroup Data="@FilterModes"
+                           @bind-Value="@FilterMode"
+                           Layout="RadioGroupLayout.Horizontal">
+        </TelerikRadioGroup>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 ShowColumnMenu="true"
+                 Pageable="true"
+                 Sortable="true"
+                 Resizable="true"
+                 Reorderable="true"
+                 FilterMode="@FilterMode">
+    <TreeListSettings>
+        <TreeListColumnMenuSettings FilterMode="@(FilterMode == TreeListFilterMode.FilterRow ? ColumnMenuFilterMode.None : ColumnMenuFilterMode.FilterMenu)">
+        </TreeListColumnMenuSettings>
+    </TreeListSettings>
+    <TreeListColumns>
+        <TreeListColumn Field="EmployeeId" Title="EmployeeID" VisibleInColumnChooser="@ShowEmployeeIdInChooser"></TreeListColumn>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="Position" Width="200px" ShowColumnMenu="@ShowPositionColumnMenu"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px" Lockable="@IsHireDateLockable"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    private TreeListFilterMode FilterMode { get; set; } = TreeListFilterMode.FilterMenu;
+
+    private List<TreeListFilterMode> FilterModes { get; set; } = new List<TreeListFilterMode>()
+    {
+        TreeListFilterMode.FilterMenu,
+        TreeListFilterMode.FilterRow
+    };
+
+    private bool ShowEmployeeIdInChooser { get; set; }
+
+    private bool IsHireDateLockable { get; set; }
+
+    private bool ShowPositionColumnMenu { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

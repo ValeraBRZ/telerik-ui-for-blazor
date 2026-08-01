@@ -1,0 +1,14 @@
+@page "/numerictextbox/rtl"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="numeric" class="k-label k-form-label">Numeric value</label>
+        <div class="k-form-field-wrap">
+            <TelerikNumericTextBox Format="C" @bind-Value=@DecimalValue Id="numeric"></TelerikNumericTextBox>
+        </div>
+    </div>
+</div>
+
+@code {
+    private decimal DecimalValue = 12.3456m;
+}

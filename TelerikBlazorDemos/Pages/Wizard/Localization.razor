@@ -1,0 +1,36 @@
+@page "/wizard/localization"
+
+@using TelerikBlazorDemos.Resources
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div style="width: 500px; margin: 0 auto;">
+    <TelerikWizard>
+        <WizardSteps>
+            <WizardStep Label="@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label1))">
+                <Content>
+                    <h1>@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Wizard_StepContent1))</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label2))">
+                <Content>
+                    <h1>@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Wizard_StepContent2))</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Stepper_Label3))">
+                <Content>
+                    <h1>@Localizer.GetStringFromDemoResource(nameof(TelerikDemoMessages.Wizard_StepContent3))</h1>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+    </TelerikWizard>
+</div>
+
+
+@code {
+    public CustomStringLocalizer Localizer { get; set; } = new CustomStringLocalizer();
+}

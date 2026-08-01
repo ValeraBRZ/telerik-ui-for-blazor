@@ -1,0 +1,110 @@
+@page "/panelbar/expanded-modes"
+@using System.Linq
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Expand Mode">
+        <TelerikRadioGroup Data="@ExpandModes"
+                           TItem="PanelBarExpandMode"
+                           TValue="PanelBarExpandMode"
+                           Value="@SelectedExpandMode"
+                           ValueChanged="@ExpandedModeChanged"
+                           Layout="RadioGroupLayout.Horizontal"></TelerikRadioGroup>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Disable Items">
+        <TelerikButton OnClick="@DisableSelectedItem">Disable Selected Item</TelerikButton>
+        <TelerikButton OnClick="@ResetDisabledItems">Reset Disabled Items</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikPanelBar @ref="@PanelBarRef"
+                 Data="@Data"
+                 ExpandMode="@SelectedExpandMode"
+                 @bind-ExpandedItems="ExpandedItems"
+                 OnItemClick="@OnItemClick">
+</TelerikPanelBar>
+
+@code {
+    private TelerikPanelBar PanelBarRef { get; set; }
+    private List<PanelBarItem> Data { get; set; }
+
+    private object SelectedItem { get; set; }
+
+    private IEnumerable<object> ExpandedItems { get; set; } = new List<object>();
+
+    private PanelBarExpandMode SelectedExpandMode { get; set; } = PanelBarExpandMode.Multiple;
+
+    private readonly List<PanelBarExpandMode> ExpandModes = new()
+    {
+        PanelBarExpandMode.Single,
+        PanelBarExpandMode.Multiple
+    };
+
+    private void DisableSelectedItem()
+    {
+        if (SelectedItem == null)
+        {
+            return;
+        }
+
+        (SelectedItem as PanelBarItem).Disabled = true;
+        ExpandedItems = ExpandedItems.Where(x => x != SelectedItem).ToList();
+
+        PanelBarRef.Rebind();
+    }
+
+    private void ResetDisabledItems()
+    {
+        Data.ForEach(x => x.Disabled = false);
+
+        PanelBarRef.Rebind();
+    }
+
+    private void OnItemClick(PanelBarItemClickEventArgs args)
+    {
+        SelectedItem = args.Item;
+    }
+
+    private void ExpandedModeChanged(PanelBarExpandMode expandMode)
+    {
+        SelectedExpandMode = expandMode;
+        ExpandedItems = new List<object>();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = new List<PanelBarItem>
+        {
+            new PanelBarItem { Id = 1, Text = "Amaya Coffey", HasChildren = true },
+            new PanelBarItem { Id = 2, Text = "Chai", ParentId = 1, HasChildren = false },
+            new PanelBarItem { Id = 3, Text = "Chang", ParentId = 1, HasChildren = false },
+            new PanelBarItem { Id = 4, Text = "Chef Anton's Cajun Seasoning", ParentId = 1 , HasChildren = false},
+            new PanelBarItem { Id = 5, Text = "Chef Anton's Gumbo Mix", ParentId = 1, HasChildren = false },
+            new PanelBarItem { Id = 6, Text = "Grandma's Boysenberry Spread", ParentId = 1, HasChildren = false },
+            new PanelBarItem { Id = 7, Text = "Roquefort", ParentId = 1, HasChildren = false },
+
+            new PanelBarItem { Id = 8, Text = "Dawson Humphrey", HasChildren = true },
+            new PanelBarItem { Id = 9, Text = "Grandma's Boysenberry Spread", ParentId = 8, HasChildren = false },
+            new PanelBarItem { Id = 10, Text = "Aniseed Syrup", ParentId = 8, HasChildren = false },
+
+            new PanelBarItem { Id = 11, Text = "Giulia Haworth", HasChildren = true },
+            new PanelBarItem { Id = 12, Text = "Mozzarella", ParentId = 11, HasChildren = false },
+            new PanelBarItem { Id = 13, Text = "Cheesecake", ParentId = 11, HasChildren = false },
+            new PanelBarItem { Id = 14, Text = "Chang", ParentId = 11, HasChildren = false },
+            new PanelBarItem { Id = 15, Text = "Aniseed Syrup", ParentId = 11, HasChildren = false }
+        };
+    }
+
+    public class PanelBarItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? ParentId { get; set; }
+        public bool HasChildren { get; set; }
+        public bool Disabled { get; set; }
+    }
+}

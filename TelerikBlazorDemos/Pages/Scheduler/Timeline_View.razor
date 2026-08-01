@@ -1,0 +1,92 @@
+@page "/scheduler/timeline-view"
+
+@inject AppointmentService appointmentService
+@inject ManagerService managerService
+@inject RoomService roomService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Group Orientation">
+        <TelerikDropDownList @bind-Value="@Orientation" Data="@Orientations">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikScheduler Data="@Appointments" @bind-Date="@StartDate" Height="500px"
+                  OnUpdate="@UpdateAppointment" OnCreate="@AddAppointment" OnDelete="@DeleteAppointment"
+                  AllowCreate="true" AllowDelete="true" AllowUpdate="true"
+                  ConfirmDelete="true"
+                  IdField="@(nameof(AppointmentDto.Id))"
+                  StartField="@(nameof(AppointmentDto.Start))"
+                  EndField="@(nameof(AppointmentDto.End))"
+                  TitleField="@(nameof(AppointmentDto.Title))"
+                  DescriptionField="@(nameof(AppointmentDto.Description))"
+                  IsAllDayField="@(nameof(AppointmentDto.IsAllDay))"
+                  RecurrenceRuleField="@(nameof(AppointmentDto.RecurrenceRule))"
+                  RecurrenceExceptionsField="@(nameof(AppointmentDto.RecurrenceExceptions))"
+                  RecurrenceIdField="@(nameof(AppointmentDto.RecurrenceId))">
+    <SchedulerSettings>
+        <SchedulerGroupSettings Resources="@GroupingResources" Orientation="@Orientation"></SchedulerGroupSettings>
+    </SchedulerSettings>
+    <SchedulerViews>
+        <SchedulerTimelineView StartTime="@DayStart" EndTime="@DayEnd" WorkDayStart="@WorkDayStart" WorkDayEnd="@WorkDayEnd" />
+    </SchedulerViews>
+    <SchedulerResources>
+        <SchedulerResource Field="RoomId" TextField="Name" ValueField="Id" Data="@Rooms"></SchedulerResource>
+        <SchedulerResource Field="ManagerId" TextField="Name" ValueField="Id" Data="@Managers"></SchedulerResource>
+    </SchedulerResources>
+</TelerikScheduler>
+
+@code {
+    public SchedulerGroupOrientation Orientation { get; set; } = SchedulerGroupOrientation.Vertical;
+    public List<SchedulerGroupOrientation> Orientations => new List<SchedulerGroupOrientation>
+    {
+        SchedulerGroupOrientation.Vertical, SchedulerGroupOrientation.Horizontal
+    };
+
+    IEnumerable<AppointmentDto> Appointments = new List<AppointmentDto>();
+    IEnumerable<RoomDto> Rooms = new List<RoomDto>();
+    IEnumerable<ManagerDto> Managers = new List<ManagerDto>();
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 6, 16);
+    List<string> GroupingResources = new List<string> { "RoomId", "ManagerId" };
+
+    //the time portions are important
+    public DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+    public DateTime DayEnd { get; set; } = new DateTime(2000, 1, 1, 20, 0, 0);
+    public DateTime WorkDayStart { get; set; } = new DateTime(2000, 1, 1, 8, 0, 0);
+    public DateTime WorkDayEnd { get; set; } = new DateTime(2000, 1, 1, 17, 0, 0);
+
+    protected override void OnInitialized()
+    {
+        Rooms = roomService.GetRooms();
+        Managers = managerService.GetManagers();
+
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Appointments = appointmentService.GetAppointments();
+    }
+
+    void UpdateAppointment(SchedulerUpdateEventArgs args)
+    {
+        appointmentService.UpdateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void AddAppointment(SchedulerCreateEventArgs args)
+    {
+        appointmentService.CreateAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+
+    void DeleteAppointment(SchedulerDeleteEventArgs args)
+    {
+        appointmentService.DeleteAppointment((AppointmentDto)args.Item);
+        LoadData();
+    }
+}

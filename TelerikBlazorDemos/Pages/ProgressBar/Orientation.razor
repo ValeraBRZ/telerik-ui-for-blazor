@@ -1,0 +1,38 @@
+@page "/progressbar/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <input id="orientation-horizontal"
+               type="radio"
+               value="@( ProgressBarOrientation.Horizontal)"
+               checked="@(ProgressOrientation == ProgressBarOrientation.Horizontal)"
+               @onchange="@(() => ProgressOrientation = ProgressBarOrientation.Horizontal)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-horizontal">Horizontal</label>
+
+        <input id="orientation-vertical"
+               type="radio"
+               value="@( ProgressBarOrientation.Vertical)"
+               checked="@(ProgressOrientation == ProgressBarOrientation.Vertical)"
+               @onchange="@(() => ProgressOrientation = ProgressBarOrientation.Vertical)"
+               name="orientation"
+               class="k-radio k-radio-md" />
+        <label class="k-radio-label" for="orientation-vertical">Vertical</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikProgressBar Value="50"
+                    AriaLabel="Progress Bar"
+                    Orientation="@ProgressOrientation">
+</TelerikProgressBar>
+
+@code {
+    public ProgressBarOrientation ProgressOrientation { get; set; } = ProgressBarOrientation.Horizontal;
+}
+
+<style>
+    .k-progressbar.k-progressbar-vertical {
+        margin-left: 1rem;
+    }
+</style>

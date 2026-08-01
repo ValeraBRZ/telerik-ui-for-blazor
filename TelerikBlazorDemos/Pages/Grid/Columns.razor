@@ -1,0 +1,53 @@
+@page "/grid/columns"
+
+@inject EmployeeService employeeService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@ToggleTitleOfCourtesyColumn">Show / Hide Title Column</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton Enabled="@(!AddressColumn)" OnClick="@ShowAddressFColumn">Add Address Column</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikButton Enabled="@AddressColumn" OnClick="@HideAddressFColumn">Delete Address Column</TelerikButton>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-alert demo-alert-success">You can tie the <code>Visible</code> parameter of the column to your business logic, such as <NavLink href="mediaquery/grid-integration">responsive design</NavLink>.</div>
+
+<TelerikGrid Data=@GridData Height="400px">
+    <GridColumns>
+        <GridColumn Field="TitleOfCourtesy" Title="Title" Visible="@TitleOfCourtesyVisible" />
+        <GridColumn Field="FirstName" />
+        <GridColumn Field="LastName" />
+        <GridColumn Field="Address" Visible="@AddressColumn" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    bool TitleOfCourtesyVisible = true;
+    bool AddressColumn = false;
+
+    public IEnumerable<EmployeeDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = employeeService.GetEmployees();
+    }
+
+    void ToggleTitleOfCourtesyColumn()
+    {
+        TitleOfCourtesyVisible = !TitleOfCourtesyVisible;
+    }
+
+    void ShowAddressFColumn()
+    {
+        AddressColumn = true;
+    }
+
+    void HideAddressFColumn()
+    {
+        AddressColumn = false;
+    }
+}

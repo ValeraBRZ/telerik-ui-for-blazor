@@ -1,0 +1,88 @@
+@page "/loader/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Pick the Loader's type">
+        <TelerikDropDownList Data="@Types"
+                             TItem="@LoaderType"
+                             TValue="LoaderType"
+                             OnChange="@TypeChanged">                             
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pick the size">
+        <TelerikDropDownList Data="@Sizes"
+                             TextField="Key"
+                             ValueField="Value"
+                             @bind-Value=@LoaderSize
+                             Width="120px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="loaders">
+    @foreach (var color in ThemeColors)
+    {
+        <div class="loader-container">
+            <span class="loader-color-title">@color.Key</span>
+            <TelerikLoader Class="loader-indicator" Type="@LoaderType" Size="@LoaderSize" ThemeColor="@color.Value"></TelerikLoader>
+        </div>
+    }
+</div>
+
+@code {
+    LoaderType LoaderType { get; set; }
+    string LoaderSize { get; set; } = ThemeConstants.Loader.Size.Medium;
+
+    List<LoaderType> Types { get; set; } = new List<LoaderType>
+{
+        LoaderType.Pulsing,
+        LoaderType.InfiniteSpinner,
+        LoaderType.ConvergingSpinner
+    };
+
+    public Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.Loader.Size.Small },
+        { "Medium", ThemeConstants.Loader.Size.Medium },
+        { "Large", ThemeConstants.Loader.Size.Large }
+    };
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Primary", ThemeConstants.Loader.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.Loader.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.Loader.ThemeColor.Tertiary },
+        { "Success", ThemeConstants.Loader.ThemeColor.Success },
+        { "Info", ThemeConstants.Loader.ThemeColor.Info },
+        { "Warning", ThemeConstants.Loader.ThemeColor.Warning },
+        { "Error", ThemeConstants.Loader.ThemeColor.Error },
+        { "Dark", ThemeConstants.Loader.ThemeColor.Dark },
+        { "Light", ThemeConstants.Loader.ThemeColor.Light },
+        { "Inverse", ThemeConstants.Loader.ThemeColor.Inverse },
+    };
+
+    void TypeChanged(object item)
+    {
+        LoaderType = (LoaderType)item;
+    }
+
+}
+
+<style>
+    .loader-color-title {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .loader-container {
+        text-align: center;
+        width: 80px;
+        display: inline-table;
+        padding-top: 10px;
+    }
+</style>

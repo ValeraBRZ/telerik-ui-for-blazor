@@ -1,0 +1,180 @@
+@page "/appbar/overview"
+
+@using Telerik.DataSource
+@using Telerik.DataSource.Extensions
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Theme Color">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@ThemeColors" @bind-Value="@ThemeColor" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+
+</DemoConfigurator>
+
+<TelerikAppBar ThemeColor="@ThemeColor">
+    <AppBarSection>
+        <TelerikButton FillMode="flat" Icon="@SvgIcon.Menu"></TelerikButton>
+    </AppBarSection>
+
+    <AppBarSpacer Size="4px" />
+
+    <AppBarSection>
+        <h1 class="title">My Telerik UI for Blazor Account</h1>
+    </AppBarSection>
+
+    <AppBarSpacer Size="50px" />
+
+    <AppBarSection>
+        <span>Release history</span>
+    </AppBarSection>
+
+    <AppBarSection>
+        <span>Documentation</span>
+    </AppBarSection>
+
+    <AppBarSection>
+        <span>Contact us</span>
+    </AppBarSection>
+
+    <AppBarSpacer />
+
+    <AppBarSection>
+        <TelerikTextBox Value="@SearchValue" Placeholder="Search" ValueChanged="OnTextBoxChanged"></TelerikTextBox>
+    </AppBarSection>
+
+    <AppBarSection>
+        <TelerikSvgIcon Icon="@SvgIcon.Bell"></TelerikSvgIcon>
+    </AppBarSection>
+
+    <AppBarSeparator />
+
+    <AppBarSection>
+        <TelerikSvgIcon Icon="@SvgIcon.Logout"></TelerikSvgIcon>
+    </AppBarSection>
+
+</TelerikAppBar>
+
+<h1 style="margin-top:10px; font-size: 18px">FAQ</h1>
+
+<TelerikPanelBar Data="@FilteredItems"
+                 @bind-ExpandedItems="@ExpandedItems"
+                 @ref="PanelBarRef">
+</TelerikPanelBar>
+
+@code {
+    public TelerikPanelBar PanelBarRef { get; set; }
+
+    public string ThemeColor { get; set; } = ThemeConstants.AppBar.ThemeColor.Primary;
+
+    public string SearchValue { get; set; }
+
+    public List<PanelBarItem> FAQItems { get; set; }
+
+    public List<PanelBarItem> FilteredItems { get; set; }
+
+    public IEnumerable<object> ExpandedItems { get; set; } = new List<object>();
+
+    public void OnTextBoxChanged(string searchTerm)
+    {
+        SearchValue = searchTerm;
+
+        var request = new DataSourceRequest()
+            {
+                Filters = new List<IFilterDescriptor>() {
+                new FilterDescriptor()
+                {
+                    Member = nameof(PanelBarItem.Text),
+                    MemberType = typeof(string),
+                    Operator = FilterOperator.Contains,
+                    Value = searchTerm
+                }
+            }
+           };
+
+        var result = FAQItems.ToDataSourceResult(request);
+
+        var filteredItems = result.Data.Cast<PanelBarItem>().ToList();
+
+        FilteredItems = filteredItems;
+    }
+
+    public Dictionary<string, string> ThemeColors { get; set; } = new Dictionary<string, string>
+    {
+        { "Base", ThemeConstants.AppBar.ThemeColor.Base },
+        { "Primary", ThemeConstants.AppBar.ThemeColor.Primary },
+        { "Secondary", ThemeConstants.AppBar.ThemeColor.Secondary },
+        { "Tertiary", ThemeConstants.AppBar.ThemeColor.Tertiary },
+        { "Info", ThemeConstants.AppBar.ThemeColor.Info },
+        { "Success", ThemeConstants.AppBar.ThemeColor.Success },
+        { "Warning", ThemeConstants.AppBar.ThemeColor.Warning },
+        { "Error", ThemeConstants.AppBar.ThemeColor.Error },
+        { "Dark", ThemeConstants.AppBar.ThemeColor.Dark },
+        { "Light", ThemeConstants.AppBar.ThemeColor.Light },
+        { "Inverse", ThemeConstants.AppBar.ThemeColor.Inverse }
+    };
+
+    protected override void OnInitialized()
+    {
+        FAQItems = FilteredItems = GeneratePanelBarData();
+        base.OnInitialized();
+    }
+
+    public List<PanelBarItem> GeneratePanelBarData()
+    {
+        List<PanelBarItem> data = new List<PanelBarItem>()
+        {
+            new PanelBarItem()
+            {
+                Text = "How to add character counter to the Telerik TextArea?",
+                Items = new List<PanelBarItem>()
+                {
+                    new PanelBarItem()
+                    {
+                        Text = "See the TextArea with MaxLength and character counter article.",
+                        Url = "https://docs.telerik.com/blazor-ui/knowledge-base/textarea-maxlength-and-character-counter"
+                    }
+                }
+            },
+            new PanelBarItem()
+            {
+                Text = "How to filter the items in the Telerik TreeView?",
+                Items = new List<PanelBarItem>()
+                {
+                    new PanelBarItem()
+                    {
+                        Text = "See the Filter or Search TreeView Items article.",
+                        Url = "https://docs.telerik.com/blazor-ui/knowledge-base/treeview-filtering"
+                    }
+                }
+            },
+            new PanelBarItem()
+            {
+                Text = "How to reverse the Grid sorting logic for a column?",
+                Items = new List<PanelBarItem>()
+                {
+                    new PanelBarItem()
+                    {
+                        Text = "See the Sort Grid Column Descending article.",
+                        Url = "https://docs.telerik.com/blazor-ui/knowledge-base/grid-sort-descending"
+                    }
+                }
+            },
+        };
+
+        return data;
+    }
+
+    public class PanelBarItem
+    {
+        public string Text { get; set; }
+        public bool Disabled { get; set; }
+        public string Url { get; set; }
+        public List<PanelBarItem> Items { get; set; }
+    }
+}
+
+<style>
+    .title {
+        font-size: 18px;
+        margin: 0;
+    }
+</style>

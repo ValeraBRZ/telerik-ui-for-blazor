@@ -1,0 +1,40 @@
+@page "/filter/operators"
+
+@using Telerik.DataSource
+
+<div class="demo-alert demo-alert-info">
+    The <strong>FilterFields</strong> use customized list of <strong>FilterOperators</strong>. The <strong>First Name</strong> and <strong>Last Name</strong> FilterFields have <strong>DefaultFilterOperator</strong>.
+</div>
+
+<TelerikFilter Value="@Value">
+    <FilterFields>
+        <FilterField Name="Id" Type="@typeof(int)" Operators="@IdOperators"/>
+        <FilterField Name="FirstName" Type="typeof(string)" Label="First Name" Operators="@NameOperators" DefaultOperator="@FilterOperator.StartsWith" />
+        <FilterField Name="LastName" Type="typeof(string)" Label="Last Name" Operators="@NameOperators" DefaultOperator="@FilterOperator.EndsWith"/>
+        <FilterField Name="Age" Type="typeof(int)" Operators="@AgeOperators" />
+    </FilterFields>
+</TelerikFilter>
+
+@code {
+    public CompositeFilterDescriptor Value { get; set; } = new CompositeFilterDescriptor();
+
+    public List<FilterListOperator> IdOperators { get; set; } = new List<FilterListOperator>()
+    {
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "is" },
+    };
+
+    public List<FilterListOperator> AgeOperators { get; set; } = new List<FilterListOperator>()
+    {
+        new FilterListOperator { Operator = FilterOperator.IsLessThanOrEqualTo, Text = "is younger than" },
+        new FilterListOperator { Operator = FilterOperator.IsEqualTo, Text = "is" },
+        new FilterListOperator { Operator = FilterOperator.IsGreaterThanOrEqualTo, Text = "is older than" },
+    };
+
+    public List<FilterListOperator> NameOperators { get; set; } = new List<FilterListOperator>()
+    {
+        new FilterListOperator { Operator = FilterOperator.StartsWith, Text = "begins with" },
+        new FilterListOperator { Operator = FilterOperator.EndsWith, Text = "ends with" },
+        new FilterListOperator { Operator = FilterOperator.Contains, Text = "includes" },
+        new FilterListOperator { Operator = FilterOperator.DoesNotContain, Text = "does not include" },
+    };
+}

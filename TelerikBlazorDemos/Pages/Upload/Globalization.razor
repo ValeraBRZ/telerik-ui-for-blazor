@@ -1,0 +1,41 @@
+@page "/upload/globalization"
+
+@inject NavigationManager NavigationManager
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <CultureChooser></CultureChooser>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="row">
+    <div class="col-6">
+        <TelerikUpload SaveUrl="@SaveUrl"
+                       RemoveUrl="@RemoveUrl"
+                       AutoUpload="false"
+                       AllowedExtensions="@AllowedExtensions"
+                       MinFileSize="@MinFileSize"
+                       MaxFileSize="@MaxFileSize">
+        </TelerikUpload>
+    </div>
+</div>
+
+@code {
+    public string SaveUrl => ToAbsoluteUrl("api/upload/save");
+    public string RemoveUrl => ToAbsoluteUrl("api/upload/remove");
+    public List<string> AllowedExtensions { get; set; } = new List<string>() { ".jpg", ".png" };
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+
+    public string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+}
+
+<style>
+    .k-upload-files {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>

@@ -1,0 +1,29 @@
+@page "/dialog/initial-focus"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn>
+        <TelerikButton OnClick="@(() => Visible = true)">Show dialog</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn>
+        <TelerikDropDownList @bind-Value="@DefaultFocusedSelector" Data="@Selectors"></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikDialog @bind-Visible="@Visible" Title="Submit the page" FocusedElementSelector="@DefaultFocusedSelector">
+    <DialogContent>
+        Are you sure you want to continue?
+        <TelerikButton Class="content-close-dialog" OnClick="@(() => { Visible = false; })">Close Dialog</TelerikButton>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton Class="cancel-btn" OnClick="@(() => { Visible = false; })">No</TelerikButton>
+        <TelerikButton Class="ok-btn" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" OnClick="@(() => { Visible = false; })">Yes</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>
+
+@code {
+    private bool Visible {  get; set; } = true;
+
+    private string DefaultFocusedSelector { get; set; } = ".ok-btn";
+
+    private List<string> Selectors { get; set; } = new List<string>() { ".ok-btn", ".cancel-btn", ".content-close-dialog" };
+}

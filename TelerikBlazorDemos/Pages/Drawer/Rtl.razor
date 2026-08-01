@@ -1,0 +1,177 @@
+@page "/drawer/rtl"
+
+<div dir="rtl" class="drawer-container">
+    <div class="custom-toolbar">
+        <TelerikButton OnClick="@ToggleDrawer" Icon="@SvgIcon.Menu" FillMode="@(ThemeConstants.Button.FillMode.Flat)"></TelerikButton>
+        <span class="mail-box">Mail Box</span>
+    </div>
+    <TelerikDrawer @ref="@Drawer" Data="Data" MiniMode="true" Mode="@DrawerMode.Push" @bind-SelectedItem="SelectedItem">
+        <DrawerContent>
+            @{
+                var additionalData = SelectedItem?.AdditionalData;
+                if (additionalData != null && additionalData.Any())
+                {
+                    <div class="page">
+                        <ul>
+                            @foreach (var dataItem in additionalData)
+                            {
+                                <li>
+                                    @if (!string.IsNullOrWhiteSpace(dataItem.Item1))
+                                    {
+                                        <h6>@dataItem.Item1</h6>
+                                    }
+
+                                    <p>@dataItem.Item2</p>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </DrawerContent>
+    </TelerikDrawer>
+</div>
+
+@code {
+    public TelerikDrawer<DrawerItem> Drawer { get; set; }
+    public DrawerItem SelectedItem { get; set; }
+    public IEnumerable<DrawerItem> Data { get; set; } =
+        new List<DrawerItem>
+            {
+            new DrawerItem
+            {
+                Text = "Inbox",
+                Icon = SvgIcon.Inbox,
+                AdditionalData = new List<(string, string)>
+            {
+                    ("Monday meeting", "Hi Tom, Since Monday I'll be out of office, I'm rescheduling the meeting for Tuesday."),
+                    ("I'm sorry, Tom", "Hi Tom, my aunt comes for a visit this Saturday, so I can't come back to St. Pete..."),
+                }
+            },
+            new DrawerItem { Separator = true},
+            new DrawerItem
+            {
+                Text = "Notifications",
+                Icon = SvgIcon.Bell,
+                AdditionalData = new List<(string, string)>
+            {
+                    (null, "Monday meeting"),
+                    (null, "Regarding org chart changes"),
+                    (null, "Meeting with Cliff"),
+                    (null, "Global Marketing Meeting"),
+                    (null, "Out tonight with collegues?")
+                }
+            },
+            new DrawerItem
+            {
+                Text = "Calendar",
+                Icon = SvgIcon.Calendar,
+                AdditionalData = new List<(string, string)>
+        {
+                    ("11/5 Monday", "Martha Birthday"),
+                    ("15/6 Sunday", "Job interview for internal position")
+                }
+            },
+            new DrawerItem { Separator = true},
+            new DrawerItem
+            {
+                Text = "Attachments",
+                Icon = SvgIcon.EnvelopeLink,
+                AdditionalData = new List<(string, string)>
+            {
+                    (null, "Build enterprise apps"),
+                    (null, "Fw: Regarding Multiline textbox"),
+                    (null, "Away next week"),
+                    (null, "Fw: Your Costume is ready"),
+                    (null, "Update completed")
+                }
+            },
+            new DrawerItem
+            {
+                Text = "Favourites",
+                Icon = SvgIcon.StarOutline,
+                AdditionalData = new List<(string, string)>
+            {
+                    (null, "70% Discount!"),
+                    (null, "90% Discount!"),
+                    (null, "One time offer!"),
+                }
+            }
+                };
+
+    protected override Task OnInitializedAsync()
+    {
+        SelectedItem = Data.First();
+
+        return base.OnInitializedAsync();
+    }
+
+    public async Task ToggleDrawer() => await Drawer.ToggleAsync();
+
+    public class DrawerItem
+    {
+        public string Text { get; set; }
+
+        public ISvgIcon Icon { get; set; }
+
+        public string Url { get; set; }
+
+        public bool Separator { get; set; }
+
+        public IEnumerable<(string, string)> AdditionalData { get; set; }
+    }
+}
+
+<style>
+    .drawer-container {
+        margin: 30px auto;
+        width: 70%;
+    }
+
+    .k-drawer-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-toolbar {
+        width: 100%;
+        background-color: #f6f6f6;
+        line-height: 10px;
+        border-bottom: inset;
+        border-bottom-width: 1px;
+        padding: 3px 8px;
+        color: #656565;
+    }
+
+    .mail-box {
+        margin-left: 20px;
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .page ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page li {
+        font-size: 20px;
+        background: 0 0;
+        border-radius: 0;
+        border-width: 0 0 1px;
+        border-color: rgba(33, 37, 41, 0.125);
+        border-style: solid;
+        line-height: 1.5em;
+        padding: 1.09em .84em 1.23em .84em;
+    }
+
+        .page li:last-child {
+            border: 0;
+        }
+
+        .page li h6 {
+            border-bottom: none;
+            padding-bottom: 8px;
+        }
+</style>

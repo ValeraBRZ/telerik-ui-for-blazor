@@ -1,0 +1,106 @@
+@page "/treelist/cell-formatting"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList Data="@Data"
+                 Height="450px"
+                 PageSize="15"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Resizable="true"
+                 Sortable="true"
+                 Pageable="true"
+                 OnRowRender="@OnRowRenderHandler">
+    <TreeListColumns>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.EmployeeId)" Title="Id" Sortable="false" Width="60px" TextAlign="@ColumnTextAlign.Right" HeaderClass="!k-text-right demo-font-weight-bold" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.FirstName)" Expandable="true" Width="350px"/>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.LastName)" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Position)" Width="200px" TextAlign="@ColumnTextAlign.Center" HeaderClass="k-justify-content-center demo-font-weight-bold hiredate2014"/>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.HireDate)" Width="100px" OnCellRender="@OnCellRenderHandler" DisplayFormat="{0:d}" />
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    void OnCellRenderHandler(TreeListCellRenderEventArgs args)
+    {
+        var value = (DateTime)args.Value;
+
+        if (value.Year == 2010)
+        {
+            args.Class = "hiredate2010";
+        }
+        else if (value.Year == 2011)
+        {
+            args.Class = "hiredate2011";
+        }
+        else if (value.Year == 2012)
+        {
+            args.Class = "hiredate2012";
+        }
+        else if (value.Year == 2013)
+        {
+            args.Class = "hiredate2013";
+        }
+        else if (value.Year == 2014)
+        {
+            args.Class = "hiredate2014";
+        }
+        else
+        {
+            args.Class = "hiredate2015";
+        }
+    }
+
+    void OnRowRenderHandler(TreeListRowRenderEventArgs args)
+    {
+        var item = (EmployeeDirectoryDto)args.Item;
+
+        if ((item.Position).Contains("Senior"))
+        {
+            args.Class = "seniorEmployee";
+        }
+    }
+}
+
+<style>
+    .hiredate2010 {
+        background-color: #89aac5;
+    }
+
+    .hiredate2011 {
+        background-color: #9db8cf;
+    }
+
+    .hiredate2012 {
+        background-color: #b1c8d9;
+    }
+
+    .hiredate2013 {
+        background-color: #c4d4e2;
+    }
+
+    .hiredate2014 {
+        background-color: #d8e3ec;
+    }
+
+    .hiredate2015 {
+        background-color: #ebf1f5;
+    }
+
+    .seniorEmployee,
+    .demo-font-weight-bold  {
+        font-weight: 700 !important;
+    }
+</style>

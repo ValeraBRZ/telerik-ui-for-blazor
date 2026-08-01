@@ -1,0 +1,240 @@
+@page "/speechtotextbutton/overview"
+
+<div class="demo-container"></div>
+<div class="profile-demo card-container">
+    <div class="k-card custom-card">
+        <div class="card-row">
+            <div class="card-column no-flex">
+                <div class="sidebar-container k-skeleton">
+                    <div class="avatar-name-container">
+                        <div class="name-container">
+                            <div class="k-skeleton skeleton-text"></div>
+                            <div class="k-skeleton skeleton-small-text-short"></div>
+                        </div>
+                    </div>
+                    <div class="description-container">
+                        <div class="k-skeleton skeleton-small-text"></div>
+                        <div class="k-skeleton skeleton-small-text"></div>
+                        <div class="k-skeleton skeleton-small-text"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-column">
+                <div class="avatar-title-container">
+                    <div class="k-skeleton skeleton-avatar"></div>
+                    <h4 class="k-h4">Additional information</h4>
+                </div>
+                <div class="skeleton-container top">
+                    <div class="k-skeleton skeleton-box-small"></div>
+                    <div class="k-skeleton skeleton-box-large"></div>
+                </div>
+                <label class="project-label" for=".component-container">Project Impact Summary</label>
+                <div class="component-container">
+                    <TelerikTextArea @bind-Value="InputValue"
+                                     Rounded="@ThemeConstants.TextArea.Rounded.Large"
+                                     Placeholder="Describe a project you worked on that had a strong impact."
+                                     ResizeMode="@TextAreaResizeMode.Auto"
+                                     Rows="3">
+                        <TextAreaSuffixTemplate>
+                            <span class="suffix-text">@(IsRecording ? "Listening..." : "Click the mic to speak")</span>
+                            <TelerikSpeechToTextButton OnResult="OnSpeechResult"
+                                                       OnStart="@(() => IsRecording = !IsRecording)"
+                                                       OnEnd="@(() => IsRecording = !IsRecording)"
+                                                       FillMode="@ThemeConstants.Button.FillMode.Flat"
+                                                       ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"
+                                                       Rounded="@ThemeConstants.Button.Rounded.Large"
+                                                       Lang="en-US" />
+                        </TextAreaSuffixTemplate>
+                    </TelerikTextArea>
+                </div>
+                <div class="skeleton-container bottom">
+                    <div class="k-skeleton skeleton-box-small"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string InputValue { get; set; }
+    private bool IsRecording { get; set; }
+
+    private void OnSpeechResult(SpeechToTextButtonResultEventArgs args)
+    {
+        InputValue = args.Alternatives[0].Transcript;
+    }
+}
+
+<style>
+    .profile-demo.card-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .profile-demo .custom-card {
+        padding: 32px;
+        width: 712px;
+        height: 350px;
+        gap: 32px;
+        border-radius: 4px 4px 0 0;
+        box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-demo .card-row {
+        display: flex;
+        gap: 32px;
+    }
+
+    .profile-demo .card-column {
+        flex: 1;
+    }
+
+    .profile-demo .no-flex {
+        flex: 0;
+    }
+
+    .profile-demo .sidebar-container,
+    .profile-demo .avatar-name-container,
+    .profile-demo .name-container,
+    .profile-demo .description-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-demo .sidebar-container {
+        padding: 30px 20px;
+        width: 180px;
+        height: 318px;
+        gap: 50px;
+    }
+
+    .profile-demo .avatar-name-container {
+        gap: 20px;
+    }
+
+    .profile-demo .name-container {
+        gap: 5px;
+    }
+
+    .profile-demo .description-container {
+        width: 100%;
+        gap: 15px;
+    }
+
+    .profile-demo .k-skeleton {
+        border-radius: 4px;
+        opacity: 0.4;
+    }
+
+    .profile-demo .sidebar-container .k-skeleton {
+        opacity: 0.8;
+    }
+
+    .profile-demo .skeleton-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+    }
+
+    .profile-demo .skeleton-text {
+        width: 104px;
+        height: 15px;
+    }
+
+    .profile-demo .skeleton-small-text {
+        width: 100%;
+        height: 10px;
+    }
+
+    .profile-demo .skeleton-small-text-short {
+        width: 56px;
+        height: 10px;
+    }
+
+    .profile-demo .skeleton-box-small {
+        width: 124px;
+        height: 15px;
+    }
+
+    .profile-demo .skeleton-box-large {
+        width: 100%;
+        height: 30px;
+    }
+
+    .profile-demo .skeleton-box-large-double {
+        width: 100%;
+        height: 56px;
+    }
+
+    .profile-demo .skeleton-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .profile-demo .avatar-title-container {
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .profile-demo .avatar-title-container .skeleton-avatar {
+            width: 48px;
+            height: 48px;
+            display: none;
+        }
+
+    .profile-demo .top {
+        margin-bottom: 32px;
+    }
+
+    .profile-demo .component-container {
+        margin-bottom: 20px;
+    }
+
+    .profile-demo .k-h4 {
+        margin-bottom: 0;
+        opacity: 0.2;
+    }
+
+    .component-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+        .component-container .k-textarea {
+            align-self: stretch;
+        }
+
+        .component-container .k-input-solid .k-input-suffix {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .component-container .k-speech-to-text-button {
+            height: 38px;
+            width: 38px;
+        }
+
+        .component-container .project-label {
+            font-size: 13px;
+            color: #424242;
+            font-weight: 400;
+        }
+
+        .component-container .suffix-text {
+            font-size: 13px;
+            color: #BDC4CB;
+            margin-left: 15px;
+            font-style: italic;
+        }
+
+        .component-container .k-input-suffix {
+            padding: var(--kendo-spacing-1, 4px);
+        }
+</style>

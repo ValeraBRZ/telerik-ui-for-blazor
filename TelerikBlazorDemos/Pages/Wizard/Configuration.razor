@@ -1,0 +1,90 @@
+@page "/wizard/configuration"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Position">
+        <TelerikDropDownList Data="@Positions" @bind-Value="@Position" Width="200px"></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Disable Item">
+        <TelerikDropDownList Data="@Steps" ValueField="@nameof(Step.Index)" @bind-Value="@SelectedStepIndex" Width="200px"></TelerikDropDownList>
+        <TelerikButton OnClick="@ToggleStep">Toggle Disable</TelerikButton>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Step Type">
+        <TelerikRadioGroup Data="@StepTypes" @bind-Value="@StepType" Layout="RadioGroupLayout.Horizontal"></TelerikRadioGroup>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Linear">
+        <TelerikCheckBox @bind-Value="@Linear"></TelerikCheckBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div style="width: 500px; margin: 0 auto;">
+    <TelerikWizard StepperPosition="@Position">
+        <WizardSteps>
+            <WizardStep Label="Test Label 0" Disabled="StepsDisable[0]">
+                <Content>
+                    <h1>This is step content</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Test Label 1" Disabled="StepsDisable[1]">
+                <Content>
+                    <h1>This is step content 1</h1>
+                </Content>
+            </WizardStep>
+            <WizardStep Label="Test Label 2" Disabled="StepsDisable[2]">
+                <Content>
+                    <h1>This is step content 2</h1>
+                </Content>
+            </WizardStep>
+        </WizardSteps>
+        <WizardSettings>
+            <WizardStepperSettings Linear="@Linear" StepType="@StepType" />
+        </WizardSettings>
+    </TelerikWizard>
+</div>
+
+@code {
+    public bool Linear { get; set; } = true;
+    public WizardStepperPosition Position { get; set; }
+    public StepperStepType StepType { get; set; }
+    public int SelectedStepIndex { get; set; }
+
+    public Dictionary<int, bool> StepsDisable { get; set; } = new Dictionary<int, bool>
+    {
+        {0, false},
+        {1, false},
+        {2, false},
+    };
+
+    public void ToggleStep()
+    {
+        StepsDisable[SelectedStepIndex] = !StepsDisable[SelectedStepIndex];
+    }
+
+    public List<WizardStepperPosition> Positions { get; set; } = new List<WizardStepperPosition>
+{
+        WizardStepperPosition.Top,
+        WizardStepperPosition.Left,
+        WizardStepperPosition.Right,
+        WizardStepperPosition.Bottom
+    };
+
+    public List<StepperStepType> StepTypes { get; set; } = new List<StepperStepType>
+{
+        StepperStepType.Steps,
+        StepperStepType.Labels
+    };
+
+    public List<Step> Steps { get; set; } = new List<Step>
+{
+        new Step { Index = 0, Text="Step 1" },
+        new Step { Index = 1, Text="Step 2" },
+        new Step { Index = 2, Text="Step 3" }
+    };
+
+    public class Step
+    {
+        public int Index { get; set; }
+
+        public string Text { get; set; }
+    }
+}
+

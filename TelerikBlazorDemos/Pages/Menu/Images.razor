@@ -1,0 +1,58 @@
+@page "/menu/images"
+
+<div style="height: 60px;">
+    <TelerikMenu Data="@MenuItems" />
+</div>
+
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public List<MenuItem> Items { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Text = "Share",
+                Icon = SvgIcon.Share,
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Text = "FaceBook",
+                        Icon = SvgIcon.Facebook
+                    },
+                    new MenuItem()
+                    {
+                        Text = "LinkedIn",
+                        Icon = SvgIcon.Linkedin
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Twitter",
+                        Icon = SvgIcon.Twitter
+                    },
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Star",
+                Icon = SvgIcon.Star
+            },
+            new MenuItem()
+            {
+                Text = "Star Outline",
+                Icon = SvgIcon.StarOutline
+            }
+        };
+
+        base.OnInitialized();
+    }
+}

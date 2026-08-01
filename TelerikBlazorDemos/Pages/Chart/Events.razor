@@ -1,0 +1,131 @@
+﻿@page "/chart/events"
+
+<p>Click on a Chart axis label, legend item or a series data point. See the event argument values in the log below the Chart.</p>
+
+<TelerikChart OnAxisLabelClick="@OnChartAxisLabelClick"
+              OnLegendItemClick="@OnChartLegendItemClick"
+              OnSeriesClick="@OnChartSeriesClick">
+    <ChartSeriesItems>
+        <ChartSeries Type="ChartSeriesType.Line"
+                     Data="@Series1Data"
+                     Field="@nameof(SalesData.Revenue)"
+                     CategoryField="@nameof(SalesData.TimePeriod)"
+                     Name="Smartphones">
+        </ChartSeries>
+        <ChartSeries Type="ChartSeriesType.Line"
+                     Data="@Series2Data"
+                     Field="@nameof(SalesData.Revenue)"
+                     CategoryField="@nameof(SalesData.TimePeriod)"
+                     Name="Tablets">
+        </ChartSeries>
+        <ChartSeries Type="ChartSeriesType.Line"
+                     Data="@Series3Data"
+                     Field="@nameof(SalesData.Revenue)"
+                     CategoryField="@nameof(SalesData.TimePeriod)"
+                     Name="Headphones">
+        </ChartSeries>
+    </ChartSeriesItems>
+
+    <ChartCategoryAxes>
+        <ChartCategoryAxis Name="my-category-axis"
+                           Type="@ChartCategoryAxisType.Date">
+        </ChartCategoryAxis>
+    </ChartCategoryAxes>
+
+    <ChartValueAxes>
+        <ChartValueAxis Name="my-value-axis">
+            <ChartValueAxisLabels Format="C0"></ChartValueAxisLabels>
+        </ChartValueAxis>
+    </ChartValueAxes>
+
+    <ChartTitle Text="Revenue per Product Line in Millions"></ChartTitle>
+</TelerikChart>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private List<SalesData> Series1Data { get; set; } = new List<SalesData>();
+    private List<SalesData> Series2Data { get; set; } = new List<SalesData>();
+    private List<SalesData> Series3Data { get; set; } = new List<SalesData>();
+
+    private string EventLog { get; set; } = string.Empty;
+
+    private void OnChartAxisLabelClick(ChartAxisLabelClickEventArgs args)
+    {
+        var logger = "<div><strong>Axis Label Click event</strong><ul>";
+
+        logger += $"<li>Clicked on axis label <strong>{args.Text}</strong> with index <strong>{args.Index}</strong> and value <strong>{args.Value}</strong> from axis <strong>{args.AxisName}</strong>.</li></ul></div>";
+        EventLog = EventLog.Insert(0, logger);
+    }
+
+    private void OnChartLegendItemClick(ChartLegendItemClickEventArgs args)
+    {
+        var logger = "<div><strong>Legend Item Click event</strong><ul>";
+
+        logger += $"<li>Clicked on legend item <strong>{args.Text}</strong> with series index <strong>{args.SeriesIndex}</strong>.</li></ul></div>";
+        EventLog = EventLog.Insert(0, logger);
+    }
+
+    private void OnChartSeriesClick(ChartSeriesClickEventArgs args)
+    {
+        var logger = "<div><strong>Series Click event</strong><ul>";
+        var item = (SalesData)args.DataItem;
+
+        logger += $"<li>Clicked on data point <strong>{item.Revenue}</strong> from series <strong>{item.Product}</strong>.</li></ul></div>";
+        EventLog = EventLog.Insert(0, logger);
+    }
+
+    private void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    private void GetChartData()
+    {
+        var rnd = new Random();
+        var now = DateTime.Today;
+        var monthsBack = 12;
+
+        for (int i = 1; i <= monthsBack; i++)
+        {
+            var dateTimeValue = now.AddMonths(-monthsBack + i);
+
+            Series1Data.Add(new SalesData()
+            {
+                Id = i,
+                Product = "Smartphones",
+                Revenue = rnd.Next(50, 90),
+                TimePeriod = dateTimeValue
+            });
+            Series2Data.Add(new SalesData()
+            {
+                Id = i,
+                Product = "Tablets",
+                Revenue = rnd.Next(30, 70),
+                TimePeriod = dateTimeValue
+            });
+            Series3Data.Add(new SalesData()
+            {
+                Id = i,
+                Product = "Headphones",
+                Revenue = rnd.Next(10, 50),
+                TimePeriod = dateTimeValue
+            });
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GetChartData();
+
+        await base.OnInitializedAsync();
+    }
+
+    public class SalesData
+    {
+        public int Id { get; set; }
+        public string Product { get; set; }
+        public DateTime TimePeriod { get; set; }
+        public decimal Revenue { get; set; }
+    }
+}

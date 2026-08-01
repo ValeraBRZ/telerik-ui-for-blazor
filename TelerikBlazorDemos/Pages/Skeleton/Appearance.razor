@@ -1,0 +1,78 @@
+@page "/skeleton/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Animation">
+        <TelerikDropDownList Data="@AnimationTypes"
+                             Value="@AnimationType"
+                             TItem="@SkeletonAnimationType"
+                             TValue="SkeletonAnimationType"
+                             OnChange="@TypeChanged">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Visibility">
+        <TelerikCheckBox @bind-Value="@Visible"></TelerikCheckBox>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div style="width: 30%">
+    <div class="skeleton-wrapper">
+        <span class="k-mr-3 shape-label">Circle:</span>
+        <TelerikSkeleton Width="50px"
+                         Height="50px"
+                         AnimationType="@AnimationType"
+                         ShapeType="@SkeletonShapeType.Circle"
+                         Class="k-display-inline-block"
+                         Visible="@Visible"></TelerikSkeleton>
+    </div>
+    <div class="skeleton-wrapper">
+        <span class="k-mr-3 shape-label">Text:</span>
+        <TelerikSkeleton Width="200px"
+                         AnimationType="@AnimationType"
+                         Class="k-display-inline-block"
+                         Visible="@Visible"></TelerikSkeleton>
+    </div>
+    <div class="skeleton-wrapper">
+        <span class="k-mr-3 shape-label">Rectangle:</span>
+        <TelerikSkeleton Width="200px"
+                         Height="50px"
+                         AnimationType="@AnimationType"
+                         ShapeType="@SkeletonShapeType.Rectangle"
+                         Class="k-display-inline-block"
+                         Visible="@Visible"></TelerikSkeleton>
+    </div>
+</div>
+
+@code {
+    public SkeletonAnimationType AnimationType { get; set; } = SkeletonAnimationType.Pulse;
+    public bool Visible { get; set; } = true;
+
+    List<SkeletonAnimationType> AnimationTypes { get; set; } = new List<SkeletonAnimationType>
+    {
+        SkeletonAnimationType.Pulse,
+        SkeletonAnimationType.Wave,
+        SkeletonAnimationType.None
+    };
+
+    void TypeChanged(object item)
+    {
+        AnimationType = (SkeletonAnimationType)item;
+    }
+}
+
+<style>
+    .skeleton-wrapper {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .shape-label {
+        width: 70px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+    }
+</style>

@@ -1,0 +1,110 @@
+@page "/editor/validation"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+
+@if (string.IsNullOrEmpty(SuccessMessage))
+{
+    <EditForm Model="@CurrentBlogPost" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+
+        <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+            <ValidationSummary />
+        </div>
+
+        <div class="demo-alert demo-alert-info">Current Value Length is: @ValueLength</div>
+        <TelerikEditor Height="300px" @bind-Value="@CurrentBlogPost.Content"></TelerikEditor>
+
+        <p style="margin-top: 20px;">
+            <TelerikButton ButtonType="@ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+        </p>
+    </EditForm>
+}
+else
+{
+    <div class="demo-alert demo-alert-success" role="alert">
+        @SuccessMessage
+    </div>
+}
+
+@code {
+    private BlogPost CurrentBlogPost { get; set; }
+    int ValueLength => GetTextCount(CurrentBlogPost.Content);
+    string SuccessMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        CurrentBlogPost = new BlogPost()
+        {
+            Content = @"
+                <h1 style=""text-align:center; font-size: large"">
+                    <span style=""font-family:Verdana, Geneva, sans-serif;"">
+                        <strong> One of the Most Beautiful Islands on Earth - Tenerife</strong>
+                    </span>
+                </h1>
+                <p>
+                    <span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" ><strong> Overview </strong>
+                    </span>
+                </p>
+                <p>
+                    <strong>Tenerife</strong> is the largest and most populated island of the eight <a href=""https://en.wikipedia.org/wiki/Canary_Islands"" target=""_blank"">Canary Islands</a>. It is also the most populated island of <strong>Spain</strong>, with a land area of 2,034.38 square kilometers (785 sq mi) and 904,713 inhabitants, 43% of the total population of the <strong>Canary Islands</strong>.
+                    The archipelago's beaches, climate and important natural attractions, make it a major tourist destination with over 12 million visitors per year.
+                </p>
+                "
+                };
+        base.OnInitialized();
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+
+    public class BlogPost
+    {
+        [CharacterMinLength(400, ErrorMessage = "The content of the blog post should be at least 400 letters.")]
+        public string Content { get; set; }
+
+        public BlogPost()
+        {
+        }
+    }
+
+    public class CharacterMinLength : ValidationAttribute
+    {
+        public int MinLength { get; set; }
+
+        public CharacterMinLength(int minLength)
+        {
+            MinLength = minLength;
+        }
+
+        public override bool IsValid(object value)
+        {
+            Regex regStripHtmlTags = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+
+            string plainText = regStripHtmlTags.Replace(value?.ToString() ?? string.Empty, "");
+
+            var valueLength = plainText.Count(char.IsLetterOrDigit);
+
+            return valueLength >= MinLength;
+        }
+    }
+
+    private int GetTextCount(string value)
+    {
+        Regex regStripHtmlTags = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+
+        string plainText = regStripHtmlTags.Replace(value?.ToString() ?? string.Empty, "");
+
+        return plainText.Count(char.IsLetterOrDigit);
+    }
+}

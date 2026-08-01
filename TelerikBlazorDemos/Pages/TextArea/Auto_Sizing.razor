@@ -1,0 +1,29 @@
+@page "/textarea/auto-sizing"
+
+<div class="demo-section auto k-form k-form-md k-form-vertical">
+    <div class="demo-alert fixed-width demo-width demo-alert-info">
+        Start typing and add some new lines to see how
+        the text area grows with the text so you always see it.
+    </div>
+
+    <div class="fixed-width k-form">
+        <div class="k-form-field">
+            <div class="k-form-field-wrap">
+                <label for="productDescription" class="k-label k-form-label">Enter product description:</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextArea Id="productDescription"
+                                     ResizeMode="@TextAreaResizeMode.Auto"
+                                     Placeholder="Enter your text here">
+                    </TelerikTextArea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fixed-width {
+        width: 400px;
+    }
+</style>
+

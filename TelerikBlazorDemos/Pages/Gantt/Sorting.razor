@@ -1,0 +1,118 @@
+@page "/gantt/sorting"
+
+@inject GanttTaskService TaskService
+@inject GanttDependencyService DependencyService
+
+<div class="demo-alert demo-alert-info">The second Gantt allows sorting by multiple fields. For example, try sorting on the "Start" column, then by the "Task Title" column to see the difference in behavior with single-column sorting.</div>
+
+<h3>Gantt with sorting enabled for a single column.</h3>
+
+<TelerikGantt Data="@GanttData" Width="100%" @bind-TreeListWidth="@TreeListWidth" Height="350px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              Sortable="true"
+              SortMode="@SortMode.Single"
+              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )">
+    <GanttColumns>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@GanttDependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+<h3>Gantt with sorting enabled for multiple columns.</h3>
+
+<TelerikGantt Data="@GanttData" Width="100%" @bind-TreeListWidth="@TreeListWidth" Height="350px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              Sortable="true"
+              SortMode="@SortMode.Multiple"
+              TreeListEditMode="@GanttTreeListEditMode.None">
+    <GanttColumns>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@GanttDependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code{
+    public List<GanttTaskDto> GanttData { get; set; } = new List<GanttTaskDto>();
+    public List<GanttDependencyDto> GanttDependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        GanttData = (await TaskService.GetTasksAsync()).ToList();
+        GanttDependencies = (await DependencyService.GetDependenciesAsync()).ToList();
+    }
+}
+
+<style>
+    /* Disable Timeline editing via CSS.
+        Will not be necessary when this is done:
+        https://feedback.telerik.com/blazor/1572900
+    */
+
+    /* delete button */
+    .k-gantt .k-task:hover .k-task-actions,
+    /* resize handles */
+    .k-gantt .k-task:hover .k-resize-handle,
+    /* progress drag handle */
+    .k-gantt .k-task-wrap:hover .k-task-draghandle,
+    /* dependency handles */
+    .k-gantt .k-task-wrap:hover .k-task-dot,
+    /* drag overlay */
+    .k-gantt .k-gantt-marquee,
+    /* drag tooltip */
+    .k-gantt .k-gantt-resize-hint {
+        visibility: hidden;
+    }
+</style>

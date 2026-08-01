@@ -1,0 +1,22 @@
+@page "/loadercontainer/rtl"
+
+<div class="my-mockup-layout">
+    <TelerikLoaderContainer LoaderPosition="@LoaderPosition.End"></TelerikLoaderContainer>
+</div>
+
+@code {
+}
+
+<style>
+    .my-mockup-layout {
+        position: relative;
+        height: 522px;
+        width: 854px;
+        margin: 0 auto;
+        background-image: url("images/loader-container/LoaderContainer-MockupApp.svg");
+    }
+
+        .my-mockup-layout .k-loader-container {
+            z-index: 1;
+        }
+</style>

@@ -1,0 +1,92 @@
+@page "/floatinglabel/overview"
+@page "/floatinglabel/index"
+
+@using User = TelerikBlazorDemos.Models.Form.User
+
+<div class="demo-section">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@TestUser" 
+                  OnValidSubmit="@HandleValidSubmit"
+                  OnInvalidSubmit="@HandleInvalidSubmit"
+                  class="k-form k-form-md">
+            <DataAnnotationsValidator />
+            <TelerikValidationSummary />
+
+            <div class="k-form-field">
+                <TelerikFloatingLabel Text="First Name*:" Class="custom-label">
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@TestUser.FirstName"></TelerikTextBox>
+                    </div>
+                </TelerikFloatingLabel>
+            </div>
+
+            <div class="k-form-field">
+                <TelerikFloatingLabel Text="Last Name*:" Class="custom-label">
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@TestUser.LastName"></TelerikTextBox>
+                    </div>
+                </TelerikFloatingLabel>
+            </div>
+
+            <div class="k-form-field">
+                <TelerikFloatingLabel Text="Birth Date*:" Class="custom-label">
+                    <div class="k-form-field-wrap">
+                        <TelerikDatePicker @bind-Value="@TestUser.BirthDate" Format=""></TelerikDatePicker>
+                    </div>
+                </TelerikFloatingLabel>
+            </div>
+
+            <div class="k-form-buttons">
+                <TelerikButton ButtonType="@ButtonType.Submit"
+                               Class="k-form-submit"
+                               ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+</div>
+
+<style>
+    .custom-label {
+        width: 100%;
+    }
+</style>
+
+@code {
+    public User TestUser { get; set; } = new User()
+    {
+        Email = "john.doe@email.com",
+        Password = "testpassword",
+        City = "Sofia",
+        Country = "Bulgaria",
+        AddressLine = "City Center",
+        AcceptTerms = true
+    };
+
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+        TestUser.FirstName = null;
+        TestUser.LastName = null;
+        TestUser.BirthDate = null;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

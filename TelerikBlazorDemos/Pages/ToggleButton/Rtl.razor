@@ -1,0 +1,20 @@
+@page "/togglebutton/rtl"
+
+<div class="demo-section auto">
+    <TelerikToggleButton Icon="@( IsAudioOn ? @SvgIcon.VolumeMute : @SvgIcon.VolumeUp )"
+                         OnClick="@MuteClickHandler">
+        @ButtonContent
+    </TelerikToggleButton>
+</div>
+
+@code {
+    private const string AudioOn = "Audio On";
+
+    private const string AudioOff = "Audio Off";
+
+    private bool IsAudioOn = true;
+
+    public string ButtonContent => IsAudioOn ? AudioOff : AudioOn;
+
+    protected void MuteClickHandler() => IsAudioOn = !IsAudioOn;
+}

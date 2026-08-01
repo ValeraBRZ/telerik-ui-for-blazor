@@ -1,0 +1,187 @@
+@page "/grid/ai-data-operations"
+
+@using System.Net.Http.Json
+@using Telerik.AI.SmartComponents.Extensions
+
+@using CustomerService = TelerikBlazorDemos.Services.Data.CustomerService;
+@using CustomerDto = TelerikBlazorDemos.Services.Data.CustomerDto;
+
+@inject CustomerService CustomerService
+@inject HttpClient HttpClientInstance
+
+<TelerikGrid @ref="@GridRef"
+             Data="@GridData"
+             FilterMode="@GridFilterMode.FilterMenu"
+             Groupable="true"
+             Height="600px"
+             Pageable="true"
+             @bind-PageSize="@GridPageSize"
+             @bind-Page="@GridPage"
+             Reorderable="true"
+             Resizable="true"
+             Sortable="true">
+    <GridToolBar>
+        <GridToolBarAIAssistantTool>
+            <GridToolBarAIAssistantToolSettings>
+                <GridToolBarAIAssistantToolPromptSettings PromptPlaceholder="Filter, sort or group with AI"
+                                                          OnPromptRequest="@OnAIPromptRequest"
+                                                          EnableSpeechToText="true"
+                                                          PromptSuggestions="@AIPromptSuggestions">
+                    <AIPromptSpeechToTextButtonSettings Lang="en-US"></AIPromptSpeechToTextButtonSettings>
+                </GridToolBarAIAssistantToolPromptSettings>
+                <GridToolBarAIAssistantToolWindowSettings MaxHeight="90vh"
+                                                          MaxWidth="90vw"
+                                                          Width="34em"
+                                                          @bind-Visible="@IsAIPromptWindowVisible">
+                </GridToolBarAIAssistantToolWindowSettings>
+            </GridToolBarAIAssistantToolSettings>
+        </GridToolBarAIAssistantTool>
+
+        <GridToolBarSpacerTool />
+
+        <GridToolBarCustomTool>
+            <TelerikButton Icon="@nameof(SvgIcon.ArrowRotateCcw)" OnClick="@OnResetChangesClick">Reset Changes</TelerikButton>
+        </GridToolBarCustomTool>
+    </GridToolBar>
+
+    <GridSettings>
+        <GridPagerSettings PageSizes="@( new List<int?> { 10, 20, 50, null } )" />
+        <GridExcelExport FileName="grid-export-by-ai.xlsx" />
+    </GridSettings>
+
+    <GridColumns>
+        <GridColumn Id="@nameof(CustomerDto.CustomerName)" Field="@nameof(CustomerDto.CustomerName)" Title="Name" Width="160px" />
+        <GridColumn Id="@nameof(CustomerDto.Amount)" Field="@nameof(CustomerDto.Amount)" Title="Amount" Width="120px" />
+        <GridColumn Id="@nameof(CustomerDto.Fee)" Field="@nameof(CustomerDto.Fee)" Title="Fee" Width="120px" />
+        <GridColumn Id="@nameof(CustomerDto.Currency)" Field="@nameof(CustomerDto.Currency)" Title="Currency" Width="140px" />
+        <GridColumn Id="@nameof(CustomerDto.Status)" Field="@nameof(CustomerDto.Status)" Title="Status" Width="140px">
+            <Template>
+                @{
+                    var dataItem = (CustomerDto)context;
+
+                    <TelerikChip Text="@dataItem.Status"
+                                 ThemeColor="@GetStatusThemeColor(dataItem)"
+                                 Selectable="false">
+                    </TelerikChip>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Id="@nameof(CustomerDto.TransactionType)" Field="@nameof(CustomerDto.TransactionType)" Title="Transaction Type" Width="180px" />
+        <GridColumn Id="@nameof(CustomerDto.AccountType)" Field="@nameof(CustomerDto.AccountType)" Title="Account Type" Width="160px">
+            <Template>
+                @{
+                    var dataItem = (CustomerDto)context;
+
+                    <TelerikChip Text="@dataItem.AccountType"
+                                 Icon="@GetAccountTypeIcon(dataItem)"
+                                 FillMode="@ThemeConstants.Chip.FillMode.Outline"
+                                 Selected="false">
+                    </TelerikChip>
+                }
+            </Template>
+        </GridColumn>
+        <GridColumn Id="@nameof(CustomerDto.TransactionDate)" Field="@nameof(CustomerDto.TransactionDate)" Title="Transaction Date" DisplayFormat="{0:d}" Width="180px" />
+        <GridColumn Id="@nameof(CustomerDto.Description)" Field="@nameof(CustomerDto.Description)" Title="Description" Width="160px" />
+        <GridColumn Id="@nameof(CustomerDto.Region)" Field="@nameof(CustomerDto.Region)" Title="Region" Width="140px" />
+    </GridColumns>
+</TelerikGrid>
+
+<style>
+    .k-grid-assistant-window .k-textarea textarea {
+        height: 3.8em;
+    }
+</style>
+
+@code {
+    private TelerikGrid<CustomerDto> GridRef { get; set; }
+    private List<CustomerDto> GridData { get; set; }
+    private int GridPage { get; set; } = 1;
+    private int GridPageSize { get; set; } = 10;
+    private bool IsAIPromptWindowVisible { get; set; }
+
+    private List<string> AIPromptSuggestions { get; set; } = new()
+    {
+        "Sort by Amount descending and filter where currency is USD",
+        "Show 20 rows per page",
+        "Reorder the Transaction Type and Status columns",
+        "Lock the Name column",
+        "Export to Excel with file name grid-report"
+    };
+
+    private async Task OnAIPromptRequest(AIPromptPromptRequestEventArgs args)
+    {
+        try
+        {
+            var requestResult = await this.HttpClientInstance.PostAsJsonAsync("https://demos.telerik.com/service/v2/ai/grid/smart-state", args.Request);
+            var resultContent = await requestResult.Content.ReadAsStringAsync();
+            var gridAIResponse = JsonSerializer.Deserialize<GridAIResponse>(resultContent);
+
+            args.Response = resultContent;
+
+            if (gridAIResponse is not null)
+            {
+                IsAIPromptWindowVisible = false;
+            }
+        }
+        catch (Exception)
+        {
+
+            args.Output = "The request returned no results. Try another request from the prompt suggestions.";
+        }
+    }
+
+    private string GetStatusThemeColor(CustomerDto dataItem)
+    {
+        string themeColor = ThemeConstants.Chip.ThemeColor.Base;
+
+        switch (dataItem.Status)
+        {
+            case "Completed":
+                themeColor = ThemeConstants.Chip.ThemeColor.Success;
+                break;
+            case "Pending":
+                themeColor = ThemeConstants.Chip.ThemeColor.Info;
+                break;
+            case "Failed":
+                themeColor = ThemeConstants.Chip.ThemeColor.Error;
+                break;
+        }
+
+        return themeColor;
+    }
+
+    private object GetAccountTypeIcon(CustomerDto dataItem)
+    {
+        object icon = null;
+
+        switch (dataItem.AccountType)
+        {
+            case "Checking":
+                icon = SvgIcon.MoneyExchange;
+                break;
+            case "Savings":
+                icon = SvgIcon.WalletSolid;
+                break;
+            case "Business":
+                icon = SvgIcon.WalletSolid;
+                break;
+            default:
+                break;
+        }
+
+        return icon;
+    }
+
+
+    private async Task OnResetChangesClick()
+    {
+        await GridRef.SetStateAsync(null);
+
+        GridPageSize = 10;
+    }
+
+    protected override void OnInitialized()
+    {
+        GridData = CustomerService.GetData();
+    }
+}

@@ -1,0 +1,66 @@
+@page "/toolbar/overview"
+
+<TelerikToolBar Class="toolbar-size" OverflowMode="@ToolBarOverflowMode.None">
+    <ToolBarButton Class="button-image">
+        <img class="k-image k-button-icon" alt="reply icon" src="images/toolbar/reply.png" />Reply
+    </ToolBarButton>
+    <ToolBarButton Class="button-image">
+        <img class="k-image k-button-icon" alt="forward icon" src="images/toolbar/forward.png" />Forward
+    </ToolBarButton>
+    <ToolBarButton Class="button-image">
+        <img class="k-image k-button-icon" alt="important icon" src="images/toolbar/important.png" />Mark as important
+    </ToolBarButton>
+    <ToolBarButton Class="button-image">
+        <img class="k-image k-button-icon" alt="important icon" src="images/toolbar/favorite.png" />Mark as favorite
+    </ToolBarButton>
+    <ToolBarTemplateItem>
+        <TelerikDropDownList @bind-Value="@Value"
+                             Data="MoveToActions"
+                             Class="move-to-icon"
+                             DefaultText="Move to...">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+            <ItemTemplate>
+                <img class="scale-image" src="images/toolbar/folder.png" alt="Folder icon" />
+                @context
+            </ItemTemplate>
+        </TelerikDropDownList>
+    </ToolBarTemplateItem>
+</TelerikToolBar>
+
+@code {
+    public string Value { get; set; }
+    public List<string> MoveToActions { get; set; } = new List<string>()
+    {
+        "Subscriptions",
+        "Personal",
+        "Bills",
+        "Travel"
+    };
+}
+
+<style>
+    .toolbar-size {
+        max-width: 830px;
+    }
+
+    .button-image img, .scale-image {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px !important;
+    }
+
+    .button-image .k-button-text {
+        display: inherit;
+    }
+
+    .move-to-icon .k-input-inner:before {
+        content: " ";
+        background-image: url('images/toolbar/move.png');
+        width: 16px;
+        height: 16px;
+        background-size: cover;
+        margin-right: 8px;
+    }
+</style>

@@ -1,0 +1,50 @@
+@page "/tilelayout/reordering"
+
+<div class="demo-alert demo-alert-info">Drag the header of a tile to reorder the tiles.</div>
+
+<div style="display: inline-block;">
+    <TelerikTileLayout Columns="3"
+                       ColumnWidth="285px"
+                       RowHeight="285px"
+                       Reorderable="true">
+        <TileLayoutItems>
+            <TileLayoutItem HeaderText="Barcelona">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/barcelona.jpg" alt="Barcelona" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Sofia">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sofia.jpg" alt="Sofia" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Rome">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/rome.jpg" alt="Rome" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="South Africa">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/south-africa.jpg" alt="South Africa" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="San Francisco">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/sanfran.jpg" alt="San Francisco" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem HeaderText="Sea View Apartments">
+                <Content>
+                    <img class="k-card-image" draggable="false" src="images/cards/places/seaview-appartments.png" alt="Sea view Apartments" />
+                </Content>
+            </TileLayoutItem>
+        </TileLayoutItems>
+    </TelerikTileLayout>
+</div>
+
+<style>
+    .k-card-image {
+        width: 285px;
+        height: 189px;
+    }
+</style>

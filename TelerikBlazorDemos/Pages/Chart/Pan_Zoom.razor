@@ -1,0 +1,83 @@
+@page "/chart/pan-zoom"
+
+<div class="k-d-flex k-flex-wrap">
+    <div style="min-width: 500px;">
+        <TelerikChart>
+            <ChartPannable Enabled="true"></ChartPannable>
+            <ChartZoomable Enabled="true"></ChartZoomable>
+
+            <ChartSeriesItems>
+                <ChartSeries Type="ChartSeriesType.Column"
+                             Name="Product 1"
+                             Data="@Data"
+                             Field="@nameof(ChartSeriesData.Product1Sales)"
+                             CategoryField="@nameof(ChartSeriesData.Year)">
+                </ChartSeries>
+
+                <ChartCategoryAxes>
+                    <ChartCategoryAxis Min="1" Max="5">
+                        <ChartCategoryAxisLabels>
+                            <ChartCategoryAxisLabelsRotation Angle="-45" />
+                        </ChartCategoryAxisLabels>
+                    </ChartCategoryAxis>
+                </ChartCategoryAxes>
+            </ChartSeriesItems>
+        </TelerikChart>
+    </div>
+
+    <div class="k-flex-column k-d-flex k-flex-wrap">
+        <div class="k-flex-grow pl-md">
+            <h6 class="kd-demo-heading mt-0">Pan instructions:</h6>
+            <div class="k-card mr-sm mb-sm" style="width: 21rem">
+                <div class="k-card-body">
+                    <div>To pan, click and hold the mouse button. Setting different key combinations is also supported.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="k-flex-grow pl-md">
+            <h6 class="kd-demo-heading mt-0">Zoom instructions:</h6>
+            <div class="k-card mr-sm mb-sm" style="width: 21rem">
+                <div class="k-card-body">
+                    <div>To zoom, use the mouse wheel/SHIFT + click and hold to select an area for zoom. Setting different key combinations is also supported.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<ChartSeriesData> Data { get; set; } = new List<ChartSeriesData>();
+
+    protected override Task OnInitializedAsync()
+    {
+        Data = ChartSeriesData.GenerateData();
+        return base.OnInitializedAsync();
+    }
+
+    public class ChartSeriesData
+    {
+        public int Product1Sales { get; set; }
+        public DateTime Year { get; set; }
+        public string SegmentName { get; set; }
+
+        public static List<ChartSeriesData> GenerateData()
+        {
+            List<ChartSeriesData> data = new List<ChartSeriesData>();
+
+            for (int i = 1; i <= 10; i++)
+            {
+                var dataItem = new ChartSeriesData
+                {
+                    Product1Sales = i,
+                    Year = new DateTime(2000 + i, 3, i),
+                    SegmentName = $"{i}"
+                };
+
+                data.Add(dataItem);
+            }
+
+            return data;
+        }
+    }
+}

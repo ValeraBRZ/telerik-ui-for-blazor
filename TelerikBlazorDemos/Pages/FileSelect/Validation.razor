@@ -1,0 +1,53 @@
+@page "/fileselect/validation"
+
+<div class="demo-section k-form k-form-md">
+    <h6 class="kd-demo-heading">Select PDF</h6>
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikFileSelect AllowedExtensions="@(new List<string>() { ".pdf" })">
+            </TelerikFileSelect>
+            <div class="k-form-hint">Select only <strong>PDF</strong> files.</div>
+        </div>
+    </div>
+    <h6 class="kd-demo-heading">Select Image</h6>
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikFileSelect AllowedExtensions="@(new List<string>() { ".gif", ".jpg", ".png" })">
+            </TelerikFileSelect>
+            <div class="k-form-hint">Select only <strong>GIF, JPG, PNG</strong> files.</div>
+        </div>
+    </div>
+
+    <h6 class="kd-demo-heading">Size Validation</h6>
+
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikFileSelect MaxFileSize="4194304">
+            </TelerikFileSelect>
+            <div class="k-form-hint">Maximum allowed file size is <strong>4MB</strong>.</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public int MinFileSize { get; set; } = 1024;
+    public int MaxFileSize { get; set; } = 4 * 1024 * 1024;
+}
+
+<style>
+    .k-upload-files {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .k-form-hint {
+        display: block;
+        margin-top: 1em;
+    }
+
+    .demo-section > .kd-demo-heading {
+        padding-bottom: 0;
+        margin-bottom: 1em;
+    }
+
+</style>

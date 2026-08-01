@@ -1,0 +1,169 @@
+@page "/treeview/selection"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Selection Mode">
+        <TelerikDropDownList @bind-Value="@SelectionMode"
+                             Data="@SelectionModeOptions"
+                             OnChange="@UpdateSeletedItemsPerSelectionMode">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+@if (SelectionMode == TreeViewSelectionMode.Multiple)
+{
+    <div class="demo-alert demo-alert-info">
+        Select one node or more (through Shift or Ctrl).
+    </div>
+}
+
+<div class="row">
+    <div class="col-6">
+        <TelerikTreeView Data="@FlatData"
+                         SelectionMode="@SelectionMode"
+                         @bind-ExpandedItems="@ExpandedItems"
+                         @bind-SelectedItems="@SelectedItems">
+            <TreeViewBindings>
+                <TreeViewBinding ParentIdField="ParentIdValue"></TreeViewBinding>
+            </TreeViewBindings>
+        </TelerikTreeView>
+    </div>
+    <div class="col-6">
+        <h6 class="kd-demo-heading mt-0">Selected Items:</h6>
+        @if (SelectedItems.Any())
+        {
+<div class="card-container">
+    @foreach (var item in SelectedItems)
+    {
+<div class="k-card mr-sm mb-sm" style="width: 15rem">
+    <div class="k-card-body">
+                            <div><strong>Icon:</strong> <TelerikSvgIcon Icon="@((item as TreeItem).Icon)" /></div>
+        <div><strong>Title:</strong> @((item as TreeItem).Text)</div>
+        <div><strong>Id:</strong> @((item as TreeItem).Id) </div>
+    </div>
+</div>                }
+</div>}
+    </div>
+</div>
+
+
+@code { public IEnumerable<object> SelectedItems { get; set; } = new List<object>();
+
+    public TreeViewSelectionMode SelectionMode { get; set; } = TreeViewSelectionMode.Multiple;
+
+    public IEnumerable<TreeItem> FlatData { get; set; }
+    public IEnumerable<object> ExpandedItems { get; set; }
+
+    public IEnumerable<TreeViewSelectionMode> SelectionModeOptions { get; set; } =
+        new List<TreeViewSelectionMode> { TreeViewSelectionMode.None, TreeViewSelectionMode.Single, TreeViewSelectionMode.Multiple };
+
+    public class TreeItem
+    {
+        public int Id { get; set; }
+        public string Text { get; set; }
+        public int? ParentIdValue { get; set; }
+        public bool HasChildren { get; set; }
+        public ISvgIcon Icon { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadFlatData();
+
+        // pre-select items (not required)
+        SelectedItems = FlatData.Skip(2).Take(2);
+    }
+
+    private void LoadFlatData()
+    {
+        List<TreeItem> items = new List<TreeItem>();
+        items.Add(new TreeItem()
+        {
+            Id = 1,
+            Text = "Project",
+            ParentIdValue = null,
+            HasChildren = true,
+            Icon = SvgIcon.Folder
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 2,
+            Text = "Design",
+            ParentIdValue = 1,
+            HasChildren = true,
+            Icon = SvgIcon.Brush
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 3,
+            Text = "Implementation",
+            ParentIdValue = 1,
+            HasChildren = true,
+            Icon = SvgIcon.Folder
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 4,
+            Text = "site.psd",
+            ParentIdValue = 2,
+            HasChildren = false,
+            Icon = SvgIcon.FilePsd
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 5,
+            Text = "index.js",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Js
+        });
+        items.Add(new TreeItem()
+        {
+            Id = 6,
+            Text = "index.html",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Code
+        });
+
+        items.Add(new TreeItem()
+        {
+            Id = 7,
+            Text = "styles.css",
+            ParentIdValue = 3,
+            HasChildren = false,
+            Icon = SvgIcon.Css
+        });
+
+        FlatData = items;
+        ExpandedItems = items.Take(3);
+    }
+
+    void UpdateSeletedItemsPerSelectionMode()
+    {
+        // we use this in the demo to clean up the cards rendered from the view-model
+        switch (SelectionMode)
+        {
+            case TreeViewSelectionMode.None:
+                SelectedItems = Enumerable.Empty<object>();
+                break;
+            case TreeViewSelectionMode.Single:
+                if (SelectedItems.Count() > 0)
+                {
+                    SelectedItems = new List<object> { SelectedItems.Last() };
+                }
+                break;
+            default:
+                break;
+        }
+    } }
+<style>
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+</style>

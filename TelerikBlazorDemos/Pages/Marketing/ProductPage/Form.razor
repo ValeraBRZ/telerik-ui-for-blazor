@@ -1,0 +1,101 @@
+@page "/marketing-campaigns/product-page/form"
+
+@layout MainLayout
+
+<div class="kd-marketing-campaign-page">
+    <div class="k-d-flex k-flex-col k-align-items-center k-py-12 k-px-4 k-gap-10 k-bg-app-surface">
+        <div class="k-d-flex k-flex-col k-align-items-center k-gap-4">
+            <h2 class="k-h2 !k-mb-0">Get in touch</h2>
+            <p class="k-font-size-xl !k-mb-0">Still have questions? Contact us.</p>
+        </div>
+        <div class="k-d-grid k-grid-cols-1 k-grid-cols-md-2 k-gap-24 k-px-4.5 k-px-sm-6 k-px-md-4 k-px-lg-7.5 k-px-xl-10">
+            <TelerikForm Model="@FormModel" Columns="2" ColumnSpacing="1rem">
+                <FormButtons>
+                    <TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Send message</TelerikButton>
+                </FormButtons>
+                <FormItems>
+                    <FormItem LabelText="Name" ColSpan="1">
+                        <Template>
+                            <label for="name" class="k-label k-form-label">Name</label>
+                            <TelerikTextBox Id="name" @bind-Value="@FormModel.Name" ShowClearButton="true" />
+                        </Template>
+                    </FormItem>
+                    <FormItem LabelText="Email" ColSpan="1">
+                        <Template>
+                            <label for="email" class="k-label k-form-label">Email</label>
+                            <TelerikTextBox Id="email" @bind-Value="@FormModel.Email" ShowClearButton="true" />
+                        </Template>
+                    </FormItem>
+                    <FormItem LabelText="Subject" ColSpan="2">
+                        <Template>
+                            <label for="subject" class="k-label k-form-label">Subject</label>
+                            <TelerikTextBox Id="subject" @bind-Value="@FormModel.Subject" ShowClearButton="true" />
+                        </Template>
+                    </FormItem>
+                    <FormItem LabelText="Message" ColSpan="1">
+                        <Template>
+                            <label for="message" class="k-label k-form-label">Message</label>
+                            <TelerikTextArea Id="message" Rows="4" @bind-Value="@FormModel.Message" />
+                        </Template>
+                    </FormItem>
+                </FormItems>
+            </TelerikForm>
+            <div class="k-d-grid k-gap-4">
+                <TelerikMap Class="k-rounded-tl-lg k-rounded-br-lg" Height="292px" Center="@Center">
+                    <MapLayers>
+                        <MapLayer Type="@MapLayersType.Tile"
+                                  Attribution="@Attribution"
+                                  Subdomains="@Subdomains"
+                                  UrlTemplate="@UrlTemplate">
+                        </MapLayer>
+                        <MapLayer Type="@MapLayersType.Marker"
+                                  Data="@MarkerData"
+                                  LocationField="@nameof(MarkerModel.LatLng)"
+                                  TitleField="@nameof(MarkerModel.Title)">
+                        </MapLayer>
+                    </MapLayers>
+                </TelerikMap>
+                <div>
+                    <div>282 Fritsch Parkways</div>
+                    <div>East Ashleefurt</div>
+                    <div>Oregon</div>
+                    <div class="k-mb-xl">08682</div>
+                    <div>202-721-4002</div>
+                    <div>support@roamin.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public FormModelType FormModel { get; set; } = new FormModelType();
+
+    public class FormModelType
+    {
+        public string Name { get; set; } = "Glen Stracke";
+        public string Email { get; set; } = "glen_stracke@email.com";
+        public string Subject { get; set; } = "financial advice";
+        public string Message { get; set; } = "Please help me simplify my finances and save me time and money. Thank you!";
+    }
+    public string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
+    public string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    public string Attribution { get; set; } = "&copy; <a href='http://example.com/'>Attribution</a>";
+
+    public double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+
+    public List<MarkerModel> MarkerData { get; set; } = new List<MarkerModel>()
+    {
+        new MarkerModel()
+        {
+            LatLng = new double[] { 25, -109 },
+            Title = ""
+        }
+    };
+
+    public class MarkerModel
+    {
+        public double[] LatLng { get; set; }
+        public string Title { get; set; }
+    }
+}

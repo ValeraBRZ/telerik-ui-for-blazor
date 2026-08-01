@@ -1,0 +1,99 @@
+@page "/gantt/column-reordering"
+
+@inject GanttTaskService GanttTaskService
+@inject GanttDependencyService GanttDependencyService
+
+<TelerikGantt Data="@Data"
+              ColumnReorderable="true"
+              @bind-View="@SelectedView"
+              @bind-TreeListWidth="@TreeListWidth"
+              IdField="Id"
+              ParentIdField="ParentId"
+              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )"
+              Width="100%"
+              Height="600px">
+    <GanttColumns>
+        <GanttColumn Field="Id"
+                     Visible="false">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Reorderable="false"
+                     Title="Title (non-reorderable)">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Title="Status"
+                     Width="100px"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+    </GanttColumns>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code{
+    public List<GanttTaskDto> Data { get; set; } = new List<GanttTaskDto>();
+
+    public List<GanttDependencyDto> Dependencies { get; set; } = new List<GanttDependencyDto>();
+
+    public GanttView SelectedView { get; set; } = GanttView.Week;
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+        await LoadDependenciesAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Data = (await GanttTaskService.GetTasksAsync()).ToList();
+    }
+
+    private async Task LoadDependenciesAsync()
+    {
+        Dependencies = (await GanttDependencyService.GetDependenciesAsync()).ToList();
+    }
+}
+
+<style>
+    /* Disable Timeline editing via CSS.
+        Will not be necessary when this is done:
+        https://feedback.telerik.com/blazor/1572900
+    */
+
+    /* delete button */
+    .k-gantt .k-task:hover .k-task-actions,
+    /* resize handles */
+    .k-gantt .k-task:hover .k-resize-handle,
+    /* progress drag handle */
+    .k-gantt .k-task-wrap:hover .k-task-draghandle,
+    /* dependency handles */
+    .k-gantt .k-task-wrap:hover .k-task-dot,
+    /* drag overlay */
+    .k-gantt .k-gantt-marquee,
+    /* drag tooltip */
+    .k-gantt .k-gantt-resize-hint {
+        visibility: hidden;
+    }
+</style>

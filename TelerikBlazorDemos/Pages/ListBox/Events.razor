@@ -1,0 +1,234 @@
+@page "/listbox/events"
+
+@inject ProductService productService
+
+<div class="demo-section auto">
+    <TelerikListBox Id="@ListBoxId"
+                    ConnectedListBoxId="@ConnectedListBoxId"
+                    Data="@AllProducts"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    SelectedItems="@SelectedProducts"
+                    SelectedItemsChanged="@((IEnumerable<ProductDto> productList) => OnSelect(productList))"
+                    Draggable="true"
+                    OnDrop="@((ListBoxDropEventArgs<ProductDto> args) => OnDropFirst(args))"
+                    OnReorder="@((ListBoxReorderEventArgs<ProductDto> args) => OnReorder(args))"
+                    OnTransfer="@((ListBoxTransferEventArgs<ProductDto> args) => OnTransfer(args))"
+                    OnRemove="@((ListBoxRemoveEventArgs<ProductDto> args) => OnRemove(args))">
+    </TelerikListBox>
+
+    <TelerikListBox Id="@ConnectedListBoxId"
+                    Data="@ProductsToPurchase"
+                    TextField="@nameof(ProductDto.ProductName)"
+                    @bind-SelectedItems="@SelectedProductsToPurchase"
+                    DropSources="@ConnectedListBoxDropSources">
+        <ListBoxToolBarSettings>
+            <ListBoxToolBar Visible="false"></ListBoxToolBar>
+        </ListBoxToolBarSettings>
+    </TelerikListBox>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private string ListBoxId = "first-listbox";
+    private string ConnectedListBoxId = "connected-listbox";
+
+    private List<string> ConnectedListBoxDropSources => new List<string> { ListBoxId };
+
+    private IEnumerable<ProductDto> AllProducts { get; set; } = new List<ProductDto>(); 
+    private IEnumerable<ProductDto> SelectedProducts { get; set; } = new List<ProductDto>();
+
+    private IEnumerable<ProductDto> ProductsToPurchase { get; set; } = new List<ProductDto>();
+    private IEnumerable<ProductDto> SelectedProductsToPurchase { get; set; } = new List<ProductDto>();
+
+    #region Tools and Events Handlers
+
+    private void OnSelect(IEnumerable<ProductDto> selectedItems)
+    {
+        SelectedProducts = selectedItems;
+
+        var log = "<div><strong>Select event</strong>. The following item has been selected in the first ListBox:<ul>";
+
+        log += $"<li><strong>{SelectedProducts.FirstOrDefault().ProductName}</strong></li></ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnDropFirst(ListBoxDropEventArgs<ProductDto> args)
+    {
+        var payload = AllProducts.FirstOrDefault(x => args.Items.Select(x => x.ProductId).Contains(x.ProductId));
+
+        //reordering through drag within the first list box
+        if (args.DestinationListBoxId == ListBoxId)
+        {
+            var data = AllProducts.ToList();
+            _ = data.Remove(payload);
+            data.Insert(args.DestinationIndex.Value, payload);
+
+            AllProducts = data;
+        }
+        // transferring items from first list box to second list box
+        else
+        {
+            var firstProductDto = AllProducts.ToList();
+            _ = firstProductDto.Remove(payload);
+
+            var secondProductDto = ProductsToPurchase.ToList();
+            secondProductDto.Insert(GetIndexToInsertAt(args.DestinationIndex), payload);
+
+            AllProducts = firstProductDto;
+            ProductsToPurchase = secondProductDto;
+        }
+
+        var log = "<div><strong>Drop event</strong>. The following item has been dropped in the second ListBox:<ul>";
+
+        foreach (var item in args.Items)
+        {
+            log += $"<li><strong>{(item as ProductDto).ProductName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnRemove(ListBoxRemoveEventArgs<ProductDto> args)
+    {
+        var itemsToRemove = AllProducts.Where(x => args.Items.Select(y => y.ProductId).Contains(x.ProductId));
+
+        var data = AllProducts.Where(x => !itemsToRemove.Contains(x)).ToList();
+
+        AllProducts = data;
+
+        var log = "<div><strong>Remove event</strong>. The following items have been removed from the first ListBox:<ul>";
+
+        foreach (var item in itemsToRemove)
+        {
+            log += $"<li><strong>{(item as ProductDto).ProductName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnReorder(ListBoxReorderEventArgs<ProductDto> args)
+    {
+        if (args.ToIndex >= AllProducts.Count() || args.ToIndex < 0)
+        {
+            return;
+        }
+
+        var data = AllProducts.ToList();
+        var itemsToShift = data.Skip(args.FromIndex).Take(args.Items.Count).ToList();
+
+        data.RemoveAll(x => itemsToShift.Contains(x));
+        data.InsertRange(args.ToIndex, itemsToShift);
+
+        AllProducts = data;
+
+        var log = "<div><strong>Reorder event</strong>. The following items have been reordered in the first ListBox:<ul>";
+
+        foreach (var item in args.Items)
+        {
+            log += $"<li><strong>{(item as ProductDto).ProductName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnTransfer(ListBoxTransferEventArgs<ProductDto> args)
+    {
+        (IEnumerable<ProductDto> origin, IEnumerable<ProductDto> destination) output;
+
+        if (args.DestinationListBoxId == ConnectedListBoxId)
+        {
+            output = Transfer(AllProducts, ProductsToPurchase, args.Items);
+            AllProducts = output.origin.ToList();
+            ProductsToPurchase = output.destination.ToList();
+            SelectedProducts = Enumerable.Empty<ProductDto>();
+        }
+        else
+        {
+            output = Transfer(ProductsToPurchase, AllProducts, args.Items);
+            ProductsToPurchase = output.origin.ToList();
+            AllProducts = output.destination.ToList();
+            SelectedProductsToPurchase = Enumerable.Empty<ProductDto>();
+        }
+
+        var log = "<div><strong>Transfer event</strong>. The following items have been transfered:<ul>";
+
+        foreach (var item in args.Items)
+        {
+            log += $"<li><strong>{(item as ProductDto).ProductName}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private (IEnumerable<ProductDto> origin, IEnumerable<ProductDto> destination) Transfer(
+        IEnumerable<ProductDto> origin,
+        IEnumerable<ProductDto> destination,
+        IEnumerable<ProductDto> payload)
+    {
+        var originData = origin.ToList();
+        var destinationData = destination.ToList();
+
+        _ = originData.RemoveAll(x => payload.Select(x => x.ProductId).Contains(x.ProductId));
+
+        destinationData.AddRange(payload);
+
+        return (originData, destinationData);
+    }
+
+    #endregion Tools and Events Handlers
+
+    #region Data
+
+    private void LoadData()
+    {
+        var allData = productService.GetProducts().Take(20).ToList();
+
+        AllProducts = allData.Take(15).ToList();
+        ProductsToPurchase = allData.Skip(15).Take(5).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private int GetIndexToInsertAt(int? destinationIndex)
+           => destinationIndex.HasValue && destinationIndex.Value > 0 ? destinationIndex.Value : 0;
+    #endregion Data
+
+    #region Configurator
+
+    private string EventLog { get; set; } = string.Empty;
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    #endregion Configurator
+}
+
+<style>
+    .k-listbox {
+        height: 360px;
+    }
+
+    #first-listbox {
+        width: 270px;
+    }
+
+    #connected-listbox {
+        margin-left: 0.6em;
+        width: 232px;
+    }
+</style>

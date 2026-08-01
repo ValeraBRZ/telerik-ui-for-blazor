@@ -1,0 +1,159 @@
+﻿@page "/upload/events"
+
+@inject NavigationManager NavigationManager
+
+<div class="row">
+    <div class="col-4">
+        <TelerikUpload SaveUrl="@SaveUrl"
+                       RemoveUrl="@RemoveUrl"
+                       OnSelect="@OnSelect"
+                       OnRemove="@OnRemove"
+                       OnUpload="@OnUpload"
+                       OnProgress="@OnProgress"
+                       OnSuccess="@OnSuccess"
+                       OnError="@OnError"
+                       OnCancel="@OnCancel"
+                       OnClear="@OnClear"
+                       AutoUpload="false">
+        </TelerikUpload>
+    </div>
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    public string SaveUrl => ToAbsoluteUrl("api/upload/save");
+    public string RemoveUrl => ToAbsoluteUrl("api/upload/remove");
+    public string EventLog { get; set; } = "";
+
+    public string ToAbsoluteUrl(string url)
+    {
+        return $"{NavigationManager.BaseUri}{url}";
+    }
+
+    void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    public void OnSelect(UploadSelectEventArgs args)
+    {
+        var log = "<div><strong>Select event</strong>. The following files have been selected for upload:<ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li><strong>{file.Name}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnRemove(UploadEventArgs args)
+    {
+        var log = "<div><strong>Remove event</strong>. The following files will be removed:<ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li><strong>{file.Name}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnUpload(UploadEventArgs args)
+    {
+        var log = "<div><strong>Upload event</strong>. Upload for the following files has starterd:<ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li><strong>{file.Name}</strong></li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnProgress(UploadProgressEventArgs args)
+    {
+        var log = "<div><strong>Progress event</strong><ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li>The progress for file <strong>{file.Name}</strong> is {args.Progress}%.</li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnSuccess(UploadSuccessEventArgs args)
+    {
+        var log = "<div><strong>Success event</strong><ul>";
+        var actionText = args.Operation == UploadOperationType.Upload ? "uploaded" : "removed";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li>The file <strong>{file.Name}</strong> has been {actionText} successfully.</li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnError(UploadErrorEventArgs args)
+    {
+        var log = "<div><strong>Error event</strong><ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li>The request for file <strong>{file.Name}</strong> has failed with status code {args.Request.Status}.</li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnCancel(UploadCancelableEventArgs args)
+    {
+        var log = "<div><strong>Cancel event</strong><ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li>The file <strong>{file.Name}</strong> has been cancelled.</li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    public void OnClear(UploadClearEventArgs args)
+    {
+        var log = "<div><strong>Clear event</strong><ul>";
+
+        foreach (var file in args.Files)
+        {
+            log += $"<li>The file <strong>{file.Name}</strong> has been removed.</li>";
+        }
+
+        log += "</ul></div>";
+
+        EventLog = EventLog.Insert(0, log);
+    }
+}
+
+
+<style>
+    .k-upload-files {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>

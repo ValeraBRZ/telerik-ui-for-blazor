@@ -1,0 +1,25 @@
+@page "/toolbar/rtl"
+
+<div class="toolbar-wrapper">
+    <TelerikToolBar OverflowMode="ToolBarOverflowMode.Menu">
+        <ToolBarButton Icon="@SvgIcon.Undo">Undo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Redo">Redo</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Image" Overflow="ToolBarItemOverflow.Always">Image</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarToggleButton Icon="@SvgIcon.ApplyFormat"></ToolBarToggleButton>
+        <ToolBarSeparator></ToolBarSeparator>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.Bold"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Italic"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Underline"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarButton Icon="@SvgIcon.Copy" Overflow="ToolBarItemOverflow.Never">Copy</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Clipboard" Overflow="ToolBarItemOverflow.Never">Paste</ToolBarButton>
+        <ToolBarSeparator></ToolBarSeparator>
+    <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
+        <ToolBarToggleButton Icon="@SvgIcon.AlignLeft" OverflowText="Left"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.AlignCenter" OverflowText="Center"></ToolBarToggleButton>
+        <ToolBarToggleButton Icon="@SvgIcon.AlignRight" OverflowText="Right"></ToolBarToggleButton>
+    </ToolBarButtonGroup>
+    </TelerikToolBar>
+</div>

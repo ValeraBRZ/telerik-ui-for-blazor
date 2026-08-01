@@ -1,0 +1,74 @@
+@page "/treelist/load-on-demand"
+
+@using System.Text.Json
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 HasChildrenField="HasChildren"
+                 Pageable="true"
+                 OnExpand="@OnExpand">
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Expandable="true" Width="200px"></TreeListColumn>
+        <TreeListColumn Field="EmployeeId" Title="Id" Editable="false"></TreeListColumn>
+        <TreeListColumn Field="Position" Width="300px"></TreeListColumn>
+        <TreeListColumn Field="Extension"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public class JsonEmployee
+    {
+        public int EmployeeId { get; set; }
+        public int? ReportsTo { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Position { get; set; }
+        public int Extension { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("hasChildren")]
+        public bool HasChildren { get; set; }
+    }
+
+    public List<JsonEmployee> Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Data = new List<JsonEmployee>(await ReadItems(null));
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task OnExpand(TreeListExpandEventArgs args)
+    {
+        var item = args.Item as JsonEmployee;
+        if (item.HasChildren && !Data.Any(x => x.ReportsTo == item.EmployeeId))
+        {
+            var items = await ReadItems(item.EmployeeId);
+
+            Data.AddRange(items);
+        }
+    }
+
+    protected async Task<IEnumerable<JsonEmployee>> ReadItems(int? reportsTo)
+    {
+        var baseUrl = "https://demos.telerik.com/service/v2/core/EmployeeDirectory";
+        var requestUrl = string.Empty;
+
+        if (reportsTo == null)
+        {
+            requestUrl = $"{baseUrl}";
+        }
+        else
+        {
+            requestUrl = $"{baseUrl}?id={reportsTo}";
+        }
+
+        var client = new HttpClient();
+
+        HttpResponseMessage response = await client.GetAsync(requestUrl);
+
+        string result = await response.Content.ReadAsStringAsync();
+
+        return JsonSerializer.Deserialize<IEnumerable<JsonEmployee>>(result);
+    }
+}

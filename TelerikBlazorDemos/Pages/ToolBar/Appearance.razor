@@ -1,0 +1,51 @@
+@page "/toolbar/appearance"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Fill Mode">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@FillModes" @bind-Value="@FillMode" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Size">
+        <TelerikDropDownList TextField="Key" ValueField="Value" Data="@Sizes" @bind-Value="@Size" Width="150px"><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikToolBar FillMode="@FillMode"
+                    Size="@Size"
+                    OverflowMode="@ToolBarOverflowMode.None">
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.Bold"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Italic"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.Underline"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarButtonGroup SelectionMode="@ButtonGroupSelectionMode.Multiple">
+            <ToolBarToggleButton Icon="@SvgIcon.AlignLeft"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignCenter"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignRight"></ToolBarToggleButton>
+            <ToolBarToggleButton Icon="@SvgIcon.AlignJustify"></ToolBarToggleButton>
+        </ToolBarButtonGroup>
+        <ToolBarSpacer></ToolBarSpacer>
+        <ToolBarButton Icon="@SvgIcon.Cut">Cut</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Copy">Copy</ToolBarButton>
+        <ToolBarButton Icon="@SvgIcon.Clipboard">Paste</ToolBarButton>
+    </TelerikToolBar>
+</div>
+
+@code {
+    private string FillMode { get; set; } = ThemeConstants.ToolBar.FillMode.Solid;
+    private string Size { get; set; } = ThemeConstants.ToolBar.Size.Medium;
+
+    private Dictionary<string, string> FillModes { get; set; } = new Dictionary<string, string>
+    {
+        { "Flat", ThemeConstants.ToolBar.FillMode.Flat },
+        { "Solid", ThemeConstants.ToolBar.FillMode.Solid },
+        { "Outline", ThemeConstants.ToolBar.FillMode.Outline }
+    };
+
+    private Dictionary<string, string> Sizes { get; set; } = new Dictionary<string, string>
+    {
+        { "Small", ThemeConstants.ToolBar.Size.Small },
+        { "Medium", ThemeConstants.ToolBar.Size.Medium },
+        { "Large", ThemeConstants.ToolBar.Size.Large }
+    };
+}

@@ -1,0 +1,141 @@
+@page "/textarea/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(FormSubmitMessage))
+    {
+        <div class="k-form">
+            <EditForm Model="@FormModel"
+                      OnValidSubmit="@OnValidSubmit"
+                      OnInvalidSubmit="@OnInvalidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                    <ValidationSummary />
+                </div>
+
+                <div class="form-wrapper">
+                    <div class="k-form-field">
+                        <div class="k-form-field-wrap">
+                            <label for="productName" class="k-label k-form-label">Product Name:</label>
+                            <div class="k-form-field-wrap">
+                                <TelerikTextBox Id="productName" @bind-Value="@FormModel.ProductName" ValidateOn="@ValidationEvent"></TelerikTextBox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="k-form-field">
+                        <div class="k-form-field-wrap">
+                            <label for="productDescription" class="k-label k-form-label">Product Description:</label>
+                            <div class="k-form-field-wrap">
+                                <div class="textarea-wrapper">
+                                    <TelerikTextArea Id="productDescription"
+                                                     Value="@FormModel.ProductDescription"
+                                                     ValueExpression="@(() => FormModel.ProductDescription)"
+                                                     ValueChanged="@OnValueChanged"
+                                                     Placeholder="Enter your text here"
+                                                     ValidateOn="@ValidationEvent">
+                                    </TelerikTextArea>
+                                </div>
+                            </div>
+
+                            <div class="textarea-info">
+                                <span class="k-form-hint">@(TextLength) / 15</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="k-form-field">
+                        <div class="k-form-buttons k-justify-content-end">
+                            <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)" ButtonType="@ButtonType.Submit">Submit</TelerikButton>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @FormSubmitMessage
+        </div>
+    }
+</div>
+
+<style>
+    .form-wrapper {
+        width: 250px;
+    }
+
+    .textarea-info {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .k-textarea {
+        height: 100px;
+    }
+
+    .textarea-wrapper > .k-textarea > textarea {
+        resize: none !important;
+    }
+
+    .form-submit-message {
+        text-align: center;
+        margin-top: 1rem;
+    }
+</style>
+
+@code {
+    public class ValidationModel
+    {
+        public string ProductName { get; set; }
+
+        [Required]
+        [MaxLength(15, ErrorMessage = "The description should be at most 15 characters.")]
+        public string ProductDescription { get; set; }
+    }
+
+    public ValidationModel FormModel = new ValidationModel();
+
+    public string FormSubmitMessage { get; set; }
+
+    public int TextLength => FormModel?.ProductDescription?.Length ?? 0;
+        
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    public async void OnValidSubmit()
+    {
+        FormSubmitMessage = "Form submitted successfully!";
+        await Task.Delay(2000);
+        FormModel.ProductName = "";
+        FormModel.ProductDescription = "";
+        FormSubmitMessage = "";
+
+        StateHasChanged();
+    }
+
+    public void OnInvalidSubmit()
+    {
+        FormSubmitMessage = "";
+    }
+
+    public void OnValueChanged(string value)
+    {
+        FormSubmitMessage = "";
+        FormModel.ProductDescription = value;
+    }
+}
+

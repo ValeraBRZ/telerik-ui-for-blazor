@@ -1,0 +1,243 @@
+@page "/scheduler/templates"
+
+@inject MeetingService meetingService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Grouped">
+        <TelerikCheckBox @bind-Value="@GroupedByDept" Id="grouped" OnChange="@OnGroupedChanged"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="grouped">Group by <code>Department</code></label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikScheduler Data="@Meetings"
+                  @bind-Date="@StartDate"
+                  @bind-View="@CurrView"
+                  OnItemRender="@OnItemRender"
+                  Height="600px">   
+    <ItemTemplate>
+        <div class="meeting-wrap">
+            @{
+                var meeting = context as MeetingDto;
+            }
+            <img src="images/scheduler/templates/@(meeting.Department).png" alt="@meeting.Department" class="meeting-icon" />
+            <span class="meeting-title">@meeting.Title</span>
+        </div>
+    </ItemTemplate>
+    <SchedulerViews>
+        <SchedulerDayView StartTime="@DayStart" SchedulerResourceGroupHeaderTemplate="@SchedulerResourceGroupHeaderTemplate">
+            <DateHeaderTemplate>
+                <div class="text-center">
+                    @context.ToString("ddd")
+                    <br />
+                    @context.ToString("dd-MM")
+                </div>
+            </DateHeaderTemplate>
+            <SlotTemplate>
+                @if (context.Start.TimeOfDay >= LunchBreak.TimeOfDay
+                && context.End.AddSeconds(-1).TimeOfDay <= LunchBreak.AddHours(1).TimeOfDay)
+                {
+                    <div class="green"><TelerikSvgIcon Icon="@SvgIcon.Pause" />Lunch</div>
+                }
+            </SlotTemplate>
+            <AllDaySlotTemplate>
+                @{
+                    var allDayAppointmentsCount = GetAllDayAppointmentsCount(context.Start.Date);
+                    if (allDayAppointmentsCount > 0)
+                    {
+                        <span>AppointmentService Count: @allDayAppointmentsCount</span>
+                    }
+                    else
+                    {
+                        <span>No All Day Appointments</span>
+                    }
+                }
+            </AllDaySlotTemplate>
+        </SchedulerDayView>
+        <SchedulerMonthView SchedulerResourceGroupHeaderTemplate="@SchedulerResourceGroupHeaderTemplate">
+            <SlotTemplate>
+                @{
+                    var dayNumber = context.Start.Day;
+                    <span class="k-link" @onclick="() => OnDateClick(dayNumber)">
+                        @context.Start.Day
+                    </span>
+
+                    if (context.Start.DayOfWeek == DayOfWeek.Saturday
+                    || context.Start.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        <div class="slot-display green"><span class="slot-text">Free Weekend</span></div>
+                    }
+                }
+            </SlotTemplate>
+        </SchedulerMonthView>
+    </SchedulerViews>
+    <SchedulerResources>
+        <SchedulerResource Field="Department" Data="@Departments"></SchedulerResource>
+    </SchedulerResources>
+    <SchedulerSettings>
+        <SchedulerGroupSettings Resources="@GroupingResources"></SchedulerGroupSettings>
+    </SchedulerSettings>
+</TelerikScheduler>
+
+<style>
+    .meeting-wrap {
+        display: flex;
+    }
+
+    .meeting-icon {
+        align-self: baseline;
+        flex-shrink: 0;
+        margin: 5px;
+    }
+
+    .meeting-title {
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 16px;
+        text-transform: uppercase;
+        margin-top: 5px;
+        overflow: hidden;
+    }
+
+    .group-header-wrap {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dept-design {
+        background-color: #FFEFE2;
+        color: #FDA150;
+    }
+
+    .dept-development {
+        background-color: #DBD5FD;
+        color: #6E60B8;
+    }
+
+    .dept-pm {
+        background-color: #D6F3FD;
+        color: #269DC6;
+    }
+
+    .slot-display {
+        display: flex;
+        align-items: center;
+    }
+
+    .green {
+        color: green;
+    }
+</style>
+
+@code {
+    private DateTime StartDate { get; set; } = new DateTime(2025, 10, 5);
+
+    private SchedulerView CurrView { get; set; } = SchedulerView.Day;
+
+    private DateTime DayStart { get; set; } = new DateTime(2000, 1, 1, 7, 0, 0);
+
+    private DateTime LunchBreak { get; set; } = new DateTime(2000, 1, 1, 12, 0, 0);
+
+    private IEnumerable<MeetingDto> Meetings = new List<MeetingDto>();
+
+    private List<Department> Departments { get; set; } = new List<Department>();
+
+    private List<string> GroupingResources { get; set; } = new List<string>() { "Department" };
+
+    protected int GetAllDayAppointmentsCount(DateTime date)
+    {
+        return Meetings.Where(x => x.End.Day == date.Day && x.IsAllDay).Count();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    #region Data generation and models
+
+    private void LoadData()
+    {
+        Meetings = meetingService.GetMeetings();
+
+        Departments = new List<Department>()
+        {
+            new Department
+            {
+                Text = "Design",
+                Value = "Design",
+            },
+            new Department
+            {
+                Text = "Development",
+                Value = "Development"
+            },
+            new Department
+            {
+                Text = "PM",
+                Value = "PM"
+            }
+        };
+    }
+
+    public class Department
+    {
+        public string Text { get; set; }
+        public string Value { get; set; }
+    }
+
+    #endregion Data generation and models
+
+    #region Event handlers
+
+    void OnDateClick(int day)
+    {
+        var currentDate = DateTime.Now;
+        var navigateDate = new DateTime(currentDate.Year, currentDate.Month, day);
+
+        CurrView = SchedulerView.Day;
+        StartDate = navigateDate;
+    }
+
+    void OnItemRender(SchedulerItemRenderEventArgs args)
+    {
+        switch ((args.Item as MeetingDto).Department)
+        {
+            case "Design":
+                args.Class = "dept-design";
+                break;
+            case "Development":
+                args.Class = "dept-development";
+                break;
+            case "PM":
+                args.Class = "dept-pm";
+                break;
+            default:
+                break;
+        }
+    }
+
+    #endregion Event handlers
+
+    #region Demo configurator options
+
+    private bool GroupedByDept { get; set; } = true;
+
+    private void OnGroupedChanged(object value)
+    {
+        GroupingResources = (bool)value ? new List<string> { "Department" } : new List<string>();
+    }
+
+    #endregion Demo configurator options
+
+    private RenderFragment<SchedulerResourceGroupHeaderTemplateContext> SchedulerResourceGroupHeaderTemplate = context => (__builder) =>
+    {
+        <div class="@($"group-header-wrap dept-{context.Value.ToString().ToLower()}")">
+            <img src="images/scheduler/templates/@(context.Value).png" alt="@context.Value" class="meeting-icon" />
+            <span class="meeting-title">@context.Text</span>
+        </div>
+    };
+}
+

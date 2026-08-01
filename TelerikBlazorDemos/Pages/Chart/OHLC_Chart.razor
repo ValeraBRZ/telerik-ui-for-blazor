@@ -1,0 +1,43 @@
+@page "/chart/ohlc-chart"
+
+@inject StockService StockService
+
+@if (Data != null)
+{
+    <TelerikChart Width="@Width"
+                  Height="@Height">
+        <ChartTitle Text="The Boeing Company NYSE:BA"></ChartTitle>
+        <ChartTooltip Visible="true"></ChartTooltip>
+
+        <ChartSeriesItems>
+            <ChartSeries Type="ChartSeriesType.OHLC"
+                         Data="@Data"
+                         CategoryField="@nameof(StockDto.Date)"
+                         OpenField="@nameof(StockDto.Open)"
+                         CloseField="@nameof(StockDto.Close)"
+                         HighField="@nameof(StockDto.High)"
+                         LowField="@nameof(StockDto.Low)">
+            </ChartSeries>
+        </ChartSeriesItems>
+
+        <ChartCategoryAxes>
+            <ChartCategoryAxis Type="ChartCategoryAxisType.Date">
+            </ChartCategoryAxis>
+        </ChartCategoryAxes>
+    </TelerikChart>
+}
+
+@code {
+    public const string Height = "400px";
+    public const string Width = "100%";
+
+    IEnumerable<StockDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = StockService.GetStocks().Take(16);
+
+        base.OnInitialized();
+    }
+}
+

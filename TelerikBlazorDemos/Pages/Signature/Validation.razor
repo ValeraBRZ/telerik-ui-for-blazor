@@ -1,0 +1,111 @@
+@page "/signature/validation"
+
+@using System.ComponentModel.DataAnnotations
+@using Telerik.Blazor
+@inject IJSRuntime JsRuntime
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents"
+                             @bind-Value="@ValidationType">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-horizontal">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@ValidationModel"
+                  OnValidSubmit="@OnValidSubmit"
+                  OnInvalidSubmit="@OnInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <label for="firstName" class="k-label k-form-label">First Name:</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="@ValidationModel.FirstName" Id="firstName" ValidateOn="@ValidationType" />
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <label for="lastName" class="k-label k-form-label">Last Name:</label>
+                <div class="k-form-field-wrap">
+                    <TelerikTextBox @bind-Value="@ValidationModel.LastName" Id="lastName" ValidateOn="@ValidationType" />
+                </div>
+            </div>
+
+            <div class="k-form-field">
+                <label class="k-label k-form-label">Signature:</label>
+                <div class="k-form-field-wrap">
+                    <TelerikSignature Width="300px"
+                                      Height="200px"
+                                      ValidateOn="@ValidationType"
+                                      @bind-Value="@ValidationModel.Signature">
+                    </TelerikSignature>
+                </div>
+            </div>
+
+            <div class="k-form-buttons k-actions-end">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">
+                    Submit
+                </TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+            <br />
+            <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)"
+                           OnClick="@BackToFormAsync">Go back</TelerikButton>
+        </div>
+    }
+</div>
+
+@code {
+    public FormModel ValidationModel { get; set; } = new FormModel();
+    public string SuccessMessage { get; set; } = string.Empty;
+
+    public ValidationEvent ValidationType { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Enter your first name")]
+        public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "Enter your last name")]
+        public string LastName { get; set; }
+
+        [Required(ErrorMessage = "Enter your signature")]
+        public string Signature { get; set; }
+    }
+
+    public void OnValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+    }
+
+    public void OnInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+
+    public async Task BackToFormAsync()
+    {
+        await JsRuntime.InvokeVoidAsync("window.location.reload");
+    }
+}
+

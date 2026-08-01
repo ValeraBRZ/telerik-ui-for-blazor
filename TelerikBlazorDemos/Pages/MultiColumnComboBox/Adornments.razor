@@ -1,0 +1,50 @@
+@page "/multicolumncombobox/adornments"
+
+@inject UrbanAreaService urbanAreaService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Show Prefix Separator">
+        <TelerikCheckBox @bind-Value="@ShowPrefixSeparator" Id="PrefixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="PrefixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Show Suffix Separator">
+        <TelerikCheckBox @bind-Value="@ShowSuffixSeparator" Id="SuffixSeparatorCheckBox"></TelerikCheckBox>
+        <label class="k-checkbox-label" for="SuffixSeparatorCheckBox">Show Separator</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    <TelerikMultiColumnComboBox @bind-Value="@MultiColumnComboBoxValue"
+                                Data="@UrbanAreas"
+                                ValueField="@(nameof(UrbanAreaDto.Id))"
+                                TextField="@(nameof(UrbanAreaDto.City))"
+                                Placeholder="Choose location"
+                                ShowPrefixSeparator="@ShowPrefixSeparator"
+                                ShowSuffixSeparator="@ShowSuffixSeparator">
+        <MultiColumnComboBoxPrefixTemplate>
+            <TelerikSvgIcon Icon="@SvgIcon.MapMarker"></TelerikSvgIcon>
+        </MultiColumnComboBoxPrefixTemplate>
+        <MultiColumnComboBoxSuffixTemplate>
+            <TelerikButton FillMode="@ThemeConstants.Button.FillMode.Flat" Icon="@SvgIcon.Copy"></TelerikButton>
+        </MultiColumnComboBoxSuffixTemplate>
+        <MultiColumnComboBoxColumns>
+            <MultiColumnComboBoxColumn Field="@nameof(UrbanAreaDto.City)" />
+            <MultiColumnComboBoxColumn Field="@nameof(UrbanAreaDto.Country)" />
+        </MultiColumnComboBoxColumns>
+    </TelerikMultiColumnComboBox>
+</div>
+
+@code {
+    private List<UrbanAreaDto> UrbanAreas { get; set; }
+
+    private int MultiColumnComboBoxValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UrbanAreas = urbanAreaService.GetUrbanAreas().ToList();
+    }
+
+    private bool ShowPrefixSeparator { get; set; } = true;
+
+    private bool ShowSuffixSeparator { get; set; } = true;
+}

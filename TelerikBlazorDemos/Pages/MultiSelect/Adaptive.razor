@@ -1,0 +1,35 @@
+@page "/multiselect/adaptive"
+
+@inject ProductService ProductService
+
+<div class="demo-alert demo-alert-info" role="alert">
+    <p>
+        Resize the browser to see how the MultiSelect adapts to different resolutions.
+    </p>
+</div>
+
+<div class="demo-section">
+    <label for="product" class="k-label k-form-label">Product</label>
+    <TelerikMultiSelect Data="@Data"
+                        @bind-Value="@Values"
+                        AdaptiveMode="@AdaptiveMode.Auto"
+                        ValueField="@nameof(ProductDto.ProductId)"
+                        TextField="@nameof(ProductDto.ProductName)"
+                        Title="Choose a product"
+                        Filterable="true"
+                        Placeholder="Enter a product, e.g., Tofu"
+                        Size="@ThemeConstants.MultiSelect.Size.Large"
+                        Id="product">
+    </TelerikMultiSelect>
+</div>
+
+@code {
+    public List<int> Values { get; set; }
+
+    public IEnumerable<ProductDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Data = ProductService.GetProducts();
+    }
+}

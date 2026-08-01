@@ -1,0 +1,81 @@
+@page "/chiplist/events"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Chip Removal">
+        <label><TelerikCheckBox @bind-Value="@CancelChipRemoval" /> Cancel OnRemove Event</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikChipList Data="@ChipListData"
+                     SelectionMode="@ChipListSelectionMode.Multiple"
+                     SelectedItems="@ChipListSelectedItems"
+                     SelectedItemsChanged="@( (IEnumerable<ChipModel> newSelected) => OnChipListSelectedItemsChanged(newSelected) )"
+                     OnRemove="@OnChipListRemove" />
+</div>
+
+<DemoConsole EventLog="@EventLog" OnClearLogClick="@OnClearLogClick" />
+
+@code {
+    private List<ChipModel> ChipListData { get; set; }
+
+    private IEnumerable<ChipModel> ChipListSelectedItems { get; set; } = new List<ChipModel>();
+
+    private bool CancelChipRemoval { get; set; }
+
+    private void OnChipListRemove(ChipListRemoveEventArgs args)
+    {
+        var chip = args.Item as ChipModel;
+        string log;
+
+        if (CancelChipRemoval)
+        {
+            args.IsCancelled = true;
+            log = $"<div><strong>OnChipRemove</strong> event was <strong>cancelled</strong> for '<strong>{chip.Text}</strong>'</div>";
+        }
+        else
+        {
+            ChipListData.RemoveAll(x => x.Id == chip.Id);
+            log = $"<div><strong>OnChipRemove</strong> event fired for '<strong>{chip.Text}</strong>'</div>";
+        }
+
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private void OnChipListSelectedItemsChanged(IEnumerable<ChipModel> newSelected)
+    {
+        ChipListSelectedItems = newSelected;
+
+        string log = $"<div><strong>SelectedItemsChanged</strong> event fired. The selected chips are now <strong>{ChipListSelectedItems.Count()}</strong>.</div>";
+        EventLog = EventLog.Insert(0, log);
+    }
+
+    private string EventLog { get; set; } = string.Empty;
+
+    private void OnClearLogClick()
+    {
+        EventLog = string.Empty;
+    }
+
+    protected override void OnInitialized()
+    {
+        ChipListData = new List<ChipModel>()
+        {
+            new ChipModel { Id = 1, Icon = SvgIcon.FileAudio, Removable = false, Text = "Audio" },
+            new ChipModel { Id = 2, Icon = SvgIcon.FileVideo, Removable = true, Text = "Video" },
+            new ChipModel { Id = 3, Icon = SvgIcon.FileImage, Removable = true, Text = "Image" }
+        };
+
+        base.OnInitialized();
+    }
+
+    public class ChipModel
+    {
+        public int Id { get; set; }
+        public bool Disabled { get; set; }
+        public ISvgIcon Icon { get; set; }
+        public bool Removable { get; set; }
+        public string Text { get; set; }
+
+    }
+}

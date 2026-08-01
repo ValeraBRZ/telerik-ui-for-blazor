@@ -1,0 +1,63 @@
+@page "/menu/hierarchical-data"
+
+<h2 class="mb-md">Click on items to display their child items.</h2>
+
+<div style="height: 60px;">
+    <TelerikMenu Data="@MenuItems"
+                 ShowOn="@MenuShowEvent.Click"
+                 HideOn="@MenuHideEvent.MouseLeave"
+                 ItemsField="@nameof(MenuItem.SubSectionList)"
+                 TextField="@nameof(MenuItem.Section)">
+    </TelerikMenu>
+</div>
+
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+    public class MenuItem
+    {
+        public string Section { get; set; }
+        public List<MenuItem> SubSectionList { get; set; }
+    }
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Section = "Company",
+                SubSectionList = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Section = "Overview"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Events"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Careers"
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Section = "Services",
+                SubSectionList = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Section = "Consulting"
+                    },
+                    new MenuItem()
+                    {
+                        Section = "Education"
+                    }
+                }
+            }
+        };
+
+        base.OnInitialized();
+    }
+}

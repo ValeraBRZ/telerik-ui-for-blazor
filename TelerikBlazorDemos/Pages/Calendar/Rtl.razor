@@ -1,0 +1,9 @@
+@page "/calendar/rtl"
+
+<div class="demo-section auto">
+    <TelerikCalendar Date="@Value"/>
+</div>
+
+@code {
+    private DateTime Value { get; set; } = new DateTime(2025, 10, 31);
+}

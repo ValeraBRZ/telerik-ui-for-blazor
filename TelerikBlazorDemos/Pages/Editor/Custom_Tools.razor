@@ -1,0 +1,155 @@
+@page "/editor/custom-tools"
+
+@using Telerik.Blazor.Components.Editor
+
+<TelerikEditor @ref="Editor"
+               Tools="@ToolCollection"
+               Height="300px"
+               @bind-Value="@Value">
+    <EditorCustomTools>
+        <EditorCustomTool Name="ColorTools">
+            <TelerikButtonGroup>
+                <ButtonGroupButton OnClick="@ExecuteBackColor"
+                                   Class="back-color"
+                                   Icon="@SvgIcon.Droplet"
+                                   Title="Back Color"></ButtonGroupButton>
+                <ButtonGroupButton OnClick="@ExecuteForeColor"
+                                   Class="fore-color"
+                                   Icon="@SvgIcon.ForegroundColor"
+                                   Title="Fore Color"></ButtonGroupButton>
+            </TelerikButtonGroup>
+        </EditorCustomTool>
+        <EditorCustomTool Name="InsertVideo">
+            <TelerikButton OnClick="@ExecuteInsertVideo"
+                           Icon="@SvgIcon.VideoExternal"
+                           Title="Insert Video"></TelerikButton>
+        </EditorCustomTool>
+        <EditorCustomTool Name="CleanFormattingTool">
+            <TelerikButton OnClick="@ExecuteCleanFormatting"
+                           Icon="@SvgIcon.ClearCss"
+                           Title="Clean Formatting"></TelerikButton>
+        </EditorCustomTool>
+        <EditorCustomTool Name="InsertHtmlTools">
+            <TelerikButtonGroup>
+                <ButtonGroupButton OnClick="@ExecuteInsertHr"
+                                   Icon="@SvgIcon.InsertBottom"
+                                   Title="Insert hr"></ButtonGroupButton>
+                <ButtonGroupButton OnClick="@ExecuteInsertLogo"
+                                   Class="icon-size"
+                                   Title="Insert editor logo">
+                    <img class="k-image k-button-icon" alt="editor image" src="images/component-icons/svg/editor.svg" />
+                </ButtonGroupButton>
+            </TelerikButtonGroup>
+        </EditorCustomTool>
+    </EditorCustomTools>
+</TelerikEditor>
+
+@code {
+    public TelerikEditor Editor {get; set; }
+    public List<IEditorTool> ToolCollection { get; set; } = new List<IEditorTool>()
+    {
+        new CustomTool("ColorTools"),
+        new CustomTool("CleanFormattingTool"),
+        new CustomTool("InsertVideo"),
+        new CustomTool("InsertHtmlTools")
+    };
+    public string Value { get; set; } =
+        @"
+    <h1 style=""text-align:center; font-size: large"">
+        <span style=""font-family:Verdana, Geneva, sans-serif;"">
+            <strong> One of the Most Beautiful Islands on Earth - Tenerife</strong>
+        </span>
+    </h1>
+    <p>
+        <span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" ><strong> Overview </strong>
+        </span>
+    </p>
+    <p>
+        <strong>Tenerife</strong> is the largest and most populated island of the eight <a href=""https://en.wikipedia.org/wiki/Canary_Islands"" target=""_blank"">Canary Islands</a>. It is also the most populated island of <strong>Spain</strong>, with a land area of 2,034.38 square kilometers (785 sq mi) and 904,713 inhabitants, 43% of the total population of the <strong>Canary Islands</strong>.
+        The archipelago's beaches, climate and important natural attractions, make it a major tourist destination with over 12 million visitors per year.
+    </p>
+    <p><span style = ""font-family:Verdana, Geneva, sans-serif;font-size:medium;"" >
+        <strong> Trip Highlights in Tenerife</strong></span></p><span style = ""white-space:pre;"" ></span>
+            <ul>
+                <li>
+                    <strong>
+                        <span  style=""color: #3E579A"">
+                            Trip to Loro Parque
+                        </span>
+                    </strong>
+                <br />
+                Out top tip is to visit the famous <em>Loro Parque</em> or 'Loro Park. It is a 13.5-hectare zoo on the outskirts of Puerto de la Cruz on Tenerife, Spain where it houses an extensive and diverse reserve of animal and plant species.
+                <br />
+            </li>
+            <li>
+                <strong>
+                    <span  style=""color: #3E579A"">
+                        Whale and Dolphin Watching Tour
+                    </span>
+                </strong>
+                <br />
+                Another great option is to take boat excursion with almost guaranteed sightings of whales and dolphins.This is a day-long trip that includes lunch, island visits, fishing, and amazing views of ocean sceneries.
+                <br />
+            </li>
+            <li>
+                <strong>
+                    <span  style=""color: #3E579A"">
+                        Teide National Park Stargazing
+                    </span>
+                </strong>
+                <br />
+                Last, but not least you can take a stargaze trip to Teide National Park, the 3rd best place in the world to view stars and described by NASA as a window to the universe.
+                <br />
+            </li>
+        </ul>
+    </p>
+    ";
+
+    private async Task ExecuteBackColor()
+    {
+        await Editor.ExecuteAsync(new FormatCommandArgs("backColor", "#00ff00"));
+    }
+
+    private async Task ExecuteForeColor()
+    {
+        await Editor.ExecuteAsync(new FormatCommandArgs("foreColor", "#ff0000"));
+    }
+
+    private async Task ExecuteCleanFormatting()
+    {
+        await Editor.ExecuteAsync(new ToolCommandArgs("cleanFormatting"));
+    }
+
+    private async Task ExecuteInsertHr()
+    {
+        await Editor.ExecuteAsync(new HtmlCommandArgs("insertHtml", "<hr/>"));
+    }
+
+    private async Task ExecuteInsertLogo()
+    {
+        await Editor.ExecuteAsync(new ImageCommandArgs("images/component-icons/svg/editor.svg", "editor-logo"));
+    }
+
+    private async Task ExecuteInsertVideo()
+    {
+        await Editor.ExecuteAsync(new HtmlCommandArgs("insertHtml", "<video controls src=\"video/netfuture.mp4\" width=\"400px\"></video>"));
+    }
+}
+<style>
+    .back-color {
+        color: #00ff00 !important;
+    }
+
+    .fore-color {
+        color: #ff0000 !important;
+    }
+
+    .icon-size img {
+        width: 1em;
+        height: 1em;
+    }
+
+    .icon-size .k-button-text {
+        display: inherit;
+    }
+</style>

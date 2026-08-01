@@ -1,0 +1,106 @@
+@page "/textbox/validation"
+
+@using System.ComponentModel.DataAnnotations
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="ValidationOn">
+        <TelerikDropDownList Data="@ValidationEvents" @bind-Value="@ValidationEvent" ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    @if (string.IsNullOrEmpty(SuccessMessage))
+    {
+        <EditForm Model="@validationModel" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="k-validation-summary k-messagebox k-messagebox-error p-0" role="alert">
+                <ValidationSummary />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="min-length" class="k-label k-form-label">Minimal Length</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@validationModel.MinLengthField" ValidateOn="@ValidationEvent" Id="min-length" />
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.MinLengthField)" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="required" class="k-label k-form-label">Required Field</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@validationModel.RequiredField" ValidateOn="@ValidationEvent" Id="required" />
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.RequiredField)" />
+            </div>
+
+            <div class="k-form-field">
+                <div class="k-form-field-wrap">
+                    <label for="max-length" class="k-label k-form-label">Maximum Length</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox @bind-Value="@validationModel.MaxLengthField" ValidateOn="@ValidationEvent" Id="max-length" />
+                    </div>
+                </div>
+                <ValidationMessage For="@(() => validationModel.MaxLengthField)" />
+            </div>
+
+            <div class="k-form-field">
+                <TelerikButton ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Submit</TelerikButton>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+</div>
+
+@code {
+    TextValidationModel validationModel { get; set; }
+    string SuccessMessage = string.Empty;
+
+    public ValidationEvent ValidationEvent { get; set; } = ValidationEvent.Change;
+    public List<ValidationEvent> ValidationEvents { get; set; } = new List<ValidationEvent>()
+    {
+        ValidationEvent.Change,
+        ValidationEvent.Input
+    };
+
+    class TextValidationModel
+    {
+        [MinLength(5, ErrorMessage = "The first textbox must contain at least 5 characters")]
+        [MaxLength(10, ErrorMessage = "The first textbox must contain at most 10 symbols")]
+        public string MinLengthField { get; set; }
+
+        [Required]
+        public string RequiredField { get; set; }
+
+        [StringLength(10, ErrorMessage = "The third textbox text is too long")]
+        [Required]
+        public string MaxLengthField { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        validationModel = new TextValidationModel() { MaxLengthField = "Too long text" };
+    }
+
+    async void HandleValidSubmit()
+    {
+        SuccessMessage = "Form Submitted Successfully!";
+        await Task.Delay(2000);
+        SuccessMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        SuccessMessage = string.Empty;
+    }
+}

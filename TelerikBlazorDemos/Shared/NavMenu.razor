@@ -1,0 +1,60 @@
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject TelerikBlazorDemos.Services.IDemoList demoList
+@inject IJSRuntime JsRuntime
+
+<div class="kd-sidebar-toggle">
+    <NavLink class="kd-link back-nav" href="/blazor-ui/" Match="NavLinkMatch.All">Components</NavLink>
+</div>
+<div class="kd-sidebar-container root">
+    <div class="kd-sidebar-demo-nav">
+        <ul class="kd-list">
+            @foreach (DemoItem rootDemo in NavData)
+            {
+                <NavMenuChildGroup Level="1" Demo="@rootDemo"></NavMenuChildGroup>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public DemoItem Demo { get; set; }
+
+    private List<DemoItem> NavData { get; set; } = new List<DemoItem>();
+
+    private bool DemoPathMatchesPageUrl =>
+        !string.IsNullOrEmpty(Demo?.Path) && NavigationManager.Uri.EndsWith(Demo.Path);
+
+    protected override void OnInitialized()
+    {
+        NavData = demoList.GetDemos();
+
+        ExpandCurrentComponent();
+
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && DemoPathMatchesPageUrl)
+        {
+            await JsRuntime.InvokeVoidAsync("scrollNavLinkIntoView", Demo.Path);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        ExpandCurrentComponent();
+        StateHasChanged();
+    }
+
+    private void ExpandCurrentComponent()
+    {
+        foreach (DemoItem item in NavData)
+        {
+            item.Expanded = item.Component.Equals(Demo.Component);
+        }
+    }
+}

@@ -1,0 +1,100 @@
+@page "/treelist/cell-selection"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Choose the TreeList Selection Mode:">
+        <TelerikDropDownList Data="@SelectionModes" @bind-Value="@SelectionMode" OnChange="@OnSelectionChange">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Toggle drag to select">
+        <TelerikCheckBox @bind-Value="@DragToSelect"
+                         Id="drag-to-select-checkbox"
+                         Enabled="@(SelectionMode == TreeListSelectionMode.Multiple)">
+        </TelerikCheckBox>
+        <label for="drag-to-select-checkbox">Enable <strong>DragToSelect</strong></label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikTreeList Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 SelectionMode="@SelectionMode"
+                 @bind-SelectedCells="@SelectedCells"
+                 Height="300px">
+    <TreeListSettings>
+        <TreeListSelectionSettings SelectionType="@TreeListSelectionType.Cell" DragToSelect="@DragToSelect"></TreeListSelectionSettings>
+    </TreeListSettings>
+    <TreeListColumns>
+        <TreeListColumn Field="FirstName" Title="First Name" Width="350px" Expandable="true"></TreeListColumn>
+        <TreeListColumn Field="LastName" Title="Last Name"></TreeListColumn>
+        <TreeListColumn Field="HireDate" Title="Hire Date" Width="200px"></TreeListColumn>
+    </TreeListColumns>
+</TelerikTreeList>
+
+<h2>Selected Cells:</h2>
+<ul>
+    @foreach (SelectedCellDescriptor selectedCell in SelectedCells)
+    {
+        <li>
+            @{
+                var selectedValue = GetPropValue(selectedCell?.DataItem as EmployeeDirectoryDto, selectedCell?.ColumnField);
+                @selectedValue
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    private IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+    private TreeListSelectionMode SelectionMode { get; set; } = TreeListSelectionMode.Multiple;
+    private bool DragToSelect { get; set; } = true;
+    private IEnumerable<TreeListSelectedCellDescriptor> SelectedCells { get; set; } = new List<TreeListSelectedCellDescriptor>();
+
+    private List<TreeListSelectionMode> SelectionModes => new List<TreeListSelectionMode>
+    {
+        TreeListSelectionMode.Single,
+        TreeListSelectionMode.Multiple,
+        TreeListSelectionMode.None
+    };
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+
+    private void OnSelectionChange(object selection)
+    {
+        TreeListSelectionMode selectionMode = (TreeListSelectionMode)selection;
+        SelectionMode = selectionMode;
+
+        //cater for choosing different selection modes
+        //this is used only for the demo to update the rendering, you are not likely to need it in a real app
+        if (selectionMode == TreeListSelectionMode.Single)
+        {
+            DragToSelect = false;
+            TreeListSelectedCellDescriptor lastSelectedCell = SelectedCells.LastOrDefault();
+
+            if (lastSelectedCell != null)
+            {
+                SelectedCells = new List<TreeListSelectedCellDescriptor> { lastSelectedCell };
+            }
+        }
+        else if (selectionMode == TreeListSelectionMode.None)
+        {
+            DragToSelect = false;
+            SelectedCells = new List<TreeListSelectedCellDescriptor>();
+        }
+    }
+
+    private object GetPropValue(object src, string propName) => src.GetType().GetProperty(propName)?.GetValue(src, null);
+}

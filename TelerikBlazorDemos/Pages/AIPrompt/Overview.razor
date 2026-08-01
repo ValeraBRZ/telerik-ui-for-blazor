@@ -1,0 +1,282 @@
+@page "/aiprompt/overview"
+
+@inject AIPromptService AIPromptAnswerService
+@inject IJSRuntime js
+@implements IDisposable
+
+@* This demo sample uses a real AI model to simulate a real use case. To test it in the offline demo version, replace the demo service and API key with your own AI service details. *@
+
+<div class="demo-alert demo-alert-info">
+    <p>
+        By accessing and using the Telerik AI service integration on the Progress website, you acknowledge and agree to be bound by the following <a href="https://www.telerik.com/purchase/license-agreement/demo-chatbots-terms-of-use" title="Terms of Use">Terms of Use</a>.
+    </p>
+</div>
+
+<div class="demo-section k-d-flex custom-width-section">
+    <div class="side-section">
+        <div class="k-skeleton side-skeleton">
+            <div className="description-container">
+                <TelerikSkeleton Width="100%" AnimationType="SkeletonAnimationType.None" ShapeType="SkeletonShapeType.Text">
+                </TelerikSkeleton>
+                <TelerikSkeleton Width="100%" AnimationType="SkeletonAnimationType.None" ShapeType="SkeletonShapeType.Text">
+                </TelerikSkeleton>
+                <TelerikSkeleton Width="100%" AnimationType="SkeletonAnimationType.None" ShapeType="SkeletonShapeType.Text">
+                </TelerikSkeleton>
+            </div>
+        </div>
+    </div>
+    <div class="main-section k-d-flex k-flex-row">
+        <div>
+            <h2 class="new-email-title">New E-mail</h2>
+            <TelerikSkeleton Width="20%" AnimationType="SkeletonAnimationType.None">
+            </TelerikSkeleton>
+            <TelerikSkeleton Width="100%" Height="30px" AnimationType="SkeletonAnimationType.None">
+            </TelerikSkeleton>
+            <TelerikSkeleton Width="100%" Height="30px" AnimationType="SkeletonAnimationType.None">
+            </TelerikSkeleton>
+        </div>
+
+        <div>
+            <div class="k-relative">
+                <label for="email-text-area">Message body</label>
+                <TelerikTextArea @bind-Value="@TextAreaValue"
+                                 Width="100%"
+                                 Rows="16"
+                                 Class="email-text-area"
+                                 Id="email-text-area"
+                                 ReadOnly="true">
+                </TelerikTextArea>
+                <TelerikFloatingActionButton Id="floating-ai-button"
+                                             Icon="@(IsAIPromptPopupVisible ? SvgIcon.X : SvgIcon.Sparkles)"
+                                             VerticalOffset="16px"
+                                             HorizontalOffset="16px"
+                                             PositionMode="@FloatingActionButtonPositionMode.Absolute"
+                                             OnClick="@ToggleAIPromptPopup">
+                </TelerikFloatingActionButton>
+            </div>
+
+            <TelerikPopup @ref="@PopupRef"
+                          AnimationDuration="300"
+                          AnimationType="@AnimationType.SlideUp"
+                          AnchorHorizontalAlign="@PopupAnchorHorizontalAlign.Right"
+                          AnchorVerticalAlign="@PopupAnchorVerticalAlign.Top"
+                          AnchorSelector="#floating-ai-button"
+                          HorizontalAlign="@PopupHorizontalAlign.Right"
+                          VerticalAlign="@PopupVerticalAlign.Bottom"
+                          VerticalOffset="4"
+                          Class="ai-prompt-popup"
+                          Width="420px"
+                          Height="400px">
+                <TelerikAIPrompt OnPromptRequest="@HandlePromptRequest"
+                                 OnCommandExecute="@HandleCommandExecute"
+                                 Commands="@PromptCommands"
+                                 PromptSuggestions="@Suggestions">
+                </TelerikAIPrompt>
+            </TelerikPopup>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DotNetObjectReference<Overview> objRef { get; set; }
+
+    private bool IsAIPromptPopupVisible { get; set; } = true;
+
+    private string TextAreaValue { get; set; }
+
+    private TelerikPopup PopupRef { get; set; }
+
+    private string CurrentOutput { get; set; }
+
+    private List<string> Suggestions { get; set; } = new List<string>()
+    {
+        "Generate an Out of Office email.",
+        "Write a LinkedIn post for the importance of work/life balance."
+    };
+
+    private List<Dictionary<string, string>> PromptData { get; set; } = AIPromptConstants.PromptData;
+
+    private List<AIPromptCommandDescriptor> PromptCommands { get; set; } = new List<AIPromptCommandDescriptor>()
+    {
+        new AIPromptCommandDescriptor()
+        {
+            Id="1",
+            Title = "Change Formality",
+            Icon = nameof(SvgIcon.ApplyFormat),
+            Children = new List<AIPromptCommandDescriptor>
+            {
+                new AIPromptCommandDescriptor() { Id="2", Title = "Casual" },
+                new AIPromptCommandDescriptor() { Id="3", Title = "Neutral" },
+                new AIPromptCommandDescriptor() { Id="4", Title = "Formal" },
+            }
+        },
+        new AIPromptCommandDescriptor()
+        {
+            Id="5",
+            Title = "Translate",
+            Icon = nameof(SvgIcon.EditTools),
+            Children = new List<AIPromptCommandDescriptor>
+            {
+                new AIPromptCommandDescriptor() { Id="6", Title = "German" },
+                new AIPromptCommandDescriptor() { Id="7", Title = "Spanish" },
+            }
+        },
+        new AIPromptCommandDescriptor() { Id="8", Title = "Simplify", Icon = nameof(SvgIcon.MinWidth)},
+        new AIPromptCommandDescriptor() { Id="9", Title = "Expand", Icon = nameof(SvgIcon.MaxWidth)},
+    };
+
+    private void ToggleAIPromptPopup()
+    {
+        if (IsAIPromptPopupVisible)
+        {
+            PopupRef.Hide();
+        }
+        else
+        {
+            PopupRef.Show();
+        }
+
+        IsAIPromptPopupVisible = !IsAIPromptPopupVisible;
+    }
+
+    private async Task HandlePromptRequest(AIPromptPromptRequestEventArgs args)
+    {
+        args.Output = await AIPromptAnswerService.AnswerQuestion(args.Prompt);
+
+        TextAreaValue = args.Output;
+
+        CurrentOutput = TextAreaValue;
+
+        _ = js.InvokeVoidAsync("selectTextAreaValue", ".email-text-area textarea");
+    }
+
+    private async Task HandleCommandExecute(AIPromptCommandExecuteEventArgs args)
+    {
+        int commandId = Int32.Parse(args.Command.Id);
+
+        string CommandPrompt = string.Empty;
+
+        if (commandId > 1 && commandId < 5)
+        {
+            CommandPrompt = $"Change Formality of the following text to {args.Command.Title}: {CurrentOutput}";
+        }
+        else if (commandId > 5 && commandId < 8)
+        {
+            CommandPrompt = $"Translate the following text to {args.Command.Title}: {CurrentOutput}";
+        }
+        else
+        {
+            CommandPrompt = $"{args.Command.Title} the following text: {CurrentOutput}";
+        }
+
+        args.Output = await AIPromptAnswerService.AnswerQuestion(CommandPrompt);
+
+        TextAreaValue = args.Output;
+
+        _ = js.InvokeVoidAsync("selectTextAreaValue", ".email-text-area textarea");
+
+        ToggleAIPromptPopup();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            PopupRef.Show();
+            objRef = DotNetObjectReference.Create(this);
+            await js.InvokeVoidAsync("observeDemoRunner", objRef);
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    [JSInvokable]
+    public void HidePopup()
+    {
+        if (PopupRef != null)
+        {
+            PopupRef.Hide();
+            IsAIPromptPopupVisible = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
+    }
+}
+
+<style>
+    .side-section {
+        display: flex;
+        padding-right: 10px;
+        width: 25%;
+    }
+
+    .side-skeleton {
+        height: 100%;
+        width: 100%;
+        padding: 1.5em;
+        transform: scale(1);
+    }
+
+    .description-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    .main-section {
+        width: 75%;
+        flex-direction: column;
+    }
+
+    .new-email-title {
+        opacity: 0.2;
+    }
+
+    .email-text-area {
+        user-select: none;
+    }
+
+    .ai-prompt-popup .k-popup {
+        max-height: 500px;
+    }
+
+    .demo-section {
+        max-width: 800px !important;
+    }
+
+    #floating-ai-button {
+        z-index: 1000;
+    }
+
+    .custom-width-section {
+        max-width: 600px;
+    }
+</style>
+
+@* Move JavaScript to separate JS file in production apps *@
+<script suppress-error="BL9992">
+    function selectTextAreaValue(selector) {
+        setTimeout(() => {
+            let element = document.querySelector(selector);
+            element.select();
+        }, 300);
+    }
+
+    window.observeDemoRunner = (dotnetRef) => {
+        const DEMO_RUNNER = document.querySelector('#demo-runner');
+
+        const DEMO_RUNNER_OBSERVER = new MutationObserver(() => {
+            if (window.getComputedStyle(DEMO_RUNNER).display === 'none') {
+                dotnetRef.invokeMethodAsync("HidePopup");
+            }
+        });
+
+        if (DEMO_RUNNER) {
+            DEMO_RUNNER_OBSERVER.observe(DEMO_RUNNER, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+    }
+</script>

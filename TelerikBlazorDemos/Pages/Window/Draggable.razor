@@ -1,0 +1,68 @@
+@page "/window/draggable"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Draggable">
+        <input class="k-checkbox k-checkbox-md k-roundend-md" type="checkbox" id="canDrag" @bind="@IsDraggable" />
+        <label class="k-checkbox-label" for="canDrag">
+            You can move the Window
+        </label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Visible">
+        <input class="k-checkbox k-checkbox-md k-roundend-md" type="checkbox" id="canSee" @bind="@Visible" />
+        <label class="k-checkbox-label" for="canSee">
+            The Window is visible
+        </label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+
+<TelerikWindow Draggable="@IsDraggable"
+               @bind-Visible="@Visible"
+               @bind-Top="@Top"
+               @bind-Left="@Left"
+               Class="demo-window"
+               Width="530px">
+    <WindowTitle>
+        <strong>Please provide additional data</strong>
+    </WindowTitle>
+    <WindowActions>
+        <WindowAction Name="Minimize"></WindowAction>
+        <WindowAction Name="Maximize"></WindowAction>
+        <WindowAction Name="Close"></WindowAction>
+    </WindowActions>
+    <WindowContent>
+        <div class="demo-alert demo-alert-info">
+            @if (IsDraggable)
+            {
+                <text>Drag the titlebar of the window to move it around on the screen.</text>
+            }
+            else
+            {
+                <text>Now the window will stay put, to move it, select the checkbox above.</text>
+            }
+        </div>
+        <form class="k-form k-form-md">
+            <fieldset class="k-form-fieldset">
+                <legend class="k-form-legend">User Details</legend>
+
+                <label class="k-form-field">
+                    <span>First Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Name" />
+                </label>
+                <label class="k-form-field">
+                    <span>Last Name</span>
+                    <input class="k-textbox k-input k-input-md k-rounded-md k-input-solid" placeholder="Your Last Name" />
+                </label>
+            </fieldset>
+        </form>
+    </WindowContent>
+</TelerikWindow>
+
+
+
+@code {
+    public bool IsDraggable { get; set; } = true;
+    public bool Visible { get; set; } = true;
+    public string Top { get; set; } = "40%";
+    public string Left { get; set; } = "45%";
+}

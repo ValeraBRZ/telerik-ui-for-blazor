@@ -1,0 +1,30 @@
+@page "/calendar/orientation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Orientation">
+        <TelerikDropDownList Data="@Orientations" @bind-Value="@CalendarOrientation" Width="150px">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikCalendar Date="@StartDate"
+                 Views="3"
+                 Orientation="@CalendarOrientation"
+                 View="CalendarView.Month"
+                 SelectionMode="@CalendarSelectionMode.Multiple">
+</TelerikCalendar>
+
+@code {
+    public CalendarOrientation CalendarOrientation { get; set; }
+
+    public List<CalendarOrientation> Orientations => new List<CalendarOrientation>
+    {
+        CalendarOrientation.Horizontal,
+        CalendarOrientation.Vertical,
+    };
+
+    public DateTime StartDate { get; set; } = new DateTime(2025, 10, 14);
+}

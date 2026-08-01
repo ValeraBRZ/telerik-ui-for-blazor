@@ -1,0 +1,41 @@
+@page "/pdfviewer/form-filling"
+
+<style>
+    html body #pdfviewer {
+        width: 100% !important;
+    }
+    .k-annotation-layer .k-text-widget-annotation > input, .k-annotation-layer .k-text-widget-annotation > textarea, .k-annotation-layer .choiceWidgetAnnotation > select, .k-annotation-layer .k-button-widget-annotation:is(.k-checkbox-widget-annotation, .k-radio-button-widget-annotation) input {
+        height: 100%;
+        width: 100%;
+    }
+    section.k-radio-button-widget-annotation > input[type="radio"],
+    section.k-checkbox-widget-annotation > input[type="checkbox"] {
+        margin-left: 1px;
+        margin-top: 0px;
+    }
+    section.k-text-widget-annotation > input[type="text"] {
+        border: none;
+    }
+</style>
+
+<TelerikPdfViewer Data="@FileData"
+                  AnnotationMode="@AnnotationMode"
+                  RenderScale="0.75"
+                  Zoom="0.75m"
+                  Height="1200px"
+                  Width="100%">
+</TelerikPdfViewer>
+
+@code {
+    private PdfViewerAnnotationMode AnnotationMode { get; set; } = PdfViewerAnnotationMode.EnableForms;
+    private byte[] FileData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fileBytes = Convert.FromBase64String(PdfViewerConstants.SampleFileBase64FormFilling);
+    
+        FileData = fileBytes;
+    
+        await base.OnInitializedAsync();
+    }
+}

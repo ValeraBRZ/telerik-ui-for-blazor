@@ -1,0 +1,22 @@
+@page "/autocomplete/rtl"
+
+@inject ProductService ProductService
+
+<div class="demo-section">
+    <TelerikAutoComplete @bind-Value="@Value"
+                         Placeholder="Select a product"
+                         Data="@AutoCompleteData"
+                         ValueField="ProductName">
+    </TelerikAutoComplete>
+</div>
+
+@code{
+    private IEnumerable<ProductDto> AutoCompleteData { get; set; }
+
+    private string Value { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AutoCompleteData = ProductService.GetProducts();
+    }
+}

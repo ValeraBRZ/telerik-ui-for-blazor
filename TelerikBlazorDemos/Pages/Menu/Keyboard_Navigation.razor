@@ -1,0 +1,118 @@
+@page "/menu/keyboard-navigation"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Select the orientation of the menu">
+        <TelerikDropDownList Data="@OrientationOptions" @bind-Value="@orientation">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<br />
+
+<TelerikMenu Data="@MenuItems" Orientation="@orientation" OnClick="@((MenuItem item) => OnClickHandler(item))">
+</TelerikMenu>
+
+@if (LastActivatedItem != null)
+{
+    <div class="pt-sm">
+        Last clicked item: @LastActivatedItem?.Text
+    </div>
+}
+
+@code {
+    public List<MenuItem> MenuItems { get; set; }
+    public MenuItem LastActivatedItem { get; set; }
+    MenuOrientation orientation = MenuOrientation.Vertical;
+
+    public List<MenuOrientation> OrientationOptions { get; set; } = new List<MenuOrientation>()
+    {
+        MenuOrientation.Horizontal,
+        MenuOrientation.Vertical
+    };
+
+
+    protected void OnClickHandler(MenuItem item)
+    {
+        LastActivatedItem = item;
+    }
+
+    public class MenuItem
+    {
+        public string Text { get; set; }
+        public bool Separator { get; set; }
+        public List<MenuItem> Items { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        MenuItems = new List<MenuItem>()
+        {
+            new MenuItem()
+            {
+                Text = "Item 1",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Text = "Item 1.1"
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Item 1.2",
+                        Items = new List<MenuItem>()
+                        {
+                            new MenuItem()
+                            {
+                                Text = "Item 1.2.1",
+                                Separator = false
+                            },
+                            new MenuItem()
+                            {
+                                Separator = true
+                            },
+                            new MenuItem()
+                            {
+                                Text = "Item 1.2.2"
+                            }
+                        }
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Separator = true
+            },
+            new MenuItem()
+            {
+                Text = "Item 2",
+                Items = new List<MenuItem>()
+                {
+                    new MenuItem()
+                    {
+                        Text = "Item 2.1",
+                        Items = new List<MenuItem>()
+                        {
+                            new MenuItem()
+                            {
+                                Text = "Item 2.1.1"
+                            }
+                        }
+                    },
+                    new MenuItem()
+                    {
+                        Text = "Item 2.2"
+                    }
+                }
+            },
+            new MenuItem()
+            {
+                Text = "Item 3"
+            }
+        };
+
+        base.OnInitialized();
+    }
+}

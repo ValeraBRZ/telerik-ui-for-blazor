@@ -1,0 +1,200 @@
+@page "/grid/adaptive"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Use the slider below to resize the Grid and observe its adaptiveness"></DemoConfiguratorColumn>
+    <TelerikSlider Class="grid-slider"
+                   @bind-Value="@Width"
+                   Min="0"
+                   Max="100"
+                   ShowButtons="false"
+                   SmallStep="0.1"
+                   TickPosition="SliderTickPosition.None"
+                   Width="100%">
+    </TelerikSlider>
+    <DemoConfiguratorColumn Description="Toolbar Scroll Buttons">
+        <TelerikCheckBox Id="scroll-buttons" @bind-Value="@ScrollButtons"></TelerikCheckBox>
+        <label for="close-on-overlay-click">@(ScrollButtons ? "Disable " : "Enable ") Scroll Buttons</label>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Toolbar Scroll Buttons Layout">
+        <TelerikDropDownList @bind-Value="@ScrollButtonsLayout"
+                             Data="@ButtonsLayouts"
+                             Enabled="@ScrollButtons">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto" />
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="grid-wrapper">
+
+    <TelerikGrid @ref="@GridRef"
+                 Data="@GridData"
+                 AdaptiveMode="@AdaptiveMode.Auto"
+                 DataLayoutMode="@(Width > 70 ? GridDataLayoutMode.Columns : GridDataLayoutMode.Stacked)"
+                 EditMode="@GridEditMode.Inline"
+                 FilterMode="@GridFilterMode.FilterMenu"
+                 Groupable="true"
+                 Pageable="true"
+                 Sortable="true"
+                 SelectionMode="@GridSelectionMode.Multiple"
+                 @bind-SelectedItems="@SelectedProjects"
+                 OnCancel="@OnCancel"
+                 OnCreate="@CreateItem"
+                 OnDelete="@DeleteItem"
+                 OnEdit="@OnEdit"
+                 OnUpdate="@UpdateItem">
+        <GridSettings>
+            <GridToolBarSettings OverflowMode="@GridToolBarOverflowMode.Scroll"
+                                 ScrollButtonsPosition="@ScrollButtonsLayout"
+                                 ScrollButtonsVisibility="@(ScrollButtons ? GridToolBarScrollButtonsVisibility.Visible : GridToolBarScrollButtonsVisibility.Hidden)"
+                                 ShowInactiveTools="true">
+            </GridToolBarSettings>
+            <GridStackedLayoutSettings ColumnsCount="@GridStackedColumnsCount" />
+        </GridSettings>
+
+        <GridToolBar>
+            @if (!InEdit)
+            {
+                <GridToolBarAddTool>Add</GridToolBarAddTool>
+                <GridToolBarEditTool>Edit</GridToolBarEditTool>
+                <GridToolBarDeleteTool>Delete</GridToolBarDeleteTool>
+                <GridToolBarFilterTool>Filter</GridToolBarFilterTool>
+                <GridToolBarSortTool>Sort</GridToolBarSortTool>
+                <GridToolBarGroupTool>Group</GridToolBarGroupTool>
+                <GridToolBarSpacerTool />
+                <GridToolBarColumnChooserTool>Columns</GridToolBarColumnChooserTool>
+            }
+            else
+            {
+                <GridToolBarSaveEditTool>Save</GridToolBarSaveEditTool>
+                <GridToolBarCancelEditTool>Cancel</GridToolBarCancelEditTool>
+            }
+        </GridToolBar>
+
+        <GridColumns>
+            <GridColumn Field=@nameof(Project.ProjectId) Title="ID" Editable="false" Width="80px" />
+            <GridColumn Field=@nameof(Project.Title) Title="Title" Width="240px" />
+            <GridColumn Field=@nameof(Project.Owner) Title="Owner" Width="160px" />
+            <GridColumn Field=@nameof(Project.Status) Title="Status" Width="140px" />
+            <GridColumn Field=@nameof(Project.StartDate) Title="Start Date" DisplayFormat="{0:d}" Width="160px" />
+            <GridColumn Field=@nameof(Project.EndDate) Title="End Date" DisplayFormat="{0:d}" Width="160px" />
+        </GridColumns>
+    </TelerikGrid>
+</div>
+
+@code {
+    private TelerikGrid<Project> GridRef { get; set; }
+    private List<Project> GridData { get; set; }
+    private IEnumerable<Project> SelectedProjects { get; set; } = Enumerable.Empty<Project>();
+    private double Width { get; set; } = 100;
+    private bool ScrollButtons { get; set; } = true;
+    private bool InEdit { get; set; } = false;
+    private GridToolBarScrollButtonsPosition ScrollButtonsLayout { get; set; } = GridToolBarScrollButtonsPosition.Split;
+
+    private List<GridToolBarScrollButtonsPosition> ButtonsLayouts { get; set; } = new List<GridToolBarScrollButtonsPosition>()
+    {
+        GridToolBarScrollButtonsPosition.Start,
+        GridToolBarScrollButtonsPosition.End,
+        GridToolBarScrollButtonsPosition.Split
+    };
+
+    private int GridStackedColumnsCount
+    {
+        get
+        {
+            if (Width > 50)
+            {
+                return 1;
+            }
+            if (Width > 30)
+            {
+                return 2;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        var statuses = new[] { "Planned", "In Progress", "Completed", "On Hold" };
+        var owners = new[] { "Alice", "Bob", "Carol", "David" };
+        var rand = new Random();
+
+        GridData = Enumerable.Range(1, 50).Select(i => new Project
+        {
+            ProjectId = i,
+            Title = $"Project {i}",
+            Owner = owners[rand.Next(owners.Length)],
+            Status = statuses[rand.Next(statuses.Length)],
+            StartDate = DateTime.Now.AddDays(-i * 3),
+            EndDate = DateTime.Now.AddDays(i * 2)
+        }).ToList();
+    }
+
+    private void CreateItem(GridCommandEventArgs args)
+    {
+        InEdit = true;
+        var newProject = args.Item as Project;
+        newProject.ProjectId = GridData.Max(p => p.ProjectId) + 1;
+        GridData.Insert(0, newProject);
+    }
+
+    private void OnEdit(GridCommandEventArgs args)
+    {
+        InEdit = true;
+    }
+
+    private void OnCancel(GridCommandEventArgs args)
+    {
+        InEdit = false;
+    }
+
+    private void UpdateItem(GridCommandEventArgs args)
+    {
+        var updated = args.Item as Project;
+        var existing = GridData.FirstOrDefault(p => p.ProjectId == updated.ProjectId);
+        if (existing != null)
+        {
+            existing.Title = updated.Title;
+            existing.Owner = updated.Owner;
+            existing.Status = updated.Status;
+            existing.StartDate = updated.StartDate;
+            existing.EndDate = updated.EndDate;
+        }
+
+        InEdit = false;
+    }
+
+    private void DeleteItem(GridCommandEventArgs args)
+    {
+        var project = args.Item as Project;
+        if (GridData.Contains(project))
+        {
+            GridData.Remove(project);
+        }
+    }
+
+    public class Project
+    {
+        public int ProjectId { get; set; }
+        public string Title { get; set; } = "";
+        public string Owner { get; set; } = "";
+        public string Status { get; set; } = "";
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+    }
+
+<style>
+    .grid-wrapper {
+        width: @(Width.ToString() + "%");
+    }
+
+    .grid-slider {
+        padding: 0px 16px;
+    }
+</style>

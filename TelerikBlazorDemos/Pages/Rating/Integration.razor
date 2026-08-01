@@ -1,0 +1,66 @@
+@page "/rating/integration"
+
+@using System.ComponentModel.DataAnnotations
+
+<div class="demo-section">
+    <TelerikForm Model="@restaurantReview"
+                 OnValidSubmit="@HandleValidSubmitAsync">
+        <FormValidation>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+        </FormValidation>
+        <FormItems>
+            <FormItem Field="@nameof(RestaurantReview.RestaurantName)" LabelText="Restaurant Name" Hint="Enter the restaurant's name"></FormItem>
+            <FormItem Field="@nameof(RestaurantReview.City)" LabelText="City" Hint="Enter the city where the restaurant is located"></FormItem>
+            <FormItem Field="@nameof(RestaurantReview.CuisineType)" LabelText="Cuisine Type" Hint="Enter the cuisine type"></FormItem>
+            <FormItem Field="@nameof(RestaurantReview.Rating)">
+                <Template>
+                    <label class="k-label k-form-label">Rate your experience at this restaurant</label>
+                    <div class="k-form-field-wrap">
+                        <TelerikRating @bind-Value="@restaurantReview.Rating"
+                                       Label="@RatingLabel">
+                        </TelerikRating>
+                    </div>
+                </Template>
+            </FormItem>
+            <FormItem Field="@nameof(RestaurantReview.Comments)" LabelText="Comments" Hint="Share your experience"></FormItem>
+        </FormItems>
+    </TelerikForm>
+</div>
+
+@code {
+    private RestaurantReview restaurantReview = new RestaurantReview();
+    private string RatingLabel => $"{restaurantReview.Rating} / 5";
+
+    [CascadingParameter]
+    private DialogFactory Dialogs { get; set; }
+
+    private async Task HandleValidSubmitAsync()
+    {
+        await Dialogs.AlertAsync("The form was submitted successfully.", "Submission Status");
+    }
+
+    public class RestaurantReview
+    {
+        [Required(ErrorMessage = "Restaurant name is required")]
+        public string RestaurantName { get; set; }
+
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; }
+
+        [Required(ErrorMessage = "Cuisine type is required")]
+        public string CuisineType { get; set; }
+
+        [Required(ErrorMessage = "Rating is required")]
+        public double Rating { get; set; }
+
+        [Required(ErrorMessage = "Comments are required")]
+        [StringLength(500, MinimumLength = 10, ErrorMessage = "Comments must be between 10 and 500 characters")]
+        public string Comments { get; set; }
+    }
+}
+
+<style>
+    .k-rating-container {
+        margin-inline: 0;
+    }
+</style>

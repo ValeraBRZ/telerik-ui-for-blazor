@@ -1,0 +1,94 @@
+@page "/marketing-campaigns/product-page/dropdowns"
+
+@layout MainLayout
+
+<div class="kd-marketing-campaign-page">
+    <div class="k-d-grid k-grid-cols-lg-3 k-grid-cols-sm-2 k-grid-cols-xs-1 k-gap-8">
+        <div class="k-col-span-1">
+            <p>AutoComplete</p>
+            <TelerikAutoComplete Data="@Sports"
+                                 @bind-Value="@AutoCompleteValue"
+                                 Width="100%"
+                                 Placeholder="Your favorite sport"
+                                 ShowClearButton="true">
+            </TelerikAutoComplete>
+        </div>
+        <div class="k-col-span-1">
+            <p>ComboBox</p>
+            <TelerikComboBox Data="@Sports"
+                             @bind-Value="@ComboBoxValue"
+                             Width="100%"
+                             Placeholder="Your favorite sport"
+                             ShowClearButton="true">
+            </TelerikComboBox>
+        </div>
+        <div class="k-col-span-1">
+            <p>MultiColumnComboBox</p>
+            <TelerikMultiColumnComboBox Data="@Employees"
+                                        @bind-Value="MultiColumnComboBoxValue"
+                                        Width="100%"
+                                        ValueField="@nameof(Employee.Id)"
+                                        TextField="@nameof(Employee.Name)">
+                <MultiColumnComboBoxColumns>
+                    <MultiColumnComboBoxColumn Field="@nameof(Employee.Name)"></MultiColumnComboBoxColumn>
+                    <MultiColumnComboBoxColumn Field="@nameof(Employee.Position)"></MultiColumnComboBoxColumn>
+                </MultiColumnComboBoxColumns>
+            </TelerikMultiColumnComboBox>
+        </div>
+        <div class="k-col-span-1">
+            <p>DropDownList</p>
+            <TelerikDropDownList Data="@Sports"
+                                 @bind-Value="@DropDownListValue"
+                                 Width="100%">
+            </TelerikDropDownList>
+        </div>
+        <div class="k-col-span-1">
+            <p>MultiSelect</p>
+            <TelerikMultiSelect Data="@Sports"
+                                @bind-Value="@MultiSelectValue"
+                                Placeholder="Your favorite sports"
+                                ShowClearButton="true"
+                                Width="100%">
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string AutoCompleteValue { get; set; }
+    private string ComboBoxValue { get; set; }
+    private int MultiColumnComboBoxValue { get; set; }
+    private string DropDownListValue { get; set; }
+    private List<string> MultiSelectValue { get; set; }
+
+    private List<string> Sports = new List<string>
+    {
+        "Baseball",
+        "Basketball",
+        "Cricket",
+        "Field Hockey",
+        "Football",
+        "Table Tennis",
+        "Tennis",
+        "Volleyball"
+    };
+
+    private List<Employee> Employees = new List<Employee>
+    {
+        new Employee { Id = 1, Name = "Alice Johnson", Position = "Software Engineer" },
+        new Employee { Id = 2, Name = "Brian Lee", Position = "Product Manager" },
+        new Employee { Id = 3, Name = "Clara Martinez", Position = "UX Designer" },
+        new Employee { Id = 4, Name = "David Kim", Position = "Sales Executive" },
+        new Employee { Id = 5, Name = "Ella Zhang", Position = "Marketing Specialist" },
+        new Employee { Id = 6, Name = "Frank O'Connor", Position = "HR Business Partner" },
+        new Employee { Id = 7, Name = "Grace Patel", Position = "Finance Analyst" },
+        new Employee { Id = 8, Name = "Henry Schmidt", Position = "DevOps Engineer" }
+    };
+
+    private class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+    }
+}

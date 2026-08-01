@@ -1,0 +1,77 @@
+@page "/combobox/custom-values"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Enable custom values">
+        <TelerikCheckBox @bind-Value="@AllowCustom" Id="customValuesCheckBox" />
+        <label class="k-checkbox-label" for="customValuesCheckBox">Allow Custom Values</label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="size" class="k-label k-form-label">Size</label>
+        <div class="k-form-field-wrap">
+            <TelerikComboBox Data="@Data"
+                             @bind-Value="@SelectedSize"
+                             TextField="SizeText"
+                             ValueField="SizeText"
+                             AllowCustom="@AllowCustom"
+                             Placeholder="Select or write your t-shirt size"
+                             Id="size"
+                             Width="100%">
+            <ComboBoxSettings>
+                <ComboBoxPopupSettings Height="auto"></ComboBoxPopupSettings>
+            </ComboBoxSettings>
+            </TelerikComboBox>
+        </div>
+    </div>
+    <div class="k-form-field">
+        <div class="mt-lg">
+            Selected size: <strong>@SelectedSize</strong>
+        </div>
+
+        <div class="mt-md">
+            Custom size:
+
+            @if (!string.IsNullOrEmpty(SelectedSize))
+            {
+                <strong>@IsCustom</strong>
+            }
+        </div>
+    </div>
+</div>
+
+@code  {
+    public IEnumerable<Size> Data { get; set; }
+    public bool AllowCustom { get; set; } = true;
+    public string SelectedSize { get; set; }
+
+    public bool IsCustom
+        => Data.FirstOrDefault(size => size.SizeText == SelectedSize) == null;
+
+    public class Size
+    {
+        public string SizeText { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        List<Size> sizes = new List<Size>();
+        sizes.Add(new Size()
+        {
+            SizeText = "Small"
+        });
+
+        sizes.Add(new Size()
+        {
+            SizeText = "Medium"
+        });
+
+        sizes.Add(new Size()
+        {
+            SizeText = "Large"
+        });
+
+        Data = sizes;
+    }
+}

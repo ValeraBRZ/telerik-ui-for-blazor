@@ -1,0 +1,60 @@
+@page "/form/validation"
+
+@using TelerikBlazorDemos.Models.Form
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Validation Message Display Type">
+        <TelerikDropDownList @bind-Value="@ValidationMessageType"
+                             Data="@ValidationMessageTypes"
+                             ><DropDownListSettings><DropDownListPopupSettings Height="auto"></DropDownListPopupSettings></DropDownListSettings></TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section">
+    @if (ValidSubmit)
+    {
+        <div class="demo-alert demo-alert-success" role="alert">
+            The form was submitted successfully.
+        </div>
+    }
+    else
+    {
+        <TelerikForm Model="@TestUser"
+                     ValidationMessageType="@ValidationMessageType"
+                     OnValidSubmit="@HandleValidSubmit"
+                     OnInvalidSubmit="@HandleInvalidSubmit">
+            <FormValidation>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <TelerikValidationSummary></TelerikValidationSummary>
+            </FormValidation>
+        </TelerikForm>
+    }
+</div>
+
+@code {
+    public Person TestUser { get; set; } = new Person();
+    public FormValidationMessageType ValidationMessageType { get; set; } = FormValidationMessageType.Tooltip;
+    public List<FormValidationMessageType> ValidationMessageTypes { get; set; } = new List<FormValidationMessageType>()
+    {
+        FormValidationMessageType.None,
+        FormValidationMessageType.Inline,
+        FormValidationMessageType.Tooltip
+    };
+    public bool ValidSubmit { get; set; } = false;
+
+    async void HandleValidSubmit()
+    {
+        ValidSubmit = true;
+
+        await Task.Delay(2000);
+
+        ValidSubmit = false;
+
+        StateHasChanged();
+    }
+
+    void HandleInvalidSubmit()
+    {
+        ValidSubmit = false;
+    }
+}

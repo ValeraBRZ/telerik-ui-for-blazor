@@ -1,0 +1,27 @@
+@page "/grid/virtual-scrolling"
+
+@inject OrderService orderService
+
+<TelerikGrid Data=@GridData
+             Sortable="true"
+             Height="460px" RowHeight="60"
+             PageSize="10"
+             FilterMode="@GridFilterMode.FilterMenu"
+             ScrollMode="@GridScrollMode.Virtual">
+    <GridColumns>
+        <GridColumn Field="@(nameof(OrderDto.OrderId))" />
+        <GridColumn Field="@(nameof(OrderDto.ShipName))" />
+        <GridColumn Field="@(nameof(OrderDto.ShipAddress))" />
+        <GridColumn Field="@(nameof(OrderDto.ShipCity))" />
+        <GridColumn Field="@(nameof(OrderDto.ShipCountry))" />
+    </GridColumns>
+</TelerikGrid>
+
+@code {
+    public IEnumerable<OrderDto> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = orderService.GetOrders();
+    }
+}

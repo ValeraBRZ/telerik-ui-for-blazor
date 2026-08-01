@@ -1,0 +1,350 @@
+@page "/gantt/zooming"
+
+<TelerikGantt Data="@Data"
+              Width="100%"
+              @bind-TreeListWidth="@TreeListWidth"
+              Height="600px"
+              IdField="Id"
+              ParentIdField="ParentId"
+              OnUpdate="UpdateTask"
+              OnDelete="DeleteTask"
+              OnCreate="CreateTask"
+              RangeSnapTo="@RangeSnapTo"
+              Sortable="true"
+              SortMode="SortMode.Multiple"
+              FilterMode="@GanttFilterMode.FilterMenu"
+              FilterMenuType="@FilterMenuType.Menu">
+    <GanttToolBarTemplate>
+        <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
+        <GanttCommandButton OnClick="ZoomToFit" Enabled="@ZoomToFitBtn" Icon="@SvgIcon.Search">Zoom to fit</GanttCommandButton>
+        <GanttCommandButton OnClick="ZoomOut" Enabled="@ZoomOutBtn" Icon="@SvgIcon.ZoomActualSize">Zoom out</GanttCommandButton>
+    </GanttToolBarTemplate>
+    <GanttViews>
+        <GanttDayView></GanttDayView>
+        <GanttWeekView></GanttWeekView>
+        <GanttMonthView></GanttMonthView>
+    </GanttViews>
+    <GanttColumns>
+        <GanttColumn Field="Id"
+                     Visible="false">
+        </GanttColumn>
+        <GanttColumn Field="Title"
+                     Expandable="true"
+                     Width="220px"
+                     Title="Task Title">
+        </GanttColumn>
+        <GanttColumn Field="Start"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="End"
+                     Width="100px"
+                     DisplayFormat="{0:d}">
+        </GanttColumn>
+        <GanttColumn Field="PercentComplete"
+                     Title="Status"
+                     Width="100px"
+                     DisplayFormat="{0:P}">
+        </GanttColumn>
+        <GanttCommandColumn Title="Commands" Width="100px">
+            <GanttCommandButton AriaLabel="Add item" Command="Add" Icon="@SvgIcon.Plus"></GanttCommandButton>
+            <GanttCommandButton AriaLabel="Delete item" Command="Delete" Icon="@SvgIcon.Trash"></GanttCommandButton>
+        </GanttCommandColumn>
+    </GanttColumns>
+    <GanttDependenciesSettings>
+        <GanttDependencies Data="@Dependencies"
+                           PredecessorIdField="PredecessorId"
+                           SuccessorIdField="SuccessorId"
+                           TypeField="Type"
+                           OnCreate="@CreateDependency"
+                           OnDelete="@DeleteDependency">
+        </GanttDependencies>
+    </GanttDependenciesSettings>
+</TelerikGantt>
+
+@code{
+    public bool ZoomToFitBtn { get; set; } = true;
+
+    public bool ZoomOutBtn { get; set; } = false;
+
+    public GanttRangeSnapTo RangeSnapTo { get; set; }
+
+    public string TreeListWidth { get; set; } = "50%";
+
+    public void ZoomToFit()
+    {
+        RangeSnapTo = GanttRangeSnapTo.MinorSlot;
+        ZoomToFitBtn = false;
+        ZoomOutBtn = true;
+    }
+
+    public void ZoomOut()
+    {
+        RangeSnapTo = GanttRangeSnapTo.MajorSlot;
+        ZoomOutBtn = false;
+        ZoomToFitBtn = true;
+    }
+
+    class FlatModel
+    {
+        public int Id { get; set; }
+        public int? ParentId { get; set; }
+        public string Title { get; set; }
+        public double PercentComplete { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+    }
+
+    class DependencyModel
+    {
+        public int Id { get; set; }
+        public int PredecessorId { get; set; }
+        public int SuccessorId { get; set; }
+        public GanttDependencyType Type { get; set; }
+    }
+
+    public int LastId { get; set; } = 1;
+    public int LastDependencyId { get; set; } = 1;
+    List<FlatModel> Data { get; set; }
+    List<DependencyModel> Dependencies { get; set; } = new List<DependencyModel>();
+
+    protected override void OnInitialized()
+    {
+        Data = new List<FlatModel>();
+
+        for (int i = 1; i < 6; i++)
+        {
+            var newItem = new FlatModel()
+            {
+                Id = LastId,
+                Title = "Employee  " + i.ToString(),
+                Start = new DateTime(2025, 12, 14 + i, 3, 0, 0),
+                End = new DateTime(2025, 12, 19 + i, 3, 0, 0),
+                PercentComplete = i * 0.125
+            };
+
+            Data.Add(newItem);
+            var parentId = LastId;
+            LastId++;
+
+            for (int j = 0; j < 5; j++)
+            {
+                Data.Add(new FlatModel()
+                {
+                    Id = LastId,
+                    ParentId = parentId,
+                    Title = "    Employee " + i + " : " + j.ToString(),
+                    Start = new DateTime(2025, 12, 14 + i + j, 3, 0, 0),
+                    End = new DateTime(2025, 12, 15 + i + j, 3, 0, 0),
+                    PercentComplete = j * 0.225
+                });
+
+                LastId++;
+            }
+        }
+
+        Dependencies.Add(new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = 3,
+            SuccessorId = 4,
+            Type = 0
+        });
+
+        Dependencies.Add(new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = 2,
+            SuccessorId = 5,
+            Type = GanttDependencyType.StartStart
+        });
+
+        base.OnInitialized();
+    }
+
+    private void CreateDependency(GanttDependencyCreateEventArgs args)
+    {
+        var dependency = new DependencyModel()
+        {
+            Id = LastDependencyId++,
+            PredecessorId = (int)args.PredecessorId,
+            SuccessorId = (int)args.SuccessorId,
+            Type = args.Type
+        };
+
+        Dependencies.Add(dependency);
+    }
+
+    private void UpdateDependency(DependencyModel dependency, int predecessorId, int successorId, GanttDependencyType type)
+    {
+        var foundDependency = Dependencies.FirstOrDefault(d => d.Id == dependency.Id);
+
+        if (foundDependency != null)
+        {
+            foundDependency.PredecessorId = predecessorId;
+            foundDependency.SuccessorId = successorId;
+            foundDependency.Type = type;
+        }
+    }
+
+    private void DeleteDependency(GanttDependencyDeleteEventArgs args)
+    {
+        Dependencies.RemoveAll(d => d.Id.Equals((args.Item as DependencyModel).Id));
+    }
+
+    private void CreateTask(GanttCreateEventArgs args)
+    {
+        var argsItem = args.Item as FlatModel;
+
+        argsItem.Id = LastId++;
+
+        if (args.ParentItem != null)
+        {
+            var parent = (FlatModel)args.ParentItem;
+
+            argsItem.ParentId = parent.Id;
+        }
+
+        Data.Insert(0, argsItem);
+
+        CalculateParentPercentRecursive(argsItem);
+        CalculateParentRangeRecursive(argsItem);
+    }
+
+    private void UpdateTask(GanttUpdateEventArgs args)
+    {
+        var item = args.Item as FlatModel;
+        var parent = args.ParentItem as FlatModel;
+
+        var foundItem = Data.FirstOrDefault(i => i.Id.Equals(item.Id));
+        var foundParent = Data.FirstOrDefault(i => i.Id.Equals(parent.Id));
+
+        if (foundItem != null)
+        {
+            var startOffset = item.Start - foundItem.Start;
+            if (startOffset != TimeSpan.Zero)
+            {
+                MoveChildrenRecursive(foundItem, startOffset);
+            }
+
+            foundItem.ParentId = foundParent?.Id;
+            foundItem.Title = item.Title;
+            foundItem.Start = item.Start;
+            foundItem.End = item.End;
+            foundItem.PercentComplete = item.PercentComplete;
+        }
+
+        UpdateDependencies(args);
+
+        CalculateParentPercentRecursive(foundItem);
+        CalculateParentRangeRecursive(foundItem);
+    }
+
+    private void UpdateDependencies(GanttUpdateEventArgs args)
+    {
+        args?.CreatedDependencies?.ForEach(x =>
+        {
+            CreateDependency(new GanttDependencyCreateEventArgs()
+            {
+                PredecessorId = (int)x.PredecessorId,
+                SuccessorId = (int)x.SuccessorId,
+                Type = x.Type
+            });
+        });
+
+        args?.UpdatedDependencies?.ForEach(x =>
+        {
+            UpdateDependency(x.DataItem as DependencyModel, (int)x.PredecessorId, (int)x.SuccessorId, x.Type);
+        });
+
+        args?.DeletedDependencies?.ForEach(x =>
+        {
+            DeleteDependency(new GanttDependencyDeleteEventArgs()
+            {
+                Item = x.DataItem as DependencyModel
+            });
+        });
+    }
+
+    private void DeleteTask(GanttDeleteEventArgs args)
+    {
+        var item = Data.FirstOrDefault(i => i.Id.Equals((args.Item as FlatModel).Id));
+
+        RemoveChildRecursive(item);
+
+        CalculateParentPercentRecursive(item);
+        CalculateParentRangeRecursive(item);
+    }
+
+    private void RemoveChildRecursive(FlatModel item)
+    {
+        var children = GetChildren(item).ToList();
+
+        foreach (var child in children)
+        {
+            RemoveChildRecursive(child);
+        }
+
+        Data.Remove(item);
+    }
+
+    private void CalculateParentPercentRecursive(FlatModel item)
+    {
+        if (item.ParentId != null)
+        {
+            var parent = GetParent(item);
+
+            var children = GetChildren(parent);
+
+            if (children.Any())
+            {
+                parent.PercentComplete = children.Average(i => i.PercentComplete);
+
+                CalculateParentPercentRecursive(parent);
+            }
+        }
+    }
+
+    private void CalculateParentRangeRecursive(FlatModel item)
+    {
+        if (item.ParentId != null)
+        {
+            var parent = GetParent(item);
+
+            var children = GetChildren(parent);
+
+            if (children.Any())
+            {
+                parent.Start = children.Min(i => i.Start);
+                parent.End = children.Max(i => i.End);
+
+                CalculateParentRangeRecursive(parent);
+            }
+        }
+    }
+
+    private void MoveChildrenRecursive(FlatModel item, TimeSpan offset)
+    {
+        var children = GetChildren(item);
+
+        foreach (var child in children)
+        {
+            child.Start = child.Start.Add(offset);
+            child.End = child.End.Add(offset);
+
+            MoveChildrenRecursive(child, offset);
+        }
+    }
+
+    private FlatModel GetParent(FlatModel item)
+    {
+        return Data.FirstOrDefault(i => i.Id.Equals(item.ParentId));
+    }
+
+    private IEnumerable<FlatModel> GetChildren(FlatModel item)
+    {
+        return Data.Where(i => item.Id.Equals(i.ParentId));
+    }
+}
+
+

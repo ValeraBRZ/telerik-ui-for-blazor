@@ -1,0 +1,36 @@
+@page "/textarea/resize-mode"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Resize Mode">
+        <TelerikRadioGroup Class="resize-modes-radio"
+                           Data="@ResizeModes"
+                           Value="@ResizeMode"
+                           ValueChanged="@( (TextAreaResizeMode resizeMode) => ResizeModeChanged(resizeMode))"
+                           Layout="@RadioGroupLayout.Horizontal" />
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="demo-section auto">
+    <TelerikTextArea ResizeMode="@ResizeMode" Placeholder="Input..."></TelerikTextArea>
+</div>
+
+@code {
+    private TextAreaResizeMode ResizeMode { get; set; } = TextAreaResizeMode.Both;
+
+    private List<TextAreaResizeMode> ResizeModes { get; set; } = new List<TextAreaResizeMode>()
+    {
+        TextAreaResizeMode.Vertical,
+        TextAreaResizeMode.Horizontal,
+        TextAreaResizeMode.Both,
+        TextAreaResizeMode.Auto,
+        TextAreaResizeMode.None,
+    };
+
+    private void ResizeModeChanged(TextAreaResizeMode resizeMode) => ResizeMode = resizeMode;
+}
+
+<style>
+    .resize-modes-radio {
+        max-width: fit-content !important;
+    }
+</style>

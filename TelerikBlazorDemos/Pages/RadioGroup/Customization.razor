@@ -1,0 +1,87 @@
+@page "/radiogroup/customization"
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Toggle enabled state">
+        <label>
+            <TelerikCheckBox @bind-Value="@Enabled"></TelerikCheckBox>
+            Enable / Disable
+        </label>        
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pick layout">
+        <TelerikDropDownList Data="@Layouts"
+                             Width=""
+                            @bind-Value="@Layout">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Pick label position">
+        <TelerikDropDownList Data="@LabelPositions"
+                             Width=""
+                             @bind-Value="@LabelPosition">
+                <DropDownListSettings>
+                    <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+                </DropDownListSettings>
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<div class="k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <div class="k-form-field-wrap">
+            <TelerikRadioGroup Data="@Responses"
+                               @bind-Value="@Response"
+                               Enabled="@Enabled"
+                               Layout="@Layout"
+                               LabelPosition="@LabelPosition"></TelerikRadioGroup>
+        </div>
+    </div>
+</div>
+
+@code  {
+    public List<string> Responses { get; set; } = new List<string>() { "Agree", "Disagree", "N/A" };
+    public string Response { get; set; } = "Agree";
+
+    /* Configurator */
+
+    public RadioGroupLabelPosition LabelPosition { get; set; } = RadioGroupLabelPosition.After;
+    public RadioGroupLayout Layout { get; set; } = RadioGroupLayout.Vertical;
+    public bool Enabled { get; set; } = true;
+
+    public List<LayoutModel> Layouts = new List<LayoutModel>()
+    {
+        new LayoutModel() { Text = "Vertical", Value = RadioGroupLayout.Vertical },
+        new LayoutModel() { Text = "Horizontal", Value = RadioGroupLayout.Horizontal }
+    };
+    public List<LabelPositionModel> LabelPositions = new List<LabelPositionModel>()
+    {
+        new LabelPositionModel() { Text = "Before", Value = RadioGroupLabelPosition.Before },
+        new LabelPositionModel() { Text = "After", Value = RadioGroupLabelPosition.After }
+    };
+
+    public class LayoutModel
+    {
+        public string Text { get; set; }
+        public RadioGroupLayout Value { get; set; }
+
+        public LayoutModel()
+        {
+        }
+    }
+
+    public class LabelPositionModel
+    {
+        public string Text { get; set; }
+        public RadioGroupLabelPosition Value { get; set; }
+
+        public LabelPositionModel()
+        {
+        }
+    }
+
+    /* Configurator */
+}

@@ -1,0 +1,40 @@
+@page "/treelist/column-virtualization"
+
+@inject EmployeeDirectoryService employeeDirectoryService
+
+<TelerikTreeList ColumnVirtualization="true"
+                 Height="450px" Width="750px"
+                 Data="@Data"
+                 IdField="EmployeeId"
+                 ParentIdField="ReportsTo"
+                 Pageable="true"
+                 FilterMode="@TreeListFilterMode.FilterMenu"
+                 Sortable="true">
+    <TreeListColumns>
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.EmployeeId)" Title="Id" Width="60px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.FirstName)" Expandable="true" Title="First Name" Width="350px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.LastName)" Title="Last Name" Width="150px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Address)" Width="300px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.City)" Width="200px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Country)" Width="300px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Phone)" Width="200px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Extension)" Width="200px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.BirthDate)" Title="Birth Date" Width="200px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.HireDate)" Title="Hire Date" Width="200px" />
+        <TreeListColumn Field="@nameof(EmployeeDirectoryDto.Position)" Width="200px" />
+    </TreeListColumns>
+</TelerikTreeList>
+
+@code {
+    public IEnumerable<EmployeeDirectoryDto> Data { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadData();
+    }
+
+    private void LoadData()
+    {
+        Data = employeeDirectoryService.GetEmployeeDirectories();
+    }
+}

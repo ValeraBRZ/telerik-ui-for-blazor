@@ -1,0 +1,32 @@
+@page "/multiselect/keyboard-navigation"
+
+<div class="demo-section k-form k-form-md k-form-vertical">
+    <div class="k-form-field">
+        <label for="countries" class="k-label k-form-label">Countries</label>
+        <div class="k-form-field-wrap">
+            <TelerikMultiSelect Data="@Countries" Id="countries" Width="100%"
+                                @bind-Value="@Values"
+                                Placeholder="Enter Balkan countries, e.g., Bulgaria">
+            </TelerikMultiSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    List<string> Countries = new List<string>();
+    List<string> Values = new List<string>();
+    protected override void OnInitialized()
+    {
+        Countries.Add("Albania");
+        Countries.Add("Bosnia & Herzegovina");
+        Countries.Add("Bulgaria");
+        Countries.Add("Croatia");
+        Countries.Add("Kosovo");
+        Countries.Add("North Macedonia");
+        Countries.Add("Montenegro");
+        Countries.Add("Serbia");
+        Countries.Add("Slovenia");
+
+        base.OnInitialized();
+    }
+}

@@ -1,0 +1,100 @@
+@page "/grid/cell-selection"
+
+@inject CustomerService customerService
+
+<DemoConfigurator>
+    <DemoConfiguratorColumn Description="Choose the Grid Selection Mode:">
+        <TelerikDropDownList Data="@SelectionModes" @bind-Value="@SelectionMode" OnChange="@OnSelectionChange">
+            <DropDownListSettings>
+                <DropDownListPopupSettings Height="auto"></DropDownListPopupSettings>
+            </DropDownListSettings>
+        </TelerikDropDownList>
+    </DemoConfiguratorColumn>
+    <DemoConfiguratorColumn Description="Toggle drag to select">
+        <TelerikCheckBox @bind-Value="@DragToSelect"
+                         Id="drag-to-select-checkbox"
+                         Enabled="@(SelectionMode == GridSelectionMode.Multiple)">
+        </TelerikCheckBox>
+        <label for="drag-to-select-checkbox">Enable <strong>DragToSelect</strong></label>
+    </DemoConfiguratorColumn>
+</DemoConfigurator>
+
+<TelerikGrid Data=@GridData
+             SelectionMode="@SelectionMode"
+             @bind-SelectedCells="@SelectedCells"
+             Pageable="true"
+             PageSize="@PageSize">
+    <GridSettings>
+        <GridSelectionSettings SelectionType="@GridSelectionType.Cell" DragToSelect="@DragToSelect"></GridSelectionSettings>
+    </GridSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(CustomerDto.ContactName) Title="Name" />
+        <GridColumn Field=@nameof(CustomerDto.ContactTitle) Title="Title" />
+        <GridColumn Field=@nameof(CustomerDto.Address) />
+        <GridColumn Field=@nameof(CustomerDto.Phone) />
+    </GridColumns>
+</TelerikGrid>
+
+<h2>Selected Cells:</h2>
+<ul>
+    @foreach (SelectedCellDescriptor selectedCell in SelectedCells)
+    {
+        <li>
+            @{
+                var selectedValue = GetPropValue(selectedCell?.DataItem as CustomerDto, selectedCell?.ColumnField);
+                @selectedValue
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    private List<GridSelectionMode> SelectionModes => new List<GridSelectionMode>
+    {
+        GridSelectionMode.Single,
+        GridSelectionMode.Multiple,
+        GridSelectionMode.None
+    };
+
+    private GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Multiple;
+    private IEnumerable<CustomerDto> GridData { get; set; } = new List<CustomerDto>();
+    private bool DragToSelect { get; set; } = true;
+    private IEnumerable<GridSelectedCellDescriptor> SelectedCells { get; set; } = new List<GridSelectedCellDescriptor>();
+    private int PageSize = 10;
+
+    protected override void OnInitialized()
+    {
+        GridData = customerService.GetCustomers().ToList();
+    }
+
+    private void OnSelectionChange(object selection)
+    {
+        GridSelectionMode selectionMode = (GridSelectionMode)selection;
+        SelectionMode = selectionMode;
+
+        //cater for choosing different selection modes
+        //this is used only for the demo to update the rendering, you are not likely to need it in a real app
+        if (selectionMode == GridSelectionMode.Single)
+        {
+            DragToSelect = false;
+            GridSelectedCellDescriptor lastSelectedCell = SelectedCells.LastOrDefault();
+            SelectedCells = new List<GridSelectedCellDescriptor>();
+            List<GridSelectedCellDescriptor> selectedCells = SelectedCells.ToList();
+
+            if (lastSelectedCell != null)
+            {
+                selectedCells.Add(lastSelectedCell);
+            }
+
+            SelectedCells = selectedCells;
+        }
+        else if (selectionMode == GridSelectionMode.None)
+        {
+            DragToSelect = false;
+            SelectedCells = new List<GridSelectedCellDescriptor>();
+        }
+    }
+
+    private object GetPropValue(object src, string propName) => src.GetType().GetProperty(propName)?.GetValue(src, null);
+}
+
