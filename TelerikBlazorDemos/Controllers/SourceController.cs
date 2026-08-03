@@ -30,7 +30,7 @@ namespace TelerikBlazorDemos.Server.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly HtmlEncoder _htmlEncoder;
 
-        private string RootPath => AppContext.BaseDirectory.ToLowerInvariant();
+        private string RootPath => AppContext.BaseDirectory;
 
         public SourceController(IWebHostEnvironment hostingEnvironment, HtmlEncoder htmlEncoder)
         {
@@ -45,9 +45,11 @@ namespace TelerikBlazorDemos.Server.Controllers
                 string mappedPath = CleanUpPath(path);
                 return GetFileContent(mappedPath);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound();
+                // Return diagnostic details in the body so the failure can be inspected
+                // in the browser Network tab when reproducing on Azure.
+                return NotFound(String.Concat(path, " __ ", RootPath, " __ ", ex.Message));
             }
         }
 
@@ -99,12 +101,16 @@ namespace TelerikBlazorDemos.Server.Controllers
 
             // ensure we return only files we want publicly available, such as the components under Pages
             // avoid traversals in the paths with the .\ and .. symbols
-            string allowedRoot = Path.Combine(RootPath, "pages");
+            string allowedRoot = Path.Combine(RootPath, "pages").ToLowerInvariant();
             if (mappedPath.ToLowerInvariant().IndexOf(allowedRoot) != 0 ||
                     mappedPath.IndexOf("..") > -1 || mappedPath.IndexOf(".\\") > -1)
             {
                 throw new FileNotFoundException();
             }
+
+            // resolve the actual on-disk casing so lookups work on case-sensitive
+            // file systems (e.g. Linux App Service), where the requested route is lower-cased
+            mappedPath = ResolveCaseInsensitivePath(mappedPath) ?? mappedPath;
 
             if (!IOFile.Exists(mappedPath))
             {
@@ -151,12 +157,67 @@ namespace TelerikBlazorDemos.Server.Controllers
                 throw new FileNotFoundException();
             }
 
+            // resolve the actual on-disk casing so lookups work on case-sensitive
+            // file systems (e.g. Linux App Service)
+            fullPath = ResolveCaseInsensitivePath(fullPath) ?? fullPath;
+
             if (!IOFile.Exists(fullPath))
             {
                 throw new FileNotFoundException();
             }
 
             return fullPath;
+        }
+
+        // Walks the requested path segment by segment starting from the known-good
+        // application base directory and matches each segment ignoring case.
+        // Returns the correctly-cased path or null when no match exists.
+        private string ResolveCaseInsensitivePath(string fullPath)
+        {
+            if (IOFile.Exists(fullPath) || Directory.Exists(fullPath))
+            {
+                return fullPath;
+            }
+
+            string root = RootPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (!fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            string relative = fullPath.Substring(root.Length);
+            string[] segments = relative.Split(
+                new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar },
+                StringSplitOptions.RemoveEmptyEntries);
+
+            string currentPath = root;
+            foreach (var segment in segments)
+            {
+                string candidate = Path.Combine(currentPath, segment);
+                if (Directory.Exists(candidate) || IOFile.Exists(candidate))
+                {
+                    currentPath = candidate;
+                    continue;
+                }
+
+                if (!Directory.Exists(currentPath))
+                {
+                    return null;
+                }
+
+                string match = Directory.EnumerateFileSystemEntries(currentPath)
+                    .FirstOrDefault(entry => string.Equals(
+                        Path.GetFileName(entry), segment, StringComparison.OrdinalIgnoreCase));
+
+                if (match == null)
+                {
+                    return null;
+                }
+
+                currentPath = match;
+            }
+
+            return currentPath;
         }
 
     }
