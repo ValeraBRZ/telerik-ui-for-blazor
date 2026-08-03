@@ -12,7 +12,7 @@ window.codeManager = {
             }
             else {
                 if (snippetContainer) {
-                    snippetContainer.innerHTML = 'Request for code snippet failed.  Returned status of ' + xhr.status;
+                    snippetContainer.innerHTML = 'Request for code snippet failed. Returned status of ' + xhr.status;
                 }
             }
         };

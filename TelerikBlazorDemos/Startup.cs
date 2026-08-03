@@ -90,9 +90,13 @@ namespace TelerikBlazorDemos
                 if (Environment.IsProduction())
                 {
                     // In production, the SQLite DB is copied to a temp location to avoid locking issues.
-                    File.Delete("/tmp/demos-local.db");
-                    File.Copy($"{Environment.ContentRootPath}/demos.db", "/tmp/demos-local.db");
-                    dbPath = "/tmp/demos-local.db";
+                    var tempDbPath = Path.Combine(Path.GetTempPath(), "demos-local.db");
+                    if (File.Exists(tempDbPath))
+                    {
+                        File.Delete(tempDbPath);
+                    }
+                    File.Copy($"{Environment.ContentRootPath}/demos.db", tempDbPath, overwrite: true);
+                    dbPath = tempDbPath;
                 }
 
                 var connectionStringBuilder2 = new SqliteConnectionStringBuilder

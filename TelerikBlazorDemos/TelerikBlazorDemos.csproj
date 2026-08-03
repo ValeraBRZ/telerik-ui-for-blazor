@@ -115,8 +115,27 @@
   <ItemGroup>
     <Content Update="Pages\**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
+  <!--
+    The Razor SDK compiles .razor/.cshtml files into the assembly and removes them
+    from the publish output (its removal runs during ComputeFilesToPublish), so
+    CopyToPublishDirectory has no effect on them. This target runs AFTER publish and
+    copies the demo .razor/.cshtml source files into the publish folder so the
+    "View Source" tab (SourceController) can read them on Azure.
+  -->
+  <Target Name="CopyDemoRazorSourceToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <DemoRazorSource Include="Pages\**\*.razor;Pages\**\*.cshtml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DemoRazorSource)"
+          DestinationFiles="@(DemoRazorSource->'$(PublishDir)Pages\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+
 
   <ItemGroup>
     <Content Include="Services\**">
