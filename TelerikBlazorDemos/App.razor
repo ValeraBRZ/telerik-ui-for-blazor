@@ -31,8 +31,6 @@
         <link rel="preconnect" href="https://stats.g.doubleclick.net">
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://geolocation.onetrust.com" />
-        <link rel="preconnect" href="https://cdn.cookielaw.org" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     }
@@ -119,69 +117,6 @@
             Blazor.start();
         });
     </script>
-
-    @if (!IsMarketingPage && (HostEnvironment.IsStaging() || HostEnvironment.IsProduction()))
-    {
-        <!-- GDPR cookie consent -->
-        <script src="https://cdn.cookielaw.org/consent/3dfce4f2-dab6-4128-9f33-df7e0597da82/otSDKStub.js"
-                data-language="en"
-                type="text/javascript"
-                charset="UTF-8"
-                data-domain-script="3dfce4f2-dab6-4128-9f33-df7e0597da82"></script>
-        <!-- End GDPR cookie consent -->
-        <!-- Google Tag Manager -->
-        <script type="text/plain" class="optanon-category-1">
-            (function() {
-            function isMobile() {
-            var result = false;
-            var matches = [
-            /(Windows Phone(?: OS)?)\s(\d+)\.(\d+(\.\d+)?)/,
-            /(Silk)\/(\d+)\.(\d+(\.\d+)?)/,
-            /(Android|Android.*(?:Opera|Firefox).*?\/)\s*(\d+)\.?(\d+(\.\d+)?)?/,
-            /(iPhone|iPod).*OS\s+(\d+)[\._]([\d\._]+)/,
-            /(iPad).*OS\s+(\d+)[\._]([\d_]+)/,
-            /(MeeGo).+NokiaBrowser\/(\d+)\.([\d\._]+)/,
-            /(webOS)\/(\d+)\.(\d+(\.\d+)?)/,
-            /(BlackBerry|BB10).*?Version\/(\d+)\.(\d+(\.\d+)?)/,
-            /(PlayBook).*?Tablet\s*OS\s*(\d+)\.(\d+(\.\d+)?)/,
-            /(MSIE)\s+(\d+)\.(\d+(\.\d+)?)/,
-            /(tizen).*?Version\/(\d+)\.(\d+(\.\d+)?)/i,
-            /(sailfish).*rv:(\d+)\.(\d+(\.\d+)?).*firefox/i,
-            /(Mobile).*rv:(\d+)\.(\d+(\.\d+)?).*Firefox/
-            ];
-            for (var i = 0; i < matches.length; i++) {
-            result = matches[i].test(window.navigator.userAgent);
-            if (result) {
-            break;
-            }
-            }
-            return result;
-            }
-
-            if (isMobile()) {
-            window._gaq = window._gaq || [];
-            window._gaq.push(['_setAccount', "UA-111455-1"],
-            ['_setDomainName', '.telerik.com'],
-            ['_addIgnoredRef', 'telerik.com'],
-            ['_trackPageview']);
-
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = '//stats.g.doubleclick.net/dc.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            } else {
-            (function (w, d, s, l, i) {
-            w[l] = w[l] || []; w[l].push({
-            'gtm.start':
-            new Date().getTime(), event: 'gtm.js'
-            }); var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-            })(window, document, 'script', 'dataLayer', 'GTM-6X92');
-            }
-            })();
-        </script>
-        <!-- End Google Tag Manager -->
-    }
 </body>
 </html>
 
